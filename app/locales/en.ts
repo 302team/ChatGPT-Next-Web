@@ -473,6 +473,10 @@ const en: LocaleType = {
     Code: "Detected access code from url, confirm to apply? ",
     Settings: "Detected settings from url, confirm to apply?",
   },
+  Config: {
+    title: "GPT302",
+    description: "Supports online and GPTs",
+  },
 };
 
 export default en;

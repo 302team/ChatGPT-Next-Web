@@ -239,6 +239,10 @@ const ru: PartialLocaleType = {
     Topic: "Тема",
     Time: "Время",
   },
+  Config: {
+    title: "GPT302",
+    description: "Интеллектуальный чат",
+  },
 };
 
 export default ru;

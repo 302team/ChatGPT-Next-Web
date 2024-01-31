@@ -231,6 +231,10 @@ const vi: PartialLocaleType = {
     Topic: "Chủ đề",
     Time: "Thời gian",
   },
+  Config: {
+    title: "GPT302",
+    description: "Ngữ dùng và GPT",
+  },
 };
 
 export default vi;

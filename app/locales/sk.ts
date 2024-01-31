@@ -477,6 +477,10 @@ const sk: PartialLocaleType = {
     Code: "Zistený prístupový kód z URL, potvrdiť na aplikovanie?",
     Settings: "Zistené nastavenia z URL, potvrdiť na aplikovanie?",
   },
+  Config: {
+    title: "GPT302",
+    description: "Podporuje pripojenie na internet a GPTs",
+  },
 };
 
 export default sk;

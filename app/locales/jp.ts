@@ -298,6 +298,10 @@ const jp: PartialLocaleType = {
     Topic: "トピック",
     Time: "時間",
   },
+  Config: {
+    title: "GPT302",
+    description: "AIとデータのサポート",
+  },
 };
 
 export default jp;

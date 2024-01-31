@@ -369,8 +369,8 @@ const id: PartialLocaleType = {
   },
   Exporter: {
     Description: {
-      Title: "Hanya pesan setelah menghapus konteks yang akan ditampilkan"
-    },  
+      Title: "Hanya pesan setelah menghapus konteks yang akan ditampilkan",
+    },
     Model: "Model",
     Messages: "Pesan",
     Topic: "Topik",
@@ -379,6 +379,10 @@ const id: PartialLocaleType = {
   URLCommand: {
     Code: "Kode akses terdeteksi dari url, konfirmasi untuk mendaftar ? ",
     Settings: "Pengaturan terdeteksi dari url, konfirmasi untuk diterapkan ?",
+  },
+  Config: {
+    title: "GPT302",
+    description: "Mendukung jaringan dan GPT",
   },
 };
 

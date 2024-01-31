@@ -284,6 +284,10 @@ ${builtin} مدمجة، ${custom} تم تعريفها من قبل المستخد
     Topic: "الموضوع",
     Time: "الوقت",
   },
+  Config: {
+    title: "GPT302",
+    description: "دعم الشبكات وGPTs",
+  },
 };
 
 export default ar;

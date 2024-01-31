@@ -329,6 +329,10 @@ const bn: PartialLocaleType = {
     Topic: "টপিক",
     Time: "সময়",
   },
+  Config: {
+    title: "GPT302",
+    description: "সাধারণ সাথে সংযোগ এবং GPTs",
+  },
 };
 
 export default bn;

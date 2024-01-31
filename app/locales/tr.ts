@@ -236,6 +236,10 @@ const tr: PartialLocaleType = {
     Topic: "Konu",
     Time: "Zaman",
   },
+  Config: {
+    title: "GPT302",
+    description: "Supports online and GPTs",
+  },
 };
 
 export default tr;

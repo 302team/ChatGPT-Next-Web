@@ -233,6 +233,10 @@ const cs: PartialLocaleType = {
     Topic: "Téma",
     Time: "Čas",
   },
+  Config: {
+    title: "GPT302",
+    description: "Podpora rozhovoru a GPTs",
+  },
 };
 
 export default cs;

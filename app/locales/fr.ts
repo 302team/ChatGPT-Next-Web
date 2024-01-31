@@ -304,6 +304,10 @@ const fr: PartialLocaleType = {
     Topic: "Sujet",
     Time: "Temps",
   },
+  Config: {
+    title: "GPT302",
+    description: "Supporte les liens et GPTs",
+  },
 };
 
 export default fr;

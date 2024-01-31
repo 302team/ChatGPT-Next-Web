@@ -466,6 +466,10 @@ const cn = {
     Topic: "主题",
     Time: "时间",
   },
+  Config: {
+    title: "GPT302",
+    description: "支持联网、GPTs",
+  },
 };
 
 type DeepPartial<T> = T extends object

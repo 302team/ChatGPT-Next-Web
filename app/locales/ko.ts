@@ -232,6 +232,10 @@ const ko: PartialLocaleType = {
     Topic: "주제",
     Time: "시간",
   },
+  Config: {
+    title: "GPT302",
+    description: "네트워킹 및 GPT 지원",
+  },
 };
 
 export default ko;

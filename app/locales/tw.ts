@@ -222,6 +222,10 @@ const tw: PartialLocaleType = {
     Topic: "主題",
     Time: "時間",
   },
+  Config: {
+    title: "GPT302",
+    description: "支援聯網、GPTs",
+  },
 };
 
 export default tw;

@@ -235,6 +235,10 @@ const es: PartialLocaleType = {
     Topic: "Tema",
     Time: "Time",
   },
+  Config: {
+    title: "GPT302",
+    description: "Supports online and GPTs",
+  },
 };
 
 export default es;

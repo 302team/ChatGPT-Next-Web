@@ -461,6 +461,10 @@ const pt: PartialLocaleType = {
     Settings:
       "Configurações detectadas a partir da url, confirmar para aplicar?",
   },
+  Config: {
+    title: "GPT302",
+    description: "Suporta internet e GPTs",
+  },
 };
 
 export default pt;

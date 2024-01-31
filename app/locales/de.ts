@@ -235,6 +235,10 @@ const de: PartialLocaleType = {
     Topic: "Thema",
     Time: "Zeit",
   },
+  Config: {
+    title: "GPT302",
+    description: "支持联网、GPTs",
+  },
 };
 
 export default de;

@@ -156,6 +156,10 @@ const no: PartialLocaleType = {
     Topic: "Emne",
     Time: "Tid",
   },
+  Config: {
+    title: "GPT302",
+    description: "Støtte nettverk og GPT-er",
+  },
 };
 
 export default no;
