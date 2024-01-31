@@ -1016,11 +1016,6 @@ function _Chat() {
             accessStore.update((access) => (access.openaiUrl = payload.url!));
           }
 
-          showToast(
-            Locale.URLCommand.Settings +
-              `\n${JSON.stringify(payload, null, 4)}`,
-          );
-
           // showConfirm(
           //   Locale.URLCommand.Settings +
           //     `\n${JSON.stringify(payload, null, 4)}`,
