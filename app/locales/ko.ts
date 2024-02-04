@@ -234,7 +234,7 @@ const ko: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "네트워킹 및 GPT 지원",
+    description: "한 번의 클릭으로 나만의 AI 로봇을 만들어보세요",
   },
 };
 

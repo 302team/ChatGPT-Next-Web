@@ -475,7 +475,7 @@ const en: LocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "Supports online and GPTs",
+    description: "Create your own AI robot with just one click",
   },
 };
 

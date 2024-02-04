@@ -286,7 +286,7 @@ ${builtin} مدمجة، ${custom} تم تعريفها من قبل المستخد
   },
   Config: {
     title: "GPT302",
-    description: "دعم الشبكات وGPTs",
+    description: "إنشاء روبوت ذكاء اصطناعي خاص بك بنقرة واحدة",
   },
 };
 

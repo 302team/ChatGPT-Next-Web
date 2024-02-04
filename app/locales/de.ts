@@ -237,7 +237,7 @@ const de: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "支持联网、GPTs",
+    description: "Erstellen Sie Ihren eigenen AI-Roboter mit nur einem Klick",
   },
 };
 

@@ -331,7 +331,7 @@ const bn: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "সাধারণ সাথে সংযোগ এবং GPTs",
+    description: "একটি ক্লিকে নিজের জন্য এইআই রোবট তৈরি করুন",
   },
 };
 

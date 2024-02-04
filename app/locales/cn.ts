@@ -468,7 +468,7 @@ const cn = {
   },
   Config: {
     title: "GPT302",
-    description: "支持联网、GPTs",
+    description: "一键生成属于自己的AI机器人",
   },
 };
 

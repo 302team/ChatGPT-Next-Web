@@ -237,7 +237,7 @@ const it: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "Supports online and GPTs",
+    description: "Buat robot AI milikmu sendiri hanya dengan satu klik",
   },
 };
 

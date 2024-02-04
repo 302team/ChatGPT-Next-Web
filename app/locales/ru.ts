@@ -241,7 +241,7 @@ const ru: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "Интеллектуальный чат",
+    description: "Создайте своего собственного робота ИИ всего в один клик",
   },
 };
 

@@ -479,7 +479,7 @@ const sk: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "Podporuje pripojenie na internet a GPTs",
+    description: "Vytvorte si vlastného AI robota jedným kliknutím",
   },
 };
 

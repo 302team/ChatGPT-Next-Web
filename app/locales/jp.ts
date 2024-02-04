@@ -300,7 +300,7 @@ const jp: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "AIとデータのサポート",
+    description: "たった一つのクリックで自分自身のAIロボットを作成する",
   },
 };
 

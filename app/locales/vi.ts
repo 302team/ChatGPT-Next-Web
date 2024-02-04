@@ -233,7 +233,7 @@ const vi: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "Ngữ dùng và GPT",
+    description: "Tạo ngay robot AI riêng của bạn chỉ với một cú nhấp chuột",
   },
 };
 

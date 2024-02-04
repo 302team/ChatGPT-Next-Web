@@ -382,7 +382,7 @@ const id: PartialLocaleType = {
   },
   Config: {
     title: "GPT302",
-    description: "Mendukung jaringan dan GPT",
+    description: "Buat robot AI milikmu sendiri hanya dengan satu klik",
   },
 };
 
