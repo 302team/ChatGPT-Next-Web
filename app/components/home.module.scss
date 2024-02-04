@@ -3,7 +3,8 @@
   border: var(--border-in-light);
   border-radius: 20px;
   box-shadow: var(--shadow);
-  color: var(--black);
+  // color: var(--black);
+  color: rgb(248, 248, 248);
   background-color: var(--white);
   min-width: 600px;
   min-height: 370px;
@@ -42,7 +43,8 @@
   width: var(--sidebar-width);
   box-sizing: border-box;
   padding: 20px;
-  background-color: var(--second);
+  // background-color: var(--second);
+  background-color: rgb(0, 0, 0);
   display: flex;
   flex-direction: column;
   box-shadow: inset -2px 0px 2px 0px rgb(0, 0, 0, 0.05);
@@ -55,6 +57,8 @@
 
     .sidebar-bar-button {
       flex-grow: 1;
+      background-color: rgb(29, 30, 35);
+      color: rgb(248, 248, 248);
 
       &:not(:last-child) {
         margin-right: 10px;
@@ -165,7 +169,8 @@
 
 .chat-item {
   padding: 10px 14px;
-  background-color: var(--white);
+  // background-color: var(--white);
+  background-color: rgb(29, 30, 35);
   border-radius: 10px;
   margin-bottom: 10px;
   box-shadow: var(--card-shadow);
@@ -178,11 +183,13 @@
 }
 
 .chat-item:hover {
-  background-color: var(--hover-color);
+  // background-color: var(--hover-color);
+  background-color: rgb(53, 53, 65);
 }
 
 .chat-item-selected {
-  border-color: var(--primary);
+  // border-color: var(--primary);
+  background-color: rgb(53, 53, 65);
 }
 
 .chat-item-title {
@@ -316,6 +323,11 @@
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
+
+  .sidebar-tail-button {
+    background-color: rgb(29, 30, 35);
+    color: rgb(248, 248, 248);
+  }
 }
 
 .sidebar-actions {

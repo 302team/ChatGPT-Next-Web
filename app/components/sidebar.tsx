@@ -213,17 +213,17 @@ export function SideBar(props: { className?: string }) {
           </div>
           <div className={styles["sidebar-action"]}>
             <Link to={Path.Settings}>
-              <IconButton icon={<SettingsIcon />} shadow />
+              <IconButton
+                className={styles["sidebar-tail-button"]}
+                icon={<SettingsIcon />}
+                shadow
+              />
             </Link>
           </div>
-          {/* <div className={styles["sidebar-action"]}>
-            <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
-              <IconButton icon={<GithubIcon />} shadow />
-            </a>
-          </div> */}
         </div>
         <div>
           <IconButton
+            className={styles["sidebar-tail-button"]}
             icon={<AddIcon />}
             text={shouldNarrow ? undefined : Locale.Home.NewChat}
             onClick={() => {

@@ -880,9 +880,11 @@ function _Chat() {
     session.messages.at(0)?.content !== BOT_HELLO.content
   ) {
     const copiedHello = Object.assign({}, BOT_HELLO);
-    if (!accessStore.isAuthorized()) {
-      copiedHello.content = Locale.Error.Unauthorized;
-    }
+
+    /* fix: 第一次打开聊天机器人提示要填key */
+    // if (!accessStore.isAuthorized()) {
+    //   copiedHello.content = Locale.Error.Unauthorized;
+    // }
     context.push(copiedHello);
   }
 
