@@ -192,7 +192,7 @@ export function SideBar(props: { className?: string }) {
         className={styles["sidebar-body"]}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
-            navigate(Path.Home);
+            // navigate(Path.Home);
           }
         }}
       >

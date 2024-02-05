@@ -22,6 +22,8 @@ import {
   Routes,
   Route,
   useLocation,
+  Outlet,
+  useParams,
 } from "react-router-dom";
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
@@ -122,11 +124,55 @@ const loadAsyncGoogleFont = () => {
   document.head.appendChild(linkEl);
 };
 
+function ChatWindow() {
+  const isHome = location.pathname === Path.Home;
+
+  return (
+    <>
+      <SideBar className={isHome ? styles["sidebar-show"] : ""} />
+
+      <div className={styles["window-content"]} id={SlotID.AppBody}>
+        <Routes>
+          <Route path={Path.Home} element={<Chat />} />
+          <Route path={Path.NewChat} element={<NewChat />} />
+          <Route path={Path.Masks} element={<MaskPage />} />
+          <Route path={Path.Chat} element={<Chat />} />
+          <Route path={Path.Settings} element={<Settings />} />
+        </Routes>
+      </div>
+    </>
+  );
+}
+
+function Bot() {
+  const params = useParams();
+  const [loading, setLoading] = useState(true);
+  const accessStore = useAccessStore();
+
+  useEffect(() => {
+    async function fetchByCode(code: string) {
+      console.log("[Config] got config from build time", getClientConfig());
+      await useAccessStore.getState().fetchByCode(code);
+
+      setLoading(false);
+    }
+
+    if (params.id && accessStore.apiDomain) {
+      fetchByCode(params.id! as string);
+    }
+  }, [params, accessStore.apiDomain]);
+
+  if (loading) return <Loading />;
+
+  return <ChatWindow />;
+}
+
 function Screen() {
   const config = useAppConfig();
   const location = useLocation();
   const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
+  const isBot = new RegExp(Path.Bot).test(location.pathname);
   const isMobileScreen = useMobileScreen();
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
@@ -144,24 +190,27 @@ function Screen() {
         }`
       }
     >
-      {isAuth ? (
+      {isBot ? (
+        <>
+          <Routes>
+            <Route
+              path={Path.Bot}
+              element={
+                <>
+                  <Outlet />
+                </>
+              }
+            >
+              <Route path=":id/*" element={<Bot />} />
+            </Route>
+          </Routes>
+        </>
+      ) : isAuth ? (
         <>
           <AuthPage />
         </>
       ) : (
-        <>
-          <SideBar className={isHome ? styles["sidebar-show"] : ""} />
-
-          <div className={styles["window-content"]} id={SlotID.AppBody}>
-            <Routes>
-              <Route path={Path.Home} element={<Chat />} />
-              <Route path={Path.NewChat} element={<NewChat />} />
-              <Route path={Path.Masks} element={<MaskPage />} />
-              <Route path={Path.Chat} element={<Chat />} />
-              <Route path={Path.Settings} element={<Settings />} />
-            </Routes>
-          </div>
-        </>
+        <ChatWindow />
       )}
     </div>
   );

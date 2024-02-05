@@ -30,6 +30,8 @@ declare global {
       // google only
       GOOGLE_API_KEY?: string;
       GOOGLE_URL?: string;
+
+      API_DOMAIN?: string;
     }
   }
 }
@@ -106,5 +108,7 @@ export const getServerSideConfig = () => {
     hideBalanceQuery: !process.env.ENABLE_BALANCE_QUERY,
     disableFastLink: !!process.env.DISABLE_FAST_LINK,
     customModels,
+
+    apiDomain: process.env.API_DOMAIN,
   };
 };
