@@ -29,7 +29,8 @@ import { useAppConfig } from "../store/config";
 import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
-import { useAccessStore } from "../store";
+import { ModelType, useAccessStore, useChatStore } from "../store";
+import { showToast } from "./ui-lib";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -128,11 +129,20 @@ function ChatWindow() {
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const accessStore = useAccessStore();
+  const chatStore = useChatStore();
 
   useEffect(() => {
     async function fetchByCode(code: string) {
-      await useAccessStore.getState().fetchByCode(code);
+      const res = await useAccessStore.getState().fetchByCode(code);
 
+      const model = res?.data?.model;
+      if (model) {
+        chatStore.updateCurrentSession((session) => {
+          session.mask.modelConfig.model = model as ModelType;
+          session.mask.syncGlobalConfig = false;
+        });
+        showToast(model);
+      }
       setLoading(false);
     }
 
@@ -142,7 +152,7 @@ function ChatWindow() {
     if (botId && accessStore.apiDomain) {
       fetchByCode(botId! as string);
     }
-  }, [searchParams, accessStore.apiDomain]);
+  }, [searchParams, chatStore, accessStore.apiDomain]);
 
   // 如果有botid 参数
   if (searchParams.get("bot") && loading) return <Loading />;
