@@ -237,7 +237,7 @@ const tr: PartialLocaleType = {
     Time: "Zaman",
   },
   Config: {
-    title: "GPT302",
+    title: "Sohbet robotu - GPT302",
     description: "Sadece bir tıklama ile kendi AI robotunuzu oluşturun",
   },
 };

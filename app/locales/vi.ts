@@ -232,7 +232,7 @@ const vi: PartialLocaleType = {
     Time: "Thời gian",
   },
   Config: {
-    title: "GPT302",
+    title: "Chatbot - GPT302",
     description: "Tạo ngay robot AI riêng của bạn chỉ với một cú nhấp chuột",
   },
 };

@@ -240,7 +240,7 @@ const ru: PartialLocaleType = {
     Time: "Время",
   },
   Config: {
-    title: "GPT302",
+    title: "Чат-бот - GPT302",
     description: "Создайте своего собственного робота ИИ всего в один клик",
   },
 };

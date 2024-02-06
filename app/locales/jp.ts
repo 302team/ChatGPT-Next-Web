@@ -299,7 +299,7 @@ const jp: PartialLocaleType = {
     Time: "時間",
   },
   Config: {
-    title: "GPT302",
+    title: "チャットボット -GPT302",
     description: "たった一つのクリックで自分自身のAIロボットを作成する",
   },
 };

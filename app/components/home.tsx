@@ -22,8 +22,7 @@ import {
   Routes,
   Route,
   useLocation,
-  Outlet,
-  useParams,
+  useSearchParams,
 } from "react-router-dom";
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
@@ -126,6 +125,27 @@ const loadAsyncGoogleFont = () => {
 
 function ChatWindow() {
   const isHome = location.pathname === Path.Home;
+  const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const accessStore = useAccessStore();
+
+  useEffect(() => {
+    async function fetchByCode(code: string) {
+      await useAccessStore.getState().fetchByCode(code);
+
+      setLoading(false);
+    }
+
+    let botId = searchParams.get("bot");
+    console.log("🚀 ~ Screen ~ searchParams.bot:", botId);
+
+    if (botId && accessStore.apiDomain) {
+      fetchByCode(botId! as string);
+    }
+  }, [searchParams, accessStore.apiDomain]);
+
+  // 如果有botid 参数
+  if (searchParams.get("bot") && loading) return <Loading />;
 
   return (
     <>
@@ -144,35 +164,11 @@ function ChatWindow() {
   );
 }
 
-function Bot() {
-  const params = useParams();
-  const [loading, setLoading] = useState(true);
-  const accessStore = useAccessStore();
-
-  useEffect(() => {
-    async function fetchByCode(code: string) {
-      console.log("[Config] got config from build time", getClientConfig());
-      await useAccessStore.getState().fetchByCode(code);
-
-      setLoading(false);
-    }
-
-    if (params.id && accessStore.apiDomain) {
-      fetchByCode(params.id! as string);
-    }
-  }, [params, accessStore.apiDomain]);
-
-  if (loading) return <Loading />;
-
-  return <ChatWindow />;
-}
-
 function Screen() {
   const config = useAppConfig();
   const location = useLocation();
-  const isHome = location.pathname === Path.Home;
+  // const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
-  const isBot = new RegExp(Path.Bot).test(location.pathname);
   const isMobileScreen = useMobileScreen();
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
@@ -190,22 +186,7 @@ function Screen() {
         }`
       }
     >
-      {isBot ? (
-        <>
-          <Routes>
-            <Route
-              path={Path.Bot}
-              element={
-                <>
-                  <Outlet />
-                </>
-              }
-            >
-              <Route path=":id/*" element={<Bot />} />
-            </Route>
-          </Routes>
-        </>
-      ) : isAuth ? (
+      {isAuth ? (
         <>
           <AuthPage />
         </>

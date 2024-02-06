@@ -236,7 +236,7 @@ const de: PartialLocaleType = {
     Time: "Zeit",
   },
   Config: {
-    title: "GPT302",
+    title: "Chatbot - GPT302",
     description: "Erstellen Sie Ihren eigenen AI-Roboter mit nur einem Klick",
   },
 };

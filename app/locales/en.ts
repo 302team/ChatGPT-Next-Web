@@ -474,7 +474,7 @@ const en: LocaleType = {
     Settings: "Detected settings from url, confirm to apply?",
   },
   Config: {
-    title: "GPT302",
+    title: "Chatbot - GPT302",
     description: "Create your own AI robot with just one click",
   },
 };

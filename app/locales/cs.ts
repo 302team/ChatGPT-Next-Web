@@ -234,7 +234,7 @@ const cs: PartialLocaleType = {
     Time: "Čas",
   },
   Config: {
-    title: "GPT302",
+    title: "Chatovací robot - GPT302",
     description: "Vytvořte si svého vlastního AI robota jedním kliknutím",
   },
 };

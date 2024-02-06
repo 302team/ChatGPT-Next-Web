@@ -64,7 +64,7 @@ import {
 import { Prompt, SearchService, usePromptStore } from "../store/prompt";
 import { ErrorBoundary } from "./error";
 import { InputRange } from "./input-range";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarPicker } from "./emoji";
 import { getClientConfig } from "../config/client";
 import { useSyncStore } from "../store/sync";
@@ -560,6 +560,7 @@ function SyncItems() {
 
 export function Settings() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const config = useAppConfig();
   const updateConfig = config.update;
@@ -634,7 +635,7 @@ export function Settings() {
   useEffect(() => {
     const keydownEvent = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        navigate(Path.Home);
+        navigate(Path.Home + location.search);
       }
     };
     if (clientConfig?.isApp) {
@@ -670,7 +671,7 @@ export function Settings() {
           <div className="window-action-button">
             <IconButton
               icon={<CloseIcon />}
-              onClick={() => navigate(Path.Home)}
+              onClick={() => navigate(Path.Home + location.search)}
               bordered
             />
           </div>
@@ -713,7 +714,11 @@ export function Settings() {
             {checkingUpdate ? (
               <LoadingIcon />
             ) : hasNewVersion ? (
-              <Link href={updateUrl} target="_blank" className="link">
+              <Link
+                href={updateUrl + location.search}
+                target="_blank"
+                className="link"
+              >
                 {Locale.Settings.Update.GoToUpdate}
               </Link>
             ) : (

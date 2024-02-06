@@ -467,7 +467,7 @@ const cn = {
     Time: "时间",
   },
   Config: {
-    title: "GPT302",
+    title: "聊天机器人 - GPT302",
     description: "一键生成属于自己的AI机器人",
   },
 };

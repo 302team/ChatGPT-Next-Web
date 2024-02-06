@@ -23,6 +23,7 @@ const DEFAULT_ACCESS_STATE = {
   // openai
   openaiUrl: DEFAULT_OPENAI_URL,
   openaiApiKey: "",
+  openaiApiKeys: {} as Record<string, string>,
 
   // azure
   azureUrl: "",
@@ -101,6 +102,14 @@ export const useAccessStore = createPersistStore(
         });
     },
     async fetchByCode(code: string) {
+      const codes = get().openaiApiKeys;
+      if (codes[code]) {
+        set(() => ({
+          openaiApiKey: codes[code],
+        }));
+        return codes[code];
+      }
+
       return fetch(`${get().apiDomain}/bot/${code}`, {
         method: "get",
         headers: {
@@ -111,7 +120,9 @@ export const useAccessStore = createPersistStore(
         .then((res: any) => {
           console.log("[Config] got config by code from server", res);
           if (res.code === 0 && res.data && res.data.value) {
+            codes[code] = res.data.value;
             set(() => ({
+              openaiApiKeys: codes,
               openaiApiKey: res.data.value,
             }));
           }

@@ -233,7 +233,7 @@ const ko: PartialLocaleType = {
     Time: "시간",
   },
   Config: {
-    title: "GPT302",
+    title: "챗봇 - GPT302",
     description: "한 번의 클릭으로 나만의 AI 로봇을 만들어보세요",
   },
 };

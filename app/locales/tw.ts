@@ -223,7 +223,7 @@ const tw: PartialLocaleType = {
     Time: "時間",
   },
   Config: {
-    title: "GPT302",
+    title: "聊天機器人- GPT302",
     description: "一鍵生成屬於自己的AI機器人",
   },
 };

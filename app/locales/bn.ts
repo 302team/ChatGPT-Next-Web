@@ -330,7 +330,7 @@ const bn: PartialLocaleType = {
     Time: "সময়",
   },
   Config: {
-    title: "GPT302",
+    title: "চ্যাটবট - GPT302",
     description: "একটি ক্লিকে নিজের জন্য এইআই রোবট তৈরি করুন",
   },
 };

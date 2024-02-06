@@ -73,7 +73,7 @@ import {
   showPrompt,
   showToast,
 } from "./ui-lib";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   CHAT_PAGE_SIZE,
   LAST_INPUT_KEY,
@@ -99,6 +99,7 @@ export function SessionConfigModel(props: { onClose: () => void }) {
   const session = chatStore.currentSession();
   const maskStore = useMaskStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className="modal-mask">
@@ -125,7 +126,7 @@ export function SessionConfigModel(props: { onClose: () => void }) {
             bordered
             text={Locale.Chat.Config.SaveAs}
             onClick={() => {
-              navigate(Path.Masks);
+              navigate(Path.Masks + location.search);
               setTimeout(() => {
                 maskStore.create(session.mask);
               }, 500);
@@ -413,6 +414,7 @@ export function ChatActions(props: {
 }) {
   const config = useAppConfig();
   const navigate = useNavigate();
+  const location = useLocation();
   const chatStore = useChatStore();
 
   // switch themes
@@ -499,7 +501,7 @@ export function ChatActions(props: {
 
       <ChatAction
         onClick={() => {
-          navigate(Path.Masks);
+          navigate(Path.Masks + location.search);
         }}
         text={Locale.Chat.InputActions.Masks}
         icon={<MaskIcon />}
@@ -628,6 +630,7 @@ function _Chat() {
   const [hitBottom, setHitBottom] = useState(true);
   const isMobileScreen = useMobileScreen();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // prompt hints
   const promptStore = usePromptStore();
@@ -665,7 +668,7 @@ function _Chat() {
   // chat commands shortcuts
   const chatCommands = useChatCommand({
     new: () => chatStore.newSession(),
-    newm: () => navigate(Path.NewChat),
+    newm: () => navigate(Path.NewChat + location.search),
     prev: () => chatStore.nextSession(-1),
     next: () => chatStore.nextSession(1),
     clear: () =>
@@ -1069,7 +1072,7 @@ function _Chat() {
                 icon={<ReturnIcon />}
                 bordered
                 title={Locale.Chat.Actions.ChatList}
-                onClick={() => navigate(Path.Home)}
+                onClick={() => navigate(Path.Home + location.search)}
               />
             </div>
           </div>

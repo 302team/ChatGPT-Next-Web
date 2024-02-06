@@ -5,13 +5,14 @@ import styles from "./home.module.scss";
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
+import ChatGptIcon from "../icons/logo.png";
 import AddIcon from "../icons/add.svg";
 import CloseIcon from "../icons/close.svg";
 import DeleteIcon from "../icons/delete.svg";
 import MaskIcon from "../icons/mask.svg";
 import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
+import NextImage from "next/image";
 
 import Locale from "../locales";
 
@@ -26,7 +27,7 @@ import {
   REPO_URL,
 } from "../constant";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, showToast } from "./ui-lib";
@@ -134,6 +135,7 @@ export function SideBar(props: { className?: string }) {
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
   const navigate = useNavigate();
+  const location = useLocation();
   const config = useAppConfig();
   const isMobileScreen = useMobileScreen();
   const isIOSMobile = useMemo(
@@ -161,7 +163,8 @@ export function SideBar(props: { className?: string }) {
           {Locale.Config.description}
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
-          <ChatGptIcon />
+          {/* <ChatGptIcon /> */}
+          <NextImage src={ChatGptIcon.src} alt="logo" width={50} height={50} />
         </div>
       </div>
 
@@ -172,9 +175,13 @@ export function SideBar(props: { className?: string }) {
           className={styles["sidebar-bar-button"]}
           onClick={() => {
             if (config.dontShowMaskSplashScreen !== true) {
-              navigate(Path.NewChat, { state: { fromHome: true } });
+              navigate(Path.NewChat + location.search, {
+                state: { fromHome: true },
+              });
             } else {
-              navigate(Path.Masks, { state: { fromHome: true } });
+              navigate(Path.Masks + location.search, {
+                state: { fromHome: true },
+              });
             }
           }}
           shadow
@@ -192,7 +199,7 @@ export function SideBar(props: { className?: string }) {
         className={styles["sidebar-body"]}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
-            // navigate(Path.Home);
+            // navigate(Path.Home + location.search);
           }
         }}
       >
@@ -212,7 +219,7 @@ export function SideBar(props: { className?: string }) {
             />
           </div>
           <div className={styles["sidebar-action"]}>
-            <Link to={Path.Settings}>
+            <Link to={Path.Settings + location.search}>
               <IconButton
                 className={styles["sidebar-tail-button"]}
                 icon={<SettingsIcon />}
@@ -229,9 +236,9 @@ export function SideBar(props: { className?: string }) {
             onClick={() => {
               if (config.dontShowMaskSplashScreen) {
                 chatStore.newSession();
-                navigate(Path.Chat);
+                navigate(Path.Chat + location.search);
               } else {
-                navigate(Path.NewChat);
+                navigate(Path.NewChat + location.search);
               }
             }}
             shadow

@@ -478,7 +478,7 @@ const sk: PartialLocaleType = {
     Settings: "Zistené nastavenia z URL, potvrdiť na aplikovanie?",
   },
   Config: {
-    title: "GPT302",
+    title: "Chatbot - GPT302",
     description: "Vytvorte si vlastného AI robota jedným kliknutím",
   },
 };

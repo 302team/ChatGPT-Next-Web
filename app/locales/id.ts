@@ -381,7 +381,7 @@ const id: PartialLocaleType = {
     Settings: "Pengaturan terdeteksi dari url, konfirmasi untuk diterapkan ?",
   },
   Config: {
-    title: "GPT302",
+    title: "Chatbot - GPT302",
     description: "Buat robot AI milikmu sendiri hanya dengan satu klik",
   },
 };
