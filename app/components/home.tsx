@@ -143,7 +143,7 @@ function ChatWindow() {
           session.mask.modelConfig.model = model as ModelType;
           session.mask.syncGlobalConfig = false;
         });
-        showToast(model);
+        // showToast(model);
       }
       setLoading(false);
     }
@@ -154,6 +154,7 @@ function ChatWindow() {
     if (botId && accessStore.apiDomain) {
       fetchByCode(botId! as string);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, location, accessStore.apiDomain]);
 
   // 如果有botid 参数
