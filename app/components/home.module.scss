@@ -147,7 +147,7 @@
   position: absolute;
   right: 0;
   bottom: 25px;
-  opacity: 0.3;
+  opacity: 1;
 }
 
 .sidebar-title {
@@ -214,7 +214,7 @@
 }
 
 .chat-item:hover > .chat-item-delete {
-  opacity: 0.5;
+  opacity: 1;
   transform: translateX(-4px);
 }
 

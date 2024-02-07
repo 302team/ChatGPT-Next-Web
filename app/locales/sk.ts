@@ -9,9 +9,8 @@ const isApp = !!getClientConfig()?.isApp;
 const sk: PartialLocaleType = {
   WIP: "Už čoskoro...",
   Error: {
-    Unauthorized: isApp
-      ? "Neplatný API kľúč, prosím skontrolujte ho na stránke [Nastavenia](/#/settings)."
-      : "Neoprávnený prístup, prosím zadajte prístupový kód na stránke [auth](/#/auth), alebo zadajte váš OpenAI API kľúč.",
+    Unauthorized:
+      "Prosím, navštívte [GPT302](https://dash.gpt302.com) pre vytvorenie vlastného robota (GPT302 je momentálne v internej testovacej fáze, prihláste sa najprv do Proxy302, aby ste získali prístup)",
   },
   Auth: {
     Title: "Potrebný prístupový kód",

@@ -8,9 +8,8 @@ const isApp = !!getClientConfig()?.isApp;
 const en: LocaleType = {
   WIP: "Coming Soon...",
   Error: {
-    Unauthorized: isApp
-      ? "Invalid API Key, please check it in [Settings](/#/settings) page."
-      : "Unauthorized access, please enter access code in [auth](/#/auth) page, or enter your OpenAI API Key.",
+    Unauthorized:
+      "Please visit [GPT302](https://dash.gpt302.com) to create your own robot (GPT302 is currently in internal testing, please log in to Proxy302 first to gain access)",
   },
   Auth: {
     Title: "Need Access Code",

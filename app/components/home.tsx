@@ -125,6 +125,7 @@ const loadAsyncGoogleFont = () => {
 };
 
 function ChatWindow() {
+  const location = useLocation();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
@@ -136,6 +137,7 @@ function ChatWindow() {
       const res = await useAccessStore.getState().fetchByCode(code);
 
       const model = res?.data?.model;
+      console.log("🚀 ~ fetchByCode ~ model:", model);
       if (model) {
         chatStore.updateCurrentSession((session) => {
           session.mask.modelConfig.model = model as ModelType;

@@ -5,7 +5,7 @@ const id: PartialLocaleType = {
   WIP: "Coming Soon...",
   Error: {
     Unauthorized:
-      "Akses tidak diizinkan, silakan masukkan kode akses atau masukkan kunci API OpenAI Anda. di halaman [autentikasi](/#/auth) atau di halaman [Pengaturan](/#/settings).",
+      "Indonesian (id): Silakan kunjungi [GPT302](https://dash.gpt302.com) untuk membuat robot Anda sendiri (GPT302 saat ini sedang dalam uji coba internal, silakan masuk ke Proxy302 terlebih dahulu untuk mendapatkan akses)",
   },
   Auth: {
     Title: "Diperlukan Kode Akses",

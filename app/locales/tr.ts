@@ -5,7 +5,7 @@ const tr: PartialLocaleType = {
   WIP: "Çalışma devam ediyor...",
   Error: {
     Unauthorized:
-      "Yetkisiz erişim, lütfen erişim kodunu ayarlar [sayfasından](/#/auth) giriniz.",
+      "Kendi robotunuzu oluşturmak için lütfen [GPT302](https://dash.gpt302.com) adresini ziyaret edin (GPT302 şu anda iç test aşamasında, erişim sağlamak için lütfen önce Proxy302'ye giriş yapın)",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} mesaj`,

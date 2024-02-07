@@ -92,6 +92,10 @@ export class ChatGPTApi implements LLMApi {
       // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
     };
 
+    if (modelConfig.model === "gpt-4-vision-preview") {
+      (requestPayload as any).max_tokens = 4000;
+    }
+
     console.log("[Request] openai payload: ", requestPayload);
 
     const shouldStream = !!options.config.stream;

@@ -6,9 +6,8 @@ const isApp = !!getClientConfig()?.isApp;
 const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
-    Unauthorized: isApp
-      ? "检测到无效 API Key，请前往[设置](/#/settings)页检查 API Key 是否配置正确。"
-      : "访问密码不正确或为空，请前往[登录](/#/auth)页输入正确的访问密码，或者在[设置](/#/settings)页填入你自己的 OpenAI API Key。",
+    Unauthorized:
+      "请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人（现在GPT302正在内测中，请先登录Proxy302获得访问权限）",
   },
   Auth: {
     Title: "需要密码",

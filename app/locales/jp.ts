@@ -5,7 +5,7 @@ const jp: PartialLocaleType = {
   WIP: "この機能は開発中です",
   Error: {
     Unauthorized:
-      "現在は未承認状態です。左下の設定ボタンをクリックし、アクセスパスワードかOpenAIのAPIキーを入力してください。",
+      "自分自身のロボットを作成するには、[GPT302](https://dash.gpt302.com) をご覧ください（GPT302 は現在内部テスト中です。アクセス権を取得するには、まず Proxy302 にログインしてください）",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 通のチャット`,

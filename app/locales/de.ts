@@ -5,7 +5,7 @@ const de: PartialLocaleType = {
   WIP: "In Bearbeitung...",
   Error: {
     Unauthorized:
-      "Unbefugter Zugriff, bitte geben Sie den Zugangscode auf der [Einstellungsseite](/#/auth) ein.",
+      "Bitte besuchen Sie [GPT302](https://dash.gpt302.com), um Ihren eigenen Roboter zu erstellen (GPT302 befindet sich derzeit in der internen Testphase, melden Sie sich bitte zuerst bei Proxy302 an, um Zugriff zu erhalten)",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} Nachrichten`,
