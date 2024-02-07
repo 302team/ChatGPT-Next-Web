@@ -155,7 +155,7 @@ function ChatWindow() {
       fetchByCode(botId! as string);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, location, accessStore.apiDomain]);
+  }, [searchParams, accessStore.apiDomain]);
 
   // 如果有botid 参数
   if (searchParams.get("bot") && loading) return <Loading />;
