@@ -208,19 +208,19 @@
   position: absolute;
   top: 0;
   right: 0;
-  transition: all ease 0.3s;
-  opacity: 0;
+  // transition: all ease 0.3s;
+  opacity: 1;
   cursor: pointer;
 }
 
-.chat-item:hover > .chat-item-delete {
-  opacity: 1;
-  transform: translateX(-4px);
-}
+// .chat-item:hover > .chat-item-delete {
+//   opacity: 1;
+//   transform: translateX(-4px);
+// }
 
-.chat-item:hover > .chat-item-delete:hover {
-  opacity: 1;
-}
+// .chat-item:hover > .chat-item-delete:hover {
+//   opacity: 1;
+// }
 
 .chat-item-info {
   display: flex;

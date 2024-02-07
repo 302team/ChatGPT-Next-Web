@@ -10,6 +10,7 @@ import { createPersistStore } from "../utils/store";
 import { ensure } from "../utils/clone";
 
 let fetchState = 0; // 0 not fetch, 1 fetching, 2 done
+let fetchByCodeLoading = false; // 0 not fetch, 1 fetching, 2 done
 
 const DEFAULT_OPENAI_URL =
   getClientConfig()?.buildMode === "export" ? DEFAULT_API_HOST : ApiPath.OpenAI;
@@ -102,13 +103,10 @@ export const useAccessStore = createPersistStore(
         });
     },
     async fetchByCode(code: string) {
+      if (fetchByCodeLoading) return;
+      fetchByCodeLoading = true;
+
       const codes = get().openaiApiKeys;
-      if (codes[code]) {
-        set(() => ({
-          openaiApiKey: codes[code],
-        }));
-        return codes[code];
-      }
 
       return fetch(`${get().apiDomain}/bot/${code}`, {
         method: "get",
@@ -126,10 +124,13 @@ export const useAccessStore = createPersistStore(
               openaiApiKey: res.data.value,
             }));
           }
+
+          fetchByCodeLoading = false;
           return res;
         })
         .catch(() => {
           console.error("[Config] failed to fetch config by code");
+          fetchByCodeLoading = false;
         });
     },
   }),
