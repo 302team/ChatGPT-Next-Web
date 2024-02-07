@@ -154,7 +154,7 @@ function ChatWindow() {
     if (botId && accessStore.apiDomain) {
       fetchByCode(botId! as string);
     }
-  }, [searchParams, chatStore, accessStore.apiDomain]);
+  }, [searchParams, location, accessStore.apiDomain]);
 
   // 如果有botid 参数
   if (searchParams.get("bot") && loading) return <Loading />;
