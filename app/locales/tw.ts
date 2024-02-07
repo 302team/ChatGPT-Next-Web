@@ -222,6 +222,10 @@ const tw: PartialLocaleType = {
     Topic: "主題",
     Time: "時間",
   },
+  Config: {
+    title: "聊天機器人- GPT302",
+    description: "一鍵生成屬於自己的AI機器人",
+  },
 };
 
 export default tw;

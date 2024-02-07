@@ -23,6 +23,7 @@ const DEFAULT_ACCESS_STATE = {
   // openai
   openaiUrl: DEFAULT_OPENAI_URL,
   openaiApiKey: "",
+  openaiApiKeys: {} as Record<string, string>,
 
   // azure
   azureUrl: "",
@@ -41,6 +42,7 @@ const DEFAULT_ACCESS_STATE = {
   disableGPT4: false,
   disableFastLink: false,
   customModels: "",
+  apiDomain: "",
 };
 
 export const useAccessStore = createPersistStore(
@@ -97,6 +99,37 @@ export const useAccessStore = createPersistStore(
         })
         .finally(() => {
           fetchState = 2;
+        });
+    },
+    async fetchByCode(code: string) {
+      const codes = get().openaiApiKeys;
+      if (codes[code]) {
+        set(() => ({
+          openaiApiKey: codes[code],
+        }));
+        return codes[code];
+      }
+
+      return fetch(`${get().apiDomain}/bot/${code}`, {
+        method: "get",
+        headers: {
+          ...getHeaders(),
+        },
+      })
+        .then((res) => res.json())
+        .then((res: any) => {
+          console.log("[Config] got config by code from server", res);
+          if (res.code === 0 && res.data && res.data.value) {
+            codes[code] = res.data.value;
+            set(() => ({
+              openaiApiKeys: codes,
+              openaiApiKey: res.data.value,
+            }));
+          }
+          return res;
+        })
+        .catch(() => {
+          console.error("[Config] failed to fetch config by code");
         });
     },
   }),

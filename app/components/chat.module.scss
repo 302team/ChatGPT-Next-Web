@@ -396,7 +396,8 @@
 }
 
 .chat-message-user > .chat-message-container > .chat-message-item {
-  background-color: var(--second);
+  // background-color: var(--second);
+  background-color: rgb(0, 0, 0, 0.1);
 
   &:hover {
     min-width: 0;
@@ -499,8 +500,10 @@
 }
 
 .chat-input-send {
-  background-color: var(--primary);
-  color: white;
+  // background-color: var(--primary);
+  // color: white;
+  background-color: rgb(29, 30, 35) !important;
+  color: rgb(248, 248, 248) !important;
 
   position: absolute;
   right: 30px;

@@ -22,6 +22,7 @@ import {
   Routes,
   Route,
   useLocation,
+  useSearchParams,
 } from "react-router-dom";
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
@@ -122,10 +123,51 @@ const loadAsyncGoogleFont = () => {
   document.head.appendChild(linkEl);
 };
 
+function ChatWindow() {
+  const isHome = location.pathname === Path.Home;
+  const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const accessStore = useAccessStore();
+
+  useEffect(() => {
+    async function fetchByCode(code: string) {
+      await useAccessStore.getState().fetchByCode(code);
+
+      setLoading(false);
+    }
+
+    let botId = searchParams.get("bot");
+    console.log("🚀 ~ Screen ~ searchParams.bot:", botId);
+
+    if (botId && accessStore.apiDomain) {
+      fetchByCode(botId! as string);
+    }
+  }, [searchParams, accessStore.apiDomain]);
+
+  // 如果有botid 参数
+  if (searchParams.get("bot") && loading) return <Loading />;
+
+  return (
+    <>
+      <SideBar className={isHome ? styles["sidebar-show"] : ""} />
+
+      <div className={styles["window-content"]} id={SlotID.AppBody}>
+        <Routes>
+          <Route path={Path.Home} element={<Chat />} />
+          <Route path={Path.NewChat} element={<NewChat />} />
+          <Route path={Path.Masks} element={<MaskPage />} />
+          <Route path={Path.Chat} element={<Chat />} />
+          <Route path={Path.Settings} element={<Settings />} />
+        </Routes>
+      </div>
+    </>
+  );
+}
+
 function Screen() {
   const config = useAppConfig();
   const location = useLocation();
-  const isHome = location.pathname === Path.Home;
+  // const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
   const isMobileScreen = useMobileScreen();
   const shouldTightBorder =
@@ -149,19 +191,7 @@ function Screen() {
           <AuthPage />
         </>
       ) : (
-        <>
-          <SideBar className={isHome ? styles["sidebar-show"] : ""} />
-
-          <div className={styles["window-content"]} id={SlotID.AppBody}>
-            <Routes>
-              <Route path={Path.Home} element={<Chat />} />
-              <Route path={Path.NewChat} element={<NewChat />} />
-              <Route path={Path.Masks} element={<MaskPage />} />
-              <Route path={Path.Chat} element={<Chat />} />
-              <Route path={Path.Settings} element={<Settings />} />
-            </Routes>
-          </div>
-        </>
+        <ChatWindow />
       )}
     </div>
   );

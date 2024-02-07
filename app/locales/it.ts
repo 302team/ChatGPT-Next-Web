@@ -235,6 +235,10 @@ const it: PartialLocaleType = {
     Topic: "Argomento",
     Time: "Tempo",
   },
+  Config: {
+    title: "Chatbot - GPT302",
+    description: "Buat robot AI milikmu sendiri hanya dengan satu klik",
+  },
 };
 
 export default it;

@@ -1,7 +1,7 @@
 import styles from "./auth.module.scss";
 import { IconButton } from "./button";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore } from "../store";
 import Locale from "../locales";
@@ -12,10 +12,11 @@ import { getClientConfig } from "../config/client";
 
 export function AuthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const accessStore = useAccessStore();
 
-  const goHome = () => navigate(Path.Home);
-  const goChat = () => navigate(Path.Chat);
+  const goHome = () => navigate(Path.Home + location.search);
+  const goChat = () => navigate(Path.Chat + location.search);
   const resetAccessCode = () => {
     accessStore.update((access) => {
       access.openaiApiKey = "";
@@ -25,7 +26,7 @@ export function AuthPage() {
 
   useEffect(() => {
     if (getClientConfig()?.isApp) {
-      navigate(Path.Settings);
+      navigate(Path.Settings + location.search);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

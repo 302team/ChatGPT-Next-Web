@@ -231,6 +231,10 @@ const vi: PartialLocaleType = {
     Topic: "Chủ đề",
     Time: "Thời gian",
   },
+  Config: {
+    title: "Chatbot - GPT302",
+    description: "Tạo ngay robot AI riêng của bạn chỉ với một cú nhấp chuột",
+  },
 };
 
 export default vi;

@@ -473,6 +473,10 @@ const en: LocaleType = {
     Code: "Detected access code from url, confirm to apply? ",
     Settings: "Detected settings from url, confirm to apply?",
   },
+  Config: {
+    title: "Chatbot - GPT302",
+    description: "Create your own AI robot with just one click",
+  },
 };
 
 export default en;

@@ -304,6 +304,10 @@ const fr: PartialLocaleType = {
     Topic: "Sujet",
     Time: "Temps",
   },
+  Config: {
+    title: "Chatbot - GPT302",
+    description: "Créez votre propre robot IA en un seul clic",
+  },
 };
 
 export default fr;

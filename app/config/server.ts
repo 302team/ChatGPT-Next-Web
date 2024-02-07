@@ -30,6 +30,8 @@ declare global {
       // google only
       GOOGLE_API_KEY?: string;
       GOOGLE_URL?: string;
+
+      API_DOMAIN?: string;
     }
   }
 }
@@ -72,7 +74,10 @@ export const getServerSideConfig = () => {
   const randomIndex = Math.floor(Math.random() * apiKeys.length);
   const apiKey = apiKeys[randomIndex];
   console.log(
-    `[Server Config] using ${randomIndex + 1} of ${apiKeys.length} api key`,
+    `[Server Config] using ${randomIndex + 1} of ${
+      apiKeys.length
+    } api key: ${apiKey};`,
+    `base url: ${process.env.BASE_URL}`,
   );
 
   return {
@@ -103,5 +108,7 @@ export const getServerSideConfig = () => {
     hideBalanceQuery: !process.env.ENABLE_BALANCE_QUERY,
     disableFastLink: !!process.env.DISABLE_FAST_LINK,
     customModels,
+
+    apiDomain: process.env.API_DOMAIN,
   };
 };

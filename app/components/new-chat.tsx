@@ -84,11 +84,12 @@ export function NewChat() {
   const maskRef = useRef<HTMLDivElement>(null);
 
   const { state } = useLocation();
+  const location = useLocation();
 
   const startChat = (mask?: Mask) => {
     setTimeout(() => {
       chatStore.newSession(mask);
-      navigate(Path.Chat);
+      navigate(Path.Chat + location.search);
     }, 10);
   };
 
@@ -116,7 +117,7 @@ export function NewChat() {
         <IconButton
           icon={<LeftIcon />}
           text={Locale.NewChat.Return}
-          onClick={() => navigate(Path.Home)}
+          onClick={() => navigate(Path.Home + location.search)}
         ></IconButton>
         {!state?.fromHome && (
           <IconButton
@@ -150,7 +151,7 @@ export function NewChat() {
       <div className={styles["actions"]}>
         <IconButton
           text={Locale.NewChat.More}
-          onClick={() => navigate(Path.Masks)}
+          onClick={() => navigate(Path.Masks + location.search)}
           icon={<EyeIcon />}
           bordered
           shadow

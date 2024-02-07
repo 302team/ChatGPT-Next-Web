@@ -16,6 +16,7 @@ export const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
 export enum Path {
   Home = "/",
+  Bot = "/bot/",
   Chat = "/chat",
   Settings = "/settings",
   NewChat = "/new-chat",

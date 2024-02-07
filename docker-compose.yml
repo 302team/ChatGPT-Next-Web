@@ -17,6 +17,7 @@ services:
       - ENABLE_BALANCE_QUERY=$ENABLE_BALANCE_QUERY
       - DISABLE_FAST_LINK=$DISABLE_FAST_LINK
       - OPENAI_SB=$OPENAI_SB
+      - API_DOMAIN=$API_DOMAIN
 
   chatgpt-next-web-proxy:
     profiles: [ "proxy" ]
@@ -36,3 +37,4 @@ services:
       - ENABLE_BALANCE_QUERY=$ENABLE_BALANCE_QUERY
       - DISABLE_FAST_LINK=$DISABLE_FAST_LINK
       - OPENAI_SB=$OPENAI_SB
+      - API_DOMAIN=$API_DOMAIN
