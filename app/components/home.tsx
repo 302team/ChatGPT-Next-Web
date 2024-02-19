@@ -131,6 +131,7 @@ function ChatWindow() {
   const [searchParams] = useSearchParams();
   const accessStore = useAccessStore();
   const chatStore = useChatStore();
+  const config = useAppConfig();
 
   useEffect(() => {
     async function fetchByCode(code: string) {
@@ -143,6 +144,7 @@ function ChatWindow() {
           session.mask.modelConfig.model = model as ModelType;
           session.mask.syncGlobalConfig = false;
         });
+        config.update((config) => (config.modelConfig.model = model));
         // showToast(model);
       }
       setLoading(false);
