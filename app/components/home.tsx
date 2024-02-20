@@ -57,6 +57,13 @@ const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
   loading: () => <Loading noLogo />,
 });
 
+const ValidPwdPage = dynamic(
+  async () => (await import("./valid-pwd")).ValidPwd,
+  {
+    loading: () => <Loading noLogo />,
+  },
+);
+
 export function useSwitchTheme() {
   const config = useAppConfig();
 
@@ -128,39 +135,27 @@ function ChatWindow() {
   const location = useLocation();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
-  const [searchParams] = useSearchParams();
+  const [validPwdVisible, setValidPwdVisible] = useState(true);
   const accessStore = useAccessStore();
-  const chatStore = useChatStore();
-  const config = useAppConfig();
 
   useEffect(() => {
-    async function fetchByCode(code: string) {
-      const res = await useAccessStore.getState().fetchByCode(code);
-
-      const model = res?.data?.model;
-      console.log("🚀 ~ fetchByCode ~ model:", model);
-      if (model) {
-        chatStore.updateCurrentSession((session) => {
-          session.mask.modelConfig.model = model as ModelType;
-          session.mask.syncGlobalConfig = false;
-        });
-        config.update((config) => (config.modelConfig.model = model));
-        // showToast(model);
-      }
+    if (accessStore.apiDomain) {
       setLoading(false);
     }
-
-    let botId = searchParams.get("bot");
-    console.log("🚀 ~ Screen ~ searchParams.bot:", botId);
-
-    if (botId && accessStore.apiDomain) {
-      fetchByCode(botId! as string);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, accessStore.apiDomain]);
+  }, [accessStore.apiDomain]);
 
-  // 如果有botid 参数
-  if (searchParams.get("bot") && loading) return <Loading />;
+  if (loading) return <Loading />;
+
+  if (validPwdVisible)
+    return (
+      <ValidPwdPage
+        onAuth={() => {
+          accessStore.update((access) => (access.isAuth = true));
+          setValidPwdVisible(false);
+        }}
+      />
+    );
 
   return (
     <>

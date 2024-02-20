@@ -12,6 +12,8 @@ const id: PartialLocaleType = {
     Tips: "Masukkan kode akses di bawah",
     SubTips: "Atau masukkan kunci API OpenAI Anda",
     Input: "Kode Akses",
+    Remember: "Ingat kode akses",
+    ValidError: "Kode akses salah",
     Confirm: "Konfirmasi",
     Later: "Nanti",
   },

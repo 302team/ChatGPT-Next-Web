@@ -16,6 +16,8 @@ const en: LocaleType = {
     Tips: "Please enter access code below",
     SubTips: "Or enter your OpenAI or Google API Key",
     Input: "access code",
+    Remember: "Remember the access code",
+    ValidError: "Access code incorrect",
     Confirm: "Confirm",
     Later: "Later",
   },
@@ -321,8 +323,7 @@ const en: LocaleType = {
       Google: {
         ApiKey: {
           Title: "API Key",
-          SubTitle:
-            "Obtain your API Key from Google AI",
+          SubTitle: "Obtain your API Key from Google AI",
           Placeholder: "Enter your Google AI Studio API Key",
         },
 

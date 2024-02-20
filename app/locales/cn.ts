@@ -14,6 +14,8 @@ const cn = {
     Tips: "管理员开启了密码验证，请在下方填入访问码",
     SubTips: "或者输入你的 OpenAI 或 Google API 密钥",
     Input: "在此处填写访问码",
+    Remember: "记住访问码",
+    ValidError: "访问码错误",
     Confirm: "确认",
     Later: "稍后再说",
   },
@@ -314,8 +316,7 @@ const cn = {
       Google: {
         ApiKey: {
           Title: "API 密钥",
-          SubTitle:
-            "从 Google AI 获取您的 API 密钥",
+          SubTitle: "从 Google AI 获取您的 API 密钥",
           Placeholder: "输入您的 Google AI Studio API 密钥",
         },
 

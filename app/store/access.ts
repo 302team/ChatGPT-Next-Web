@@ -10,7 +10,7 @@ import { createPersistStore } from "../utils/store";
 import { ensure } from "../utils/clone";
 
 let fetchState = 0; // 0 not fetch, 1 fetching, 2 done
-let fetchByCodeLoading = false; // 0 not fetch, 1 fetching, 2 done
+let fetchCodeLoading = false; // 0 not fetch, 1 fetching, 2 done
 
 const DEFAULT_OPENAI_URL =
   getClientConfig()?.buildMode === "export"
@@ -18,6 +18,11 @@ const DEFAULT_OPENAI_URL =
     : ApiPath.OpenAI;
 
 const DEFAULT_ACCESS_STATE = {
+  userCode: "",
+  pwd: "",
+  remember: false,
+  isAuth: false,
+
   accessCode: "",
   useCustomConfig: false,
 
@@ -82,6 +87,13 @@ export const useAccessStore = createPersistStore(
         (this.enabledAccessControl() && ensure(get(), ["accessCode"]))
       );
     },
+
+    setRemember(checked: boolean) {
+      set(() => ({
+        remember: checked,
+      }));
+    },
+
     fetch() {
       if (fetchState > 0 || getClientConfig()?.buildMode === "export") return;
       fetchState = 1;
@@ -104,9 +116,10 @@ export const useAccessStore = createPersistStore(
           fetchState = 2;
         });
     },
+
     async fetchByCode(code: string) {
-      if (fetchByCodeLoading) return;
-      fetchByCodeLoading = true;
+      if (fetchCodeLoading) return;
+      fetchCodeLoading = true;
 
       const codes = get().openaiApiKeys;
 
@@ -127,12 +140,39 @@ export const useAccessStore = createPersistStore(
             }));
           }
 
-          fetchByCodeLoading = false;
+          fetchCodeLoading = false;
           return res;
         })
         .catch(() => {
           console.error("[Config] failed to fetch config by code");
-          fetchByCodeLoading = false;
+          fetchCodeLoading = false;
+        });
+    },
+    async validPwd(code: string) {
+      if (fetchCodeLoading) return;
+      fetchCodeLoading = true;
+
+      return fetch(`${get().apiDomain}/bot/${code}?pwd=${get().pwd}`, {
+        method: "get",
+        headers: {
+          ...getHeaders(),
+        },
+      })
+        .then((res) => res.json())
+        .then((res: any) => {
+          console.log("[Config] got config by code from server", res);
+          if (res.code === 0 && res.data && res.data.value) {
+            set(() => ({
+              openaiApiKey: res.data.value,
+            }));
+          }
+
+          fetchCodeLoading = false;
+          return res;
+        })
+        .catch(() => {
+          console.error("[Config] failed to fetch config by code");
+          fetchCodeLoading = false;
         });
     },
   }),

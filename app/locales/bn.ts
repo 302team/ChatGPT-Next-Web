@@ -12,6 +12,8 @@ const bn: PartialLocaleType = {
     Tips: "নীচে অ্যাক্সেস কোড ইনপুট করুন",
     SubTips: "অথবা আপনার OpenAI API কী প্রবেশ করুন",
     Input: "অ্যাক্সেস কোড",
+    Remember: "অ্যাক্সেস কোড মনে রাখুন",
+    ValidError: " অ্যাক্সেস কোড ভুল",
     Confirm: "নিশ্চিত করুন",
     Later: "পরে",
   },
