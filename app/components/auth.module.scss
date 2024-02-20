@@ -33,4 +33,24 @@
       margin-bottom: 10px;
     }
   }
+  
+  .auth-error {
+    position: relative;
+    top: -2.8vh;
+    font-size: 14px;
+    color: rgb(212 14 14);
+  }
+  
+  .auth-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 0;
+    gap: 5px;
+
+    input[type="checkbox"] {
+      position: relative;
+      top: 1px;
+    }
+  }
 }
