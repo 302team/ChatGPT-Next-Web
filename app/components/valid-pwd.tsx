@@ -23,7 +23,7 @@ export function ValidPwd(props: ValidPwdProps) {
   const accessStore = useAccessStore();
   const chatStore = useChatStore();
   const config = useAppConfig();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const pwd = searchParams.get("pwd") || "";
 
   const [loading, setLoading] = useState(true);
@@ -58,6 +58,8 @@ export function ValidPwd(props: ValidPwdProps) {
 
           if (res.code === 0) {
             props.onAuth?.();
+            searchParams.delete("pwd");
+            setSearchParams(searchParams, { replace: true });
           } else {
             // pwd 已经失效了, 修改校验状态为 false
             accessStore.update((access) => (access.isAuth = false));
@@ -115,6 +117,8 @@ export function ValidPwd(props: ValidPwdProps) {
               const res = await handleSubmit(userCode);
               if (res.code === 0) {
                 props.onAuth?.();
+                searchParams.delete("pwd");
+                setSearchParams(searchParams, { replace: true });
               } else {
                 setShowError(true);
               }
