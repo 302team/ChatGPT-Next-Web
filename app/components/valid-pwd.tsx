@@ -67,6 +67,8 @@ export function ValidPwd(props: ValidPwdProps) {
             searchParams.delete("pwd");
             searchParams.delete("confirm");
             setSearchParams(searchParams, { replace: true });
+            // 登录成功之后 更新访问码
+            accessStore.update((access) => (access.pwd = pwd));
           } else {
             // 访问码已经失效了, 修改校验状态为 false
             accessStore.update((access) => (access.isAuth = false));
