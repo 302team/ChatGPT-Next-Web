@@ -13,7 +13,7 @@ const en: LocaleType = {
   },
   Auth: {
     Title: "Need Access Code",
-    Tips: "Please enter access code below",
+    Tips: "The creator has enabled verification, please enter the access code below",
     SubTips: "Or enter your OpenAI or Google API Key",
     Input: "access code",
     Remember: "Remember the access code",

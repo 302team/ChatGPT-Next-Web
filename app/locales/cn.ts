@@ -10,8 +10,8 @@ const cn = {
       "请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人（现在GPT302正在内测中，请先登录Proxy302获得访问权限）",
   },
   Auth: {
-    Title: "需要密码",
-    Tips: "管理员开启了密码验证，请在下方填入访问码",
+    Title: "需要访问码",
+    Tips: "创建者开启了验证, 请在下方填入访问码",
     SubTips: "或者输入你的 OpenAI 或 Google API 密钥",
     Input: "在此处填写访问码",
     Remember: "记住访问码",

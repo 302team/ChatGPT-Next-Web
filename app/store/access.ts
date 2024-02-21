@@ -152,7 +152,12 @@ export const useAccessStore = createPersistStore(
       if (fetchCodeLoading) return;
       fetchCodeLoading = true;
 
-      return fetch(`${get().apiDomain}/bot/${code}?pwd=${get().pwd}`, {
+      let fetchUrl = `${get().apiDomain}/bot/${code}`;
+      if (get().pwd) {
+        fetchUrl += `?pwd=${get().pwd}`;
+      }
+
+      return fetch(fetchUrl, {
         method: "get",
         headers: {
           ...getHeaders(),

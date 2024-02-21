@@ -8,8 +8,8 @@ const id: PartialLocaleType = {
       "Indonesian (id): Silakan kunjungi [GPT302](https://dash.gpt302.com) untuk membuat robot Anda sendiri (GPT302 saat ini sedang dalam uji coba internal, silakan masuk ke Proxy302 terlebih dahulu untuk mendapatkan akses)",
   },
   Auth: {
-    Title: "Diperlukan Kode Akses",
-    Tips: "Masukkan kode akses di bawah",
+    Title: "Se requiere código de acceso",
+    Tips: "Pembuat telah mengaktifkan verifikasi, silakan masukkan kode akses di bawah ini",
     SubTips: "Atau masukkan kunci API OpenAI Anda",
     Input: "Kode Akses",
     Remember: "Ingat kode akses",

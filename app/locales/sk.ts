@@ -14,7 +14,7 @@ const sk: PartialLocaleType = {
   },
   Auth: {
     Title: "Potrebný prístupový kód",
-    Tips: "Prosím, zadajte prístupový kód nižšie",
+    Tips: "Tvorca aktivoval overenie, prosím, zadajte prístupový kód nižšie",
     SubTips: "Alebo zadajte váš OpenAI alebo Google API kľúč",
     Input: "prístupový kód",
     Remember: "Zapamätajte si prístupový kód",

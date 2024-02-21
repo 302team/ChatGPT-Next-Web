@@ -12,7 +12,7 @@ const pt: PartialLocaleType = {
   },
   Auth: {
     Title: "Necessário Código de Acesso",
-    Tips: "Por favor, insira o código de acesso abaixo",
+    Tips: "O criador ativou a verificação, por favor insira o código de acesso abaixo",
     SubTips: "Ou insira sua Chave API OpenAI",
     Input: "código de acesso",
     Remember: "Lembre-se do código de acesso",

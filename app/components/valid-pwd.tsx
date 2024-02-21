@@ -1,8 +1,7 @@
 import styles from "./auth.module.scss";
 import { IconButton } from "./button";
 
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { Path } from "../constant";
+import { useSearchParams } from "react-router-dom";
 import {
   ModelType,
   useAccessStore,
@@ -11,7 +10,8 @@ import {
 } from "../store";
 import Locale from "../locales";
 
-import BotIcon from "../icons/logo.png";
+import BotIcon from "../icons/logo-horizontal-dark.png";
+import LockIcon from "../icons/lock.svg";
 import { useEffect, useState } from "react";
 import NextImage from "next/image";
 import { Loading, showToast } from "./ui-lib";
@@ -25,6 +25,8 @@ export function ValidPwd(props: ValidPwdProps) {
   const config = useAppConfig();
   const [searchParams, setSearchParams] = useSearchParams();
   const pwd = searchParams.get("pwd") || "";
+  const autoConfirm = searchParams.get("confirm");
+  console.log("🚀 ~ ValidPwd ~ autoConfirm:", autoConfirm === "true");
 
   const [loading, setLoading] = useState(true);
   const [submiting, setSubmiting] = useState(false);
@@ -52,23 +54,26 @@ export function ValidPwd(props: ValidPwdProps) {
 
     (async () => {
       try {
-        // 如果以前登录过,不关联新的 pwd, 直接使用缓存中的 pwd 校验
-        if (accessStore.isAuth) {
+        // 未登录过的, 并且带了访问码, 需要填充访问码
+        if (!accessStore.isAuth && !accessStore.pwd && pwd) {
+          accessStore.update((access) => (access.pwd = pwd));
+        }
+        // 如果以前登录过, 不关联新的访问码, 直接使用缓存中的访问码校验
+        if (!pwd || autoConfirm || accessStore.isAuth) {
           const res = await handleSubmit(userCode);
 
           if (res.code === 0) {
             props.onAuth?.();
             searchParams.delete("pwd");
+            searchParams.delete("confirm");
             setSearchParams(searchParams, { replace: true });
           } else {
-            // pwd 已经失效了, 修改校验状态为 false
+            // 访问码已经失效了, 修改校验状态为 false
             accessStore.update((access) => (access.isAuth = false));
-            // 然后把新的 pwd 填入输入框中
+            // 然后把新的访问码填入输入框中
             accessStore.update((access) => (access.pwd = pwd));
             setShowError(true);
           }
-        } else if (!accessStore.pwd) {
-          accessStore.update((access) => (access.pwd = pwd));
         }
       } catch (error) {
         console.log("🚀 [valid pwd useEffect] catch error:", error);
@@ -84,7 +89,11 @@ export function ValidPwd(props: ValidPwdProps) {
   return (
     <div className={styles["auth-page"]}>
       <div className={`no-dark ${styles["auth-logo"]}`}>
-        <NextImage src={BotIcon} width={42} height={42} alt="" />
+        <NextImage src={BotIcon} height={34} alt="" />
+      </div>
+
+      <div className={`no-dark ${styles["auth-lock"]}`}>
+        <LockIcon />
       </div>
 
       <div className={styles["auth-title"]}>{Locale.Auth.Title}</div>
@@ -118,6 +127,7 @@ export function ValidPwd(props: ValidPwdProps) {
               if (res.code === 0) {
                 props.onAuth?.();
                 searchParams.delete("pwd");
+                searchParams.delete("confirm");
                 setSearchParams(searchParams, { replace: true });
               } else {
                 setShowError(true);
