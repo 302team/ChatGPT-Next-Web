@@ -262,6 +262,18 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .chat-window-header {
+    position: relative;
+    justify-content: center;
+  }
+
+  .chat-window-actions {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translate(0, -50%);
+  }
+  
   .chat-body-title {
     text-align: center;
   }

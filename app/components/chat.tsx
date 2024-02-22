@@ -1064,9 +1064,12 @@ function _Chat() {
 
   return (
     <div className={styles.chat} key={session.id}>
-      <div className="window-header" data-tauri-drag-region>
+      <div
+        className={`window-header ${styles["chat-window-header"]}`}
+        data-tauri-drag-region
+      >
         {isMobileScreen && (
-          <div className="window-actions">
+          <div className={`window-actions ${styles["chat-window-actions"]}`}>
             <div className={"window-action-button"}>
               <IconButton
                 icon={<ReturnIcon />}
