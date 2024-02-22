@@ -49,7 +49,7 @@ const sk: PartialLocaleType = {
     },
     Commands: {
       new: "Začať nový chat",
-      newm: "Začať nový chat s maskou",
+      newm: "Začať nový chat s asistent",
       next: "Ďalší Chat",
       prev: "Predchádzajúci Chat",
       clear: "Vymazať kontext",
@@ -64,7 +64,7 @@ const sk: PartialLocaleType = {
         dark: "Tmavý motív",
       },
       Prompt: "Výzvy",
-      Masks: "Masky",
+      Masks: "Asistent",
       Clear: "Vymazať kontext",
       Settings: "Nastavenia",
     },
@@ -75,12 +75,12 @@ const sk: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter na zalomenie";
       }
-      return inputHints + ", / na vyhľadávanie výziev, : na použitie príkazov";
+      return "Poslať správu"; // inputHints + ", / na vyhľadávanie výziev, : na použitie príkazov";
     },
     Send: "Odoslať",
     Config: {
       Reset: "Resetovať na predvolené",
-      SaveAs: "Uložiť ako masku",
+      SaveAs: "Uložiť ako asistent",
     },
     IsContext: "Kontextová výzva",
   },
@@ -97,7 +97,7 @@ const sk: PartialLocaleType = {
     },
     IncludeContext: {
       Title: "Vrátane kontextu",
-      SubTitle: "Exportovať kontextové výzvy v maske alebo nie",
+      SubTitle: "Exportovať kontextové výzvy v asistent alebo nie",
     },
     Steps: {
       Select: "Vybrať",
@@ -223,18 +223,19 @@ const sk: PartialLocaleType = {
 
       LocalState: "Lokálne údaje",
       Overview: (overview: any) => {
-        return `${overview.chat} chaty, ${overview.message} správy, ${overview.prompt} výzvy, ${overview.mask} masky`;
+        return `${overview.chat} chaty, ${overview.message} správy, ${overview.prompt} výzvy, ${overview.mask} Asistent`;
       },
       ImportFailed: "Import z súboru zlyhal",
     },
     Mask: {
       Splash: {
-        Title: "Úvodná obrazovka masky",
-        SubTitle: "Zobraziť úvodnú obrazovku masky pred začatím nového chatu",
+        Title: "Úvodná obrazovka Asistent",
+        SubTitle:
+          "Zobraziť úvodnú obrazovku Asistent pred začatím nového chatu",
       },
       Builtin: {
-        Title: "Skryť vstavané masky",
-        SubTitle: "Skryť vstavané masky v zozname masiek",
+        Title: "Skryť vstavané Asistent",
+        SubTitle: "Skryť vstavané Asistent v zozname masiek",
       },
     },
     Prompt: {
@@ -402,7 +403,7 @@ const sk: PartialLocaleType = {
     Sysmessage: "Ste asistent, ktorý",
   },
   Mask: {
-    Name: "Maska",
+    Name: "Asistent",
     Page: {
       Title: "Šablóna výziev",
       SubTitle: (count: number) => `${count} šablón výziev`,
@@ -436,8 +437,8 @@ const sk: PartialLocaleType = {
         SubTitle: "Nezobrazovať kontextové výzvy v chate",
       },
       Share: {
-        Title: "Zdieľať túto masku",
-        SubTitle: "Vygenerovať odkaz na túto masku",
+        Title: "Zdieľať túto asistent",
+        SubTitle: "Vygenerovať odkaz na túto asistent",
         Action: "Kopírovať odkaz",
       },
     },
@@ -445,8 +446,8 @@ const sk: PartialLocaleType = {
   NewChat: {
     Return: "Vrátiť sa",
     Skip: "Len začať",
-    Title: "Vybrať masku",
-    SubTitle: "Chatovať s dušou za maskou",
+    Title: "Vybrať asistent",
+    SubTitle: "Chatovať s dušou za asistent",
     More: "Nájsť viac",
     NotShow: "Už nezobrazovať",
     ConfirmNoShow:

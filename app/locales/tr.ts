@@ -28,12 +28,12 @@ const tr: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", kaydırmak için Shift + Enter";
       }
-      return inputHints + ", komutları aramak için / (eğik çizgi)";
+      return "Mesaj gönder"; // inputHints + ", komutları aramak için / (eğik çizgi)";
     },
     Send: "Gönder",
     Config: {
       Reset: "Reset to Default",
-      SaveAs: "Save as Mask",
+      SaveAs: "Save as Asistan",
     },
   },
   Export: {
@@ -93,8 +93,8 @@ const tr: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "Mask Splash Screen",
-        SubTitle: "Show a mask splash screen before starting new chat",
+        Title: "Asistan Splash Screen",
+        SubTitle: "Show a asistan splash screen before starting new chat",
       },
     },
     Prompt: {
@@ -187,7 +187,7 @@ const tr: PartialLocaleType = {
     Sysmessage: "Sen bir asistansın",
   },
   Mask: {
-    Name: "Mask",
+    Name: "Asistan",
     Page: {
       Title: "Prompt Template",
       SubTitle: (count: number) => `${count} prompt templates`,
@@ -216,8 +216,8 @@ const tr: PartialLocaleType = {
   NewChat: {
     Return: "Return",
     Skip: "Skip",
-    Title: "Pick a Mask",
-    SubTitle: "Chat with the Soul behind the Mask",
+    Title: "Pick a Asistan",
+    SubTitle: "Chat with the Soul behind the Asistan",
     More: "Find More",
     NotShow: "Not Show Again",
     ConfirmNoShow: "Confirm to disable？You can enable it in settings later.",

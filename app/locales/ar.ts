@@ -40,7 +40,7 @@ const ar: PartialLocaleType = {
         dark: "نمط داكن",
       },
       Prompt: "الاقتراحات",
-      Masks: "الأقنعة",
+      Masks: "قناع",
       Clear: "مسح السياق",
       Settings: "الإعدادات",
     },
@@ -51,7 +51,7 @@ const ar: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += "، Shift + Enter للإنشاء";
       }
-      return inputHints + "، / للبحث في الاقتراحات";
+      return "إرسال رسالة"; // inputHints + "، / للبحث في الاقتراحات";
     },
     Send: "إرسال",
     Config: {
@@ -72,7 +72,7 @@ const ar: PartialLocaleType = {
     },
     IncludeContext: {
       Title: "تضمين السياق",
-      SubTitle: "تصدير اقتراحات السياق في الأقنعة أم لا",
+      SubTitle: "تصدير اقتراحات السياق في قناع أم لا",
     },
     Steps: {
       Select: "تحديد",
@@ -139,8 +139,8 @@ const ar: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "شاشة تظهر الأقنعة",
-        SubTitle: "عرض شاشة تظهر الأقنعة قبل بدء الدردشة الجديدة",
+        Title: "شاشة تظهر قناع",
+        SubTitle: "عرض شاشة تظهر قناع قبل بدء الدردشة الجديدة",
       },
     },
     Prompt: {
@@ -228,7 +228,7 @@ ${builtin} مدمجة، ${custom} تم تعريفها من قبل المستخد
     Sysmessage: "أنت مساعد ي",
   },
   Mask: {
-    Name: "الأقنعة",
+    Name: "قناع",
     Page: {
       Title: "قالب الاقتراح",
       SubTitle: (count: number) => `${count} قوالب الاقتراح`,

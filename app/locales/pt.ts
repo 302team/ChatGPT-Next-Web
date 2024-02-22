@@ -47,7 +47,7 @@ const pt: PartialLocaleType = {
     },
     Commands: {
       new: "Iniciar um novo chat",
-      newm: "Iniciar um novo chat com máscara",
+      newm: "Iniciar um novo chat com Assistente",
       next: "Próximo Chat",
       prev: "Chat Anterior",
       clear: "Limpar Contexto",
@@ -62,7 +62,7 @@ const pt: PartialLocaleType = {
         dark: "Tema Escuro",
       },
       Prompt: "Prompts",
-      Masks: "Máscaras",
+      Masks: "Assistente",
       Clear: "Limpar Contexto",
       Settings: "Configurações",
     },
@@ -73,12 +73,12 @@ const pt: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter para quebrar linha";
       }
-      return inputHints + ", / para buscar prompts, : para usar comandos";
+      return "Enviar mensagem"; // inputHints + ", / para buscar prompts, : para usar comandos";
     },
     Send: "Enviar",
     Config: {
       Reset: "Redefinir para Padrão",
-      SaveAs: "Salvar como Máscara",
+      SaveAs: "Salvar como Assistente",
     },
     IsContext: "Prompt Contextual",
   },
@@ -95,7 +95,7 @@ const pt: PartialLocaleType = {
     },
     IncludeContext: {
       Title: "Incluindo Contexto",
-      SubTitle: "Exportar prompts de contexto na máscara ou não",
+      SubTitle: "Exportar prompts de contexto na Assistente ou não",
     },
     Steps: {
       Select: "Selecionar",
@@ -221,19 +221,19 @@ const pt: PartialLocaleType = {
 
       LocalState: "Dados Locais",
       Overview: (overview: any) => {
-        return `${overview.chat} chats，${overview.message} mensagens，${overview.prompt} prompts，${overview.mask} máscaras`;
+        return `${overview.chat} chats，${overview.message} mensagens，${overview.prompt} prompts，${overview.mask} Assistente`;
       },
       ImportFailed: "Falha ao importar do arquivo",
     },
     Mask: {
       Splash: {
-        Title: "Tela de Início da Máscara",
+        Title: "Tela de Início da Assistente",
         SubTitle:
-          "Mostrar uma tela de início da máscara antes de iniciar novo chat",
+          "Mostrar uma tela de início da Assistente antes de iniciar novo chat",
       },
       Builtin: {
-        Title: "Esconder Máscaras Embutidas",
-        SubTitle: "Esconder máscaras embutidas na lista de máscaras",
+        Title: "Esconder Assistente Embutidas",
+        SubTitle: "Esconder Assistente embutidas na lista de Assistente",
       },
     },
     Prompt: {
@@ -384,7 +384,7 @@ const pt: PartialLocaleType = {
     Sysmessage: "Você é um assistente que",
   },
   Mask: {
-    Name: "Máscara",
+    Name: "Assistente",
     Page: {
       Title: "Template de Prompt",
       SubTitle: (count: number) => `${count} templates de prompt`,
@@ -419,8 +419,8 @@ const pt: PartialLocaleType = {
         SubTitle: "Não mostrar prompts de contexto no chat",
       },
       Share: {
-        Title: "Compartilhar Esta Máscara",
-        SubTitle: "Gerar um link para esta máscara",
+        Title: "Compartilhar Esta Assistente",
+        SubTitle: "Gerar um link para esta Assistente",
         Action: "Copiar Link",
       },
     },
@@ -428,8 +428,8 @@ const pt: PartialLocaleType = {
   NewChat: {
     Return: "Retornar",
     Skip: "Apenas Começar",
-    Title: "Escolher uma Máscara",
-    SubTitle: "Converse com a Alma por trás da Máscara",
+    Title: "Escolher uma Assistente",
+    SubTitle: "Converse com a Alma por trás da Assistente",
     More: "Encontre Mais",
     NotShow: "Nunca Mostrar Novamente",
     ConfirmNoShow:

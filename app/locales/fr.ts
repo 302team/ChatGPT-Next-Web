@@ -53,12 +53,12 @@ const fr: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter pour insérer un saut de ligne";
       }
-      return inputHints + ", / pour rechercher des prompts";
+      return "Envoyer un message"; // inputHints + ", / pour rechercher des prompts";
     },
     Send: "Envoyer",
     Config: {
       Reset: "Restaurer les paramètres par défaut",
-      SaveAs: "Enregistrer en tant que masque",
+      SaveAs: "Enregistrer en tant que assistant",
     },
   },
   Export: {
@@ -137,13 +137,13 @@ const fr: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "Écran de masque",
+        Title: "Écran de assistant",
         SubTitle:
-          "Afficher un écran de masque avant de démarrer une nouvelle discussion",
+          "Afficher un écran de assistant avant de démarrer une nouvelle discussion",
       },
       Builtin: {
-        Title: "Masquer Les Assistants Intégrés",
-        SubTitle: "Masquer les assistants intégrés par défaut",
+        Title: "Assistant Les Assistants Intégrés",
+        SubTitle: "Assistant les assistants intégrés par défaut",
       },
     },
     Prompt: {
@@ -240,7 +240,7 @@ const fr: PartialLocaleType = {
     Sysmessage: "Eres un asistente que",
   },
   Mask: {
-    Name: "Masque",
+    Name: "Assistant",
     Page: {
       Title: "Modèle de prompt",
       SubTitle: (count: number) => `${count} modèles de prompts`,
@@ -270,12 +270,12 @@ const fr: PartialLocaleType = {
         Confirm: "Voulez-vous definir votre configuration personnalisée ?",
       },
       HideContext: {
-        Title: "Masquer les invites contextuelles",
+        Title: "Assistant les invites contextuelles",
         SubTitle: "Ne pas afficher les instructions contextuelles dans le chat",
       },
       Share: {
-        Title: "Partager ce masque",
-        SubTitle: "Générer un lien vers ce masque",
+        Title: "Partager ce assistant",
+        SubTitle: "Générer un lien vers ce assistant",
         Action: "Copier le lien",
       },
     },
@@ -284,7 +284,7 @@ const fr: PartialLocaleType = {
     Return: "Retour",
     Skip: "Passer",
     Title: "Choisir un assitant",
-    SubTitle: "Discutez avec l'âme derrière le masque",
+    SubTitle: "Discutez avec l'âme derrière le assistant",
     More: "En savoir plus",
     NotShow: "Ne pas afficher à nouveau",
     ConfirmNoShow:

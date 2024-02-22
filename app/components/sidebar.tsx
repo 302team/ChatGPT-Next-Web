@@ -20,6 +20,7 @@ import { useAppConfig, useChatStore } from "../store";
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
+  GPT302_WEBSITE_URL,
   MAX_SIDEBAR_WIDTH,
   MIN_SIDEBAR_WIDTH,
   NARROW_SIDEBAR_WIDTH,
@@ -28,7 +29,7 @@ import {
 } from "../constant";
 
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { isIOS, useMobileScreen } from "../utils";
+import { isIOS, openWindow, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, showToast } from "./ui-lib";
 
@@ -164,7 +165,13 @@ export function SideBar(props: { className?: string }) {
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           {/* <ChatGptIcon /> */}
-          <NextImage src={ChatGptIcon.src} alt="logo" width={50} height={50} />
+          <NextImage
+            src={ChatGptIcon.src}
+            alt="logo"
+            width={50}
+            height={50}
+            onClick={() => openWindow(GPT302_WEBSITE_URL)}
+          />
         </div>
       </div>
 

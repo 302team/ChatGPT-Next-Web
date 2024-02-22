@@ -28,12 +28,12 @@ const cs: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter pro řádkování";
       }
-      return inputHints + ", / pro vyhledávání pokynů";
+      return "Odeslat zprávu"; // inputHints + ", / pro vyhledávání pokynů";
     },
     Send: "Odeslat",
     Config: {
       Reset: "Obnovit výchozí",
-      SaveAs: "Uložit jako Masku",
+      SaveAs: "Uložit jako Asistent",
     },
   },
   Export: {
@@ -93,8 +93,9 @@ const cs: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "Úvodní obrazovka Masek",
-        SubTitle: "Před zahájením nového chatu zobrazte úvodní obrazovku Masek",
+        Title: "Úvodní obrazovka Asistent",
+        SubTitle:
+          "Před zahájením nového chatu zobrazte úvodní obrazovku Asistent",
       },
     },
     Prompt: {
@@ -184,7 +185,7 @@ const cs: PartialLocaleType = {
     Sysmessage: "Jste asistent, který",
   },
   Mask: {
-    Name: "Maska",
+    Name: "Asistent",
     Page: {
       Title: "Šablona pokynu",
       SubTitle: (count: number) => `${count} šablon pokynů`,
@@ -213,8 +214,8 @@ const cs: PartialLocaleType = {
   NewChat: {
     Return: "Zpět",
     Skip: "Přeskočit",
-    Title: "Vyberte Masku",
-    SubTitle: "Chatovat s duší za Maskou",
+    Title: "Vyberte Asistent",
+    SubTitle: "Chatovat s duší za Asistent",
     More: "Najít více",
     NotShow: "Nezobrazovat znovu",
     ConfirmNoShow: "Potvrdit zakázání？Můžete jej povolit později v nastavení.",

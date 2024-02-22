@@ -10,11 +10,14 @@ import {
 } from "../store";
 import Locale from "../locales";
 
-import BotIcon from "../icons/logo-horizontal-dark.png";
+import BotIconLight from "../icons/logo-horizontal-light.png";
+import BotIconDark from "../icons/logo-horizontal-dark.png";
 import LockIcon from "../icons/lock.svg";
 import { useEffect, useState } from "react";
 import NextImage from "next/image";
 import { Loading, showToast } from "./ui-lib";
+import { openWindow } from "../utils";
+import { GPT302_WEBSITE_URL } from "../constant";
 
 interface ValidPwdProps {
   onAuth?: () => void;
@@ -86,10 +89,17 @@ export function ValidPwd(props: ValidPwdProps) {
 
   if (loading) return <Loading />;
 
+  const logoSrc = config.theme === "dark" ? BotIconLight : BotIconDark;
+
   return (
     <div className={styles["auth-page"]}>
       <div className={`no-dark ${styles["auth-logo"]}`}>
-        <NextImage src={BotIcon} height={34} alt="" />
+        <NextImage
+          src={logoSrc}
+          height={34}
+          alt=""
+          onClick={() => openWindow(GPT302_WEBSITE_URL)}
+        />
       </div>
 
       <div className={`no-dark ${styles["auth-lock"]}`}>

@@ -28,12 +28,12 @@ const it: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", premi Shift + Enter per andare a capo";
       }
-      return inputHints;
+      return "messaggio"; // inputHints;
     },
     Send: "Invia",
     Config: {
       Reset: "Reset to Default",
-      SaveAs: "Save as Mask",
+      SaveAs: "Save as Assistente",
     },
   },
   Export: {
@@ -93,8 +93,8 @@ const it: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "Mask Splash Screen",
-        SubTitle: "Show a mask splash screen before starting new chat",
+        Title: "Assistente Splash Screen",
+        SubTitle: "Show a assistente splash screen before starting new chat",
       },
     },
     Prompt: {
@@ -186,7 +186,7 @@ const it: PartialLocaleType = {
     Sysmessage: "Sei un assistente che",
   },
   Mask: {
-    Name: "Mask",
+    Name: "Assistente",
     Page: {
       Title: "Prompt Template",
       SubTitle: (count: number) => `${count} prompt templates`,
@@ -215,8 +215,8 @@ const it: PartialLocaleType = {
   NewChat: {
     Return: "Return",
     Skip: "Skip",
-    Title: "Pick a Mask",
-    SubTitle: "Chat with the Soul behind the Mask",
+    Title: "Pick a Assistente",
+    SubTitle: "Chat with the Soul behind the Assistente",
     More: "Find More",
     NotShow: "Not Show Again",
     ConfirmNoShow: "Confirm to disable？You can enable it in settings later.",

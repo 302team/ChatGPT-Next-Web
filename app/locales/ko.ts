@@ -29,12 +29,12 @@ const ko: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter로 줄 바꿈";
       }
-      return inputHints + ", 프롬프트 검색을 위해 / 입력";
+      return "메시지 보내기"; // inputHints + ", 프롬프트 검색을 위해 / 입력";
     },
     Send: "보내기",
     Config: {
       Reset: "기본값으로 재설정",
-      SaveAs: "마스크로 저장",
+      SaveAs: "조수로 저장",
     },
   },
   Export: {
@@ -94,8 +94,8 @@ const ko: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "마스크 시작 화면",
-        SubTitle: "새로운 채팅 시작 전에 마스크 시작 화면 표시",
+        Title: "조수 시작 화면",
+        SubTitle: "새로운 채팅 시작 전에 조수 시작 화면 표시",
       },
     },
     Prompt: {
@@ -182,7 +182,7 @@ const ko: PartialLocaleType = {
     Sysmessage: "당신은 어시스턴트입니다",
   },
   Mask: {
-    Name: "마스크",
+    Name: "조수",
     Page: {
       Title: "프롬프트 템플릿",
       SubTitle: (count: number) => `${count}개의 프롬프트 템플릿`,
@@ -211,8 +211,8 @@ const ko: PartialLocaleType = {
   NewChat: {
     Return: "돌아가기",
     Skip: "건너뛰기",
-    Title: "마스크 선택",
-    SubTitle: "마스크 뒤의 영혼과 대화하세요",
+    Title: "조수 선택",
+    SubTitle: "조수 뒤의 영혼과 대화하세요",
     More: "더 보기",
     NotShow: "다시 표시하지 않음",
     ConfirmNoShow:

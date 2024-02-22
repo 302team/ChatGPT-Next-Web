@@ -28,7 +28,7 @@ const tw: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += "，Shift + Enter 鍵換行";
       }
-      return inputHints;
+      return "發送消息"; // inputHints;
     },
     Send: "傳送",
     Config: {
@@ -91,8 +91,8 @@ const tw: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "面具啟動頁面",
-        SubTitle: "新增聊天時，呈現面具啟動頁面",
+        Title: "助手啟動頁面",
+        SubTitle: "新增聊天時，呈現助手啟動頁面",
       },
     },
     Prompt: {
@@ -175,11 +175,11 @@ const tw: PartialLocaleType = {
   Plugin: { Name: "外掛" },
   FineTuned: { Sysmessage: "你是一個助手" },
   Mask: {
-    Name: "面具",
+    Name: "助手",
     Page: {
-      Title: "預設角色面具",
-      SubTitle: (count: number) => `${count} 個預設角色定義`,
-      Search: "搜尋角色面具",
+      Title: "預設助手",
+      SubTitle: (count: number) => `${count} 個預設助手定義`,
+      Search: "搜尋助手",
       Create: "新增",
     },
     Item: {
@@ -192,20 +192,20 @@ const tw: PartialLocaleType = {
     },
     EditModal: {
       Title: (readonly: boolean) =>
-        `編輯預設面具 ${readonly ? "（只讀）" : ""}`,
+        `編輯預設助手 ${readonly ? "（只讀）" : ""}`,
       Download: "下載預設",
       Clone: "複製預設",
     },
     Config: {
-      Avatar: "角色頭像",
-      Name: "角色名稱",
+      Avatar: "助手頭像",
+      Name: "助手名稱",
     },
   },
   NewChat: {
     Return: "返回",
     Skip: "跳過",
-    Title: "挑選一個面具",
-    SubTitle: "現在開始，與面具背後的靈魂思維碰撞",
+    Title: "挑選一個助手",
+    SubTitle: "現在開始，與助手背後的靈魂思維碰撞",
     More: "搜尋更多",
     NotShow: "不再呈現",
     ConfirmNoShow: "確認停用？停用後可以隨時在設定中重新啟用。",

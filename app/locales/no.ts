@@ -28,7 +28,7 @@ const no: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter for å omgi";
       }
-      return inputHints + ", / for å søke instrukser";
+      return "Send melding"; // inputHints + ", / for å søke instrukser";
     },
     Send: "Send",
   },

@@ -28,7 +28,7 @@ const vi: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter để xuống dòng";
       }
-      return inputHints + ", / để tìm kiếm mẫu gợi ý";
+      return "Gửi tin nhắn"; // inputHints + ", / để tìm kiếm mẫu gợi ý";
     },
     Send: "Gửi",
     Config: {

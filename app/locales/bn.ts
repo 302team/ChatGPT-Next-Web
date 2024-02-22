@@ -37,7 +37,7 @@ const bn: PartialLocaleType = {
     },
     Commands: {
       new: "নতুন চ্যাট শুরু করুন",
-      newm: "মাস্ক সহ নতুন চ্যাট শুরু করুন",
+      newm: "সহায়ক সহ নতুন চ্যাট শুরু করুন",
       next: "পরবর্তী চ্যাট",
       prev: "পূর্ববর্তী চ্যাট",
       clear: "সংশ্লিষ্টতাবদ্ধকরণ পরিষ্কার করুন",
@@ -52,7 +52,7 @@ const bn: PartialLocaleType = {
         dark: "ডার্ক থিম",
       },
       Prompt: "প্রম্পটগুলিতে",
-      Masks: "মাস্কগুলি",
+      Masks: "সহায়ক",
       Clear: "সংশ্লিষ্টতাবদ্ধকরণ পরিষ্কার করুন",
       Settings: "সেটিংস",
     },
@@ -63,12 +63,12 @@ const bn: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter to wrap";
       }
-      return inputHints + ", / to search prompts, : to use commands";
+      return "বার্তা পাঠান"; // inputHints + ", / to search prompts, : to use commands";
     },
     Send: "প্রেরণ করুন",
     Config: {
       Reset: "ডিফল্টে রিসেট করুন",
-      SaveAs: "মাস্ক হিসাবে সংরক্ষণ করুন",
+      SaveAs: "সহায়ক হিসাবে সংরক্ষণ করুন",
     },
   },
   Export: {
@@ -83,8 +83,8 @@ const bn: PartialLocaleType = {
       SubTitle: "মার্কডাউন বা পিএনজি চিত্র",
     },
     IncludeContext: {
-      Title: "মাস্ক অন্তর্ভুক্ত করুন",
-      SubTitle: "মাস্কগুলি সংরক্ষণ করবেন না কি",
+      Title: "সহায়ক অন্তর্ভুক্ত করুন",
+      SubTitle: "সহায়ক সংরক্ষণ করবেন না কি",
     },
     Steps: {
       Select: "নির্বাচন করুন",
@@ -165,13 +165,13 @@ const bn: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "মাস্ক স্প্ল্যাশ স্ক্রিন",
+        Title: "সহায়ক স্প্ল্যাশ স্ক্রিন",
         SubTitle:
-          "নতুন চ্যাট শুরু করার আগে মাস্ক স্প্ল্যাশ স্ক্রিন প্রদর্শন করুন",
+          "নতুন চ্যাট শুরু করার আগে সহায়ক স্প্ল্যাশ স্ক্রিন প্রদর্শন করুন",
       },
       Builtin: {
-        Title: "মূলত মাস্ক গোপন করুন",
-        SubTitle: "মাস্ক তালিকা থেকে মূলত মাস্কগুলি লুকান",
+        Title: "মূলত সহায়ক গোপন করুন",
+        SubTitle: "সহায়ক তালিকা থেকে মূলত সহায়ক লুকান",
       },
     },
     Prompt: {
@@ -266,7 +266,7 @@ const bn: PartialLocaleType = {
     Sysmessage: "আপনি একটি সহকারী যা",
   },
   Mask: {
-    Name: "মাস্ক",
+    Name: "সহায়ক",
     Page: {
       Title: "প্রম্পট টেমপ্লেট",
       SubTitle: (count: number) => `${count} টি প্রম্পট টেমপ্লেট`,
@@ -301,8 +301,8 @@ const bn: PartialLocaleType = {
         SubTitle: "চ্যাটে সংশ্লিষ্টতা প্রম্পটগুলি দেখাবেন না",
       },
       Share: {
-        Title: "এই মাস্কটি শেয়ার করুন",
-        SubTitle: "এই মাস্কের একটি লিঙ্ক তৈরি করুন",
+        Title: "এই সহায়কটি শেয়ার করুন",
+        SubTitle: "এই সহায়কের একটি লিঙ্ক তৈরি করুন",
         Action: "লিঙ্ক কপি করুন",
       },
     },
@@ -310,8 +310,8 @@ const bn: PartialLocaleType = {
   NewChat: {
     Return: "ফিরে যান",
     Skip: "শুরু করুন",
-    Title: "মাস্ক নির্বাচন করুন",
-    SubTitle: "মাস্কের পিছনে আত্মার সঙ্গে চ্যাট করুন",
+    Title: "সহায়ক নির্বাচন করুন",
+    SubTitle: "সহায়কের পিছনে আত্মার সঙ্গে চ্যাট করুন",
     More: "আরো খুঁজুন",
     NotShow: "এখনও দেখাবেন না",
     ConfirmNoShow:

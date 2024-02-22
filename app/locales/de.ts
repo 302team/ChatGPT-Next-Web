@@ -28,12 +28,12 @@ const de: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Umschalt + Eingabe für Zeilenumbruch";
       }
-      return inputHints + ", / zum Durchsuchen von Prompts";
+      return "Nachricht senden"; // inputHints + ", / zum Durchsuchen von Prompts";
     },
     Send: "Senden",
     Config: {
       Reset: "Reset to Default",
-      SaveAs: "Save as Mask",
+      SaveAs: "Save as Assistent",
     },
   },
   Export: {
@@ -93,8 +93,8 @@ const de: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "Mask Splash Screen",
-        SubTitle: "Show a mask splash screen before starting new chat",
+        Title: "Assistent Splash Screen",
+        SubTitle: "Show a assistant splash screen before starting new chat",
       },
     },
     Prompt: {
@@ -186,7 +186,7 @@ const de: PartialLocaleType = {
     Sysmessage: "Du bist ein Assistent, der",
   },
   Mask: {
-    Name: "Mask",
+    Name: "Assistent",
     Page: {
       Title: "Prompt Template",
       SubTitle: (count: number) => `${count} prompt templates`,
@@ -215,8 +215,8 @@ const de: PartialLocaleType = {
   NewChat: {
     Return: "Return",
     Skip: "Skip",
-    Title: "Pick a Mask",
-    SubTitle: "Chat with the Soul behind the Mask",
+    Title: "Pick a Assistent",
+    SubTitle: "Chat with the Soul behind the Assistent",
     More: "Find More",
     NotShow: "Not Show Again",
     ConfirmNoShow: "Confirm to disable？You can enable it in settings later.",

@@ -37,7 +37,7 @@ const id: PartialLocaleType = {
     },
     Commands: {
       new: "Mulai Chat Baru",
-      newm: "Mulai Chat Baru dengan Masks",
+      newm: "Mulai Chat Baru dengan Asistens",
       next: "Chat Selanjutnya",
       prev: "Chat Sebelumnya",
       clear: "Bersihkan Percakapan",
@@ -52,7 +52,7 @@ const id: PartialLocaleType = {
         dark: "Tema Gelap",
       },
       Prompt: "Prompts",
-      Masks: "Masks",
+      Masks: "Asistens",
       Clear: "Bersihkan Percakapan",
       Settings: "Pengaturan",
     },
@@ -63,14 +63,15 @@ const id: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter untuk membalut";
       }
-      return (
-        inputHints + ", / untuk mencari prompt, : untuk menggunakan perintah"
-      );
+      // return (
+      //   inputHints + ", / untuk mencari prompt, : untuk menggunakan perintah"
+      // );
+      return "Kirim pesan";
     },
     Send: "Kirim",
     Config: {
       Reset: "Reset ke Default",
-      SaveAs: "Simpan sebagai Masks",
+      SaveAs: "Simpan sebagai Asistens",
     },
   },
   Export: {
@@ -86,7 +87,7 @@ const id: PartialLocaleType = {
     },
     IncludeContext: {
       Title: "Sertakan Konteks",
-      SubTitle: "Apakah akan menyertakan masks",
+      SubTitle: "Apakah akan menyertakan asistens",
     },
     Steps: {
       Select: "Pilih",
@@ -204,13 +205,13 @@ const id: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "Layar Pembuka Masks",
+        Title: "Layar Pembuka Asistens",
         SubTitle:
-          "Tampilkan layar pembuka masks sebelum memulai percakapan baru",
+          "Tampilkan layar pembuka asistens sebelum memulai percakapan baru",
       },
       Builtin: {
-        Title: "Sembunyikan Masks Bawaan",
-        SubTitle: "Sembunyikan Masks bawaan dari daftar masks",
+        Title: "Sembunyikan Asistens Bawaan",
+        SubTitle: "Sembunyikan Asistens bawaan dari daftar asistens",
       },
     },
     Prompt: {
@@ -310,7 +311,7 @@ const id: PartialLocaleType = {
     Sysmessage: "Anda adalah asisten yang",
   },
   Mask: {
-    Name: "Masks",
+    Name: "Asistens",
     Page: {
       Title: "Template Promp",
       SubTitle: (count: number) => `${count} template prompt`,
@@ -345,8 +346,8 @@ const id: PartialLocaleType = {
         SubTitle: "Tidak menampilkan prompt konteks dalam obrolan",
       },
       Share: {
-        Title: "Bagikan Masks Ini",
-        SubTitle: "Buat tautan untuk masks ini",
+        Title: "Bagikan Asistens Ini",
+        SubTitle: "Buat tautan untuk asistens ini",
         Action: "Salin Tautan",
       },
     },
@@ -354,8 +355,8 @@ const id: PartialLocaleType = {
   NewChat: {
     Return: "Kembali",
     Skip: "Lewati",
-    Title: "Pilih Masks",
-    SubTitle: "Berkonversasilah dengan diri Anda di balik masks",
+    Title: "Pilih Asistens",
+    SubTitle: "Berkonversasilah dengan diri Anda di balik asistens",
     More: "Lebih Lanjut",
     NotShow: "Jangan Tampilkan Sekarang",
     ConfirmNoShow:

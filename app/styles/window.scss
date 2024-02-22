@@ -36,3 +36,17 @@
 .window-action-button:not(:first-child) {
   margin-left: 10px;
 }
+
+@media screen and (max-width: 600px) {
+  .window-header {
+    position: relative;
+    justify-content: center;
+
+    .window-actions {
+      position: absolute;
+      top: 50%;
+      left: 20px;
+      transform: translate(0, -50%);
+    }
+  }
+}

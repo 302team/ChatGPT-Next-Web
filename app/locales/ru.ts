@@ -28,7 +28,7 @@ const ru: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += ", Shift + Enter для переноса строки";
       }
-      return inputHints + ", / для поиска подсказок";
+      return "Отправить сообщение"; // inputHints + ", / для поиска подсказок";
     },
     Send: "Отправить",
     Config: {
@@ -93,8 +93,9 @@ const ru: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "Экран заставки маски",
-        SubTitle: "Показывать экран заставки маски перед началом нового чата",
+        Title: "Экран заставки Помощник",
+        SubTitle:
+          "Показывать экран заставки Помощник перед началом нового чата",
       },
     },
     Prompt: {
@@ -187,7 +188,7 @@ const ru: PartialLocaleType = {
     Sysmessage: "Вы - ассистент, который",
   },
   Mask: {
-    Name: "Маска",
+    Name: "Помощник",
     Page: {
       Title: "Шаблон подсказки",
       SubTitle: (count: number) => `${count} шаблонов подсказок`,
