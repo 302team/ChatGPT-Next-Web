@@ -5,7 +5,7 @@ const ar: PartialLocaleType = {
   WIP: "قريبًا...",
   Error: {
     Unauthorized:
-      "يرجى زيارة [GPT302](https://dash.gpt302.com) لإنشاء روبوتك الخاص (يتم حاليًا اختبار GPT302 داخليًا، يرجى تسجيل الدخول إلى Proxy302 أولاً للحصول على إذن الوصول)",
+      "يرجى زيارة [GPT302](https://dash.gpt302.com) لإنشاء روبوتك الخاص",
   },
   Auth: {
     Title: "يتطلب رمز الوصول",

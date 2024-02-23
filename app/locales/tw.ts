@@ -5,7 +5,7 @@ const tw: PartialLocaleType = {
   WIP: "該功能仍在開發中……",
   Error: {
     Unauthorized:
-      "請訪問[GPT302](https://dash.gpt302.com)創建屬於你自己的機器人（現在GPT302正在內部測試中，請先登錄Proxy302獲得訪問權限）",
+      "請訪問[GPT302](https://dash.gpt302.com)創建屬於你自己的機器人",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 則對話`,

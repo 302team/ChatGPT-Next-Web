@@ -89,14 +89,22 @@ export function ValidPwd(props: ValidPwdProps) {
 
   if (loading) return <Loading />;
 
-  const logoSrc = config.theme === "dark" ? BotIconLight : BotIconDark;
+  const themeMedia = window.matchMedia("(prefers-color-scheme: light)");
+  const logoSrc =
+    config.theme === "auto"
+      ? themeMedia.matches
+        ? BotIconDark
+        : BotIconLight
+      : config.theme === "dark"
+      ? BotIconLight
+      : BotIconDark;
 
   return (
     <div className={styles["auth-page"]}>
       <div className={`no-dark ${styles["auth-logo"]}`}>
         <NextImage
           src={logoSrc}
-          height={34}
+          width={120}
           alt=""
           onClick={() => openWindow(GPT302_WEBSITE_URL)}
         />

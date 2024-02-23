@@ -9,7 +9,7 @@ const en: LocaleType = {
   WIP: "Coming Soon...",
   Error: {
     Unauthorized:
-      "Please visit [GPT302](https://dash.gpt302.com) to create your own robot (GPT302 is currently in internal testing, please log in to Proxy302 first to gain access)",
+      "Please visit [GPT302](https://dash.gpt302.com) to create your own robot",
   },
   Auth: {
     Title: "Need Access Code",

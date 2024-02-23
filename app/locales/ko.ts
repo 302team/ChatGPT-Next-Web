@@ -6,7 +6,7 @@ const ko: PartialLocaleType = {
   WIP: "곧 출시 예정...",
   Error: {
     Unauthorized:
-      "자신의 로봇을 만들려면 [GPT302](https://dash.gpt302.com) 을 방문하십시오 (GPT302는 현재 내부 테스트 중이며, 먼저 액세스 권한을 얻기 위해 먼저 Proxy302에 로그인하십시오)",
+      "자신의 로봇을 만들려면 [GPT302](https://dash.gpt302.com) 을 방문하십시오",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count}개의 메시지`,

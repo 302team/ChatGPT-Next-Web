@@ -7,7 +7,7 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized:
-      "请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人（现在GPT302正在内测中，请先登录Proxy302获得访问权限）",
+      "请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人",
   },
   Auth: {
     Title: "需要访问码",

@@ -10,7 +10,7 @@ const sk: PartialLocaleType = {
   WIP: "Už čoskoro...",
   Error: {
     Unauthorized:
-      "Prosím, navštívte [GPT302](https://dash.gpt302.com) pre vytvorenie vlastného robota (GPT302 je momentálne v internej testovacej fáze, prihláste sa najprv do Proxy302, aby ste získali prístup)",
+      "Prosím, navštívte [GPT302](https://dash.gpt302.com) pre vytvorenie vlastného robota",
   },
   Auth: {
     Title: "Potrebný prístupový kód",

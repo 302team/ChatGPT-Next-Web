@@ -5,7 +5,7 @@ const no: PartialLocaleType = {
   WIP: "Arbeid pågår ...",
   Error: {
     Unauthorized:
-      "Vennligst besøk [GPT302](https://dash.gpt302.com) for å opprette din egen robot (GPT302 er for øyeblikket i intern testing, vennligst logg inn på Proxy302 først for å få tilgang)",
+      "Vennligst besøk [GPT302](https://dash.gpt302.com) for å opprette din egen robot",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} meldinger`,

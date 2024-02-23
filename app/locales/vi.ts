@@ -5,7 +5,7 @@ const vi: PartialLocaleType = {
   WIP: "Sắp ra mắt...",
   Error: {
     Unauthorized:
-      "Vui lòng truy cập [GPT302](https://dash.gpt302.com) để tạo ra robot của riêng bạn (GPT302 hiện đang trong quá trình thử nghiệm nội bộ, vui lòng đăng nhập vào Proxy302 trước để có quyền truy cập)",
+      "Vui lòng truy cập [GPT302](https://dash.gpt302.com) để tạo ra robot của riêng bạn",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} tin nhắn`,
