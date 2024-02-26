@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import styles from "./home.module.scss";
 import BotIcon from "../icons/bot.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import BotIconDark from "../icons/logo-horizontal-dark.png";
 import { getCSSVar, useMobileScreen, openWindow } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -165,13 +164,7 @@ function ChatWindow() {
 
       <div className={styles["window-content"]} id={SlotID.AppBody}>
         <Routes>
-          <Route
-            path={Path.Home}
-            element={
-              // <Chat />
-              <Navigate replace to={Path.Chat} />
-            }
-          />
+          <Route path={Path.Home} element={<Chat />} />
           <Route path={Path.NewChat} element={<NewChat />} />
           <Route path={Path.Masks} element={<MaskPage />} />
           <Route path={Path.Chat} element={<Chat />} />
@@ -212,15 +205,6 @@ function Screen() {
         ) : (
           <ChatWindow />
         )}
-      </div>
-      <div className="powerd">
-        Powered By
-        <NextImage
-          src={BotIconDark}
-          height={13}
-          alt=""
-          onClick={() => openWindow(GPT302_WEBSITE_URL)}
-        />
       </div>
     </>
   );

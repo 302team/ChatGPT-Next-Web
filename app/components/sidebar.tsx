@@ -13,6 +13,7 @@ import MaskIcon from "../icons/mask.svg";
 import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
 import NextImage from "next/image";
+import BotIconDark from "../icons/logo-horizontal-dark.png";
 
 import Locale from "../locales";
 
@@ -251,6 +252,16 @@ export function SideBar(props: { className?: string }) {
             shadow
           />
         </div>
+      </div>
+
+      <div className="powerd">
+        Powered By
+        <NextImage
+          src={BotIconDark}
+          height={13}
+          alt=""
+          onClick={() => openWindow(GPT302_WEBSITE_URL)}
+        />
       </div>
 
       <div
