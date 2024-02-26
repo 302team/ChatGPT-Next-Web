@@ -5,14 +5,15 @@ require("../polyfill");
 import { useState, useEffect } from "react";
 
 import styles from "./home.module.scss";
-
 import BotIcon from "../icons/bot.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-
-import { getCSSVar, useMobileScreen } from "../utils";
+import BotIconDark from "../icons/logo-horizontal-dark.png";
+import { getCSSVar, useMobileScreen, openWindow } from "../utils";
 
 import dynamic from "next/dynamic";
-import { ModelProvider, Path, SlotID } from "../constant";
+import NextImage from "next/image";
+
+import { ModelProvider, Path, SlotID, GPT302_WEBSITE_URL } from "../constant";
 import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
@@ -22,7 +23,8 @@ import {
   Routes,
   Route,
   useLocation,
-  useSearchParams,
+  redirect,
+  Navigate,
 } from "react-router-dom";
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
@@ -133,10 +135,10 @@ const loadAsyncGoogleFont = () => {
 
 function ChatWindow() {
   const location = useLocation();
+  const accessStore = useAccessStore();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
-  const [validPwdVisible, setValidPwdVisible] = useState(true);
-  const accessStore = useAccessStore();
+  const [validPwdVisible, setValidPwdVisible] = useState(!accessStore.isAuth);
 
   useEffect(() => {
     if (accessStore.apiDomain) {
@@ -163,7 +165,13 @@ function ChatWindow() {
 
       <div className={styles["window-content"]} id={SlotID.AppBody}>
         <Routes>
-          <Route path={Path.Home} element={<Chat />} />
+          <Route
+            path={Path.Home}
+            element={
+              // <Chat />
+              <Navigate replace to={Path.Chat} />
+            }
+          />
           <Route path={Path.NewChat} element={<NewChat />} />
           <Route path={Path.Masks} element={<MaskPage />} />
           <Route path={Path.Chat} element={<Chat />} />
@@ -188,22 +196,33 @@ function Screen() {
   }, []);
 
   return (
-    <div
-      className={
-        styles.container +
-        ` ${shouldTightBorder ? styles["tight-container"] : styles.container} ${
-          getLang() === "ar" ? styles["rtl-screen"] : ""
-        }`
-      }
-    >
-      {isAuth ? (
-        <>
-          <AuthPage />
-        </>
-      ) : (
-        <ChatWindow />
-      )}
-    </div>
+    <>
+      <div
+        className={
+          styles.container +
+          ` ${
+            shouldTightBorder ? styles["tight-container"] : styles.container
+          } ${getLang() === "ar" ? styles["rtl-screen"] : ""}`
+        }
+      >
+        {isAuth ? (
+          <>
+            <AuthPage />
+          </>
+        ) : (
+          <ChatWindow />
+        )}
+      </div>
+      <div className="powerd">
+        Powered By
+        <NextImage
+          src={BotIconDark}
+          height={13}
+          alt=""
+          onClick={() => openWindow(GPT302_WEBSITE_URL)}
+        />
+      </div>
+    </>
   );
 }
 

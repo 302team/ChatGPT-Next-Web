@@ -103,6 +103,8 @@ body {
   height: var(--full-height);
   width: 100vw;
   display: flex;
+  flex-direction: column;
+  gap: 10px;
   justify-content: center;
   align-items: center;
   user-select: none;
@@ -362,4 +364,18 @@ pre {
 
 .copyable {
   user-select: text;
+}
+
+.powerd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--deep-gray);
+
+  img {
+    cursor: pointer;
+  }
 }
