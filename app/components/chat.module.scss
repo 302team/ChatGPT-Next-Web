@@ -1,10 +1,12 @@
 @import "../styles/animation.scss";
 
 .attach-images {
-  position: absolute;
-  left: 30px;
-  bottom: 32px;
+  // position: absolute;
+  // left: 30px;
+  // bottom: 32px;
   display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .attach-image {
@@ -13,7 +15,7 @@
   height: 64px;
   border: rgba($color: #888, $alpha: 0.2) 1px solid;
   border-radius: 5px;
-  margin-right: 10px;
+  // margin-right: 10px;
   background-size: cover;
   background-position: center;
   background-color: var(--white);
@@ -590,12 +592,13 @@
   cursor: text;
   display: flex;
   flex: 1;
+  padding: 5px 10px;
   border-radius: 10px;
   border: var(--border-in-light);
 }
 
 .chat-input-panel-inner-attach {
-  padding-bottom: 80px;
+  // padding-bottom: 80px;
 }
 
 .chat-input-panel-inner:has(.chat-input:focus) {
@@ -615,11 +618,11 @@
   resize: none;
   outline: none;
   box-sizing: border-box;
-  min-height: 68px;
+  // min-height: 68px;
 }
 
 .chat-input:focus {
-  border: 1px solid var(--black);
+  // border: 1px solid var(--black);
 }
 
 .chat-input:focus ~ .chat-input-send {
@@ -633,7 +636,7 @@
 
   position: absolute;
   right: 30px;
-  bottom: 32px;
+  bottom: 27px;
 }
 
 @media only screen and (max-width: 600px) {
@@ -643,5 +646,17 @@
 
   .chat-input-send {
     bottom: 30px;
+  }
+}
+
+.chat-input-attach {
+  display: flex;
+  align-items: center;
+  
+  .text,
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

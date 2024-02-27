@@ -29,6 +29,7 @@ import EditIcon from "../icons/rename.svg";
 import ConfirmIcon from "../icons/confirm.svg";
 import CancelIcon from "../icons/cancel.svg";
 import ImageIcon from "../icons/image.svg";
+import AttachIcon from "../icons/attach.svg";
 
 import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
@@ -337,6 +338,7 @@ function ClearContextDivider() {
 function ChatAction(props: {
   text: string;
   icon: JSX.Element;
+  className?: string;
   onClick: () => void;
 }) {
   const iconRef = useRef<HTMLDivElement>(null);
@@ -359,7 +361,7 @@ function ChatAction(props: {
 
   return (
     <div
-      className={`${styles["chat-input-action"]} clickable`}
+      className={`${styles["chat-input-action"]} clickable ${props.className}`}
       onClick={() => {
         props.onClick();
         setTimeout(updateWidth, 1);
@@ -646,6 +648,11 @@ export function DeleteImageButton(props: { deleteImage: () => void }) {
   );
 }
 
+export interface AttachImages {
+  name: string;
+  fileUrl: string;
+  dataUrl: string;
+}
 function _Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
@@ -665,8 +672,20 @@ function _Chat() {
   const isMobileScreen = useMobileScreen();
   const navigate = useNavigate();
   const location = useLocation();
-  const [attachImages, setAttachImages] = useState<string[]>([]);
+  const [attachImages, setAttachImages] = useState<AttachImages[]>([]);
   const [uploading, setUploading] = useState(false);
+
+  const [showUploadFile, setShowUploadFile] = useState(false);
+  const currentModel = session.mask.modelConfig.model;
+
+  useEffect(() => {
+    const show = isVisionModel(currentModel);
+    setShowUploadFile(show);
+    if (!show) {
+      setAttachImages([]);
+      setUploading(false);
+    }
+  }, [currentModel]);
 
   // prompt hints
   const promptStore = usePromptStore();
@@ -681,15 +700,15 @@ function _Chat() {
   );
 
   // auto grow input
-  const [inputRows, setInputRows] = useState(2);
+  const [inputRows, setInputRows] = useState(1);
   const measure = useDebouncedCallback(
     () => {
-      const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
-      const inputRows = Math.min(
-        20,
-        Math.max(2 + Number(!isMobileScreen), rows),
-      );
-      setInputRows(inputRows);
+      // const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
+      // const inputRows = Math.min(
+      //   20,
+      //   Math.max(2 + Number(!isMobileScreen), rows),
+      // );
+      // setInputRows(inputRows);
     },
     100,
     {
@@ -745,7 +764,10 @@ function _Chat() {
     }
     setIsLoading(true);
     chatStore
-      .onUserInput(userInput, attachImages)
+      .onUserInput(
+        userInput,
+        attachImages.map((i) => i.dataUrl),
+      )
       .then(() => setIsLoading(false));
     setAttachImages([]);
     localStorage.setItem(LAST_INPUT_KEY, userInput);
@@ -1104,36 +1126,49 @@ function _Chat() {
   }, []);
 
   async function uploadImage() {
-    const images: string[] = [];
+    const images: AttachImages[] = [];
     images.push(...attachImages);
 
     images.push(
-      ...(await new Promise<string[]>((res, rej) => {
+      ...(await new Promise<AttachImages[]>((resolve, reject) => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.accept =
           "image/png, image/jpeg, image/webp, image/heic, image/heif";
-        fileInput.multiple = true;
+        fileInput.multiple = false;
         fileInput.onchange = (event: any) => {
           setUploading(true);
           const files = event.target.files;
-          const imagesData: string[] = [];
+          const imagesData: AttachImages[] = [];
+
           for (let i = 0; i < files.length; i++) {
             const file = event.target.files[i];
-            compressImage(file, 256 * 1024)
-              .then((dataUrl) => {
-                imagesData.push(dataUrl);
-                if (
-                  imagesData.length === 3 ||
-                  imagesData.length === files.length
-                ) {
-                  setUploading(false);
-                  res(imagesData);
+
+            const formData = new FormData();
+            formData.append("file", file);
+            const uploadUrl = `${accessStore.apiDomain}/gpt/api/upload/gpt/image`;
+            fetch(uploadUrl, {
+              method: "POST",
+              body: formData,
+            })
+              .then((res) => res.json())
+              .then(async (res: any) => {
+                if (res.code === 0) {
+                  const url = res.data.url;
+                  const filename = url.substring(url.lastIndexOf("/") + 1);
+                  const dataUrl = await compressImage(file, 256 * 1024);
+                  imagesData.push({
+                    name: filename,
+                    fileUrl: url,
+                    dataUrl: dataUrl,
+                  });
                 }
+                setUploading(false);
+                resolve(imagesData);
               })
               .catch((e) => {
                 setUploading(false);
-                rej(e);
+                reject(e);
               });
           }
         };
@@ -1141,10 +1176,10 @@ function _Chat() {
       })),
     );
 
-    const imagesLength = images.length;
-    if (imagesLength > 3) {
-      images.splice(3, imagesLength - 3);
-    }
+    // const imagesLength = images.length;
+    // if (imagesLength > 3) {
+    //   images.splice(3, imagesLength - 3);
+    // }
     setAttachImages(images);
   }
 
@@ -1416,7 +1451,7 @@ function _Chat() {
       <div className={styles["chat-input-panel"]}>
         <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
 
-        <ChatActions
+        {/* <ChatActions
           uploadImage={uploadImage}
           setAttachImages={setAttachImages}
           setUploading={setUploading}
@@ -1435,15 +1470,44 @@ function _Chat() {
             setUserInput("/");
             onSearch("");
           }}
-        />
-        <label
+        /> */}
+        {attachImages.length != 0 && (
+          <div className={styles["attach-images"]}>
+            {attachImages.map((image, index) => {
+              return (
+                <div
+                  key={index}
+                  className={styles["attach-image"]}
+                  style={{ backgroundImage: `url("${image.dataUrl}")` }}
+                >
+                  <div className={styles["attach-image-mask"]}>
+                    <DeleteImageButton
+                      deleteImage={() => {
+                        setAttachImages(
+                          attachImages.filter((_, i) => i !== index),
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div
           className={`${styles["chat-input-panel-inner"]} ${
             attachImages.length != 0
               ? styles["chat-input-panel-inner-attach"]
               : ""
           }`}
-          htmlFor="chat-input"
         >
+          {/* {showUploadFile && <ChatAction
+            onClick={uploadImage}
+            // text={Locale.Chat.InputActions.UploadImage}
+            text=""
+            className={styles["chat-input-attach"]}
+            icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
+          />} */}
           <textarea
             id="chat-input"
             ref={inputRef}
@@ -1460,36 +1524,13 @@ function _Chat() {
               fontSize: config.fontSize,
             }}
           />
-          {attachImages.length != 0 && (
-            <div className={styles["attach-images"]}>
-              {attachImages.map((image, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={styles["attach-image"]}
-                    style={{ backgroundImage: `url("${image}")` }}
-                  >
-                    <div className={styles["attach-image-mask"]}>
-                      <DeleteImageButton
-                        deleteImage={() => {
-                          setAttachImages(
-                            attachImages.filter((_, i) => i !== index),
-                          );
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
           <IconButton
             icon={<SendWhiteIcon />}
             className={styles["chat-input-send"]}
             type="primary"
             onClick={() => doSubmit(userInput)}
           />
-        </label>
+        </div>
       </div>
 
       {showExport && (
