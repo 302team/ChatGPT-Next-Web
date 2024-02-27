@@ -680,7 +680,7 @@ function _Chat() {
 
   useEffect(() => {
     const show = isVisionModel(currentModel);
-    setShowUploadFile(show);
+    setShowUploadFile(false);
     if (!show) {
       setAttachImages([]);
       setUploading(false);
