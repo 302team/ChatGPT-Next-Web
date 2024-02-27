@@ -137,7 +137,7 @@ function ChatWindow() {
   const accessStore = useAccessStore();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
-  const [validPwdVisible, setValidPwdVisible] = useState(!accessStore.isAuth);
+  const [validPwdVisible, setValidPwdVisible] = useState(true);
 
   useEffect(() => {
     if (accessStore.apiDomain) {

@@ -20,6 +20,7 @@ import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
+import type { AttachImages } from "../components/chat";
 
 export type ChatMessage = RequestMessage & {
   date: string;
@@ -290,28 +291,38 @@ export const useChatStore = createPersistStore(
         get().summarizeSession();
       },
 
-      async onUserInput(content: string, attachImages?: string[]) {
+      async onUserInput(content: string, attachImages?: AttachImages[]) {
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
 
         const userContent = fillTemplateWith(content, modelConfig);
         console.log("[User Input] after template: ", userContent);
 
-        let mContent: string | MultimodalContent[] = userContent;
+        let saveContent: MultimodalContent[];
+        let mContent: MultimodalContent[] = (saveContent = [
+          {
+            type: "text",
+            text: userContent,
+          },
+        ]);
 
         if (attachImages && attachImages.length > 0) {
-          mContent = [
-            {
-              type: "text",
-              text: userContent,
-            },
-          ];
           mContent = mContent.concat(
             attachImages.map((url) => {
               return {
                 type: "image_url",
                 image_url: {
-                  url: url,
+                  url: url.dataUrl!,
+                },
+              };
+            }),
+          );
+          saveContent = saveContent.concat(
+            attachImages.map((url) => {
+              return {
+                type: "image_url",
+                image_url: {
+                  url: url.fileUrl!,
                 },
               };
             }),
@@ -337,7 +348,7 @@ export const useChatStore = createPersistStore(
         get().updateCurrentSession((session) => {
           const savedUserMessage = {
             ...userMessage,
-            content: mContent,
+            content: saveContent,
           };
           session.messages = session.messages.concat([
             savedUserMessage,

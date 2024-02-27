@@ -649,9 +649,9 @@ export function DeleteImageButton(props: { deleteImage: () => void }) {
 }
 
 export interface AttachImages {
-  name: string;
-  fileUrl: string;
-  dataUrl: string;
+  name?: string;
+  fileUrl?: string;
+  dataUrl?: string;
 }
 function _Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
@@ -703,12 +703,12 @@ function _Chat() {
   const [inputRows, setInputRows] = useState(1);
   const measure = useDebouncedCallback(
     () => {
-      // const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
-      // const inputRows = Math.min(
-      //   20,
-      //   Math.max(2 + Number(!isMobileScreen), rows),
-      // );
-      // setInputRows(inputRows);
+      const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
+      const inputRows = Math.min(
+        20,
+        Math.max(0 + Number(!isMobileScreen), rows),
+      );
+      setInputRows(inputRows);
     },
     100,
     {
@@ -764,10 +764,7 @@ function _Chat() {
     }
     setIsLoading(true);
     chatStore
-      .onUserInput(
-        userInput,
-        attachImages.map((i) => i.dataUrl),
-      )
+      .onUserInput(userInput, attachImages)
       .then(() => setIsLoading(false));
     setAttachImages([]);
     localStorage.setItem(LAST_INPUT_KEY, userInput);
@@ -919,7 +916,12 @@ function _Chat() {
     setIsLoading(true);
     const textContent = getMessageTextContent(userMessage);
     const images = getMessageImages(userMessage);
-    chatStore.onUserInput(textContent, images).then(() => setIsLoading(false));
+    chatStore
+      .onUserInput(
+        textContent,
+        images.map((i) => ({ dataUrl: i })),
+      )
+      .then(() => setIsLoading(false));
     inputRef.current?.focus();
   };
 
@@ -1501,13 +1503,15 @@ function _Chat() {
               : ""
           }`}
         >
-          {/* {showUploadFile && <ChatAction
-            onClick={uploadImage}
-            // text={Locale.Chat.InputActions.UploadImage}
-            text=""
-            className={styles["chat-input-attach"]}
-            icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
-          />} */}
+          {showUploadFile && (
+            <ChatAction
+              onClick={uploadImage}
+              // text={Locale.Chat.InputActions.UploadImage}
+              text=""
+              className={styles["chat-input-attach"]}
+              icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
+            />
+          )}
           <textarea
             id="chat-input"
             ref={inputRef}
