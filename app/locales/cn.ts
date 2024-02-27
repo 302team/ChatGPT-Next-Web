@@ -64,6 +64,7 @@ const cn = {
       Masks: "所有助手",
       Clear: "清除聊天",
       Settings: "对话设置",
+      UploadImage: "上传图片",
     },
     Rename: "重命名对话",
     Typing: "正在输入…",
