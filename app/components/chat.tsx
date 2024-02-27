@@ -1127,11 +1127,11 @@ function _Chat() {
           )}
         </div>
 
-        {/* <PromptToast
-          showToast={!hitBottom}
+        <PromptToast
+          showToast={false}
           showModal={showPromptModal}
           setShowModal={setShowPromptModal}
-        /> */}
+        />
       </div>
 
       <div
