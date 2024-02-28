@@ -25,6 +25,7 @@ import ResetIcon from "../icons/reload.svg";
 import BreakIcon from "../icons/break.svg";
 import SettingsIcon from "../icons/chat-settings.svg";
 import DeleteIcon from "../icons/clear2.svg";
+import CleanIcon from "../icons/clean.png";
 import PinIcon from "../icons/pin.svg";
 import EditIcon from "../icons/rename.svg";
 import ConfirmIcon from "../icons/confirm.svg";
@@ -100,6 +101,7 @@ import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
 import { MultimodalContent } from "../client/api";
+import Image from "next/image";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -648,7 +650,7 @@ export function EditMessageModal(props: { onClose: () => void }) {
 export function DeleteImageButton(props: { deleteImage: () => void }) {
   return (
     <div className={styles["delete-image"]} onClick={props.deleteImage}>
-      <DeleteIcon />
+      <Image src={CleanIcon} alt="delete" width={16} height={16} />
     </div>
   );
 }
@@ -732,7 +734,10 @@ function useUploadFile() {
           Promise.all(tasks)
             .then(() => {
               setUploading(false);
-              console.log("🚀 ~ Promise.all ~ all tasks end:", imagesData);
+              console.log(
+                "🚀 ~ Promise.all ~ uploadImage all tasks end:",
+                imagesData,
+              );
               resolve(imagesData);
             })
             .catch(() => {
@@ -757,34 +762,23 @@ function useUploadFile() {
     const images: AttachImages[] = [];
     images.push(...attachImages);
 
-    images.push(
-      ...(await new Promise<AttachImages[]>((resolve, reject) => {
-        const imagesData: AttachImages[] = [];
-        setUploading(true);
+    setUploading(true);
 
-        const tasks = Array.from(files).map(async (file) => {
-          return handleUpload(file)
-            .then((result) => {
-              imagesData.push(result);
-            })
-            .catch((e) => {
-              reject(e);
-            });
-        });
+    const tasks = Array.from(files).map(async (file) => {
+      return await handleUpload(file).then((result) => {
+        images.push(result);
+      });
+    });
 
-        Promise.all(tasks)
-          .then(() => {
-            setUploading(false);
-            console.log("🚀 ~ Promise.all ~ all tasks end:", imagesData);
-            resolve(imagesData);
-          })
-          .catch(() => {
-            setUploading(false);
-          });
-      })),
-    );
-
-    setAttachImages(images);
+    Promise.all(tasks)
+      .then(() => {
+        setUploading(false);
+        setAttachImages(images);
+        console.log("🚀 ~ Promise.all ~ dropUpload all tasks end:", images);
+      })
+      .catch(() => {
+        setUploading(false);
+      });
   }
 
   return {
@@ -1284,7 +1278,6 @@ function _Chat() {
       //阻止浏览器默认打开文件的操作
       e.preventDefault();
       const files = e.dataTransfer.files;
-      console.log("🚀 ~ dp?.addEventListener ~ files:", files);
 
       const filterdFiles = Array.from(files).filter((f) => {
         return /image\/(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif)/gi.test(
@@ -1294,6 +1287,32 @@ function _Chat() {
       if (filterdFiles.length > 0) {
         dropUpload(filterdFiles as File[]);
       }
+    });
+  }, []);
+
+  // paste event
+  useEffect(() => {
+    document.addEventListener("paste", function (event) {
+      var items = (event.clipboardData || window.clipboardData).items;
+      var file = null;
+      if (items && items.length) {
+        // 搜索剪切板items
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf("image") !== -1) {
+            file = items[i].getAsFile();
+            break;
+          }
+        }
+      } else {
+        console.log("当前浏览器不支持");
+        return;
+      }
+      if (!file) {
+        console.log("粘贴内容非图片");
+        return;
+      }
+
+      dropUpload([file]);
     });
   }, []);
 
@@ -1584,26 +1603,6 @@ function _Chat() {
       <div id="chatInputPanel" className={styles["chat-input-panel"]}>
         <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
 
-        {/* <ChatActions
-          uploadImage={uploadImage}
-          setAttachImages={setAttachImages}
-          setUploading={setUploading}
-          showPromptModal={() => setShowPromptModal(true)}
-          scrollToBottom={scrollToBottom}
-          hitBottom={hitBottom}
-          uploading={uploading}
-          showPromptHints={() => {
-            // Click again to close
-            if (promptHints.length > 0) {
-              setPromptHints([]);
-              return;
-            }
-
-            inputRef.current?.focus();
-            setUserInput("/");
-            onSearch("");
-          }}
-        /> */}
         {attachImages.length != 0 && (
           <div className={styles["attach-images"]}>
             {attachImages.map((image, index) => {
@@ -1637,7 +1636,6 @@ function _Chat() {
           {showUploadFile && (
             <ChatAction
               onClick={uploadImage}
-              // text={Locale.Chat.InputActions.UploadImage}
               text=""
               className={styles["chat-input-attach"]}
               icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
