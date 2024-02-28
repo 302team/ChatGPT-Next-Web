@@ -706,7 +706,7 @@ function useUploadFile() {
 
   async function uploadImage() {
     const images: AttachImages[] = [];
-    images.push(...attachImages);
+    // images.push(...attachImages);
 
     images.push(
       ...(await new Promise<AttachImages[]>((resolve, reject) => {
@@ -715,7 +715,7 @@ function useUploadFile() {
         fileInput.type = "file";
         fileInput.accept =
           "image/png, image/jpeg, image/webp, image/heic, image/heif";
-        fileInput.multiple = false;
+        fileInput.multiple = true;
         fileInput.addEventListener("change", (event: any) => {
           setUploading(true);
           const files = event.target.files;
@@ -755,12 +755,14 @@ function useUploadFile() {
       })),
     );
 
-    setAttachImages(images);
+    setAttachImages((prev) => [...prev, ...images]);
   }
 
   async function dropUpload(files: File[]) {
+    console.log("🚀 ~ dropUpload ~ attachImages:", attachImages);
+
     const images: AttachImages[] = [];
-    images.push(...attachImages);
+    // images.push(...attachImages);
 
     setUploading(true);
 
@@ -773,7 +775,7 @@ function useUploadFile() {
     Promise.all(tasks)
       .then(() => {
         setUploading(false);
-        setAttachImages(images);
+        setAttachImages((prev) => [...prev, ...images]);
         console.log("🚀 ~ Promise.all ~ dropUpload all tasks end:", images);
       })
       .catch(() => {
