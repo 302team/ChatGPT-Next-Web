@@ -20,7 +20,7 @@ const DEFAULT_OPENAI_URL =
 const DEFAULT_ACCESS_STATE = {
   userCode: "",
   pwd: "",
-  remember: false,
+  remember: true,
   isAuth: false,
 
   accessCode: "",

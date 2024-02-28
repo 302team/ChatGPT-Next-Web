@@ -23,7 +23,7 @@ import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
 import BreakIcon from "../icons/break.svg";
 import SettingsIcon from "../icons/chat-settings.svg";
-import DeleteIcon from "../icons/clear.svg";
+import DeleteIcon from "../icons/clear2.svg";
 import PinIcon from "../icons/pin.svg";
 import EditIcon from "../icons/rename.svg";
 import ConfirmIcon from "../icons/confirm.svg";
@@ -35,7 +35,9 @@ import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
 import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
-import StopIcon from "../icons/pause.svg";
+import PauseIcon from "../icons/pause.svg";
+import StopIcon from "../icons/stop2.svg";
+import SendIcon from "../icons/send.svg";
 import RobotIcon from "../icons/robot.svg";
 
 import {
@@ -480,7 +482,7 @@ export function ChatActions(props: {
         <ChatAction
           onClick={stopAll}
           text={Locale.Chat.InputActions.Stop}
-          icon={<StopIcon />}
+          icon={<PauseIcon />}
         />
       )}
       {!props.hitBottom && (
@@ -648,6 +650,153 @@ export function DeleteImageButton(props: { deleteImage: () => void }) {
   );
 }
 
+function useUploadFile() {
+  const chatStore = useChatStore();
+  const session = chatStore.currentSession();
+  const accessStore = useAccessStore();
+  const uploadUrl = `${accessStore.apiDomain}/gpt/api/upload/gpt/image`;
+
+  const [attachImages, setAttachImages] = useState<AttachImages[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  const [showUploadFile, setShowUploadFile] = useState(false);
+  const currentModel = session.mask.modelConfig.model;
+
+  useEffect(() => {
+    const show = isVisionModel(currentModel);
+    setShowUploadFile(show);
+    if (!show) {
+      setAttachImages([]);
+      setUploading(false);
+    }
+  }, [currentModel]);
+
+  async function handleUpload(file: File): Promise<AttachImages> {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      fetch(uploadUrl, {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then(async (res: any) => {
+          if (res.code === 0) {
+            const url = res.data.url;
+            const filename = url.substring(url.lastIndexOf("/") + 1);
+            const dataUrl = await compressImage(file, 256 * 1024);
+            resolve({
+              name: filename,
+              fileUrl: url,
+              dataUrl: dataUrl,
+            });
+          }
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    });
+  }
+
+  async function uploadImage() {
+    const images: AttachImages[] = [];
+    images.push(...attachImages);
+
+    images.push(
+      ...(await new Promise<AttachImages[]>((resolve, reject) => {
+        const fileInput = document.createElement("input");
+        fileInput.id = "upload_file_input";
+        fileInput.type = "file";
+        fileInput.accept =
+          "image/png, image/jpeg, image/webp, image/heic, image/heif";
+        fileInput.multiple = false;
+        fileInput.addEventListener("change", (event: any) => {
+          setUploading(true);
+          const files = event.target.files;
+          const imagesData: AttachImages[] = [];
+
+          const tasks = Array.from(files).map(async (file) => {
+            return handleUpload(file as File)
+              .then((result) => {
+                imagesData.push(result);
+              })
+              .catch((e) => {
+                reject(e);
+              });
+          });
+
+          Promise.all(tasks)
+            .then(() => {
+              setUploading(false);
+              console.log("🚀 ~ Promise.all ~ all tasks end:", imagesData);
+              resolve(imagesData);
+            })
+            .catch(() => {
+              setUploading(false);
+            })
+            .finally(() => {
+              document.body.removeChild(fileInput);
+            });
+        });
+
+        fileInput.style.display = "none";
+        document.body.appendChild(fileInput);
+
+        fileInput.click();
+      })),
+    );
+
+    setAttachImages(images);
+  }
+
+  async function dropUpload(files: File[]) {
+    const images: AttachImages[] = [];
+    images.push(...attachImages);
+
+    images.push(
+      ...(await new Promise<AttachImages[]>((resolve, reject) => {
+        const imagesData: AttachImages[] = [];
+        setUploading(true);
+
+        const tasks = Array.from(files).map(async (file) => {
+          return handleUpload(file)
+            .then((result) => {
+              imagesData.push(result);
+            })
+            .catch((e) => {
+              reject(e);
+            });
+        });
+
+        Promise.all(tasks)
+          .then(() => {
+            setUploading(false);
+            console.log("🚀 ~ Promise.all ~ all tasks end:", imagesData);
+            resolve(imagesData);
+          })
+          .catch(() => {
+            setUploading(false);
+          });
+      })),
+    );
+
+    setAttachImages(images);
+  }
+
+  return {
+    attachImages,
+    setAttachImages,
+    uploading,
+    setUploading,
+    showUploadFile,
+    setShowUploadFile,
+    handleUpload,
+    dropUpload,
+    uploadImage,
+  };
+}
+
 export interface AttachImages {
   name?: string;
   fileUrl?: string;
@@ -672,20 +821,16 @@ function _Chat() {
   const isMobileScreen = useMobileScreen();
   const navigate = useNavigate();
   const location = useLocation();
-  const [attachImages, setAttachImages] = useState<AttachImages[]>([]);
-  const [uploading, setUploading] = useState(false);
 
-  const [showUploadFile, setShowUploadFile] = useState(false);
-  const currentModel = session.mask.modelConfig.model;
-
-  useEffect(() => {
-    const show = isVisionModel(currentModel);
-    setShowUploadFile(false);
-    if (!show) {
-      setAttachImages([]);
-      setUploading(false);
-    }
-  }, [currentModel]);
+  // upload file
+  const {
+    attachImages,
+    uploading,
+    showUploadFile,
+    setAttachImages,
+    dropUpload,
+    uploadImage,
+  } = useUploadFile();
 
   // prompt hints
   const promptStore = usePromptStore();
@@ -794,6 +939,13 @@ function _Chat() {
   // stop response
   const onUserStop = (messageId: string) => {
     ChatControllerPool.stop(session.id, messageId);
+  };
+  // stop all responses
+  const [status, setStatus] = useState(0);
+  const couldStop = ChatControllerPool.hasPending();
+  const stopAll = () => {
+    ChatControllerPool.stopAll();
+    setStatus(Math.random() * 10);
   };
 
   useEffect(() => {
@@ -1110,6 +1262,29 @@ function _Chat() {
   // edit / insert message modal
   const [isEditingMessage, setIsEditingMessage] = useState(false);
 
+  // drag/drop
+  useEffect(() => {
+    const dp = document.getElementById("chatInputPanel");
+
+    //多图上传
+    dp?.addEventListener("drop", function (e: any) {
+      e.stopPropagation();
+      //阻止浏览器默认打开文件的操作
+      e.preventDefault();
+      const files = e.dataTransfer.files;
+      console.log("🚀 ~ dp?.addEventListener ~ files:", files);
+
+      const filterdFiles = Array.from(files).filter((f) => {
+        return /image\/(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif)/gi.test(
+          (f as File).type,
+        );
+      });
+      if (filterdFiles.length > 0) {
+        dropUpload(filterdFiles as File[]);
+      }
+    });
+  }, []);
+
   // remember unfinished input
   useEffect(() => {
     // try to load from local storage
@@ -1126,64 +1301,6 @@ function _Chat() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  async function uploadImage() {
-    const images: AttachImages[] = [];
-    images.push(...attachImages);
-
-    images.push(
-      ...(await new Promise<AttachImages[]>((resolve, reject) => {
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept =
-          "image/png, image/jpeg, image/webp, image/heic, image/heif";
-        fileInput.multiple = false;
-        fileInput.onchange = (event: any) => {
-          setUploading(true);
-          const files = event.target.files;
-          const imagesData: AttachImages[] = [];
-
-          for (let i = 0; i < files.length; i++) {
-            const file = event.target.files[i];
-
-            const formData = new FormData();
-            formData.append("file", file);
-            const uploadUrl = `${accessStore.apiDomain}/gpt/api/upload/gpt/image`;
-            fetch(uploadUrl, {
-              method: "POST",
-              body: formData,
-            })
-              .then((res) => res.json())
-              .then(async (res: any) => {
-                if (res.code === 0) {
-                  const url = res.data.url;
-                  const filename = url.substring(url.lastIndexOf("/") + 1);
-                  const dataUrl = await compressImage(file, 256 * 1024);
-                  imagesData.push({
-                    name: filename,
-                    fileUrl: url,
-                    dataUrl: dataUrl,
-                  });
-                }
-                setUploading(false);
-                resolve(imagesData);
-              })
-              .catch((e) => {
-                setUploading(false);
-                reject(e);
-              });
-          }
-        };
-        fileInput.click();
-      })),
-    );
-
-    // const imagesLength = images.length;
-    // if (imagesLength > 3) {
-    //   images.splice(3, imagesLength - 3);
-    // }
-    setAttachImages(images);
-  }
 
   return (
     <div className={styles.chat} key={session.id}>
@@ -1211,9 +1328,11 @@ function _Chat() {
           >
             {!session.topic ? DEFAULT_TOPIC : session.topic}
           </div>
-          <div className="window-header-sub-title">
-            {Locale.Chat.SubTitle(session.messages.length)}
-          </div>
+          {!isMobileScreen && (
+            <div className="window-header-sub-title">
+              {Locale.Chat.SubTitle(session.messages.length)}
+            </div>
+          )}
         </div>
         <div className="window-actions">
           {!isMobileScreen && (
@@ -1346,7 +1465,7 @@ function _Chat() {
                           {message.streaming ? (
                             <ChatAction
                               text={Locale.Chat.Actions.Stop}
-                              icon={<StopIcon />}
+                              icon={<PauseIcon />}
                               onClick={() => onUserStop(message.id ?? i)}
                             />
                           ) : (
@@ -1450,7 +1569,7 @@ function _Chat() {
         })}
       </div>
 
-      <div className={styles["chat-input-panel"]}>
+      <div id="chatInputPanel" className={styles["chat-input-panel"]}>
         <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
 
         {/* <ChatActions
@@ -1528,12 +1647,21 @@ function _Chat() {
               fontSize: config.fontSize,
             }}
           />
-          <IconButton
-            icon={<SendWhiteIcon />}
-            className={styles["chat-input-send"]}
-            type="primary"
-            onClick={() => doSubmit(userInput)}
-          />
+          {couldStop ? (
+            <ChatAction
+              icon={<StopIcon />}
+              text=""
+              className={styles["chat-input-pause"]}
+              onClick={stopAll}
+            />
+          ) : (
+            <ChatAction
+              icon={<SendIcon />}
+              text=""
+              className={styles["chat-input-send"]}
+              onClick={() => doSubmit(userInput)}
+            />
+          )}
         </div>
       </div>
 
