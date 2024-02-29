@@ -94,7 +94,7 @@ export const getServerSideConfig = () => {
     googleApiKey: process.env.GOOGLE_API_KEY,
     googleUrl: process.env.GOOGLE_URL,
 
-    gtmId: process.env.GTM_ID,
+    gtmId: "G-M82BZZLSBQ", // process.env.GTM_ID,
 
     needCode: ACCESS_CODES.size > 0,
     code: process.env.CODE,
