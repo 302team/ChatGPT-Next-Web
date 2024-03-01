@@ -782,10 +782,18 @@ function useUploadFile() {
   }
 
   async function dropUpload(files: File[]) {
-    if (!isGpt4All || !isVisionModel(currentModel)) {
-      console.log("🚀 ~ dropUpload ~ : 当前模型不支持上传文件");
+    if (!isGpt4AllModel(currentModel) && !isVisionModel(currentModel)) {
+      console.log(
+        "🚀 ~ dropUpload ~ : 当前模型不支持上传文件",
+        !isGpt4AllModel(currentModel),
+        !isVisionModel(currentModel),
+      );
       return false;
     }
+
+    const filterdFiles = Array.from(files).filter((f) => {
+      return isGpt4All ? true : isImage((f as File).type);
+    });
 
     const images: AttachImages[] = [];
     // images.push(...attachImages);
@@ -793,7 +801,7 @@ function useUploadFile() {
     if (uploading) return;
     setUploading(true);
 
-    const tasks = Array.from(files).map(async (file) => {
+    const tasks = Array.from(filterdFiles).map(async (file) => {
       return await handleUpload(file).then((result) => {
         images.push(result);
       });
@@ -813,11 +821,7 @@ function useUploadFile() {
   }
 
   async function pasteUpload(file: File) {
-    if (!isGpt4All || !isVisionModel(currentModel)) {
-      console.log("🚀 ~ pasteUpload ~ : 当前模型不支持上传图片");
-    } else {
-      dropUpload([file]);
-    }
+    dropUpload([file]);
   }
 
   return {
@@ -1331,16 +1335,10 @@ function _Chat() {
       e.preventDefault();
       const files = e.dataTransfer.files;
 
-      const filterdFiles = Array.from(files).filter((f) => {
-        return isGpt4All ? true : isImage((f as File).type);
-      });
-      console.log("🚀 ~ filterdFiles ~ filterdFiles:", filterdFiles);
-      if (filterdFiles.length > 0) {
-        dropUpload(filterdFiles as File[]);
-      }
+      dropUpload(files);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGpt4All]);
+  }, []);
 
   // paste event
   useEffect(() => {
