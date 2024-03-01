@@ -5,9 +5,11 @@ import {
   DEFAULT_INPUT_TEMPLATE,
   DEFAULT_MODELS,
   DEFAULT_SIDEBAR_WIDTH,
+  LOGO_BASE64_ICON,
   StoreKey,
 } from "../constant";
 import { createPersistStore } from "../utils/store";
+import Locale, { getLang } from "../locales";
 
 export type ModelType = (typeof DEFAULT_MODELS)[number]["name"];
 
@@ -26,8 +28,6 @@ export enum Theme {
 }
 
 export const DEFAULT_CONFIG = {
-  appDesc: "---",
-
   lastUpdate: Date.now(), // timestamp, to merge state
 
   submitKey: SubmitKey.Enter,
@@ -62,7 +62,16 @@ export const DEFAULT_CONFIG = {
   },
 };
 
+export const DEFAULT_SETTING = {
+  chatbotInfo: "---",
+
+  chatbotName: "",
+  chatbotDesc: "",
+  chatbotLogo: LOGO_BASE64_ICON,
+};
+
 export type ChatConfig = typeof DEFAULT_CONFIG;
+export type ChatbotSetting = typeof DEFAULT_SETTING;
 
 export type ModelConfig = ChatConfig["modelConfig"];
 
@@ -101,7 +110,7 @@ export const ModalConfigValidator = {
 };
 
 export const useAppConfig = createPersistStore(
-  { ...DEFAULT_CONFIG },
+  { ...DEFAULT_CONFIG, ...DEFAULT_SETTING },
   (set, get) => ({
     reset() {
       set(() => ({ ...DEFAULT_CONFIG }));

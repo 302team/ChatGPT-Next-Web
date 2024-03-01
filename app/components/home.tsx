@@ -7,12 +7,11 @@ import { useState, useEffect } from "react";
 import styles from "./home.module.scss";
 import BotIcon from "../icons/bot.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import { getCSSVar, useMobileScreen, openWindow } from "../utils";
+import { getCSSVar, useMobileScreen } from "../utils";
 
 import dynamic from "next/dynamic";
-import NextImage from "next/image";
 
-import { ModelProvider, Path, SlotID, GPT302_WEBSITE_URL } from "../constant";
+import { ModelProvider, Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
@@ -22,16 +21,13 @@ import {
   Routes,
   Route,
   useLocation,
-  redirect,
-  Navigate,
 } from "react-router-dom";
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
 import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
-import { ModelType, useAccessStore, useChatStore } from "../store";
-import { showToast } from "./ui-lib";
+import { ChatbotSetting, useAccessStore } from "../store";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -152,9 +148,20 @@ function ChatWindow() {
   if (validPwdVisible)
     return (
       <ValidPwdPage
-        onAuth={(opt: { info?: string }) => {
+        onAuth={(opt: any) => {
           accessStore.update((access) => (access.isAuth = true));
-          config.update((conf) => (conf.appDesc = opt.info ?? ""));
+          config.update((conf) => {
+            conf.chatbotInfo = opt.info ?? "";
+            const settings = opt.settings;
+            if (settings) {
+              for (let key in settings) {
+                conf[key as keyof ChatbotSetting] = settings[key];
+              }
+              if (settings.chatbotName) {
+                document.title = settings.chatbotName;
+              }
+            }
+          });
           setValidPwdVisible(false);
         }}
       />

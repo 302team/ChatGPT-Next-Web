@@ -142,7 +142,7 @@ function AppDescription(props: { onClose: () => void }) {
         subtitle={Locale.Config.AppDescSubTitle}
         onClose={() => props.onClose()}
       >
-        <div dangerouslySetInnerHTML={{ __html: config.appDesc }}></div>
+        <div dangerouslySetInnerHTML={{ __html: config.chatbotInfo }}></div>
       </Modal>
     </div>
   );
@@ -177,20 +177,25 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          GPT302
+          {config.chatbotName || "GPT302"}
         </div>
         <div className={styles["sidebar-sub-title"]}>
-          {Locale.Config.description}
+          {config.chatbotDesc || Locale.Config.description}
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
-          {/* <ChatGptIcon /> */}
-          <NextImage
-            src={ChatGptIcon.src}
-            alt="logo"
-            width={50}
-            height={50}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={config.chatbotLogo}
+            alt="LOGO"
             onClick={() => openWindow(GPT302_WEBSITE_URL)}
           />
+          {/* <NextImage
+            src={ ChatGptIcon.src}
+            alt="logo"
+            height={50}
+            width={50}
+            onClick={() => openWindow(GPT302_WEBSITE_URL)}
+          /> */}
         </div>
       </div>
 
