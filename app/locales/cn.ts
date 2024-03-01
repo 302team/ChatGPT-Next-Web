@@ -18,7 +18,7 @@ const cn = {
     ValidError: "分享码错误",
     Confirm: "确认",
     Later: "稍后再说",
-    CAPTCHA_ERROR: "验证码错误",
+    CAPTCHA_ERROR: "分享码错误",
     CHATBOT_DISABLED_ERROR: `聊天机器人已禁用，更多信息请访问 <a href="https://dash.gpt302.com">GPT302</a>`,
     CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问 <a href="https://dash.gpt302.com">GPT302</a>`,
     SERVER_ERROR: "内部错误, 请联系客服",
