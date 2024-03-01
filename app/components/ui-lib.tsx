@@ -96,6 +96,7 @@ export function Loading() {
 
 interface ModalProps {
   title: string;
+  subtitle?: string;
   children?: any;
   actions?: React.ReactNode[];
   defaultMax?: boolean;
@@ -127,7 +128,12 @@ export function Modal(props: ModalProps) {
       }
     >
       <div className={styles["modal-header"]}>
-        <div className={styles["modal-title"]}>{props.title}</div>
+        <div className={styles["modal-title-wrap"]}>
+          <div className={styles["modal-title"]}>{props.title}</div>
+          {props.subtitle && (
+            <div className={styles["modal-subtitle"]}>{props.subtitle}</div>
+          )}
+        </div>
 
         <div className={styles["modal-header-actions"]}>
           <div

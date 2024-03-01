@@ -26,6 +26,8 @@ export enum Theme {
 }
 
 export const DEFAULT_CONFIG = {
+  appDesc: "---",
+
   lastUpdate: Date.now(), // timestamp, to merge state
 
   submitKey: SubmitKey.Enter,

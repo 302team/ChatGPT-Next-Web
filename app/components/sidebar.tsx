@@ -1,9 +1,10 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 
 import styles from "./home.module.scss";
 
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
+import QuestionIcon from "../icons/question.svg";
 import GithubIcon from "../icons/github.svg";
 import ChatGptIcon from "../icons/logo.png";
 import AddIcon from "../icons/add.svg";
@@ -32,7 +33,7 @@ import {
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { isIOS, openWindow, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
-import { showConfirm, showToast } from "./ui-lib";
+import { Modal, showConfirm, showToast } from "./ui-lib";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -131,8 +132,25 @@ function useDragSideBar() {
   };
 }
 
+function AppDescription(props: { onClose: () => void }) {
+  const config = useAppConfig();
+
+  return (
+    <div className="modal-mask app-desc-modal">
+      <Modal
+        title={Locale.Config.AppDescTitle}
+        subtitle={Locale.Config.AppDescSubTitle}
+        onClose={() => props.onClose()}
+      >
+        <div dangerouslySetInnerHTML={{ __html: config.appDesc }}></div>
+      </Modal>
+    </div>
+  );
+}
+
 export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
+  const [showModal, setShowModal] = useState(false);
 
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
@@ -235,6 +253,14 @@ export function SideBar(props: { className?: string }) {
               />
             </Link>
           </div>
+          <div className={styles["sidebar-action"]}>
+            <IconButton
+              className={styles["sidebar-tail-button"]}
+              icon={<QuestionIcon />}
+              onClick={() => setShowModal(true)}
+              shadow
+            />
+          </div>
         </div>
         <div>
           <IconButton
@@ -270,6 +296,8 @@ export function SideBar(props: { className?: string }) {
       >
         <DragIcon />
       </div>
+
+      {showModal && <AppDescription onClose={() => setShowModal(false)} />}
     </div>
   );
 }

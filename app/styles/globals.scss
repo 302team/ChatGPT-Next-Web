@@ -257,6 +257,12 @@ div.math {
   @media screen and (max-width: 600px) {
     align-items: flex-end;
   }
+  
+  &.app-desc-modal {
+    @media screen and (max-width: 600px) {
+      align-items: center;
+    }
+  }
 }
 
 .link {
@@ -312,6 +318,10 @@ pre {
   &:focus {
     filter: brightness(0.95);
   }
+}
+
+.unclickable {
+  cursor: not-allowed;
 }
 
 .error {
@@ -378,5 +388,21 @@ pre {
 
   img {
     cursor: pointer;
+  }
+}
+
+.app-desc-content {
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: #525252;
+  line-height: 1.6;
+
+  li {
+    margin: 5px 0;
+
+    p {
+      margin: 0;
+    }
   }
 }

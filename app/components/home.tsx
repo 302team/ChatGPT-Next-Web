@@ -135,6 +135,7 @@ const loadAsyncGoogleFont = () => {
 function ChatWindow() {
   const location = useLocation();
   const accessStore = useAccessStore();
+  const config = useAppConfig();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
   const [validPwdVisible, setValidPwdVisible] = useState(true);
@@ -151,8 +152,9 @@ function ChatWindow() {
   if (validPwdVisible)
     return (
       <ValidPwdPage
-        onAuth={() => {
+        onAuth={(opt: { info?: string }) => {
           accessStore.update((access) => (access.isAuth = true));
+          config.update((conf) => (conf.appDesc = opt.info ?? ""));
           setValidPwdVisible(false);
         }}
       />

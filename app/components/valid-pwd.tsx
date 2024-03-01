@@ -20,7 +20,7 @@ import { openWindow } from "../utils";
 import { GPT302_WEBSITE_URL } from "../constant";
 
 interface ValidPwdProps {
-  onAuth?: () => void;
+  onAuth?: (opt: { info?: string }) => void;
 }
 export function ValidPwd(props: ValidPwdProps) {
   const accessStore = useAccessStore();
@@ -34,6 +34,7 @@ export function ValidPwd(props: ValidPwdProps) {
   const [loading, setLoading] = useState(true);
   const [submiting, setSubmiting] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const userCode = window.location.hostname.split(".")[0];
   console.log("🚀 ~ [valid pwd] ~ user code:", userCode);
@@ -66,11 +67,12 @@ export function ValidPwd(props: ValidPwdProps) {
           const res = await handleSubmit(userCode);
 
           if (res.code === 0) {
-            props.onAuth?.();
+            props.onAuth?.(res.data);
             searchParams.delete("pwd");
             searchParams.delete("confirm");
             setSearchParams(searchParams, { replace: true });
           } else {
+            setErrorMsg(res.msg);
             // 访问码已经失效了, 修改校验状态为 false
             accessStore.update((access) => (access.isAuth = false));
             // 然后把新的访问码填入输入框中
@@ -128,7 +130,9 @@ export function ValidPwd(props: ValidPwdProps) {
       />
 
       {showError && (
-        <div className={styles["auth-error"]}>{Locale.Auth.ValidError}</div>
+        <div className={styles["auth-error"]}>
+          {errorMsg || Locale.Auth.ValidError}
+        </div>
       )}
 
       <div className={styles["auth-actions"]}>
@@ -143,7 +147,7 @@ export function ValidPwd(props: ValidPwdProps) {
             try {
               const res = await handleSubmit(userCode);
               if (res.code === 0) {
-                props.onAuth?.();
+                props.onAuth?.(res.data);
                 searchParams.delete("pwd");
                 searchParams.delete("confirm");
                 setSearchParams(searchParams, { replace: true });

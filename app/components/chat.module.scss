@@ -628,18 +628,27 @@
 //   border: 1px solid var(--black);
 // }
 
-// .chat-input:focus ~ .chat-input-send {
-//   background-color: var(--black) !important;
-//   color: white !important;
-// }
-
 .chat-input ~ .chat-input-send {
-  // background-color: var(--primary);
-  // color: white;
-
   position: absolute;
   right: 30px;
   bottom: 27px;
+  color: #e5e5e5;
+}
+
+/*亮色*/
+@media (prefers-color-scheme: light) {
+  .chat-input ~ .chat-input-send {
+    color: #e5e5e5;
+  }
+
+  .chat-input:not(:placeholder-shown) ~ .chat-input-send {
+    color: var(--black) !important;
+  }
+}
+
+/*暗色*/
+@media (prefers-color-scheme: dark) {
+
 }
 
 @media only screen and (max-width: 600px) {
