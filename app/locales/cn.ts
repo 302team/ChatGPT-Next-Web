@@ -10,7 +10,7 @@ const cn = {
       "请访问创[GPT302](https://dash.gpt302.com)建属于你自己的机器人",
   },
   Auth: {
-    Title: "需要访问码",
+    Title: "需要分享码",
     Tips: "创建者开启了验证, 请在下方填入分享码",
     SubTips: "或者输入你的 OpenAI 或 Google API 密钥",
     Input: "在此处填写分享码",
@@ -20,7 +20,7 @@ const cn = {
     Later: "稍后再说",
     CAPTCHA_ERROR: "验证码错误",
     CHATBOT_DISABLED_ERROR: `聊天机器人已禁用，更多信息请访问 <a href="https://dash.gpt302.com">GPT302</a>`,
-    CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问<a href="https://dash.gpt302.com">GPT302</a>`,
+    CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问 <a href="https://dash.gpt302.com">GPT302</a>`,
     SERVER_ERROR: "内部错误, 请联系客服",
     BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
