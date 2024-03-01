@@ -664,6 +664,7 @@ export function DeleteImageButton(props: { deleteImage: () => void }) {
   return (
     <div className={styles["delete-image"]} onClick={props.deleteImage}>
       <Image src={CleanIcon} alt="delete" width={16} height={16} />
+      <Image src={CleanIcon} alt="delete" width={16} height={16} />
     </div>
   );
 }
