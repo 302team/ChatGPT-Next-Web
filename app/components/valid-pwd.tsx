@@ -17,7 +17,8 @@ import { useEffect, useState } from "react";
 import NextImage from "next/image";
 import { Loading, showToast } from "./ui-lib";
 import { openWindow } from "../utils";
-import { GPT302_WEBSITE_URL } from "../constant";
+import { GPT302_WEBSITE_URL, ERROR_CODE, ERROR_CODE_TYPE } from "../constant";
+import { AuthType } from "../locales/cn";
 
 interface ValidPwdProps {
   onAuth?: (opt: { info?: string }) => void;
@@ -65,6 +66,7 @@ export function ValidPwd(props: ValidPwdProps) {
         // 如果以前登录过, 不关联新的访问码, 直接使用缓存中的访问码校验
         if (!pwd || autoConfirm || accessStore.isAuth) {
           const res = await handleSubmit(userCode);
+          console.log("🚀 ~ res:", res);
 
           if (res.code === 0) {
             props.onAuth?.(res.data);
@@ -72,7 +74,11 @@ export function ValidPwd(props: ValidPwdProps) {
             searchParams.delete("confirm");
             setSearchParams(searchParams, { replace: true });
           } else {
-            setErrorMsg(res.msg);
+            const CODE = ERROR_CODE[res.code as ERROR_CODE_TYPE] as AuthType;
+            const errMsg = Locale.Auth[CODE];
+            console.log("🚀 ~ CODE:", CODE, errMsg);
+
+            setErrorMsg(errMsg || res.msg);
             // 访问码已经失效了, 修改校验状态为 false
             accessStore.update((access) => (access.isAuth = false));
             // 然后把新的访问码填入输入框中
@@ -130,9 +136,10 @@ export function ValidPwd(props: ValidPwdProps) {
       />
 
       {showError && (
-        <div className={styles["auth-error"]}>
-          {errorMsg || Locale.Auth.ValidError}
-        </div>
+        <div
+          className={styles["auth-error"]}
+          dangerouslySetInnerHTML={{ __html: errorMsg }}
+        ></div>
       )}
 
       <div className={styles["auth-actions"]}>
@@ -152,6 +159,12 @@ export function ValidPwd(props: ValidPwdProps) {
                 searchParams.delete("confirm");
                 setSearchParams(searchParams, { replace: true });
               } else {
+                const CODE = ERROR_CODE[
+                  res.code as ERROR_CODE_TYPE
+                ] as AuthType;
+                const errMsg = Locale.Auth[CODE];
+
+                setErrorMsg(errMsg || res.msg);
                 setShowError(true);
               }
             } catch (error) {

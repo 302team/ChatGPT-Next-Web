@@ -20,6 +20,18 @@ const en: LocaleType = {
     ValidError: "Access code incorrect",
     Confirm: "Confirm",
     Later: "Later",
+    CAPTCHA_ERROR: "Access code incorrect",
+    CHATBOT_DISABLED_ERROR:
+      "Chatbot is disabled, Please refer to [GPT302](https://dash.gpt302.com) for details",
+    CHATBOT_DELETE_ERROR:
+      "Chatbot is deleted, Please refer to [GPT302](https://dash.gpt302.com) for details",
+    SERVER_ERROR: "Internal error, please contact customer service",
+    BALANCE_LIMIT_ERROR: "The account balance is insufficient, please top up",
+    TOKEN_EXPIRED_ERROR: "Token expired, please log in again",
+    TOTAL_QUOTA_ERROR:
+      "Chatbot's total quota reached maximum limit. Please visit [GPT302](https://dash.gpt302.com) to create your own robot",
+    DAILY_QUOTA_ERROR:
+      "Chatbot's daily quota reached maximum limit. Please visit [GPT302](https://dash.gpt302.com) to create your own robot",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,

@@ -6,6 +6,8 @@ import {
   OpenaiPath,
   REQUEST_TIMEOUT_MS,
   ServiceProvider,
+  ERROR_CODE,
+  ERROR_CODE_TYPE,
 } from "@/app/constant";
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 
@@ -30,6 +32,7 @@ import {
   getMessageImages,
   isVisionModel,
 } from "@/app/utils";
+import { AuthType } from "@/app/locales/cn";
 
 export interface OpenAIListModelResponse {
   object: string;
@@ -201,12 +204,28 @@ export class ChatGPTApi implements LLMApi {
             ) {
               const responseTexts = [responseText];
               let extraInfo = await res.clone().text();
+              let errorMsg = "";
+
               try {
                 const resJson = await res.clone().json();
+                if (resJson.error && resJson.error?.type === "api_error") {
+                  const CODE =
+                    ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
+                  errorMsg =
+                    Locale.Auth[CODE as AuthType] || resJson.error.message;
+                  console.log(
+                    "🚀 ~ ChatGPTApi ~ onopen ~ CODE:",
+                    CODE,
+                    errorMsg,
+                  );
+                }
+
                 extraInfo = prettyObject(resJson);
               } catch {}
 
-              if (res.status === 401) {
+              if (errorMsg) {
+                responseTexts.push(errorMsg);
+              } else if (res.status === 401) {
                 responseTexts.push(Locale.Error.Unauthorized);
               }
 

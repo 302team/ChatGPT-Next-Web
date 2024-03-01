@@ -7,7 +7,7 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized:
-      "请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人",
+      "请访问创[GPT302](https://dash.gpt302.com)建属于你自己的机器人",
   },
   Auth: {
     Title: "需要访问码",
@@ -18,6 +18,16 @@ const cn = {
     ValidError: "分享码错误",
     Confirm: "确认",
     Later: "稍后再说",
+    CAPTCHA_ERROR: "验证码错误",
+    CHATBOT_DISABLED_ERROR: `聊天机器人已禁用，更多信息请访问 <a href="https://dash.gpt302.com">GPT302</a>`,
+    CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问<a href="https://dash.gpt302.com">GPT302</a>`,
+    SERVER_ERROR: "内部错误, 请联系客服",
+    BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
+    TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
+    TOTAL_QUOTA_ERROR:
+      "聊天机器人的总额度已达上限，请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人",
+    DAILY_QUOTA_ERROR:
+      "聊天机器人的单日额度已达上限，请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -487,3 +497,5 @@ export type LocaleType = typeof cn;
 export type PartialLocaleType = DeepPartial<typeof cn>;
 
 export default cn;
+
+export type AuthType = keyof typeof cn.Auth;
