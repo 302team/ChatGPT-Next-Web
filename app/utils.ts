@@ -364,6 +364,7 @@ export const openWindow = (
 };
 
 export function isGpt4AllModel(model: string) {
+  return false;
   return (
     // model.startsWith("gpt-4-vision") ||
     // model.startsWith("gemini-pro-vision") ||

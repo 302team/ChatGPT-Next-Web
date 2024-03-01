@@ -785,8 +785,8 @@ function useUploadFile() {
     if (!isGpt4AllModel(currentModel) && !isVisionModel(currentModel)) {
       console.log(
         "🚀 ~ dropUpload ~ : 当前模型不支持上传文件",
-        !isGpt4AllModel(currentModel),
-        !isVisionModel(currentModel),
+        `is gpt-4-all model: ${isGpt4AllModel(currentModel)}`,
+        `is vision model: ${isVisionModel(currentModel)}`,
       );
       return false;
     }
