@@ -808,7 +808,11 @@ function useUploadFile() {
   }
 
   async function pasteUpload(file: File) {
-    dropUpload([file]);
+    if (!isGpt4All || !isVisionModel(currentModel)) {
+      console.log("🚀 ~ pasteUpload ~ : 当前模型不支持上传图片");
+    } else {
+      dropUpload([file]);
+    }
   }
 
   return {
