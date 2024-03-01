@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useDebouncedCallback } from "use-debounce";
 import React, {
   useState,
@@ -8,6 +9,8 @@ import React, {
   Fragment,
   RefObject,
 } from "react";
+
+import mime from "mime";
 
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
@@ -40,6 +43,7 @@ import BottomIcon from "../icons/bottom.svg";
 import PauseIcon from "../icons/pause.svg";
 import StopIcon from "../icons/stop2.svg";
 import SendIcon from "../icons/send.svg";
+import FileIcon from "../icons/file.svg";
 import RobotIcon from "../icons/robot.svg";
 
 import {
@@ -63,7 +67,10 @@ import {
   getMessageTextContent,
   getMessageImages,
   isVisionModel,
+  isGpt4AllModel,
   compressImage,
+  isImage,
+  getMessageFiles,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -87,6 +94,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   CHAT_PAGE_SIZE,
+  FILE_BASE64_ICON,
   LAST_INPUT_KEY,
   Path,
   REQUEST_TIMEOUT_MS,
@@ -344,6 +352,7 @@ function ChatAction(props: {
   text: string;
   icon: JSX.Element;
   className?: string;
+  disabled?: boolean;
   onClick: () => void;
 }) {
   const iconRef = useRef<HTMLDivElement>(null);
@@ -354,6 +363,8 @@ function ChatAction(props: {
   });
 
   function updateWidth() {
+    if (props.disabled) return;
+
     if (!iconRef.current || !textRef.current) return;
     const getWidth = (dom: HTMLDivElement) => dom.getBoundingClientRect().width;
     const textWidth = getWidth(textRef.current);
@@ -366,7 +377,9 @@ function ChatAction(props: {
 
   return (
     <div
-      className={`${styles["chat-input-action"]} clickable ${props.className}`}
+      className={`${styles["chat-input-action"]} ${
+        props.disabled ? "unclickable" : "clickable"
+      } ${props.className}`}
       onClick={() => {
         props.onClick();
         setTimeout(updateWidth, 1);
@@ -664,12 +677,14 @@ function useUploadFile() {
   const [attachImages, setAttachImages] = useState<AttachImages[]>([]);
   const [uploading, setUploading] = useState(false);
 
-  const [showUploadFile, setShowUploadFile] = useState(false);
+  const [showUploadImage, setShowUploadImage] = useState(false);
   const currentModel = session.mask.modelConfig.model;
+  const isGpt4All = useMemo(() => isGpt4AllModel(currentModel), [currentModel]);
 
   useEffect(() => {
-    const show = isVisionModel(currentModel);
-    setShowUploadFile(show);
+    const gpt4All = isGpt4AllModel(currentModel);
+    const show = isVisionModel(currentModel) || gpt4All;
+    setShowUploadImage(show);
     if (!show) {
       setAttachImages([]);
       setUploading(false);
@@ -689,10 +704,16 @@ function useUploadFile() {
         .then(async (res: any) => {
           if (res.code === 0) {
             const url = res.data.url;
-            const filename = url.substring(url.lastIndexOf("/") + 1);
-            const dataUrl = await compressImage(file, 256 * 1024);
+            // const filename = url.substring(url.lastIndexOf("/") + 1);
+            let dataUrl = "";
+            if (isImage(file.type)) {
+              dataUrl = await compressImage(file, 256 * 1024);
+            } else {
+              dataUrl = FILE_BASE64_ICON;
+            }
             resolve({
-              name: filename,
+              type: file.type,
+              name: file.name,
               fileUrl: url,
               dataUrl: dataUrl,
             });
@@ -713,8 +734,10 @@ function useUploadFile() {
         const fileInput = document.createElement("input");
         fileInput.id = "upload_file_input";
         fileInput.type = "file";
-        fileInput.accept =
-          "image/png, image/jpeg, image/webp, image/heic, image/heif";
+        if (!isGpt4All) {
+          fileInput.accept =
+            "image/png, image/jpeg, image/webp, image/heic, image/heif";
+        }
         fileInput.multiple = true;
         fileInput.addEventListener("change", (event: any) => {
           setUploading(true);
@@ -759,11 +782,10 @@ function useUploadFile() {
   }
 
   async function dropUpload(files: File[]) {
-    console.log("🚀 ~ dropUpload ~ attachImages:", attachImages);
-
     const images: AttachImages[] = [];
     // images.push(...attachImages);
 
+    if (uploading) return;
     setUploading(true);
 
     const tasks = Array.from(files).map(async (file) => {
@@ -774,8 +796,10 @@ function useUploadFile() {
 
     Promise.all(tasks)
       .then(() => {
-        setUploading(false);
         setAttachImages((prev) => [...prev, ...images]);
+        setTimeout(() => {
+          setUploading(false);
+        }, 300);
         console.log("🚀 ~ Promise.all ~ dropUpload all tasks end:", images);
       })
       .catch(() => {
@@ -783,20 +807,27 @@ function useUploadFile() {
       });
   }
 
+  async function pasteUpload(file: File) {
+    dropUpload([file]);
+  }
+
   return {
     attachImages,
     setAttachImages,
     uploading,
     setUploading,
-    showUploadFile,
-    setShowUploadFile,
+    showUploadImage,
+    setShowUploadImage,
+    isGpt4All,
     handleUpload,
     dropUpload,
+    pasteUpload,
     uploadImage,
   };
 }
 
 export interface AttachImages {
+  type?: string;
   name?: string;
   fileUrl?: string;
   dataUrl?: string;
@@ -835,9 +866,11 @@ function _Chat() {
   const {
     attachImages,
     uploading,
-    showUploadFile,
+    showUploadImage,
+    isGpt4All, // gpt-4-all 的模型支持多模态文件
     setAttachImages,
     dropUpload,
+    pasteUpload,
     uploadImage,
   } = useUploadFile();
 
@@ -1075,12 +1108,20 @@ function _Chat() {
 
     // resend the message
     setIsLoading(true);
-    const textContent = getMessageTextContent(userMessage);
+    const textContent = getMessageTextContent(userMessage, 2);
     const images = getMessageImages(userMessage);
+    const files = getMessageFiles(userMessage);
     chatStore
       .onUserInput(
         textContent,
-        images.map((i) => ({ dataUrl: i })),
+        isGpt4All
+          ? files.map((i) => ({
+              dataUrl: i!.url,
+              fileUrl: i?.url,
+              name: i?.name,
+              type: i?.type,
+            }))
+          : images.map((i) => ({ dataUrl: i })),
       )
       .then(() => setIsLoading(false));
     inputRef.current?.focus();
@@ -1282,15 +1323,15 @@ function _Chat() {
       const files = e.dataTransfer.files;
 
       const filterdFiles = Array.from(files).filter((f) => {
-        return /image\/(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif)/gi.test(
-          (f as File).type,
-        );
+        return isGpt4All ? true : isImage((f as File).type);
       });
+      console.log("🚀 ~ filterdFiles ~ filterdFiles:", filterdFiles);
       if (filterdFiles.length > 0) {
         dropUpload(filterdFiles as File[]);
       }
     });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isGpt4All]);
 
   // paste event
   useEffect(() => {
@@ -1314,8 +1355,9 @@ function _Chat() {
         return;
       }
 
-      dropUpload([file]);
+      pasteUpload(file);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // remember unfinished input
@@ -1452,6 +1494,7 @@ function _Chat() {
                             let newContent: string | MultimodalContent[] =
                               newMessage;
                             const images = getMessageImages(message);
+                            const files = getMessageFiles(message);
                             if (images.length > 0) {
                               newContent = [{ type: "text", text: newMessage }];
                               for (let i = 0; i < images.length; i++) {
@@ -1459,6 +1502,19 @@ function _Chat() {
                                   type: "image_url",
                                   image_url: {
                                     url: images[i],
+                                  },
+                                });
+                              }
+                            }
+                            if (files.length > 0) {
+                              newContent = [{ type: "text", text: newMessage }];
+                              for (let i = 0; i < files.length; i++) {
+                                newContent.push({
+                                  type: "file",
+                                  file: {
+                                    name: files[i]!.name,
+                                    type: files[i]!.type,
+                                    url: files[i]!.url,
                                   },
                                 });
                               }
@@ -1542,7 +1598,7 @@ function _Chat() {
                   )}
                   <div className={styles["chat-message-item"]}>
                     <Markdown
-                      content={getMessageTextContent(message)}
+                      content={getMessageTextContent(message, 0)}
                       loading={
                         (message.preview || message.streaming) &&
                         message.content.length === 0 &&
@@ -1607,21 +1663,45 @@ function _Chat() {
 
         {attachImages.length != 0 && (
           <div className={styles["attach-images"]}>
-            {attachImages.map((image, index) => {
+            {attachImages.map((item, index) => {
+              let ext = mime.getExtension(item.type!);
+              if (!ext) {
+                ext = item.name!.substring(item.name!.lastIndexOf(".") + 1);
+              }
+
               return (
-                <div
-                  key={index}
-                  className={styles["attach-image"]}
-                  style={{ backgroundImage: `url("${image.dataUrl}")` }}
-                >
-                  <div className={styles["attach-image-mask"]}>
-                    <DeleteImageButton
-                      deleteImage={() => {
-                        setAttachImages(
-                          attachImages.filter((_, i) => i !== index),
-                        );
-                      }}
-                    />
+                <div key={index}>
+                  <div className={styles["attach-image-item"]}>
+                    <div className={styles["attach-image-wrap"]}>
+                      {isImage(item.type!) ? (
+                        <div
+                          className={styles["attach-image"]}
+                          style={{
+                            backgroundImage: `url("${item.dataUrl}")`,
+                            backgroundRepeat: "no-repeat",
+                          }}
+                        ></div>
+                      ) : (
+                        <FileIcon style={{ margin: "8px" }} />
+                      )}
+                    </div>
+                    {!isImage(item.type!) && (
+                      <div className={styles["attach-info"]}>
+                        <h5 className={styles["attach-title"]}>{item.name}</h5>
+                        <p className={styles["attach-ext"]}>
+                          {ext.toLocaleUpperCase()}
+                        </p>
+                      </div>
+                    )}
+                    <div className={styles["attach-image-mask"]}>
+                      <DeleteImageButton
+                        deleteImage={() => {
+                          setAttachImages(
+                            attachImages.filter((_, i) => i !== index),
+                          );
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               );
@@ -1635,10 +1715,11 @@ function _Chat() {
               : ""
           }`}
         >
-          {showUploadFile && (
+          {showUploadImage && (
             <ChatAction
               onClick={uploadImage}
               text=""
+              disabled={uploading}
               className={styles["chat-input-attach"]}
               icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
             />
@@ -1670,6 +1751,7 @@ function _Chat() {
             <ChatAction
               icon={<SendIcon />}
               text=""
+              disabled={!!!userInput}
               className={styles["chat-input-send"]}
               onClick={() => doSubmit(userInput)}
             />

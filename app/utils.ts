@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { showToast } from "./components/ui-lib";
 import Locale from "./locales";
-import { RequestMessage } from "./client/api";
+import { MultimodalContent, RequestMessage } from "./client/api";
 import { DEFAULT_MODELS } from "./constant";
+import { AttachImages } from "./components/chat";
 
 export function trimTopic(topic: string) {
   // Fix an issue where double quotes still show in the Indonesian language
@@ -270,19 +271,30 @@ export function isMacOS(): boolean {
     return !!macintosh;
   }
   return false;
-  return false;
 }
 
-export function getMessageTextContent(message: RequestMessage) {
+export function getMessageTextContent(message: RequestMessage, type = 1) {
   if (typeof message.content === "string") {
     return message.content;
   }
-  for (const c of message.content) {
-    if (c.type === "text") {
-      return c.text ?? "";
+  let s = [];
+  for (let i = 0; i < message.content.length; i++) {
+    const c = message.content[i];
+    if (type === 2) {
+      if (c.type === "text") {
+        return c.text ?? "";
+      }
+    } else {
+      if (c.type === "file") {
+        s.push(
+          type === 0 ? `[${c.file?.name}](${c.file?.url})` : `${c.file?.url}`,
+        );
+      } else if (c.type === "text") {
+        s.push(c.text ?? "");
+      }
     }
   }
-  return "";
+  return s.length ? s.join("\n") : "";
 }
 
 export function getMessageImages(message: RequestMessage): string[] {
@@ -293,6 +305,25 @@ export function getMessageImages(message: RequestMessage): string[] {
   for (const c of message.content) {
     if (c.type === "image_url") {
       urls.push(c.image_url?.url ?? "");
+    }
+  }
+  return urls;
+}
+
+export function getMessageFiles(
+  message: RequestMessage,
+): Array<MultimodalContent["file"]> {
+  if (typeof message.content === "string") {
+    return [];
+  }
+  const urls: Array<MultimodalContent["file"]> = [];
+  for (const c of message.content) {
+    if (c.type === "file") {
+      urls.push({
+        name: c.file?.name ?? "",
+        type: c.file?.type ?? "",
+        url: c.file?.url ?? "",
+      });
     }
   }
   return urls;
@@ -323,3 +354,83 @@ export const openWindow = (
       .join(","),
   );
 };
+
+export function isGpt4AllModel(model: string) {
+  return (
+    // model.startsWith("gpt-4-vision") ||
+    // model.startsWith("gemini-pro-vision") ||
+    model.includes("gpt-4-all")
+  );
+}
+
+export function buildMessage(
+  userContent: string,
+  model: string,
+  attachImages?: AttachImages[],
+) {
+  const content: {
+    mContent: string | MultimodalContent[];
+    sContent: string | MultimodalContent[];
+  } = {
+    mContent: userContent,
+    sContent: userContent,
+  };
+
+  if (isGpt4AllModel(model)) {
+    const c: MultimodalContent[] = [
+      {
+        type: "text",
+        text: userContent,
+      },
+    ];
+    content.mContent =
+      attachImages!.map((i) => i.fileUrl).join("\n") + "\n" + userContent;
+    content.sContent = c.concat(
+      attachImages!.map((item) => {
+        return {
+          type: "file",
+          file: {
+            name: item.name ?? "",
+            type: item.type ?? "",
+            url: item.fileUrl!,
+          },
+        };
+      }),
+    );
+  } else if (isVisionModel(model)) {
+    const c: MultimodalContent[] = [
+      {
+        type: "text",
+        text: userContent,
+      },
+    ];
+    content.mContent = c.concat(
+      attachImages!.map((url) => {
+        return {
+          type: "image_url",
+          image_url: {
+            url: url.dataUrl!,
+          },
+        };
+      }),
+    );
+    content.sContent = c.concat(
+      attachImages!.map((url) => {
+        return {
+          type: "image_url",
+          image_url: {
+            url: url.fileUrl!,
+          },
+        };
+      }),
+    );
+  } else {
+    // other model
+  }
+
+  return content;
+}
+
+export function isImage(type: string) {
+  return /image\/(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif)/gi.test(type);
+}

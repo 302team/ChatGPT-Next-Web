@@ -1,4 +1,4 @@
-import { trimTopic, getMessageTextContent } from "../utils";
+import { trimTopic, getMessageTextContent, buildMessage } from "../utils";
 
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
@@ -292,42 +292,24 @@ export const useChatStore = createPersistStore(
       },
 
       async onUserInput(content: string, attachImages?: AttachImages[]) {
+        console.log("🚀 ~ onUserInput ~ attachImages:", attachImages);
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
 
         const userContent = fillTemplateWith(content, modelConfig);
         console.log("[User Input] after template: ", userContent);
 
-        let saveContent: MultimodalContent[];
-        let mContent: MultimodalContent[] = (saveContent = [
-          {
-            type: "text",
-            text: userContent,
-          },
-        ]);
+        // let saveContent: string | MultimodalContent[];
+        // let mContent: string | MultimodalContent[] = userContent;
 
-        if (attachImages && attachImages.length > 0) {
-          mContent = mContent.concat(
-            attachImages.map((url) => {
-              return {
-                type: "image_url",
-                image_url: {
-                  url: url.dataUrl!,
-                },
-              };
-            }),
-          );
-          saveContent = saveContent.concat(
-            attachImages.map((url) => {
-              return {
-                type: "image_url",
-                image_url: {
-                  url: url.fileUrl!,
-                },
-              };
-            }),
-          );
-        }
+        const { mContent, sContent } = buildMessage(
+          userContent,
+          modelConfig.model,
+          attachImages,
+        );
+        console.log("🚀 ~ onUserInput ~ mContent:", mContent);
+        console.log("🚀 ~ onUserInput ~ sContent:", sContent);
+
         let userMessage: ChatMessage = createMessage({
           role: "user",
           content: mContent,
@@ -348,7 +330,7 @@ export const useChatStore = createPersistStore(
         get().updateCurrentSession((session) => {
           const savedUserMessage = {
             ...userMessage,
-            content: saveContent,
+            content: sContent,
           };
           session.messages = session.messages.concat([
             savedUserMessage,
