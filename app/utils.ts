@@ -286,9 +286,17 @@ export function getMessageTextContent(message: RequestMessage, type = 1) {
       }
     } else {
       if (c.type === "file") {
-        s.push(
-          type === 0 ? `[${c.file?.name}](${c.file?.url})` : `${c.file?.url}`,
-        );
+        if (type === 0) {
+          const t = `[${c.file?.name}](${c.file?.url})`;
+          if (isImage(c.file!.type)) {
+            s.push(`!${t}`);
+          } else {
+            s.push(t);
+          }
+          s.push();
+        } else {
+          s.push(`${c.file?.url}`);
+        }
       } else if (c.type === "text") {
         s.push(c.text ?? "");
       }
