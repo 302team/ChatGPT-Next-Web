@@ -782,6 +782,11 @@ function useUploadFile() {
   }
 
   async function dropUpload(files: File[]) {
+    if (!isGpt4All || !isVisionModel(currentModel)) {
+      console.log("🚀 ~ dropUpload ~ : 当前模型不支持上传文件");
+      return false;
+    }
+
     const images: AttachImages[] = [];
     // images.push(...attachImages);
 
