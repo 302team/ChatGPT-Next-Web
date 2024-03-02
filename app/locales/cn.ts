@@ -24,6 +24,7 @@ const cn = {
     SERVER_ERROR: "内部错误, 请联系客服",
     BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
+    CHATBOT_DISABLED_ERROR2: `聊天机器人已禁用，更多信息请访问[GPT302](https://dash.gpt302.com)`,
     TOTAL_QUOTA_ERROR:
       "聊天机器人的总额度已达上限，请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人",
     DAILY_QUOTA_ERROR:
@@ -91,6 +92,7 @@ const cn = {
       SaveAs: "存为助手",
     },
     IsContext: "预设提示词",
+    Tips: "AI可能会犯错误。请考虑核实重要信息。",
   },
   Export: {
     Title: "分享聊天记录",

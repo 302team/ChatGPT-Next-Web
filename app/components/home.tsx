@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 
 import styles from "./home.module.scss";
 import BotIcon from "../icons/bot.svg";
+import Logo from "../icons/logo.png";
 import LoadingIcon from "../icons/three-dots.svg";
 import { getCSSVar, useMobileScreen } from "../utils";
 
@@ -28,11 +29,12 @@ import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
 import { ChatbotSetting, useAccessStore } from "../store";
+import Image from "next/image";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
     <div className={styles["loading-content"] + " no-dark"}>
-      {!props.noLogo && <BotIcon />}
+      {!props.noLogo && <Image src={Logo.src} width={35} height={35} alt="" />}
       <LoadingIcon />
     </div>
   );

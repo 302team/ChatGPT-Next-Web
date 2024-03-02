@@ -316,6 +316,7 @@ export const ERROR_CODE = {
   "-99": "CAPTCHA_ERROR", // 验证码错误
   "-100": "CHATBOT_DISABLED_ERROR", // 机器人禁用
   "-101": "CHATBOT_DELETE_ERROR", // 机器人删除
+  "-10002": "CHATBOT_DISABLED_ERROR2", // 机器人删除
   "-10003": "SERVER_ERROR", // 内部错误
   "-10004": "BALANCE_LIMIT_ERROR", // 账户余额不足
   "-10005": "TOKEN_EXPIRED_ERROR", // token过期

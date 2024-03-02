@@ -1764,6 +1764,8 @@ function _Chat() {
             />
           )}
         </div>
+
+        <div className={styles["chat-tips"]}>{Locale.Chat.Tips}</div>
       </div>
 
       {showExport && (
