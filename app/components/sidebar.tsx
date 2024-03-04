@@ -23,6 +23,7 @@ import { useAppConfig, useChatStore } from "../store";
 import {
   DEFAULT_SIDEBAR_WIDTH,
   GPT302_WEBSITE_URL,
+  LOGO_BASE64_ICON,
   MAX_SIDEBAR_WIDTH,
   MIN_SIDEBAR_WIDTH,
   NARROW_SIDEBAR_WIDTH,
@@ -185,7 +186,7 @@ export function SideBar(props: { className?: string }) {
         <div className={styles["sidebar-logo"] + " no-dark"}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={config.chatbotLogo}
+            src={config.chatbotLogo ?? LOGO_BASE64_ICON}
             alt="LOGO"
             onClick={() => openWindow(GPT302_WEBSITE_URL)}
           />
