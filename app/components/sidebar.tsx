@@ -184,19 +184,22 @@ export function SideBar(props: { className?: string }) {
           {config.chatbotDesc || Locale.Config.description}
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={config.chatbotLogo ?? LOGO_BASE64_ICON}
-            alt="LOGO"
-            onClick={() => openWindow(GPT302_WEBSITE_URL)}
-          />
-          {/* <NextImage
-            src={ ChatGptIcon.src}
-            alt="logo"
-            height={50}
-            width={50}
-            onClick={() => openWindow(GPT302_WEBSITE_URL)}
-          /> */}
+          {config.chatbotLogo && (
+            <img
+              src={config.chatbotLogo}
+              alt="LOGO"
+              onClick={() => openWindow(GPT302_WEBSITE_URL)}
+            />
+          )}
+          {!config.chatbotLogo && (
+            <NextImage
+              src={ChatGptIcon.src}
+              alt="logo"
+              height={50}
+              width={50}
+              onClick={() => openWindow(GPT302_WEBSITE_URL)}
+            />
+          )}
         </div>
       </div>
 
