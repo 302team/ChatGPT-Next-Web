@@ -57,13 +57,14 @@ export const usePromptStore = createPersistStore(
   (set, get) => ({
     add(prompt: Prompt) {
       const prompts = get().prompts;
-      prompt.id = nanoid();
-      prompt.isUser = true;
-      prompt.createdAt = Date.now();
+      // prompt.id = nanoid();
+      // prompt.isUser = true;
+      // prompt.createdAt = Date.now();
       prompts[prompt.id] = prompt;
 
       set(() => ({
         prompts: prompts,
+        counter: get().counter + 1,
       }));
 
       return prompt.id!;
@@ -96,6 +97,13 @@ export const usePromptStore = createPersistStore(
       set(() => ({
         prompts,
         counter: get().counter + 1,
+      }));
+    },
+
+    clean() {
+      set(() => ({
+        prompts: {},
+        counter: 0,
       }));
     },
 

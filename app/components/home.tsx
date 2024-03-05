@@ -28,8 +28,9 @@ import { useAppConfig } from "../store/config";
 import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
-import { ChatbotSetting, useAccessStore } from "../store";
+import { ModelConfig, ChatbotSetting, useAccessStore } from "../store";
 import Image from "next/image";
+import { Prompt, usePromptStore } from "../store/prompt";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -137,6 +138,7 @@ function ChatWindow() {
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
   const [validPwdVisible, setValidPwdVisible] = useState(true);
+  const promptStore = usePromptStore();
 
   useEffect(() => {
     if (accessStore.apiDomain) {
@@ -144,6 +146,24 @@ function ChatWindow() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessStore.apiDomain]);
+
+  function setPromptConfig(prompts: Prompt[]) {
+    if (!prompts.length) return;
+
+    promptStore.clean();
+    prompts.forEach((prompt) => {
+      promptStore.add(prompt);
+    });
+  }
+  function setModelConfig(modelConfig: any) {
+    // 空对象
+    if (JSON.stringify(modelConfig) === "{}") return;
+    let modelConf: any = {};
+    for (let key in modelConfig) {
+      modelConf[key] = modelConfig[key];
+    }
+    config.update((config) => (config.modelConfig = modelConf));
+  }
 
   if (loading) return <Loading />;
 
@@ -156,8 +176,21 @@ function ChatWindow() {
             conf.chatbotInfo = opt.info ?? "";
             const settings = opt.settings;
             if (settings) {
+              console.warn("🚀 ~ config.update ~ settings:", settings);
+
+              if (settings.modelConfig) {
+                setModelConfig(settings.modelConfig);
+                // delete settings.modelConfig;
+              }
+
+              if (settings.prompts) {
+                setPromptConfig(settings.prompts);
+                // delete settings.prompts;
+              }
+
               for (let key in settings) {
                 conf[key as keyof ChatbotSetting] = settings[key];
+                console.warn("settings[" + key + "]:", settings[key]);
               }
               if (settings.chatbotName) {
                 document.title = settings.chatbotName;
