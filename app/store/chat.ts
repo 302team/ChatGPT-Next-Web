@@ -123,6 +123,7 @@ function fillTemplateWith(input: string, modelConfig: ModelConfig) {
     time: new Date().toLocaleString(),
     lang: getLang(),
     input: input,
+    language: window.navigator.language,
   };
 
   let output = modelConfig.template ?? DEFAULT_INPUT_TEMPLATE;
