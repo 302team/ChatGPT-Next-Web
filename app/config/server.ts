@@ -31,6 +31,9 @@ declare global {
       GOOGLE_API_KEY?: string;
       GOOGLE_URL?: string;
 
+      // google tag manager
+      GTM_ID?: string;
+
       API_DOMAIN?: string;
     }
   }
