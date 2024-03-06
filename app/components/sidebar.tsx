@@ -243,7 +243,7 @@ export function SideBar(props: { className?: string }) {
 
       <div className={styles["sidebar-tail"]}>
         <div className={styles["sidebar-actions"]}>
-          <div className={styles["sidebar-action"] + " " + styles.mobile}>
+          {/* <div className={styles["sidebar-action"] + " " + styles.mobile}>
             <IconButton
               icon={<DeleteIcon />}
               onClick={async () => {
@@ -252,7 +252,7 @@ export function SideBar(props: { className?: string }) {
                 }
               }}
             />
-          </div>
+          </div> */}
           <div className={styles["sidebar-action"]}>
             <Link to={Path.Settings + location.search}>
               <IconButton
@@ -277,12 +277,14 @@ export function SideBar(props: { className?: string }) {
             icon={<AddIcon />}
             text={shouldNarrow ? undefined : Locale.Home.NewChat}
             onClick={() => {
-              if (config.dontShowMaskSplashScreen) {
-                chatStore.newSession();
-                navigate(Path.Chat + location.search);
-              } else {
-                navigate(Path.NewChat + location.search);
-              }
+              chatStore.newSession();
+              navigate(Path.Chat + location.search);
+              // if (config.dontShowMaskSplashScreen) {
+              //   chatStore.newSession();
+              //   navigate(Path.Chat + location.search);
+              // } else {
+              //   navigate(Path.NewChat + location.search);
+              // }
             }}
             shadow
           />
