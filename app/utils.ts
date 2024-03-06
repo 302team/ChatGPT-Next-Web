@@ -345,6 +345,10 @@ export function isVisionModel(model: string) {
   );
 }
 
+export function isGizmoModel(model: string) {
+  return model.includes("gpt-4-all") || model.includes("gpt-4-gizmo-");
+}
+
 type TargetContext = "_self" | "_parent" | "_blank" | "_top";
 export const openWindow = (
   url: string,
@@ -363,14 +367,6 @@ export const openWindow = (
   );
 };
 
-export function isGpt4AllModel(model: string) {
-  return (
-    // model.startsWith("gpt-4-vision") ||
-    // model.startsWith("gemini-pro-vision") ||
-    model.includes("gpt-4-all")
-  );
-}
-
 export function buildMessage(
   userContent: string,
   model: string,
@@ -384,7 +380,7 @@ export function buildMessage(
     sContent: userContent,
   };
 
-  if (isGpt4AllModel(model)) {
+  if (isGizmoModel(model)) {
     const c: MultimodalContent[] = [
       {
         type: "text",

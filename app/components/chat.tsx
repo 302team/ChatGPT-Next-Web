@@ -67,7 +67,7 @@ import {
   getMessageTextContent,
   getMessageImages,
   isVisionModel,
-  isGpt4AllModel,
+  isGizmoModel,
   compressImage,
   isImage,
   getMessageFiles,
@@ -679,11 +679,11 @@ function useUploadFile() {
 
   const [showUploadImage, setShowUploadImage] = useState(false);
   const currentModel = session.mask.modelConfig.model;
-  const isGpt4All = useMemo(() => isGpt4AllModel(currentModel), [currentModel]);
+  const isGizmo = useMemo(() => isGizmoModel(currentModel), [currentModel]);
 
   useEffect(() => {
-    const gpt4All = isGpt4AllModel(currentModel);
-    const show = isVisionModel(currentModel) || gpt4All;
+    const gizmo = isGizmoModel(currentModel);
+    const show = isVisionModel(currentModel) || gizmo;
     setShowUploadImage(show);
     if (!show) {
       setAttachImages([]);
@@ -734,7 +734,7 @@ function useUploadFile() {
         const fileInput = document.createElement("input");
         fileInput.id = "upload_file_input";
         fileInput.type = "file";
-        if (!isGpt4All) {
+        if (!isGizmo) {
           fileInput.accept =
             "image/png, image/jpeg, image/webp, image/heic, image/heif";
         }
@@ -782,17 +782,17 @@ function useUploadFile() {
   }
 
   async function dropUpload(files: File[]) {
-    if (!isGpt4AllModel(currentModel) && !isVisionModel(currentModel)) {
+    if (!isGizmoModel(currentModel) && !isVisionModel(currentModel)) {
       console.log(
         "🚀 ~ dropUpload ~ : 当前模型不支持上传文件",
-        `is gpt-4-all model: ${isGpt4AllModel(currentModel)}`,
+        `is gpt-4-all model: ${isGizmoModel(currentModel)}`,
         `is vision model: ${isVisionModel(currentModel)}`,
       );
       return false;
     }
 
     const filterdFiles = Array.from(files).filter((f) => {
-      return isGpt4All ? true : isImage((f as File).type);
+      return isGizmo ? true : isImage((f as File).type);
     });
 
     const images: AttachImages[] = [];
@@ -831,7 +831,7 @@ function useUploadFile() {
     setUploading,
     showUploadImage,
     setShowUploadImage,
-    isGpt4All,
+    isGizmo,
     handleUpload,
     dropUpload,
     pasteUpload,
@@ -880,7 +880,7 @@ function _Chat() {
     attachImages,
     uploading,
     showUploadImage,
-    isGpt4All, // gpt-4-all 的模型支持多模态文件
+    isGizmo, // gpt-4-all 的模型支持多模态文件
     setAttachImages,
     dropUpload,
     pasteUpload,
@@ -1127,7 +1127,7 @@ function _Chat() {
     chatStore
       .onUserInput(
         textContent,
-        isGpt4All
+        isGizmo
           ? files.map((i) => ({
               dataUrl: i!.url,
               fileUrl: i?.url,
