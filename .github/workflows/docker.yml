@@ -2,9 +2,9 @@ name: Publish Docker image
 
 on:
   push:
-    branches: ["main-proxy302"]
+    branches: ["main-proxy302", "dev"]
   pull_request:
-    branches: ["main-proxy302"]
+    branches: ["main-proxy302", "dev"]
 
 jobs:
   push_to_registry:
@@ -28,7 +28,7 @@ jobs:
         with:
           images: proxy302/chatgpt-next-web
           tags: |
-            type=raw,value=latest
+            # type=raw,value=latest
             type=ref,event=tag
             type=ref,event=branch
       
