@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getServerSideConfig } from "../../config/server";
 
+
 const serverConfig = getServerSideConfig();
 
 // Danger! Do not hard code any secret value here!
