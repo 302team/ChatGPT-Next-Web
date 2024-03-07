@@ -30,6 +30,7 @@ jobs:
           tags: |
             type=raw,value=latest
             type=ref,event=tag
+            type=ref,event=branch
       
       - 
         name: Set up QEMU
