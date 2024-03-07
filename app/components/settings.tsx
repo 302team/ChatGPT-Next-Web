@@ -492,7 +492,7 @@ function SyncItems() {
   return (
     <>
       <List>
-        <ListItem
+        {/* <ListItem
           title={Locale.Settings.Sync.CloudState}
           subTitle={
             syncStore.lastProvider
@@ -526,7 +526,7 @@ function SyncItems() {
               />
             )}
           </div>
-        </ListItem>
+        </ListItem> */}
 
         <ListItem
           title={Locale.Settings.Sync.LocalState}
@@ -832,7 +832,7 @@ export function Settings() {
           </ListItem>
         </List>
 
-        {/* <SyncItems /> */}
+        <SyncItems />
 
         {/* <List>
           <ListItem

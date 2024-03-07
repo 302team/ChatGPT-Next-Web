@@ -42,15 +42,6 @@ export function ValidPwd(props: ValidPwdProps) {
 
   async function handleSubmit(code: string) {
     const res = await accessStore.validPwd(code);
-    const model = res?.data?.model;
-    console.log("🚀 ~ [valid pwd] ~ model:", model);
-    if (model) {
-      chatStore.updateCurrentSession((session) => {
-        session.mask.modelConfig.model = model as ModelType;
-        session.mask.syncGlobalConfig = false;
-      });
-      config.update((config) => (config.modelConfig.model = model));
-    }
     return res;
   }
 

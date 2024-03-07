@@ -28,7 +28,12 @@ import { useAppConfig } from "../store/config";
 import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
-import { ModelConfig, ChatbotSetting, useAccessStore } from "../store";
+import {
+  ModelConfig,
+  ChatbotSetting,
+  useAccessStore,
+  useChatStore,
+} from "../store";
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
 
@@ -134,6 +139,7 @@ const loadAsyncGoogleFont = () => {
 function ChatWindow() {
   const location = useLocation();
   const accessStore = useAccessStore();
+  const chatStore = useChatStore();
   const config = useAppConfig();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
@@ -163,6 +169,10 @@ function ChatWindow() {
       modelConf[key] = modelConfig[key];
     }
     config.update((config) => (config.modelConfig = modelConf));
+    chatStore.updateCurrentSession((session) => {
+      session.mask.modelConfig = modelConf;
+      session.mask.syncGlobalConfig = true;
+    });
   }
 
   if (loading) return <Loading />;
@@ -179,6 +189,7 @@ function ChatWindow() {
               console.warn("🚀 ~ config.update ~ settings:", settings);
 
               if (settings.modelConfig) {
+                settings.modelConfig.model = opt.model;
                 setModelConfig(settings.modelConfig);
                 // delete settings.modelConfig;
               }
