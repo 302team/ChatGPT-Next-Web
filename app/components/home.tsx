@@ -8,7 +8,7 @@ import styles from "./home.module.scss";
 import BotIcon from "../icons/bot.svg";
 import Logo from "../icons/logo.png";
 import LoadingIcon from "../icons/three-dots.svg";
-import { getCSSVar, useMobileScreen } from "../utils";
+import { getCSSVar, isEmptyObject, useMobileScreen } from "../utils";
 
 import dynamic from "next/dynamic";
 
@@ -33,6 +33,7 @@ import {
   ChatbotSetting,
   useAccessStore,
   useChatStore,
+  ModelType,
 } from "../store";
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
@@ -164,7 +165,7 @@ function ChatWindow() {
   function setModelConfig(modelConfig: any) {
     console.log("🚀 ~ setModelConfig ~ modelConfig:", modelConfig);
     // 空对象
-    if (JSON.stringify(modelConfig) === "{}") return;
+    if (isEmptyObject(modelConfig)) return;
     let modelConf: any = {};
     for (let key in modelConfig) {
       modelConf[key] = modelConfig[key];
@@ -186,9 +187,13 @@ function ChatWindow() {
           config.update((conf) => {
             conf.chatbotInfo = opt.info ?? "";
             const settings = opt.settings;
-            if (settings) {
-              console.warn("🚀 ~ config.update ~ settings:", settings);
+            console.warn(
+              "🚀 ~ config.update ~ isEmptyObject(settings):",
+              isEmptyObject(settings),
+              settings,
+            );
 
+            if (settings && !isEmptyObject(settings)) {
               if (settings.modelConfig) {
                 settings.modelConfig.model = opt.model;
                 setModelConfig(settings.modelConfig);

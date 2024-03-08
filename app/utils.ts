@@ -438,3 +438,7 @@ export function buildMessage(
 export function isImage(type: string) {
   return /image\/(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif)/gi.test(type);
 }
+
+export function isEmptyObject(object: any) {
+  return JSON.stringify(object) === "{}";
+}
