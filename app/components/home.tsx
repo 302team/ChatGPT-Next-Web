@@ -162,6 +162,7 @@ function ChatWindow() {
     });
   }
   function setModelConfig(modelConfig: any) {
+    console.log("🚀 ~ setModelConfig ~ modelConfig:", modelConfig);
     // 空对象
     if (JSON.stringify(modelConfig) === "{}") return;
     let modelConf: any = {};
