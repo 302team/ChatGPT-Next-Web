@@ -206,7 +206,8 @@ function ChatWindow() {
               }
 
               for (let key in settings) {
-                conf[key as keyof ChatbotSetting] = settings[key];
+                conf[key as keyof ChatbotSetting] =
+                  settings[key as keyof ChatbotSetting];
               }
               if (settings.chatbotName) {
                 document.title = settings.chatbotName;

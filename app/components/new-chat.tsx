@@ -11,7 +11,7 @@ import EyeIcon from "../icons/eye.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Mask, useMaskStore } from "../store/mask";
 import Locale from "../locales";
-import { useAppConfig, useChatStore } from "../store";
+import { ModelType, useAppConfig, useChatStore } from "../store";
 import { MaskAvatar } from "./mask";
 import { useCommand } from "../command";
 import { showConfirm } from "./ui-lib";
@@ -22,7 +22,7 @@ function MaskItem(props: { mask: Mask; onClick?: () => void }) {
     <div className={styles["mask"]} onClick={props.onClick}>
       <MaskAvatar
         avatar={props.mask.avatar}
-        model={props.mask.modelConfig.model}
+        model={props.mask.modelConfig.model as ModelType}
       />
       <div className={styles["mask-name"] + " one-line"}>{props.mask.name}</div>
     </div>

@@ -72,13 +72,17 @@ export const DEFAULT_SETTING = {
   chatbotName: "",
   chatbotDesc: "",
   chatbotLogo: "",
+};
 
+export const CHATBOT_CONFIG = {
   // 助手启动页
   dontShowMaskSplashScreen: true, // dont show splash screen when create chat
   // 隐藏内置助手
   hideBuiltinMasks: false, // dont add builtin masks
   // 自定义提示词
   disablePromptHint: false,
+
+  prompts: [],
 
   modelConfig: {
     model: "gpt-4-all", // 模型 (model):
@@ -97,7 +101,9 @@ export const DEFAULT_SETTING = {
   },
 };
 
-export type ChatConfig = typeof DEFAULT_CONFIG & typeof DEFAULT_SETTING;
+export type ChatConfig = typeof DEFAULT_CONFIG &
+  typeof DEFAULT_SETTING &
+  typeof CHATBOT_CONFIG;
 export type ChatbotSetting = typeof DEFAULT_SETTING;
 
 export type ModelConfig = ChatConfig["modelConfig"];
@@ -137,7 +143,7 @@ export const ModalConfigValidator = {
 };
 
 export const useAppConfig = createPersistStore(
-  { ...DEFAULT_CONFIG, ...DEFAULT_SETTING },
+  { ...DEFAULT_CONFIG, ...CHATBOT_CONFIG, ...DEFAULT_SETTING },
   (set, get) => ({
     reset() {
       set(() => ({ ...DEFAULT_CONFIG }));

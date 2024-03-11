@@ -355,7 +355,11 @@ export function isVisionModel(model: string) {
 }
 
 export function isGizmoModel(model: string) {
-  return model.includes("gpt-4-all") || model.includes("gpt-4-gizmo-");
+  return (
+    model.includes("gpt-4-all") ||
+    model.includes("gpt-4-gizmo-") ||
+    model.includes("claude-3-")
+  );
 }
 
 type TargetContext = "_self" | "_parent" | "_blank" | "_top";
@@ -460,4 +464,31 @@ export function computedUsedStorage() {
     }
   }
   return (cache / 1024).toFixed(2);
+}
+
+//将远程图片转化为base64
+export function getBase64(src: string) {
+  function getBase64Image(img: HTMLImageElement) {
+    var canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    var ctx = canvas.getContext("2d");
+    ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
+    var dataURL = canvas.toDataURL();
+    return dataURL;
+  }
+
+  var image = new Image();
+  image.crossOrigin = "";
+  image.src = src;
+
+  return new Promise((resolve, reject) => {
+    image.onload = function () {
+      resolve(getBase64Image(image)); //将base64传给done上传处理
+    };
+    image.onerror = (err) => {
+      reject(err);
+    };
+  });
 }

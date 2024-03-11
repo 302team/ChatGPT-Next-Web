@@ -9,7 +9,7 @@ import {
   OnDragEndResponder,
 } from "@hello-pangea/dnd";
 
-import { useChatStore } from "../store";
+import { ModelType, useChatStore } from "../store";
 
 import Locale from "../locales";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -63,7 +63,7 @@ export function ChatItem(props: {
               <div className={styles["chat-item-avatar"] + " no-dark"}>
                 <MaskAvatar
                   avatar={props.mask.avatar}
-                  model={props.mask.modelConfig.model}
+                  model={props.mask.modelConfig.model as ModelType}
                 />
               </div>
               <div className={styles["chat-item-narrow-count"]}>
