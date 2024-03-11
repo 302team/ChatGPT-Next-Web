@@ -25,6 +25,7 @@ import MaskIcon from "../icons/mask.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
+import ResetIcon2 from "../icons/reload2.svg";
 import BreakIcon from "../icons/break.svg";
 import SettingsIcon from "../icons/chat-settings.svg";
 import DeleteIcon from "../icons/clear2.svg";
@@ -71,6 +72,7 @@ import {
   compressImage,
   isImage,
   getMessageFiles,
+  dataURLtoFile,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -692,9 +694,22 @@ function useUploadFile() {
   }, [currentModel]);
 
   async function handleUpload(file: File): Promise<AttachImages> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      console.warn("🚀 ~ before compress ~ size:", file.size, file.type);
+      let dataUrl = "";
+      let f = file;
+      if (isImage(file.type)) {
+        dataUrl = await compressImage(file, 1 * 1024 * 1024);
+        if (!/gif/.test(file.type)) {
+          f = dataURLtoFile(dataUrl, file.name);
+        }
+        console.warn("🚀 ~ after compressed ~ size:", f.size);
+      } else {
+        dataUrl = FILE_BASE64_ICON;
+      }
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", f);
 
       fetch(uploadUrl, {
         method: "POST",
@@ -704,13 +719,6 @@ function useUploadFile() {
         .then(async (res: any) => {
           if (res.code === 0) {
             const url = res.data.url;
-            // const filename = url.substring(url.lastIndexOf("/") + 1);
-            let dataUrl = "";
-            if (isImage(file.type)) {
-              dataUrl = await compressImage(file, 256 * 1024);
-            } else {
-              dataUrl = FILE_BASE64_ICON;
-            }
             resolve({
               type: file.type,
               name: file.name,
@@ -1605,22 +1613,38 @@ function _Chat() {
                     </div>
                   )}
                   <div className={styles["chat-message-item"]}>
-                    <Markdown
-                      content={getMessageTextContent(message, 0)}
-                      loading={
-                        (message.preview || message.streaming) &&
-                        message.content.length === 0 &&
-                        !isUser
-                      }
-                      onContextMenu={(e) => onRightClick(e, message)}
-                      onDoubleClickCapture={() => {
-                        if (!isMobileScreen) return;
-                        setUserInput(getMessageTextContent(message));
-                      }}
-                      fontSize={fontSize}
-                      parentRef={scrollRef}
-                      defaultShow={i >= messages.length - 6}
-                    />
+                    <div
+                      className={`${
+                        message.isError
+                          ? `${styles["chat-message-item-error"]}`
+                          : ""
+                      }`}
+                    >
+                      <Markdown
+                        content={getMessageTextContent(message, 0)}
+                        loading={
+                          (message.preview || message.streaming) &&
+                          message.content.length === 0 &&
+                          !isUser
+                        }
+                        onContextMenu={(e) => onRightClick(e, message)}
+                        onDoubleClickCapture={() => {
+                          if (!isMobileScreen) return;
+                          setUserInput(getMessageTextContent(message));
+                        }}
+                        fontSize={fontSize}
+                        parentRef={scrollRef}
+                        defaultShow={i >= messages.length - 6}
+                      />
+
+                      {/* {message.isError && (
+                        <ChatAction
+                          text=""
+                          icon={<ResetIcon2 />}
+                          onClick={() => onResend(message)}
+                        />
+                      )} */}
+                    </div>
                     {getMessageImages(message).length == 1 && (
                       <img
                         className={styles["chat-message-item-image"]}

@@ -131,6 +131,18 @@ export function compressImage(file: File, maxSize: number): Promise<string> {
   });
 }
 
+export function dataURLtoFile(dataurl: string, filename: string) {
+  var arr = dataurl.split(","),
+    mime = arr[0].match(/:(.*?);/)![1],
+    bstr = atob(arr[1]),
+    n = bstr.length,
+    u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+}
+
 export function readFromFile() {
   return new Promise<string>((res, rej) => {
     const fileInput = document.createElement("input");

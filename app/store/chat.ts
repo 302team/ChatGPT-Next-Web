@@ -351,6 +351,7 @@ export const useChatStore = createPersistStore(
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onUpdate(message) {
+            console.warn("🚀 ~ onUpdate ~ message:", message);
             botMessage.streaming = true;
             if (message) {
               botMessage.content = message;

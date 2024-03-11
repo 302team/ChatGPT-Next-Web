@@ -743,3 +743,10 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+.chat-message-item-error {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
