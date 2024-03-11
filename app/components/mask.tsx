@@ -132,7 +132,7 @@ export function MaskConfig(props: {
             >
               <MaskAvatar
                 avatar={props.mask.avatar}
-                model={props.mask.modelConfig.model}
+                model={props.mask.modelConfig.model as ModelType}
               />
             </div>
           </Popover>
@@ -545,7 +545,10 @@ export function MaskPage() {
               <div className={styles["mask-item"]} key={m.id}>
                 <div className={styles["mask-header"]}>
                   <div className={styles["mask-icon"]}>
-                    <MaskAvatar avatar={m.avatar} model={m.modelConfig.model} />
+                    <MaskAvatar
+                      avatar={m.avatar}
+                      model={m.modelConfig.model as ModelType}
+                    />
                   </div>
                   <div className={styles["mask-title"]}>
                     <div className={styles["mask-name"]}>{m.name}</div>

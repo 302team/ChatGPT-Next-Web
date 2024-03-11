@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChatMessage, useAppConfig, useChatStore } from "../store";
+import { ChatMessage, ModelType, useAppConfig, useChatStore } from "../store";
 import { Updater } from "../typing";
 import { IconButton } from "./button";
 import { Avatar } from "./emoji";
@@ -213,7 +213,9 @@ export function MessageSelector(props: {
                 ) : (
                   <MaskAvatar
                     avatar={session.mask.avatar}
-                    model={m.model || session.mask.modelConfig.model}
+                    model={
+                      m.model || (session.mask.modelConfig.model as ModelType)
+                    }
                   />
                 )}
               </div>

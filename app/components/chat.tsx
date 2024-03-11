@@ -1426,7 +1426,7 @@ function _Chat() {
               />
             </div>
           )}
-          {/* <div className="window-action-button">
+          <div className="window-action-button">
             <IconButton
               icon={<ExportIcon />}
               bordered
@@ -1435,7 +1435,7 @@ function _Chat() {
                 setShowExport(true);
               }}
             />
-          </div> */}
+          </div>
           {showMaxIcon && (
             <div className="window-action-button">
               <IconButton
@@ -1547,7 +1547,8 @@ function _Chat() {
                             <MaskAvatar
                               avatar={session.mask.avatar}
                               model={
-                                message.model || session.mask.modelConfig.model
+                                message.model ||
+                                (session.mask.modelConfig.model as ModelType)
                               }
                             />
                           )}
