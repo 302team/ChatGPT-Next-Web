@@ -229,7 +229,7 @@ export function MessageSelector(props: {
               </div>
 
               <div className={styles["checkbox"]}>
-                <input type="checkbox" checked={isSelected}></input>
+                <input type="checkbox" checked={isSelected} readOnly></input>
               </div>
             </div>
           );

@@ -98,7 +98,7 @@ const en: LocaleType = {
   },
   Export: {
     Title: "Export Messages",
-    Copy: "Copy All",
+    Copy: "Copy",
     Download: "Download",
     MessageFromYou: "Message From You",
     MessageFromChatGPT: "Message From ChatGPT",

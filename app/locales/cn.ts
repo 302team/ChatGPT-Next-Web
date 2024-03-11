@@ -96,8 +96,8 @@ const cn = {
   },
   Export: {
     Title: "分享聊天记录",
-    Copy: "全部复制",
-    Download: "下载文件",
+    Copy: "复制",
+    Download: "下载",
     Share: "分享到 ShareGPT",
     MessageFromYou: "用户",
     MessageFromChatGPT: "ChatGPT",

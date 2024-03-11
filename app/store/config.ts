@@ -39,31 +39,31 @@ export const DEFAULT_CONFIG = {
   enableAutoGenerateTitle: true,
   sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
 
-  disablePromptHint: false,
+  // disablePromptHint: false,
 
-  dontShowMaskSplashScreen: true, // dont show splash screen when create chat
-  hideBuiltinMasks: false, // dont add builtin masks
+  // dontShowMaskSplashScreen: true, // dont show splash screen when create chat
+  // hideBuiltinMasks: false, // dont add builtin masks
 
   customModels: "",
   models: DEFAULT_MODELS as any as LLMModel[],
 
-  modelConfig: {
-    model: "gpt-3.5-turbo" as ModelType,
-    temperature: 0.5,
-    top_p: 1,
-    max_tokens: 32000,
-    presence_penalty: 0,
-    frequency_penalty: 0,
-    sendMemory: true,
-    historyMessageCount: 4,
-    compressMessageLengthThreshold: 1000,
-    enableInjectSystemPrompts: true,
-    template: DEFAULT_INPUT_TEMPLATE,
+  // modelConfig: {
+  //   model: "gpt-3.5-turbo" as ModelType,
+  //   temperature: 0.5,
+  //   top_p: 1,
+  //   max_tokens: 32000,
+  //   presence_penalty: 0,
+  //   frequency_penalty: 0,
+  //   sendMemory: true,
+  //   historyMessageCount: 4,
+  //   compressMessageLengthThreshold: 1000,
+  //   enableInjectSystemPrompts: true,
+  //   template: DEFAULT_INPUT_TEMPLATE,
 
-    // 用户自定义的系统提示信息
-    enableInjectCustomSystemPrompts: false,
-    injectCustomSystemPrompts: "",
-  },
+  //   // 用户自定义的系统提示信息
+  //   enableInjectCustomSystemPrompts: false,
+  //   injectCustomSystemPrompts: "",
+  // },
 };
 
 export const DEFAULT_SETTING = {
@@ -71,10 +71,33 @@ export const DEFAULT_SETTING = {
 
   chatbotName: "",
   chatbotDesc: "",
-  chatbotLogo: LOGO_BASE64_ICON,
+  chatbotLogo: "",
+
+  // 助手启动页
+  dontShowMaskSplashScreen: true, // dont show splash screen when create chat
+  // 隐藏内置助手
+  hideBuiltinMasks: false, // dont add builtin masks
+  // 自定义提示词
+  disablePromptHint: false,
+
+  modelConfig: {
+    model: "gpt-4-all", // 模型 (model):
+    temperature: 0.5, // 随机性 (temperature): 值越大，回复越随机
+    top_p: 1, // 核采样 (top_p): 与随机性类似，但不要和随机性一起更改
+    max_tokens: 32000, // 单次回复限制 (max_tokens): 单次交互所用的最大 Token 数
+    presence_penalty: 0, // 话题新鲜度 (presence_penalty): 值越大，越有可能扩展到新话题
+    frequency_penalty: 0, // 频率惩罚度 (frequency_penalty): 值越大，越有可能降低重复字词
+    enableInjectSystemPrompts: true, // 注入系统级提示信息【注入默认系统提示信息】: 强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示
+    enableInjectCustomSystemPrompts: false, // 注入自定义系统提示信息: 强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示
+    injectCustomSystemPrompts: "", // 注入自定义系统提示信息: 强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示
+    template: DEFAULT_INPUT_TEMPLATE, // 用户输入预处理: 用户最新的一条消息会填充到此模板
+    historyMessageCount: 4, // 附带历史消息数: 每次请求携带的历史消息数
+    compressMessageLengthThreshold: 1000, // 历史消息长度压缩阈值: 当未压缩的历史消息超过该值时，将进行压缩
+    sendMemory: true, // 历史摘要: 自动压缩聊天记录并作为上下文发送
+  },
 };
 
-export type ChatConfig = typeof DEFAULT_CONFIG;
+export type ChatConfig = typeof DEFAULT_CONFIG & typeof DEFAULT_SETTING;
 export type ChatbotSetting = typeof DEFAULT_SETTING;
 
 export type ModelConfig = ChatConfig["modelConfig"];

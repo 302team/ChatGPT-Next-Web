@@ -47,7 +47,7 @@
       flex-grow: 1;
       padding: 5px 10px;
       font-size: 14px;
-      color: var(--black);
+      color: var(--deep-gray);
       opacity: 0.5;
       transition: all ease 0.3s;
 
@@ -66,7 +66,8 @@
       }
 
       &-current {
-        color: var(--primary);
+        // color: var(--primary);
+        color: var(--black);
       }
 
       .step-index {
@@ -106,7 +107,8 @@
     border-radius: 10px;
     padding: 20px;
     box-shadow: var(--card-shadow) inset;
-    background-color: var(--gray);
+    // background-color: var(--gray);
+    background-color: var(--white);
 
     .chat-info {
       background-color: var(--second);
@@ -160,7 +162,8 @@
 
       .chat-info-item {
         font-size: 12px;
-        color: var(--primary);
+        // color: var(--primary);
+        color: var(--deep-gray);
         padding: 2px 15px;
         border-radius: 10px;
         background-color: var(--white);
@@ -206,7 +209,7 @@
         }
 
         @media screen and (max-width: 600px) {
-          $image-width: calc(calc(100vw/2)/var(--image-count));
+          $image-width: calc(calc(100vw / 2) / var(--image-count));
 
           .message-image-multi {
             width: $image-width;
@@ -214,13 +217,13 @@
           }
 
           .message-image {
-            max-width: calc(100vw/3*2);
+            max-width: calc(100vw / 3 * 2);
           }
         }
 
         @media screen and (min-width: 600px) {
-          $max-image-width: calc(900px/3*2/var(--image-count));
-          $image-width: calc(80vw/3*2/var(--image-count));
+          $max-image-width: calc(900px / 3 * 2 / var(--image-count));
+          $image-width: calc(80vw / 3 * 2 / var(--image-count));
 
           .message-image-multi {
             width: $image-width;
@@ -230,7 +233,7 @@
           }
 
           .message-image {
-            max-width: calc(100vw/3*2);
+            max-width: calc(100vw / 3 * 2);
           }
         }
 
@@ -267,5 +270,6 @@
     }
   }
 
-  .default-theme {}
+  .default-theme {
+  }
 }

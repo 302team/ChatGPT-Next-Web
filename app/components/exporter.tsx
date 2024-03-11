@@ -21,9 +21,9 @@ import {
 
 import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import ChatGptIcon from "../icons/chatgpt.png";
+import ChatGptIcon from "../icons/logo.png";
 import ShareIcon from "../icons/share.svg";
-import BotIcon from "../icons/bot.png";
+import BotIcon from "../icons/logo.png";
 
 import DownloadIcon from "../icons/download.svg";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -51,18 +51,18 @@ export function ExportMessageModal(props: { onClose: () => void }) {
       <Modal
         title={Locale.Export.Title}
         onClose={props.onClose}
-        footer={
-          <div
-            style={{
-              width: "100%",
-              textAlign: "center",
-              fontSize: 14,
-              opacity: 0.5,
-            }}
-          >
-            {Locale.Exporter.Description.Title}
-          </div>
-        }
+        // footer={
+        //   <div
+        //     style={{
+        //       width: "100%",
+        //       textAlign: "center",
+        //       fontSize: 14,
+        //       opacity: 0.5,
+        //     }}
+        //   >
+        //     {Locale.Exporter.Description.Title}
+        //   </div>
+        // }
       >
         <div style={{ minHeight: "40vh" }}>
           <MessageExporter />
@@ -384,13 +384,13 @@ export function PreviewActions(props: {
           icon={<DownloadIcon />}
           onClick={props.download}
         ></IconButton>
-        <IconButton
+        {/* <IconButton
           text={Locale.Export.Share}
           bordered
           shadow
           icon={loading ? <LoadingIcon /> : <ShareIcon />}
           onClick={share}
-        ></IconButton>
+        ></IconButton> */}
       </div>
       <div
         style={{
@@ -540,13 +540,16 @@ export function ImagePreviewer(props: {
               alt="logo"
               width={50}
               height={50}
+              style={{ opacity: 0.2 }}
             />
           </div>
 
           <div>
-            <div className={styles["main-title"]}>NextChat</div>
+            <div className={styles["main-title"]}>
+              {config.chatbotName || "GPT302"}
+            </div>
             <div className={styles["sub-title"]}>
-              github.com/Yidadaa/ChatGPT-Next-Web
+              {config.chatbotDesc || Locale.Config.description}
             </div>
             <div className={styles["icons"]}>
               <ExportAvatar avatar={config.avatar} />
