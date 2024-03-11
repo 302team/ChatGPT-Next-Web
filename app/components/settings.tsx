@@ -48,7 +48,7 @@ import Locale, {
   changeLang,
   getLang,
 } from "../locales";
-import { copyToClipboard } from "../utils";
+import { computedUsedStorage, copyToClipboard } from "../utils";
 import Link from "next/link";
 import {
   Azure,
@@ -527,6 +527,16 @@ function SyncItems() {
             )}
           </div>
         </ListItem> */}
+
+        {/* 存储数据 */}
+        <ListItem
+          title={Locale.Settings.Sync.Storage.Title}
+          subTitle={Locale.Settings.Sync.Storage.SubTitle}
+        >
+          <div className={styles["list-item-value"]}>
+            {computedUsedStorage()}KB / 5120KB
+          </div>
+        </ListItem>
 
         <ListItem
           title={Locale.Settings.Sync.LocalState}

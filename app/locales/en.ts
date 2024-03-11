@@ -238,6 +238,12 @@ const en: LocaleType = {
         return `${overview.chat} chats，${overview.message} messages，${overview.prompt} prompts，${overview.mask} assistants`;
       },
       ImportFailed: "Failed to import from file",
+
+      Storage: {
+        Title: "Storage usage",
+        SubTitle:
+          "Local data storage occupancy. The browser LocalStorage is only 5M. When the storage is almost full, it is recommended to export the data for backup and then delete it.",
+      },
     },
     Mask: {
       Splash: {

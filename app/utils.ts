@@ -439,3 +439,13 @@ export function isImage(type: string) {
 export function isEmptyObject(object: any) {
   return JSON.stringify(object) === "{}";
 }
+
+export function computedUsedStorage() {
+  let cache = 0;
+  for (let key in localStorage) {
+    if (localStorage.hasOwnProperty(key)) {
+      cache += localStorage.getItem(key)!.length;
+    }
+  }
+  return (cache / 1024).toFixed(2);
+}

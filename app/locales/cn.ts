@@ -235,6 +235,12 @@ const cn = {
         return `${overview.chat} 次对话，${overview.message} 条消息，${overview.prompt} 条提示词，${overview.mask} 个助手`;
       },
       ImportFailed: "导入失败",
+
+      Storage: {
+        Title: "存储占用",
+        SubTitle:
+          "本地数据存储占用情况，浏览器LocalStorage只有5M，存储快满时，建议把数据导出备份，然后删除",
+      },
     },
     Mask: {
       Splash: {
