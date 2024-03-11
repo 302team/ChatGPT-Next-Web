@@ -82,7 +82,7 @@ export const CHATBOT_CONFIG = {
   // 自定义提示词
   disablePromptHint: false,
 
-  prompts: [],
+  // prompts: [],
 
   modelConfig: {
     model: "gpt-4-all", // 模型 (model):
