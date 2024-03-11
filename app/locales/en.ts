@@ -10,6 +10,7 @@ const en: LocaleType = {
   Error: {
     Unauthorized:
       "Please visit [GPT302](https://dash.gpt302.com) to create your own robot",
+    ApiTimeout: "Request timed out, please try again",
   },
   Auth: {
     Title: "Please enter the share code",

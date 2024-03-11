@@ -8,6 +8,7 @@ const cn = {
   Error: {
     Unauthorized:
       "请访问创[GPT302](https://dash.gpt302.com)建属于你自己的机器人",
+    ApiTimeout: "请求超时，请重试",
   },
   Auth: {
     Title: "需要分享码",

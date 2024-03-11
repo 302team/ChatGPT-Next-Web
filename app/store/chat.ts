@@ -319,7 +319,7 @@ export const useChatStore = createPersistStore(
         const botMessage: ChatMessage = createMessage({
           role: "assistant",
           streaming: true,
-          model: modelConfig.model,
+          model: modelConfig.model as ModelType,
         });
 
         // get recent messages
@@ -370,6 +370,7 @@ export const useChatStore = createPersistStore(
           onError(error) {
             const isAborted = error.message.includes("aborted");
             botMessage.content +=
+              Locale.Error.ApiTimeout +
               "\n\n" +
               prettyObject({
                 error: true,
