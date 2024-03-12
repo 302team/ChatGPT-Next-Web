@@ -177,6 +177,8 @@ function ChatWindow() {
     });
   }
 
+  const [promptStarters, setPromptStarters] = useState<string[]>([]);
+
   if (loading) return <Loading />;
 
   if (validPwdVisible)
@@ -214,6 +216,10 @@ function ChatWindow() {
               }
             }
           });
+
+          if (opt.model_prompts) {
+            setPromptStarters(opt.model_prompts);
+          }
           setValidPwdVisible(false);
         }}
       />
@@ -225,10 +231,16 @@ function ChatWindow() {
 
       <div className={styles["window-content"]} id={SlotID.AppBody}>
         <Routes>
-          <Route path={Path.Home} element={<Chat />} />
+          <Route
+            path={Path.Home}
+            element={<Chat promptStarters={promptStarters} />}
+          />
           <Route path={Path.NewChat} element={<NewChat />} />
           <Route path={Path.Masks} element={<MaskPage />} />
-          <Route path={Path.Chat} element={<Chat />} />
+          <Route
+            path={Path.Chat}
+            element={<Chat promptStarters={promptStarters} />}
+          />
           <Route path={Path.Settings} element={<Settings />} />
         </Routes>
       </div>

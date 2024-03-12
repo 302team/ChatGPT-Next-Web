@@ -853,7 +853,7 @@ export interface AttachImages {
   fileUrl?: string;
   dataUrl?: string;
 }
-function _Chat() {
+function _Chat(props: { promptStarters: string[] }) {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
@@ -1273,12 +1273,10 @@ function _Chat() {
   const autoFocus = !isMobileScreen; // wont auto focus on mobile screen
   const showMaxIcon = !isMobileScreen && !clientConfig?.isApp;
 
-  const [promptStarters, setPromptStarters] = useState<string[]>([
-    // "Can you teach me basic phrases in Spanish?",
-    // "How do I ask for directions in Japanese?",
-    // "I'm struggling with French grammar. Can you help?",
-    // "Make a conversation more challenging in German.",
-  ]);
+  const promptStarters = useMemo(
+    () => props.promptStarters,
+    [props.promptStarters],
+  );
 
   useCommand({
     fill: setUserInput,
@@ -1826,8 +1824,10 @@ function _Chat() {
   );
 }
 
-export function Chat() {
+export function Chat(props: { promptStarters: string[] }) {
   const chatStore = useChatStore();
   const sessionIndex = chatStore.currentSessionIndex;
-  return <_Chat key={sessionIndex}></_Chat>;
+  return (
+    <_Chat key={sessionIndex} promptStarters={props.promptStarters}></_Chat>
+  );
 }
