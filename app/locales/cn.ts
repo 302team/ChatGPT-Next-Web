@@ -484,6 +484,7 @@ const cn = {
     },
     Model: "模型",
     Messages: "消息",
+    Source: "来源",
     Topic: "主题",
     Time: "时间",
   },

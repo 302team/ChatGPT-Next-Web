@@ -1273,6 +1273,13 @@ function _Chat() {
   const autoFocus = !isMobileScreen; // wont auto focus on mobile screen
   const showMaxIcon = !isMobileScreen && !clientConfig?.isApp;
 
+  const [promptStarters, setPromptStarters] = useState<string[]>([
+    // "Can you teach me basic phrases in Spanish?",
+    // "How do I ask for directions in Japanese?",
+    // "I'm struggling with French grammar. Can you help?",
+    // "Make a conversation more challenging in German.",
+  ]);
+
   useCommand({
     fill: setUserInput,
     submit: (text) => {
@@ -1688,6 +1695,24 @@ function _Chat() {
             </Fragment>
           );
         })}
+
+        {promptStarters.length > 0 &&
+          messages.length === 1 &&
+          context.length === 1 && (
+            <div className={styles["chat-prompt-list"]}>
+              {promptStarters.map((item, index) => (
+                <div
+                  key={index}
+                  className={styles["chat-prompt-list-item"]}
+                  onClick={() => {
+                    doSubmit(item);
+                  }}
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          )}
       </div>
 
       <div id="chatInputPanel" className={styles["chat-input-panel"]}>

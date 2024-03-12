@@ -109,7 +109,8 @@ function Steps<
         <div
           className={styles["steps-progress-inner"]}
           style={{
-            width: `${((props.index + 1) / stepCount) * 100}%`,
+            width: `${(1 / stepCount) * 100}%`,
+            transform: `translate(${props.index * 100}%, 0)`,
           }}
         ></div>
       </div>
@@ -534,7 +535,7 @@ export function ImagePreviewer(props: {
         ref={previewRef}
       >
         <div className={styles["chat-info"]}>
-          <div className={styles["logo"] + " no-dark"}>
+          {/* <div className={styles["logo"] + " no-dark"}>
             <NextImage
               src={ChatGptIcon.src}
               alt="logo"
@@ -542,7 +543,7 @@ export function ImagePreviewer(props: {
               height={50}
               style={{ opacity: 0.2 }}
             />
-          </div>
+          </div> */}
 
           <div>
             <div className={styles["main-title"]}>
@@ -559,10 +560,10 @@ export function ImagePreviewer(props: {
           </div>
           <div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Model}: {mask.modelConfig.model}
+              {Locale.Exporter.Source}: GPT302
             </div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Messages}: {props.messages.length}
+              {Locale.Exporter.Model}: {mask.modelConfig.model}
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Topic}: {session.topic}
