@@ -207,7 +207,7 @@ export const useChatStore = createPersistStore(
             ...mask,
             modelConfig: {
               ...globalModelConfig,
-              ...mask.modelConfig,
+              // ...mask.modelConfig,
             },
           };
           session.topic = mask.name;

@@ -205,13 +205,13 @@ export function MaskConfig(props: {
         ) : null}
       </List>
 
-      <List>
+      {/* <List>
         <ModelConfigList
           modelConfig={{ ...props.mask.modelConfig }}
           updateConfig={updateConfig}
         />
         {props.extraListItems}
-      </List>
+      </List> */}
     </>
   );
 }
