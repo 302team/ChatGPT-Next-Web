@@ -218,6 +218,10 @@ export class ChatGPTApi implements LLMApi {
                     CODE,
                     errorMsg,
                   );
+                } else if (
+                  resJson.error &&
+                  resJson.error?.param.startsWith("5")
+                ) {
                 }
 
                 extraInfo = prettyObject(resJson);

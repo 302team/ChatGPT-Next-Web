@@ -1497,9 +1497,9 @@ function _Chat() {
           return (
             <Fragment key={message.id}>
               <div
-                className={
+                className={`${
                   isUser ? styles["chat-message-user"] : styles["chat-message"]
-                }
+                } ${message.isError ? `${styles["chat-message-error"]}` : ""}`}
               >
                 <div className={styles["chat-message-container"]}>
                   <div className={styles["chat-message-header"]}>
@@ -1620,38 +1620,22 @@ function _Chat() {
                     </div>
                   )}
                   <div className={styles["chat-message-item"]}>
-                    <div
-                      className={`${
-                        message.isError
-                          ? `${styles["chat-message-item-error"]}`
-                          : ""
-                      }`}
-                    >
-                      <Markdown
-                        content={getMessageTextContent(message, 0)}
-                        loading={
-                          (message.preview || message.streaming) &&
-                          message.content.length === 0 &&
-                          !isUser
-                        }
-                        onContextMenu={(e) => onRightClick(e, message)}
-                        onDoubleClickCapture={() => {
-                          if (!isMobileScreen) return;
-                          setUserInput(getMessageTextContent(message));
-                        }}
-                        fontSize={fontSize}
-                        parentRef={scrollRef}
-                        defaultShow={i >= messages.length - 6}
-                      />
-
-                      {/* {message.isError && (
-                        <ChatAction
-                          text=""
-                          icon={<ResetIcon2 />}
-                          onClick={() => onResend(message)}
-                        />
-                      )} */}
-                    </div>
+                    <Markdown
+                      content={getMessageTextContent(message, 0)}
+                      loading={
+                        (message.preview || message.streaming) &&
+                        message.content.length === 0 &&
+                        !isUser
+                      }
+                      onContextMenu={(e) => onRightClick(e, message)}
+                      onDoubleClickCapture={() => {
+                        if (!isMobileScreen) return;
+                        setUserInput(getMessageTextContent(message));
+                      }}
+                      fontSize={fontSize}
+                      parentRef={scrollRef}
+                      defaultShow={i >= messages.length - 6}
+                    />
                     {getMessageImages(message).length == 1 && (
                       <img
                         className={styles["chat-message-item-image"]}
@@ -1690,6 +1674,15 @@ function _Chat() {
                       : message.date.toLocaleString()}
                   </div>
                 </div>
+                {!isUser && message.isError && (
+                  <div className={styles["chat-message-retry"]}>
+                    <ChatAction
+                      text=""
+                      icon={<ResetIcon2 />}
+                      onClick={() => onResend(message)}
+                    />
+                  </div>
+                )}
               </div>
               {shouldShowClearContextDivider && <ClearContextDivider />}
             </Fragment>
