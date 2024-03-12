@@ -1673,12 +1673,16 @@ function _Chat(props: { promptStarters: string[] }) {
                   </div>
                 </div>
                 {!isUser && message.isError && (
-                  <div className={styles["chat-message-retry"]}>
-                    <ChatAction
-                      text=""
-                      icon={<ResetIcon2 />}
-                      onClick={() => onResend(message)}
-                    />
+                  <div className={styles["chat-message-actions"]}>
+                    <div className={styles["chat-input-actions"]}>
+                      <div className={styles["chat-message-retry"]}>
+                        <ChatAction
+                          text=""
+                          icon={<ResetIcon2 />}
+                          onClick={() => onResend(message)}
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
