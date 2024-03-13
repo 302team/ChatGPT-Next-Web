@@ -57,6 +57,7 @@ const en: LocaleType = {
       PinToastAction: "View",
       Delete: "Delete",
       Edit: "Edit",
+      Speek: "Speek",
     },
     Commands: {
       new: "Start a new chat",
@@ -95,6 +96,15 @@ const en: LocaleType = {
       SaveAs: "Save as Assistant",
     },
     IsContext: "Contextual Prompt",
+    Speech: {
+      Voice: "Voice",
+      ResponseFormat: "ResponseFormat",
+      Speed: "speed",
+      FetchAudioError: "FetchAudioError, please check interface or OSS",
+      Recording: "Recording:",
+      ToVoiceError: "Text to voice error!",
+      ToTextError: "Voice to text error!",
+    },
     Tips: "AI can make mistakes. Consider checking important information.",
   },
   Export: {

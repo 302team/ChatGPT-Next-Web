@@ -14,7 +14,12 @@ import {
   SUMMARIZE_MODEL,
   GEMINI_SUMMARIZE_MODEL,
 } from "../constant";
-import { ClientApi, RequestMessage, MultimodalContent } from "../client/api";
+import {
+  ClientApi,
+  RequestMessage,
+  MultimodalContent,
+  SpeechOptions,
+} from "../client/api";
 import { ChatControllerPool } from "../client/controller";
 import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
@@ -659,6 +664,54 @@ export const useChatStore = createPersistStore(
       clearAllData() {
         localStorage.clear();
         location.reload();
+      },
+
+      async audioSpeech(content: string, model: ModelType, extAttr: any) {
+        const config = useAppConfig.getState();
+        const options: SpeechOptions = {
+          model: model,
+          input: content,
+          ...config.speech,
+        };
+        try {
+          const fileName = nanoid() + "." + config.speech.response_format;
+          let fileType = "";
+          const formdata = new FormData();
+          let url: string;
+
+          var api: ClientApi;
+          if (model.includes("gemini-pro")) {
+            api = new ClientApi(ModelProvider.GeminiPro);
+          } else {
+            api = new ClientApi(ModelProvider.GPT);
+          }
+          await api.llm
+            .audioSpeech(options)
+            .then(async (res) => await res!.blob())
+            .then((blob) => {
+              if (blob.size > 0) {
+                url = window.URL.createObjectURL(blob);
+                extAttr?.setSpeechUrl?.(url);
+
+                fileType = blob.type;
+                const file = new File([blob], fileName);
+                formdata.append("file", file);
+              }
+            });
+          // 把文件上传到oss
+          if (fileType && formdata.has("file")) {
+          } else {
+            // botMessage.content =
+            //   Locale.Chat.Speech.FetchAudioError;
+            extAttr?.setSpeechStatus?.(Locale.Chat.Speech.FetchAudioError);
+          }
+        } catch (err) {
+          // botMessage.content = prettyObject(err);
+          throw err;
+        }
+        // botMessage.streaming = false;
+        // get().onNewMessage(botMessage);
+        // extAttr?.setAutoScroll(true);
       },
     };
 

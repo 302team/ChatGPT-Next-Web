@@ -55,6 +55,7 @@ const cn = {
       PinToastAction: "查看",
       Delete: "删除",
       Edit: "编辑",
+      Speek: "播放",
     },
     Commands: {
       new: "新建聊天",
@@ -93,6 +94,15 @@ const cn = {
       SaveAs: "存为助手",
     },
     IsContext: "预设提示词",
+    Speech: {
+      Voice: "声音",
+      ResponseFormat: "返回数据格式",
+      Speed: "速率",
+      FetchAudioError: "获取音频文件出错，请检查接口或OSS配置",
+      Recording: "录音中：",
+      ToVoiceError: "文字转语音出错！",
+      ToTextError: "语音转文字出错！",
+    },
     Tips: "AI可能会犯错误。请考虑核实重要信息。",
   },
   Export: {

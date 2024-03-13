@@ -46,6 +46,8 @@ import StopIcon from "../icons/stop2.svg";
 import SendIcon from "../icons/send.svg";
 import FileIcon from "../icons/file.svg";
 import RobotIcon from "../icons/robot.svg";
+import SpeakIcon from "../icons/speak.svg";
+import VoiceIcon from "../icons/voice.svg";
 
 import {
   ChatMessage,
@@ -112,6 +114,8 @@ import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
 import { MultimodalContent } from "../client/api";
 import Image from "next/image";
+
+import { LoadingOutlined } from "@ant-design/icons";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -1278,6 +1282,49 @@ function _Chat(props: { promptStarters: string[] }) {
     [props.promptStarters],
   );
 
+  // speak voice
+  const [speaking, setSpeaking] = useState(false);
+  const [fetchSpeechLoading, setFetchSpeechLoading] = useState(false);
+  const [speechUrl, setSpeechUrl] = useState("");
+  const audio = new Audio();
+  const extArr = {
+    setSpeechUrl,
+  };
+  const speakContent = (content: string | MultimodalContent[]) => {
+    if (fetchSpeechLoading) return;
+    setFetchSpeechLoading(true);
+
+    let text = content;
+    if (typeof content !== "string") {
+      text = "";
+      content.forEach((msg) => {
+        if (msg.type == "text") {
+          text += msg.text + "\n";
+        }
+      });
+    }
+    if (text) {
+      text = (text as string).replaceAll("\n", " ");
+      chatStore
+        .audioSpeech(text, "tts-1", extArr)
+        .then(() => {
+          audio.src = speechUrl;
+          audio.play();
+          setSpeaking(true);
+        })
+        .catch((err) => {
+          showToast(err, undefined, 60 * 10 * 1000);
+        })
+        .finally(() => {
+          setFetchSpeechLoading(false);
+        });
+    }
+  };
+  const cancelSpeak = () => {
+    audio.pause();
+    setSpeaking(false);
+  };
+
   useCommand({
     fill: setUserInput,
     submit: (text) => {
@@ -1609,6 +1656,29 @@ function _Chat(props: { promptStarters: string[] }) {
                                     getMessageTextContent(message),
                                   )
                                 }
+                              />
+                              <ChatAction
+                                text={
+                                  fetchSpeechLoading
+                                    ? "Load"
+                                    : speaking
+                                    ? Locale.Chat.Actions.Stop
+                                    : Locale.Chat.Actions.Speek
+                                }
+                                icon={
+                                  fetchSpeechLoading ? (
+                                    <LoadingOutlined />
+                                  ) : speaking ? (
+                                    <PauseIcon />
+                                  ) : (
+                                    <SpeakIcon />
+                                  )
+                                }
+                                onClick={() => {
+                                  speaking
+                                    ? cancelSpeak()
+                                    : speakContent(message.content);
+                                }}
                               />
                             </>
                           )}

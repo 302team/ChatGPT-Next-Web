@@ -52,6 +52,17 @@ export interface ChatOptions {
   onController?: (controller: AbortController) => void;
 }
 
+export type Voice = "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
+export type VoiceFormat = "mp3" | "opus" | "aac" | "flac";
+
+export interface SpeechOptions {
+  model: ModelType;
+  input: string;
+  voice?: string | Voice;
+  response_format?: string | VoiceFormat;
+  speed?: Number; // 0.25 到 4.0
+}
+
 export interface LLMUsage {
   used: number;
   total: number;
@@ -73,6 +84,7 @@ export abstract class LLMApi {
   abstract chat(options: ChatOptions): Promise<void>;
   abstract usage(): Promise<LLMUsage>;
   abstract models(): Promise<LLMModel[]>;
+  abstract audioSpeech(options: SpeechOptions): Promise<Response | void>;
 }
 
 type ProviderName = "openai" | "azure" | "claude" | "palm";

@@ -64,6 +64,16 @@ export const DEFAULT_CONFIG = {
   //   enableInjectCustomSystemPrompts: false,
   //   injectCustomSystemPrompts: "",
   // },
+
+  speech: {
+    voice: "alloy",
+    response_format: "mp3",
+    speed: 1.0,
+  },
+  tts: {
+    lang: "zh-CN",
+    voice: "Microsoft Huihui - Chinese (Simplified, PRC)",
+  },
 };
 
 export const DEFAULT_SETTING = {
