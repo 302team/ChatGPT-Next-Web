@@ -1313,7 +1313,7 @@ function _Chat(props: { promptStarters: string[] }) {
           setSpeaking(true);
         })
         .catch((err) => {
-          showToast(err, undefined, 60 * 10 * 1000);
+          showToast(err);
         })
         .finally(() => {
           setFetchSpeechLoading(false);
