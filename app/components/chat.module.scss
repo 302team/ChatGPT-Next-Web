@@ -357,8 +357,15 @@
   .chat-window-actions {
     position: absolute;
     top: 50%;
-    left: 20px;
     transform: translate(0, -50%);
+  }
+
+  .chat-window-actions-left {
+    left: 20px;
+  }
+
+  .chat-window-actions-right {
+    right: 20px;
   }
 
   .chat-body-title {
@@ -770,11 +777,28 @@
 
   &-item {
     padding: 15px;
-    border: rgba(0, 0, 0, 0.1) 1px solid;
+    border: rgba(0, 0, 0, 0.03) 1px solid;
     border-radius: 10px;
     font-size: 14px;
     font-weight: normal;
     color: #333;
+    background-color: rgba(0, 0, 0, 0.02);
     cursor: pointer;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .chat-prompt-list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: scroll;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &-item {
+      flex-shrink: 0;
+    }
   }
 }

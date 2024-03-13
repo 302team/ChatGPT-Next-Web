@@ -1404,7 +1404,9 @@ function _Chat(props: { promptStarters: string[] }) {
         data-tauri-drag-region
       >
         {isMobileScreen && (
-          <div className={`window-actions ${styles["chat-window-actions"]}`}>
+          <div
+            className={`window-actions ${styles["chat-window-actions"]} ${styles["chat-window-actions-left"]}`}
+          >
             <div className={"window-action-button"}>
               <IconButton
                 icon={<ReturnIcon />}
@@ -1429,7 +1431,9 @@ function _Chat(props: { promptStarters: string[] }) {
             </div>
           )}
         </div>
-        <div className="window-actions">
+        <div
+          className={`window-actions ${styles["chat-window-actions"]}  ${styles["chat-window-actions-right"]}`}
+        >
           {!isMobileScreen && (
             <div className="window-action-button">
               <IconButton
