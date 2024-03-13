@@ -1285,14 +1285,13 @@ function _Chat(props: { promptStarters: string[] }) {
   // speak voice
   const [speaking, setSpeaking] = useState(false);
   const [fetchSpeechLoading, setFetchSpeechLoading] = useState(false);
-  const audio = new Audio();
-  audio.addEventListener(
-    "ended",
-    () => {
-      setSpeaking(false);
-    },
-    false,
-  );
+
+  const audioRef = useRef(new Audio());
+  useEffect(() => {
+    const handler = () => setSpeaking(false);
+    audioRef.current.addEventListener("ended", handler);
+  }, [audioRef]);
+
   const extArr = {};
   const speakContent = (content: string | MultimodalContent[]) => {
     if (fetchSpeechLoading) return;
@@ -1312,10 +1311,10 @@ function _Chat(props: { promptStarters: string[] }) {
       chatStore
         .audioSpeech(text, "tts-1", extArr)
         .then((url) => {
-          audio.src = url;
+          audioRef.current.src = url;
           // 加 settimeout 是为了防止前面的字听不清
           setTimeout(() => {
-            audio.play();
+            audioRef.current.play();
             setSpeaking(true);
           }, 500);
         })
@@ -1328,7 +1327,7 @@ function _Chat(props: { promptStarters: string[] }) {
     }
   };
   const cancelSpeak = () => {
-    audio.pause();
+    audioRef.current.pause();
     setSpeaking(false);
   };
 
