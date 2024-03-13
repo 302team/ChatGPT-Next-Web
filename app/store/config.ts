@@ -66,7 +66,7 @@ export const DEFAULT_CONFIG = {
   // },
 
   speech: {
-    voice: "alloy",
+    voice: "onyx",
     response_format: "mp3",
     speed: 1.0,
   },

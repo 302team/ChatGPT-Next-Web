@@ -666,7 +666,11 @@ export const useChatStore = createPersistStore(
         location.reload();
       },
 
-      async audioSpeech(content: string, model: ModelType, extAttr: any) {
+      async audioSpeech(
+        content: string,
+        model: ModelType,
+        extAttr: any,
+      ): Promise<string> {
         const config = useAppConfig.getState();
         const options: SpeechOptions = {
           model: model,
@@ -677,7 +681,7 @@ export const useChatStore = createPersistStore(
           const fileName = nanoid() + "." + config.speech.response_format;
           let fileType = "";
           const formdata = new FormData();
-          let url: string;
+          let url: string = "";
 
           var api: ClientApi;
           if (model.includes("gemini-pro")) {
@@ -691,7 +695,6 @@ export const useChatStore = createPersistStore(
             .then((blob) => {
               if (blob.size > 0) {
                 url = window.URL.createObjectURL(blob);
-                extAttr?.setSpeechUrl?.(url);
 
                 fileType = blob.type;
                 const file = new File([blob], fileName);
@@ -705,6 +708,7 @@ export const useChatStore = createPersistStore(
             //   Locale.Chat.Speech.FetchAudioError;
             extAttr?.setSpeechStatus?.(Locale.Chat.Speech.FetchAudioError);
           }
+          return url;
         } catch (err) {
           // botMessage.content = prettyObject(err);
           throw err;
