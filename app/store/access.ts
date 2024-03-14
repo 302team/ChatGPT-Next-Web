@@ -167,14 +167,6 @@ export const useAccessStore = createPersistStore(
         .then((res: any) => {
           console.log("[Config] got config by code from server", res);
           if (res.code === 0 && res.data && res.data.value) {
-            // debug
-            if (location.origin.includes("gptsrobot")) {
-              res.data.model = "gpt-4-gizmo-g-0qswOqHNJ";
-              res.data.model_prompts = [
-                "我做了一个梦，我飞到了天上",
-                "我梦见我从山上跌落下来",
-              ];
-            }
             set(() => ({
               openaiApiKey: res.data.value,
             }));
