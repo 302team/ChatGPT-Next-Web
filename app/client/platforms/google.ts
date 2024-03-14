@@ -276,6 +276,10 @@ export class GeminiProApi implements LLMApi {
     return "/api/google/" + path;
   }
 
+  async audioTranscriptions(formData: FormData) {
+    throw new Error("Method not implemented.");
+  }
+
   async audioSpeech(options: SpeechOptions) {
     throw new Error("Method not implemented.");
   }

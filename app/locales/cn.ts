@@ -8,7 +8,7 @@ const cn = {
   Error: {
     Unauthorized:
       "请访问创[GPT302](https://dash.gpt302.com)建属于你自己的机器人",
-    ApiTimeout: "请求超时，请重试",
+    ApiTimeout: "请求失败，请重试",
   },
   Auth: {
     Title: "需要分享码",
@@ -78,6 +78,7 @@ const cn = {
       Clear: "清除聊天",
       Settings: "对话设置",
       UploadImage: "上传图片",
+      Waiting: "请稍等...",
     },
     Rename: "重命名对话",
     Typing: "正在输入…",
@@ -102,6 +103,8 @@ const cn = {
       Recording: "录音中：",
       ToVoiceError: "文字转语音出错！",
       ToTextError: "语音转文字出错！",
+      StartSpeaking: "开始说话",
+      StopSpeaking: "停止说话",
     },
     Tips: "AI可能会犯错误。请考虑核实重要信息。",
   },

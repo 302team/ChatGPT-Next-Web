@@ -14,6 +14,7 @@ import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 import {
   ChatOptions,
   getHeaders,
+  getHeadersNoCT,
   LLMApi,
   LLMModel,
   LLMUsage,
@@ -383,6 +384,41 @@ export class ChatGPTApi implements LLMApi {
     }));
   }
 
+  async errorHandle(res: Response) {
+    if (!res.ok) {
+      console.warn("🚀 ~ ChatGPTApi ~ errorHandle ~ res:", res);
+      let errorMsg = "";
+
+      if (res.status >= 500) {
+        errorMsg = Locale.Auth.SERVER_ERROR;
+      } else {
+        try {
+          const resJson = await res.clone().json();
+          if (resJson.error && resJson.error?.type === "api_error") {
+            const CODE = ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
+            errorMsg = Locale.Auth[CODE as AuthType] || resJson.error.message;
+          } else if (resJson.error && resJson.error?.param.startsWith("5")) {
+            errorMsg = Locale.Auth.SERVER_ERROR;
+          }
+        } catch {}
+      }
+
+      throw errorMsg;
+    }
+  }
+
+  async audioTranscriptions(formData: FormData) {
+    const res = await fetch(this.path(OpenaiPath.AudioTranscriptionsPath), {
+      method: "POST",
+      headers: getHeadersNoCT(),
+      body: formData,
+    });
+
+    await this.errorHandle(res);
+
+    return res;
+  }
+
   async audioSpeech(options: SpeechOptions) {
     const res = await fetch(this.path(OpenaiPath.AudioSpeechPath), {
       method: "POST",
@@ -392,20 +428,8 @@ export class ChatGPTApi implements LLMApi {
       },
     });
 
-    if (!res.ok) {
-      let errorMsg = "";
-      try {
-        const resJson = await res.clone().json();
-        if (resJson.error && resJson.error?.type === "api_error") {
-          const CODE = ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
-          errorMsg = Locale.Auth[CODE as AuthType] || resJson.error.message;
-        } else if (resJson.error && resJson.error?.param.startsWith("5")) {
-          errorMsg = Locale.Auth.SERVER_ERROR;
-        }
-      } catch {}
+    await this.errorHandle(res);
 
-      throw errorMsg;
-    }
     return res;
   }
 }

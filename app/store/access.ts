@@ -168,7 +168,7 @@ export const useAccessStore = createPersistStore(
           console.log("[Config] got config by code from server", res);
           if (res.code === 0 && res.data && res.data.value) {
             // debug
-            if (origin.includes("gptsrobot")) {
+            if (location.origin.includes("gptsrobot")) {
               res.data.model = "gpt-4-gizmo-g-0qswOqHNJ";
               res.data.model_prompts = [
                 "我做了一个梦，我飞到了天上",

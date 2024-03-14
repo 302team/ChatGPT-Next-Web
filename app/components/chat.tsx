@@ -11,6 +11,8 @@ import React, {
 } from "react";
 
 import mime from "mime";
+import { useAudioRecorder } from "react-audio-voice-recorder";
+import { nanoid } from "nanoid";
 
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
@@ -48,6 +50,7 @@ import FileIcon from "../icons/file.svg";
 import RobotIcon from "../icons/robot.svg";
 import SpeakIcon from "../icons/speak.svg";
 import VoiceIcon from "../icons/voice.svg";
+import KeyboardIcon from "../icons/keyboard.svg";
 
 import {
   ChatMessage,
@@ -89,6 +92,7 @@ import styles from "./chat.module.scss";
 import {
   List,
   ListItem,
+  ShowLoading,
   Modal,
   Selector,
   showConfirm,
@@ -100,6 +104,7 @@ import {
   CHAT_PAGE_SIZE,
   FILE_BASE64_ICON,
   LAST_INPUT_KEY,
+  ModelProvider,
   Path,
   REQUEST_TIMEOUT_MS,
   UNFINISHED_INPUT,
@@ -112,10 +117,10 @@ import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
-import { MultimodalContent } from "../client/api";
+import { ClientApi, MultimodalContent } from "../client/api";
 import Image from "next/image";
 
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, CloseOutlined } from "@ant-design/icons";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -851,6 +856,135 @@ function useUploadFile() {
   };
 }
 
+function useSpeakAndVoice(
+  setUserInput: React.Dispatch<React.SetStateAction<string>>,
+) {
+  const chatStore = useChatStore();
+  const [showLoading, setShowLoading] = useState(false);
+
+  /* 文本转语音 */
+  const [speaking, setSpeaking] = useState(false);
+  const [fetchSpeechLoading, setFetchSpeechLoading] = useState(false);
+
+  /* 录音 */
+  // 显示录音
+  const [showRecording, setShowRecording] = useState(false);
+  const [cancelRecording, setCancelRecording] = useState(false);
+  const extArr = {};
+
+  const {
+    startRecording,
+    stopRecording,
+    // togglePauseResume,
+    recordingBlob,
+    isRecording,
+    // isPaused,
+    recordingTime,
+    // mediaRecorder
+  } = useAudioRecorder();
+
+  const audioRef = useRef(new Audio());
+  const speakContent = (content: string | MultimodalContent[]) => {
+    if (fetchSpeechLoading) return;
+    setFetchSpeechLoading(true);
+
+    let text = content;
+    if (typeof content !== "string") {
+      text = "";
+      content.forEach((msg) => {
+        if (msg.type == "text") {
+          text += msg.text + "\n";
+        }
+      });
+    }
+    if (text) {
+      text = (text as string).replaceAll("\n", " ");
+      chatStore
+        .audioSpeech(text, "tts-1", extArr)
+        .then((url) => {
+          audioRef.current.src = url;
+          // 加 settimeout 是为了防止前面的字听不清
+          setTimeout(() => {
+            audioRef.current.play();
+            setSpeaking(true);
+          }, 500);
+        })
+        .catch((err) => {
+          showToast(err);
+        })
+        .finally(() => {
+          setFetchSpeechLoading(false);
+        });
+    }
+  };
+  const cancelSpeak = () => {
+    audioRef.current.pause();
+    setSpeaking(false);
+  };
+
+  useEffect(() => {
+    const handler = () => {
+      setSpeaking(false);
+      audioRef.current.removeEventListener("ended", handler);
+    };
+    audioRef.current.addEventListener("ended", handler);
+  }, [audioRef]);
+
+  useEffect(() => {
+    if (cancelRecording) return;
+    if (!recordingBlob) return;
+
+    // recordingBlob will be present at this point after 'stopRecording' has been called
+    setShowLoading(true);
+
+    const fileName =
+      nanoid() + "." + recordingBlob.type.split(";")[0].split("/")[1];
+    const file = new File([recordingBlob], fileName);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("model", "whisper-1");
+
+    const api = new ClientApi(ModelProvider.GPT);
+    api.llm
+      .audioTranscriptions(formData)
+      .then((res) => res!.json())
+      .then((res) => {
+        if (res.text) {
+          setUserInput(res.text);
+        } else {
+          showToast(Locale.Chat.Speech.ToTextError);
+        }
+      })
+      .catch((err) => {
+        showToast(err);
+      })
+      .finally(() => setShowLoading(false));
+  }, [recordingBlob, cancelRecording]);
+
+  return {
+    showLoading,
+
+    /* 转语音 */
+    speaking,
+    setSpeaking,
+    fetchSpeechLoading,
+    setFetchSpeechLoading,
+    speakContent,
+    cancelSpeak,
+
+    /* 录音 */
+    showRecording,
+    setShowRecording,
+    isRecording,
+    recordingBlob,
+    recordingTime,
+    startRecording,
+    stopRecording,
+
+    setCancelRecording,
+  };
+}
+
 export interface AttachImages {
   type?: string;
   name?: string;
@@ -1282,54 +1416,23 @@ function _Chat(props: { promptStarters: string[] }) {
     [props.promptStarters],
   );
 
-  // speak voice
-  const [speaking, setSpeaking] = useState(false);
-  const [fetchSpeechLoading, setFetchSpeechLoading] = useState(false);
+  const {
+    showLoading,
 
-  const audioRef = useRef(new Audio());
-  useEffect(() => {
-    const handler = () => setSpeaking(false);
-    audioRef.current.addEventListener("ended", handler);
-  }, [audioRef]);
+    speaking,
+    fetchSpeechLoading,
+    cancelSpeak,
+    speakContent,
 
-  const extArr = {};
-  const speakContent = (content: string | MultimodalContent[]) => {
-    if (fetchSpeechLoading) return;
-    setFetchSpeechLoading(true);
-
-    let text = content;
-    if (typeof content !== "string") {
-      text = "";
-      content.forEach((msg) => {
-        if (msg.type == "text") {
-          text += msg.text + "\n";
-        }
-      });
-    }
-    if (text) {
-      text = (text as string).replaceAll("\n", " ");
-      chatStore
-        .audioSpeech(text, "tts-1", extArr)
-        .then((url) => {
-          audioRef.current.src = url;
-          // 加 settimeout 是为了防止前面的字听不清
-          setTimeout(() => {
-            audioRef.current.play();
-            setSpeaking(true);
-          }, 500);
-        })
-        .catch((err) => {
-          showToast(err);
-        })
-        .finally(() => {
-          setFetchSpeechLoading(false);
-        });
-    }
-  };
-  const cancelSpeak = () => {
-    audioRef.current.pause();
-    setSpeaking(false);
-  };
+    showRecording,
+    setShowRecording,
+    isRecording,
+    recordingBlob,
+    recordingTime,
+    startRecording,
+    stopRecording,
+    setCancelRecording,
+  } = useSpeakAndVoice(setUserInput);
 
   useCommand({
     fill: setUserInput,
@@ -1849,29 +1952,77 @@ function _Chat(props: { promptStarters: string[] }) {
         >
           {showUploadImage && (
             <ChatAction
-              onClick={uploadImage}
+              onClick={() => {
+                if (uploading || isRecording) {
+                  return;
+                }
+                uploadImage();
+              }}
               text=""
-              disabled={uploading}
+              disabled={uploading || isRecording}
               className={styles["chat-input-attach"]}
               icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
             />
           )}
-          <textarea
-            id="chat-input"
-            ref={inputRef}
-            className={styles["chat-input"]}
-            placeholder={Locale.Chat.Input(submitKey)}
-            onInput={(e) => onInput(e.currentTarget.value)}
-            value={userInput}
-            onKeyDown={onInputKeyDown}
-            onFocus={scrollToBottom}
-            onClick={scrollToBottom}
-            rows={inputRows}
-            autoFocus={autoFocus}
-            style={{
-              fontSize: config.fontSize,
-            }}
-          />
+          {showRecording ? (
+            <div
+              className={`${styles["chat-input"]} ${styles["chat-input-recording"]}`}
+            >
+              <span
+                className={styles["chat-input-recording-button"]}
+                onClick={() => {
+                  if (isRecording) {
+                    // 正在录音
+                    // 提交录音
+                    setCancelRecording(false);
+                    stopRecording();
+                  } else {
+                    // 开始录音
+                    setCancelRecording(false);
+                    startRecording();
+                  }
+                }}
+              >
+                {isRecording
+                  ? `${Locale.Chat.Speech.StopSpeaking}(${recordingTime}s)`
+                  : Locale.Chat.Speech.StartSpeaking}
+              </span>
+            </div>
+          ) : (
+            <textarea
+              id="chat-input"
+              ref={inputRef}
+              className={styles["chat-input"]}
+              placeholder={Locale.Chat.Input(submitKey)}
+              onInput={(e) => onInput(e.currentTarget.value)}
+              value={userInput}
+              onKeyDown={onInputKeyDown}
+              onFocus={scrollToBottom}
+              onClick={scrollToBottom}
+              rows={inputRows}
+              autoFocus={autoFocus}
+              style={{
+                fontSize: config.fontSize,
+              }}
+            />
+          )}
+
+          {!showRecording && (
+            <IconButton
+              text=""
+              icon={<VoiceIcon />}
+              key="voice"
+              onClick={() => {
+                setShowRecording(true);
+
+                // setTimeout(() => {
+                //   setShowRecording(true);
+                // }, 8000);
+              }}
+              className={styles["chat-input-voice"]}
+            />
+          )}
+
           {couldStop ? (
             <ChatAction
               icon={<StopIcon />}
@@ -1879,6 +2030,26 @@ function _Chat(props: { promptStarters: string[] }) {
               className={styles["chat-input-pause"]}
               onClick={stopAll}
             />
+          ) : showRecording ? ( // 显示 开始说话 ? 👇 : 发送
+            isRecording ? ( // 正在说话 ? 显示 x : 键盘
+              <ChatAction
+                icon={<CloseOutlined />}
+                text=""
+                className={styles["chat-recording-stop"]}
+                onClick={() => {
+                  setCancelRecording(true);
+                  stopRecording();
+                }}
+              />
+            ) : (
+              <ChatAction
+                icon={<KeyboardIcon />}
+                text=""
+                key="keyboard"
+                className={styles["chat-recording-keyboard"]}
+                onClick={() => setShowRecording(false)}
+              />
+            )
           ) : (
             <ChatAction
               icon={<SendIcon />}
@@ -1904,6 +2075,8 @@ function _Chat(props: { promptStarters: string[] }) {
           }}
         />
       )}
+
+      {showLoading && <ShowLoading tip={Locale.Chat.InputActions.Waiting} />}
     </div>
   );
 }

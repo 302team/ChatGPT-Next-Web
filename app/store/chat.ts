@@ -65,6 +65,23 @@ export interface ChatSession {
   mask: Mask;
 }
 
+export interface UploadFile {
+  uid: string;
+  name: string;
+  size: number;
+  type: string;
+  originFileObj: File;
+  lastModified: number;
+  lastModifiedDate: string;
+  status: string;
+  response: {
+    fileUrl?: string;
+    data?: {
+      url?: string;
+    };
+  };
+}
+
 export const DEFAULT_TOPIC = Locale.Store.DefaultTopic;
 export const BOT_HELLO: ChatMessage = createMessage({
   role: "assistant",
@@ -145,6 +162,75 @@ function fillTemplateWith(input: string, modelConfig: ModelConfig) {
   });
 
   return output;
+}
+
+async function getFileArr(uploadFiles: UploadFile[]) {
+  if (!uploadFiles || uploadFiles.length < 1) {
+    return [];
+  }
+  const fileArr = [];
+  for (const file of uploadFiles) {
+    let url = "";
+    if (file.response && file.response.fileUrl) {
+      url = file.response.fileUrl;
+    } else if (file.response && file.response.data && file.response.data.url) {
+      url = file.response.data.url;
+    }
+    let imgBase64 = "";
+    if (file.type?.includes("image")) {
+      imgBase64 = (await getBase64(file.originFileObj)) as string;
+    }
+    const fileParam = {
+      name: file.name,
+      type: file.type,
+      url: url,
+      base64: imgBase64,
+      fileObj: file.originFileObj,
+    };
+    fileArr.push(fileParam);
+  }
+  return fileArr;
+}
+
+async function getBase64FromUrl(url: string) {
+  let base64 = "";
+  await fetch(url, {
+    method: "get",
+    headers: {
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "*",
+      "Access-Control-Allow-Headers": "*",
+    },
+  })
+    .then((response) => response.blob())
+    .then((blob) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onload = () => (base64 = reader.result as string);
+    });
+  return base64;
+}
+
+function getBase64(file: File) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+}
+async function getFileFromUrl(fileUrl: string, fileName: string) {
+  let fileObj = undefined;
+  await fetch(fileUrl, {
+    method: "get",
+    body: null,
+  })
+    .then((response) => response.blob())
+    .then((blob) => {
+      fileObj = new File([blob], fileName);
+    });
+  return fileObj;
 }
 
 const DEFAULT_CHAT_STATE = {
@@ -356,7 +442,6 @@ export const useChatStore = createPersistStore(
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
           onUpdate(message) {
-            console.warn("🚀 ~ onUpdate ~ message:", message);
             botMessage.streaming = true;
             if (message) {
               botMessage.content = message;

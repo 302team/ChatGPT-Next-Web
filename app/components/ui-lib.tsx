@@ -15,6 +15,7 @@ import Locale from "../locales";
 import { createRoot } from "react-dom/client";
 import React, { HTMLProps, useEffect, useState } from "react";
 import { IconButton } from "./button";
+import { Spin } from "antd";
 
 export function Popover(props: {
   children: JSX.Element;
@@ -488,6 +489,16 @@ export function Selector<T>(props: {
           })}
         </List>
       </div>
+    </div>
+  );
+}
+
+export function ShowLoading(props: { tip: string }) {
+  return (
+    <div className="modal-mask">
+      <Spin tip={props.tip} size="large" fullscreen={true}>
+        <div style={{ width: 120 }}></div>
+      </Spin>
     </div>
   );
 }

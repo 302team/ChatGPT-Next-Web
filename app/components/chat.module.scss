@@ -662,6 +662,7 @@
   cursor: text;
   display: flex;
   flex: 1;
+  align-items: center;
   padding: 5px 10px;
   border-radius: 10px;
   border: var(--border-in-light);
@@ -684,11 +685,29 @@
   background-color: var(--white);
   color: var(--black);
   font-family: inherit;
-  padding: 10px 90px 10px 14px;
+  padding: 10px 14px;
   resize: none;
   outline: none;
   box-sizing: border-box;
   // min-height: 68px;
+}
+
+.chat-input-recording {
+  text-align: center;
+  padding-top: 0;
+  padding-bottom: 0;
+
+  &-button {
+    display: block;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:focus-visible {
+      outline: none;
+      border: none;
+    }
+  }
 }
 
 // .chat-input:focus {
@@ -727,8 +746,37 @@
   }
 }
 
+.chat-input {
+  ~ .chat-input-voice {
+    position: absolute;
+    right: 65px;
+    bottom: 40px;
+    height: 30px;
+    padding: 5px 8px;
+    margin-right: 3px;
+    color: #808080;
+  }
+
+  ~ .chat-recording-keyboard {
+    // position: absolute;
+    // right: 65px;
+    // bottom: 40px;
+    height: 30px;
+    // padding: 5px 8px;
+    // margin-right: 3px;
+    color: #808080;
+  }
+
+  ~ .chat-recording-stop {
+    width: 30px;
+    display: flex;
+    justify-content: center;
+  }
+}
+
 .chat-input-send,
 .chat-input-pause,
+// .chat-input-voice,
 .chat-input-attach {
   display: flex;
   align-items: center;

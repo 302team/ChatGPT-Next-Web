@@ -85,6 +85,7 @@ export abstract class LLMApi {
   abstract usage(): Promise<LLMUsage>;
   abstract models(): Promise<LLMModel[]>;
   abstract audioSpeech(options: SpeechOptions): Promise<Response | void>;
+  abstract audioTranscriptions(formData: FormData): Promise<Response | void>;
 }
 
 type ProviderName = "openai" | "azure" | "claude" | "palm";
@@ -202,4 +203,15 @@ export function getHeaders() {
   }
 
   return headers;
+}
+
+export function getHeadersNoCT() {
+  const headers = getHeaders();
+  const newHeaders: Record<string, string> = {};
+  for (const key in headers) {
+    if (key !== "Content-Type") {
+      newHeaders[key] = headers[key];
+    }
+  }
+  return newHeaders;
 }
