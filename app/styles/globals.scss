@@ -257,7 +257,7 @@ div.math {
   @media screen and (max-width: 600px) {
     align-items: flex-end;
   }
-  
+
   &.app-desc-modal {
     @media screen and (max-width: 600px) {
       align-items: center;
@@ -405,4 +405,8 @@ pre {
       margin: 0;
     }
   }
+}
+
+.gpts-selector > div:nth-of-type(2) {
+  max-height: 75vh;
 }

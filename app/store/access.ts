@@ -182,10 +182,6 @@ export const useAccessStore = createPersistStore(
 
           fetchCodeLoading = false;
           return res;
-        })
-        .catch(() => {
-          console.error("[Config] failed to fetch config by code");
-          fetchCodeLoading = false;
         });
     },
   }),

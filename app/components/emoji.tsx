@@ -10,6 +10,7 @@ import BotIcon from "../icons/bot.svg";
 import BlackBotIcon from "../icons/black-bot.svg";
 import Logo from "../icons/logo.png";
 import Image from "next/image";
+import { regexUrl } from "../utils";
 
 export function getEmojiUrl(unified: string, style: EmojiStyle) {
   // Whoever owns this Content Delivery Network (CDN), I am using your CDN to serve emojis
@@ -44,6 +45,19 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
         ) : (
           <BotIcon className="user-avatar" />
         )} */}
+      </div>
+    );
+  } else if (props.avatar && regexUrl.test(props.avatar)) {
+    return (
+      <div className="no-dark">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={props.avatar}
+          alt=""
+          width={30}
+          height={30}
+          style={{ borderRadius: "50%" }}
+        />
       </div>
     );
   }

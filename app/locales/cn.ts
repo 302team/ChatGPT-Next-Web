@@ -9,6 +9,7 @@ const cn = {
     Unauthorized:
       "请访问创[GPT302](https://dash.gpt302.com)建属于你自己的机器人",
     ApiTimeout: "请求失败，请重试",
+    NetworkError: "网络错误",
   },
   Auth: {
     Title: "需要分享码",
@@ -105,6 +106,13 @@ const cn = {
       ToTextError: "语音转文字出错！",
       StartSpeaking: "开始说话",
       StopSpeaking: "停止说话",
+    },
+    Model: {
+      Selector: "选择模型",
+      Local: "本地模型",
+      GPTs: "应用商店",
+      KnowledgeBase: "知识库",
+      SearchPlaceholder: "请输入名称",
     },
     Tips: "AI可能会犯错误。请考虑核实重要信息。",
   },

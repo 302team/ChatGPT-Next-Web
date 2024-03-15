@@ -37,6 +37,7 @@ import {
 } from "../store";
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
+import { shouldOverwriteModel } from "./valid-pwd";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -172,8 +173,10 @@ function ChatWindow() {
     }
     config.update((config) => (config.modelConfig = modelConf));
     chatStore.updateCurrentSession((session) => {
-      session.mask.modelConfig = modelConf;
-      session.mask.syncGlobalConfig = true;
+      if (shouldOverwriteModel(session.mask.modelConfig.model)) {
+        session.mask.modelConfig = modelConf;
+        session.mask.syncGlobalConfig = true;
+      }
     });
   }
 
@@ -188,6 +191,8 @@ function ChatWindow() {
           accessStore.update((access) => (access.isAuth = true));
           config.update((conf) => {
             conf.chatbotInfo = opt.info ?? "";
+            conf.isGpts = opt.is_gpts;
+
             const settings = opt.settings;
             console.warn(
               "🚀 ~ config.update ~ isEmptyObject(settings):",
@@ -217,8 +222,9 @@ function ChatWindow() {
             }
           });
 
-          if (opt.model_prompts) {
-            setPromptStarters(opt.model_prompts);
+          // 设置模型的 promptStarters
+          if (opt.is_gpts && opt.gpts_msg && opt.gpts_msg.prompt_starters) {
+            setPromptStarters(opt.gpts_msg.prompt_starters);
           }
           setValidPwdVisible(false);
         }}

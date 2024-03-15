@@ -924,11 +924,15 @@ function useSpeakAndVoice(
 
   useEffect(() => {
     const handler = () => {
+      console.log("🚀 ~ 音频播放完毕 ~ ");
       setSpeaking(false);
-      audioRef.current.removeEventListener("ended", handler);
     };
     audioRef.current.addEventListener("ended", handler);
-  }, [audioRef]);
+
+    return () => {
+      audioRef.current.removeEventListener("ended", handler);
+    };
+  }, []);
 
   useEffect(() => {
     if (cancelRecording) return;
@@ -1411,10 +1415,14 @@ function _Chat(props: { promptStarters: string[] }) {
   const autoFocus = !isMobileScreen; // wont auto focus on mobile screen
   const showMaxIcon = !isMobileScreen && !clientConfig?.isApp;
 
-  const promptStarters = useMemo(
-    () => props.promptStarters,
-    [props.promptStarters],
-  );
+  const promptStarters = useMemo(() => {
+    const maskPromptStarters = chatStore.currentSession().mask.promptStarters;
+    if (config.isGpts) {
+      return props.promptStarters;
+    } else {
+      return maskPromptStarters ?? [];
+    }
+  }, [props.promptStarters, chatStore, config.isGpts]);
 
   const {
     showLoading,

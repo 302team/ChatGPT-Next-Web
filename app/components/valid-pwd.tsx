@@ -20,6 +20,10 @@ import { openWindow } from "../utils";
 import { GPT302_WEBSITE_URL, ERROR_CODE, ERROR_CODE_TYPE } from "../constant";
 import { AuthType } from "../locales/cn";
 
+export const shouldOverwriteModel = (model: string) => {
+  return !model.includes("gpt-4-gizmo-");
+};
+
 interface ValidPwdProps {
   onAuth?: (opt: { info?: string }) => void;
 }
@@ -40,18 +44,36 @@ export function ValidPwd(props: ValidPwdProps) {
   const userCode = window.location.hostname.split(".")[0];
   console.log("🚀 ~ [valid pwd] ~ user code:", userCode);
 
-  async function handleSubmit(code: string) {
+  async function handleSubmit(code: string, callback?: (res: any) => void) {
     const res = await accessStore.validPwd(code);
-    const model = res?.data?.model;
-    console.log("🚀 ~ [valid pwd] ~ model:", model);
-    if (model) {
-      chatStore.updateCurrentSession((session) => {
-        session.mask.modelConfig.model = model as ModelType;
-        session.mask.syncGlobalConfig = false;
-      });
-      config.update((config) => (config.modelConfig.model = model));
+
+    if (res.code === 0) {
+      const model = res?.data?.model;
+      console.log("🚀 ~ [valid pwd] ~ model:", model);
+      if (model) {
+        chatStore.updateCurrentSession((session) => {
+          // 普通机器人,
+          if (shouldOverwriteModel(session.mask.modelConfig.model)) {
+            session.mask.modelConfig.model = model as ModelType;
+            session.mask.syncGlobalConfig = true;
+          }
+        });
+        config.update((config) => (config.modelConfig.model = model));
+      }
+
+      callback?.(res);
+      return res;
+    } else {
+      const CODE = ERROR_CODE[res.code as ERROR_CODE_TYPE] as AuthType;
+      const errMsg = Locale.Auth[CODE];
+
+      setErrorMsg(errMsg || res.msg);
+      // 访问码已经失效了, 修改校验状态为 false
+      accessStore.update((access) => (access.isAuth = false));
+      // 然后把新的访问码填入输入框中
+      accessStore.update((access) => (access.pwd = pwd));
+      setShowError(true);
     }
-    return res;
   }
 
   useEffect(() => {
@@ -65,29 +87,13 @@ export function ValidPwd(props: ValidPwdProps) {
         }
         // 如果以前登录过, 不关联新的访问码, 直接使用缓存中的访问码校验
         if (!pwd || autoConfirm || accessStore.isAuth) {
-          const res = await handleSubmit(userCode);
-          console.log("🚀 ~ res:", res);
-
-          if (res.code === 0) {
+          await handleSubmit(userCode, (res) => {
             props.onAuth?.(res.data);
-            searchParams.delete("pwd");
-            searchParams.delete("confirm");
-            setSearchParams(searchParams, { replace: true });
-          } else {
-            const CODE = ERROR_CODE[res.code as ERROR_CODE_TYPE] as AuthType;
-            const errMsg = Locale.Auth[CODE];
-            console.log("🚀 ~ CODE:", CODE, errMsg);
-
-            setErrorMsg(errMsg || res.msg);
-            // 访问码已经失效了, 修改校验状态为 false
-            accessStore.update((access) => (access.isAuth = false));
-            // 然后把新的访问码填入输入框中
-            accessStore.update((access) => (access.pwd = pwd));
-            setShowError(true);
-          }
+          });
         }
       } catch (error) {
         console.log("🚀 [valid pwd useEffect] catch error:", error);
+        showToast(Locale.Error.NetworkError);
       } finally {
         setLoading(false);
       }
@@ -152,24 +158,12 @@ export function ValidPwd(props: ValidPwdProps) {
             setSubmiting(true);
 
             try {
-              const res = await handleSubmit(userCode);
-              if (res.code === 0) {
+              await handleSubmit(userCode, (res) => {
                 props.onAuth?.(res.data);
-                searchParams.delete("pwd");
-                searchParams.delete("confirm");
-                setSearchParams(searchParams, { replace: true });
-              } else {
-                const CODE = ERROR_CODE[
-                  res.code as ERROR_CODE_TYPE
-                ] as AuthType;
-                const errMsg = Locale.Auth[CODE];
-
-                setErrorMsg(errMsg || res.msg);
-                setShowError(true);
-              }
+              });
             } catch (error) {
               console.log("🚀 ~ [valid pwd] submit error:", error);
-              showToast((error as any).toString());
+              showToast(Locale.Error.NetworkError);
               accessStore.setRemember(false);
             } finally {
               setSubmiting(false);

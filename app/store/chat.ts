@@ -287,7 +287,7 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      newSession(mask?: Mask) {
+      newSession(mask?: Mask, override?: boolean) {
         const session = createEmptySession();
 
         if (mask) {
@@ -298,7 +298,7 @@ export const useChatStore = createPersistStore(
             ...mask,
             modelConfig: {
               ...globalModelConfig,
-              // ...mask.modelConfig,
+              ...(override ? mask.modelConfig : {}),
             },
           };
           session.topic = mask.name;

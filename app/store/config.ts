@@ -109,6 +109,8 @@ export const CHATBOT_CONFIG = {
     compressMessageLengthThreshold: 1000, // 历史消息长度压缩阈值: 当未压缩的历史消息超过该值时，将进行压缩
     sendMemory: true, // 历史摘要: 自动压缩聊天记录并作为上下文发送
   },
+
+  isGpts: false,
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG &

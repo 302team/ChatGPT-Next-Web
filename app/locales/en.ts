@@ -11,6 +11,7 @@ const en: LocaleType = {
     Unauthorized:
       "Please visit [GPT302](https://dash.gpt302.com) to create your own robot",
     ApiTimeout: "Request failed, please try again",
+    NetworkError: "Network Error",
   },
   Auth: {
     Title: "Please enter the share code",
@@ -107,6 +108,13 @@ const en: LocaleType = {
       ToTextError: "Voice to text error!",
       StartSpeaking: "Start speaking",
       StopSpeaking: "Stop speaking",
+    },
+    Model: {
+      Selector: "Model Selector",
+      Local: "Local",
+      GPTs: "App Store",
+      KnowledgeBase: "Knowledge Base",
+      SearchPlaceholder: "Please input value",
     },
     Tips: "AI can make mistakes. Consider checking important information.",
   },

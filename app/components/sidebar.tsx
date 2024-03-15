@@ -23,6 +23,7 @@ import { useAppConfig, useChatStore } from "../store";
 import {
   DEFAULT_SIDEBAR_WIDTH,
   GPT302_WEBSITE_URL,
+  GPTS302_WEBSITE_URL,
   LOGO_BASE64_ICON,
   MAX_SIDEBAR_WIDTH,
   MIN_SIDEBAR_WIDTH,
@@ -35,6 +36,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { isIOS, openWindow, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { Modal, showConfirm, showToast } from "./ui-lib";
+import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -149,9 +151,108 @@ function AppDescription(props: { onClose: () => void }) {
   );
 }
 
+export function useWindowSize() {
+  // 第一步：声明能够体现视口大小变化的状态
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  // 第二步：通过生命周期 Hook 声明回调的绑定和解绑逻辑
+  useEffect(() => {
+    const updateSize = () =>
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  return windowSize;
+}
+
+function useGptsConfigMessage(props: { callback: () => void }) {
+  const [gptsModel, setGptsModel] = useState();
+  const chatStore = useChatStore();
+  const config = useAppConfig();
+
+  useEffect(() => {
+    const messageListener = (e: any) => {
+      console.log("🚀 ~ messageListener ~ e:", e.data);
+      const res = e.data;
+      if (res) {
+        if (res.from === "auth" && res.data) {
+          const data = res.data;
+          setGptsModel({
+            ...data,
+            code: data.id,
+          });
+          props?.callback?.();
+
+          const emptyMask = createEmptyMask();
+
+          let promptStarters: string[] = [];
+          try {
+            if (data.detail) {
+              promptStarters = JSON.parse(data.detail);
+            }
+          } catch (error) {}
+
+          chatStore.newSession(
+            {
+              ...emptyMask,
+              syncGlobalConfig: false,
+              avatar: data.display_url ?? DEFAULT_MASK_AVATAR,
+              name: data.display_name,
+              hideContext: true,
+              modelConfig: {
+                ...config.modelConfig,
+                model: `gpt-4-gizmo-${data.uuid}`,
+              },
+              promptStarters,
+            } as Mask,
+            true,
+          );
+        }
+      }
+    };
+
+    window.addEventListener("message", messageListener);
+    return () => window.removeEventListener("resize", messageListener);
+  }, []);
+
+  return {
+    gptsModel,
+    setGptsModel,
+  };
+}
+
+export function GptsConfigModel(props: { onClose: () => void }) {
+  const windowSize = useWindowSize();
+
+  return (
+    <div className="modal-mask">
+      <Modal
+        title={Locale.Chat.Model.GPTs}
+        containerClass="gpts-selector"
+        onClose={() => props.onClose()}
+      >
+        <iframe
+          width="100%"
+          height={windowSize.height * 0.7}
+          src={GPTS302_WEBSITE_URL}
+          title={Locale.Chat.Model.GPTs}
+        ></iframe>
+      </Modal>
+    </div>
+  );
+}
+
 export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
-  const [showModal, setShowModal] = useState(false);
+  const [showAppDescModal, setShowAppDescModal] = useState(false);
+  const [showGptsConfigModal, setShowGptsConfigModal] = useState(false);
 
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
@@ -163,6 +264,12 @@ export function SideBar(props: { className?: string }) {
     () => isIOS() && isMobileScreen,
     [isMobileScreen],
   );
+
+  useGptsConfigMessage({
+    callback: () => {
+      setShowGptsConfigModal(false);
+    },
+  });
 
   useHotKey();
 
@@ -203,32 +310,34 @@ export function SideBar(props: { className?: string }) {
         </div>
       </div>
 
-      <div className={styles["sidebar-header-bar"]}>
-        <IconButton
-          icon={<MaskIcon />}
-          text={shouldNarrow ? undefined : Locale.Mask.Name}
-          className={styles["sidebar-bar-button"]}
-          onClick={() => {
-            if (config.dontShowMaskSplashScreen !== true) {
-              navigate(Path.NewChat + location.search, {
-                state: { fromHome: true },
-              });
-            } else {
-              navigate(Path.Masks + location.search, {
-                state: { fromHome: true },
-              });
-            }
-          }}
-          shadow
-        />
-        {/* <IconButton
-          icon={<PluginIcon />}
-          text={shouldNarrow ? undefined : Locale.Plugin.Name}
-          className={styles["sidebar-bar-button"]}
-          onClick={() => showToast(Locale.WIP)}
-          shadow
-        /> */}
-      </div>
+      {!config.isGpts && (
+        <div className={styles["sidebar-header-bar"]}>
+          <IconButton
+            icon={<MaskIcon />}
+            text={shouldNarrow ? undefined : Locale.Mask.Name}
+            className={styles["sidebar-bar-button"]}
+            onClick={() => {
+              if (config.dontShowMaskSplashScreen !== true) {
+                navigate(Path.NewChat + location.search, {
+                  state: { fromHome: true },
+                });
+              } else {
+                navigate(Path.Masks + location.search, {
+                  state: { fromHome: true },
+                });
+              }
+            }}
+            shadow
+          />
+          <IconButton
+            icon={<PluginIcon />}
+            text={shouldNarrow ? undefined : Locale.Chat.Model.GPTs}
+            className={styles["sidebar-bar-button"]}
+            onClick={() => setShowGptsConfigModal(true)}
+            shadow
+          />
+        </div>
+      )}
 
       <div
         className={styles["sidebar-body"]}
@@ -266,7 +375,7 @@ export function SideBar(props: { className?: string }) {
             <IconButton
               className={styles["sidebar-tail-button"]}
               icon={<QuestionIcon />}
-              onClick={() => setShowModal(true)}
+              onClick={() => setShowAppDescModal(true)}
               shadow
             />
           </div>
@@ -308,7 +417,13 @@ export function SideBar(props: { className?: string }) {
         <DragIcon />
       </div>
 
-      {showModal && <AppDescription onClose={() => setShowModal(false)} />}
+      {showAppDescModal && (
+        <AppDescription onClose={() => setShowAppDescModal(false)} />
+      )}
+
+      {showGptsConfigModal && (
+        <GptsConfigModel onClose={() => setShowGptsConfigModal(false)} />
+      )}
     </div>
   );
 }

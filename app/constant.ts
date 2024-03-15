@@ -14,6 +14,7 @@ export const OPENAI_BASE_URL = "https://api.openai.com";
 export const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
 export const GPT302_WEBSITE_URL = "https://www.gpt302.com";
+export const GPTS302_WEBSITE_URL = "https://gpts.gpt302.com/";
 
 export enum Path {
   Home = "/",

@@ -102,6 +102,7 @@ interface ModalProps {
   actions?: React.ReactNode[];
   defaultMax?: boolean;
   footer?: React.ReactNode;
+  containerClass?: string;
   onClose?: () => void;
 }
 export function Modal(props: ModalProps) {
@@ -125,7 +126,8 @@ export function Modal(props: ModalProps) {
   return (
     <div
       className={
-        styles["modal-container"] + ` ${isMax && styles["modal-container-max"]}`
+        styles["modal-container"] +
+        ` ${isMax && styles["modal-container-max"]} ${props.containerClass}`
       }
     >
       <div className={styles["modal-header"]}>
