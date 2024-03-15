@@ -955,6 +955,7 @@ function useSpeakAndVoice(
       .then((res) => {
         if (res.text) {
           setUserInput(res.text);
+          setShowRecording(false);
         } else {
           showToast(Locale.Chat.Speech.ToTextError);
         }
@@ -2015,7 +2016,7 @@ function _Chat(props: { promptStarters: string[] }) {
             />
           )}
 
-          {/* {!showRecording && (
+          {!showRecording && (
             <IconButton
               text=""
               icon={<VoiceIcon />}
@@ -2029,7 +2030,7 @@ function _Chat(props: { promptStarters: string[] }) {
               }}
               className={styles["chat-input-voice"]}
             />
-          )} */}
+          )}
 
           {couldStop ? (
             <ChatAction
