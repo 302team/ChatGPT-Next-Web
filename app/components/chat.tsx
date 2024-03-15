@@ -959,7 +959,7 @@ function useSpeakAndVoice(
         showToast(err);
       })
       .finally(() => setShowLoading(false));
-  }, [recordingBlob, cancelRecording]);
+  }, [recordingBlob]);
 
   return {
     showLoading,
@@ -2007,7 +2007,7 @@ function _Chat(props: { promptStarters: string[] }) {
             />
           )}
 
-          {!showRecording && (
+          {/* {!showRecording && (
             <IconButton
               text=""
               icon={<VoiceIcon />}
@@ -2021,7 +2021,7 @@ function _Chat(props: { promptStarters: string[] }) {
               }}
               className={styles["chat-input-voice"]}
             />
-          )}
+          )} */}
 
           {couldStop ? (
             <ChatAction
