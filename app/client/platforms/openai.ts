@@ -210,20 +210,24 @@ export class ChatGPTApi implements LLMApi {
 
               try {
                 const resJson = await res.clone().json();
-                if (resJson.error && resJson.error?.type === "api_error") {
-                  const CODE =
-                    ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
-                  errorMsg =
-                    Locale.Auth[CODE as AuthType] || resJson.error.message;
-                  console.log(
-                    "🚀 ~ ChatGPTApi ~ onopen ~ CODE:",
-                    CODE,
-                    errorMsg,
-                  );
-                } else if (
-                  resJson.error &&
-                  resJson.error?.param.startsWith("5")
-                ) {
+                if (resJson.error) {
+                  if (resJson.error?.type === "api_error") {
+                    const CODE =
+                      ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
+                    errorMsg =
+                      Locale.Auth[CODE as AuthType] || resJson.error.message;
+                    console.log(
+                      "🚀 ~ ChatGPTApi ~ onopen ~ CODE:",
+                      CODE,
+                      errorMsg,
+                    );
+                  } else if (resJson.error?.param.startsWith("5")) {
+                    errorMsg = Locale.Auth.SERVER_ERROR;
+                  } else if (
+                    resJson.error?.message.includes("No config for gizmo")
+                  ) {
+                    errorMsg = Locale.GPTs.Error.Deleted;
+                  }
                 }
 
                 extraInfo = prettyObject(resJson);

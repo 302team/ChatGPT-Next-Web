@@ -1,5 +1,5 @@
 import { BUILTIN_MASKS } from "../masks";
-import { getLang, Lang } from "../locales";
+import Locale, { getLang, Lang } from "../locales";
 import { DEFAULT_TOPIC, ChatMessage } from "./chat";
 import { ModelConfig, useAppConfig } from "./config";
 import { StoreKey } from "../constant";
@@ -18,6 +18,7 @@ export type Mask = {
   lang: Lang;
   builtin: boolean;
   promptStarters?: string[];
+  botHelloContent?: string;
 };
 
 export const DEFAULT_MASK_STATE = {
@@ -38,6 +39,7 @@ export const createEmptyMask = () =>
     lang: getLang(),
     builtin: false,
     createdAt: Date.now(),
+    botHelloContent: Locale.Store.BotHello,
   }) as Mask;
 
 export const useMaskStore = createPersistStore(

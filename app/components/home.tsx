@@ -34,6 +34,7 @@ import {
   useAccessStore,
   useChatStore,
   ModelType,
+  BOT_HELLO,
 } from "../store";
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
@@ -223,8 +224,28 @@ function ChatWindow() {
           });
 
           // 设置模型的 promptStarters
-          if (opt.is_gpts && opt.gpts_msg && opt.gpts_msg.prompt_starters) {
-            setPromptStarters(opt.gpts_msg.prompt_starters);
+          if (opt.is_gpts && opt.gpts_msg) {
+            if (opt.gpts_msg.prompt_starters) {
+              setPromptStarters(opt.gpts_msg.prompt_starters);
+            }
+            if (opt.gpts_msg.description) {
+              // setBotHelloContent(opt.gpts_msg.description);
+            }
+            if (opt.gpts_msg.logo_url) {
+              chatStore.updateCurrentSession((session) => {
+                session.mask.avatar = opt.gpts_msg.logo_url;
+              });
+            }
+            if (opt.gpts_msg.description) {
+              chatStore.updateCurrentSession((session) => {
+                session.mask.botHelloContent = opt.gpts_msg.description;
+              });
+            }
+            config.update((config) => {
+              config.gptsConfig = {
+                ...(opt.gpts_msg as typeof config.gptsConfig),
+              };
+            });
           }
           setValidPwdVisible(false);
         }}

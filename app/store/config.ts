@@ -111,6 +111,13 @@ export const CHATBOT_CONFIG = {
   },
 
   isGpts: false,
+  gptsConfig: {
+    author: "",
+    code: "",
+    description: "",
+    logo_url: "",
+    name: "",
+  },
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG &

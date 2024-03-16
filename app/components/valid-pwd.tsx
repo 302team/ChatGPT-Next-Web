@@ -61,6 +61,9 @@ export function ValidPwd(props: ValidPwdProps) {
         config.update((config) => (config.modelConfig.model = model));
       }
 
+      searchParams.delete("pwd");
+      searchParams.delete("confirm");
+      setSearchParams(searchParams, { replace: true });
       callback?.(res);
       return res;
     } else {

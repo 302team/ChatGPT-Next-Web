@@ -410,3 +410,10 @@ pre {
 .gpts-selector > div:nth-of-type(2) {
   max-height: 75vh;
 }
+
+.gpts-selector {
+  .gpts-selector-spin {
+    top: 50% !important;
+    transform: translate(0, -50%);
+  }
+}

@@ -10,6 +10,10 @@ const cn = {
       "请访问创[GPT302](https://dash.gpt302.com)建属于你自己的机器人",
     ApiTimeout: "请求失败，请重试",
     NetworkError: "网络错误",
+    PageOpenError: "页面加载失败",
+    Action: {
+      Retry: "重试",
+    },
   },
   Auth: {
     Title: "需要分享码",
@@ -110,7 +114,6 @@ const cn = {
     Model: {
       Selector: "选择模型",
       Local: "本地模型",
-      GPTs: "应用商店",
       KnowledgeBase: "知识库",
       SearchPlaceholder: "请输入名称",
     },
@@ -508,6 +511,16 @@ const cn = {
     Source: "来源",
     Topic: "主题",
     Time: "时间",
+  },
+  GPTs: {
+    PrefixName: "[应用]",
+    Modal: {
+      Title: "应用商店",
+      Subtitle: "",
+    },
+    Error: {
+      Deleted: "应用已被删除",
+    },
   },
   Config: {
     title: "聊天机器人 - GPT302",

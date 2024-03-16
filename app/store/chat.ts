@@ -108,7 +108,7 @@ function createEmptySession(): ChatSession {
 
 function getSummarizeModel(currentModel: string) {
   // if it is using gpt-* models, force to use 3.5 to summarize
-  if (currentModel.startsWith("gpt")) {
+  if (currentModel.startsWith("gpt") || currentModel.startsWith("claude")) {
     return SUMMARIZE_MODEL;
   }
   if (currentModel.startsWith("gemini-pro")) {
@@ -289,9 +289,18 @@ export const useChatStore = createPersistStore(
 
       newSession(mask?: Mask, override?: boolean) {
         const session = createEmptySession();
+        const config = useAppConfig.getState();
+
+        if (config.isGpts) {
+          if (config.gptsConfig.logo_url) {
+            session.mask.avatar = config.gptsConfig.logo_url;
+          }
+          if (config.gptsConfig.description) {
+            session.mask.botHelloContent = config.gptsConfig.description;
+          }
+        }
 
         if (mask) {
-          const config = useAppConfig.getState();
           const globalModelConfig = config.modelConfig;
 
           session.mask = {

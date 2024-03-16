@@ -38,6 +38,8 @@ import dynamic from "next/dynamic";
 import { Modal, showConfirm, showToast } from "./ui-lib";
 import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
 
+import { Spin, Result, Button } from "antd";
+
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
 });
@@ -172,7 +174,7 @@ export function useWindowSize() {
   return windowSize;
 }
 
-function useGptsConfigMessage(props: { callback: () => void }) {
+function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
   const [gptsModel, setGptsModel] = useState();
   const chatStore = useChatStore();
   const config = useAppConfig();
@@ -188,7 +190,6 @@ function useGptsConfigMessage(props: { callback: () => void }) {
             ...data,
             code: data.id,
           });
-          props?.callback?.();
 
           const emptyMask = createEmptyMask();
 
@@ -204,7 +205,8 @@ function useGptsConfigMessage(props: { callback: () => void }) {
               ...emptyMask,
               syncGlobalConfig: false,
               avatar: data.display_url ?? DEFAULT_MASK_AVATAR,
-              name: data.display_name,
+              name: `${Locale.GPTs.PrefixName} ${data.display_name}`,
+              botHelloContent: data.description || emptyMask.botHelloContent,
               hideContext: true,
               modelConfig: {
                 ...config.modelConfig,
@@ -214,6 +216,8 @@ function useGptsConfigMessage(props: { callback: () => void }) {
             } as Mask,
             true,
           );
+
+          props?.callback?.(data);
         }
       }
     };
@@ -228,22 +232,59 @@ function useGptsConfigMessage(props: { callback: () => void }) {
   };
 }
 
-export function GptsConfigModel(props: { onClose: () => void }) {
+export function GptsConfigModel(props: {
+  style?: React.CSSProperties;
+  onClose: () => void;
+}) {
   const windowSize = useWindowSize();
+  const [spinning, setSpinning] = useState(true);
+  const [error, setError] = useState(false);
+  const [iframeSrc, setIframeSrc] = useState(GPTS302_WEBSITE_URL);
 
   return (
-    <div className="modal-mask">
+    <div className="modal-mask" style={props.style}>
       <Modal
-        title={Locale.Chat.Model.GPTs}
+        title={Locale.GPTs.Modal.Title}
         containerClass="gpts-selector"
         onClose={() => props.onClose()}
       >
-        <iframe
-          width="100%"
-          height={windowSize.height * 0.7}
-          src={GPTS302_WEBSITE_URL}
-          title={Locale.Chat.Model.GPTs}
-        ></iframe>
+        <Spin spinning={spinning} className="gpts-selector-spin">
+          {error ? (
+            <Result
+              status="500"
+              subTitle={Locale.Error.PageOpenError}
+              extra={
+                <Button
+                  key="retry"
+                  onClick={() => {
+                    setIframeSrc("about:blank");
+                    setError(false);
+                    setSpinning(true);
+                    setIframeSrc(GPTS302_WEBSITE_URL);
+                  }}
+                >
+                  {Locale.Error.Action.Retry}
+                </Button>
+              }
+            />
+          ) : (
+            <iframe
+              width="100%"
+              frameBorder={0}
+              height={windowSize.height * 0.7}
+              src={iframeSrc}
+              title={Locale.GPTs.Modal.Title}
+              onLoad={() => {
+                setError(false);
+                setSpinning(false);
+              }}
+              onError={() => {
+                setError(true);
+                setSpinning(false);
+              }}
+            ></iframe>
+          )}
+        </Spin>
       </Modal>
     </div>
   );
@@ -266,8 +307,11 @@ export function SideBar(props: { className?: string }) {
   );
 
   useGptsConfigMessage({
-    callback: () => {
+    callback(data: any) {
       setShowGptsConfigModal(false);
+      if (isMobileScreen) {
+        navigate(Path.Chat + location.search);
+      }
     },
   });
 
@@ -331,7 +375,7 @@ export function SideBar(props: { className?: string }) {
           />
           <IconButton
             icon={<PluginIcon />}
-            text={shouldNarrow ? undefined : Locale.Chat.Model.GPTs}
+            text={shouldNarrow ? undefined : Locale.GPTs.Modal.Title}
             className={styles["sidebar-bar-button"]}
             onClick={() => setShowGptsConfigModal(true)}
             shadow
@@ -421,9 +465,10 @@ export function SideBar(props: { className?: string }) {
         <AppDescription onClose={() => setShowAppDescModal(false)} />
       )}
 
-      {showGptsConfigModal && (
-        <GptsConfigModel onClose={() => setShowGptsConfigModal(false)} />
-      )}
+      <GptsConfigModel
+        style={{ display: showGptsConfigModal ? "flex" : "none" }}
+        onClose={() => setShowGptsConfigModal(false)}
+      />
     </div>
   );
 }

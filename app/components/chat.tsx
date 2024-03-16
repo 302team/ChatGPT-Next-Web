@@ -943,7 +943,9 @@ function useSpeakAndVoice(
 
     const fileName =
       nanoid() + "." + recordingBlob.type.split(";")[0].split("/")[1];
-    const file = new File([recordingBlob], fileName);
+    const file = new File([recordingBlob], fileName, {
+      type: recordingBlob.type.split(";")[0],
+    });
     const formData = new FormData();
     formData.append("file", file);
     formData.append("model", "whisper-1");
@@ -1038,6 +1040,10 @@ function _Chat(props: { promptStarters: string[] }) {
     uploadImage,
   } = useUploadFile();
 
+  const disabledSend = useMemo(() => {
+    return !userInput && !attachImages.length;
+  }, [userInput, attachImages]);
+
   // prompt hints
   const promptStore = usePromptStore();
   const [promptHints, setPromptHints] = useState<RenderPompt[]>([]);
@@ -1105,7 +1111,7 @@ function _Chat(props: { promptStarters: string[] }) {
   };
 
   const doSubmit = (userInput: string) => {
-    if (userInput.trim() === "") return;
+    // if (userInput.trim() === "") return;
     const matchCommand = chatCommands.match(userInput);
     if (matchCommand.matched) {
       setUserInput("");
@@ -1313,7 +1319,13 @@ function _Chat(props: { promptStarters: string[] }) {
     context.length === 0 &&
     session.messages.at(0)?.content !== BOT_HELLO.content
   ) {
-    const copiedHello = Object.assign({}, BOT_HELLO);
+    console.warn(session.mask.botHelloContent);
+
+    const botHello = {
+      ...BOT_HELLO,
+      content: session.mask.botHelloContent,
+    } as ChatMessage;
+    const copiedHello = Object.assign({}, botHello);
 
     /* fix: 第一次打开聊天机器人提示要填key */
     // if (!accessStore.isAuthorized()) {
@@ -2063,9 +2075,12 @@ function _Chat(props: { promptStarters: string[] }) {
             <ChatAction
               icon={<SendIcon />}
               text=""
-              disabled={!!!userInput}
+              disabled={disabledSend}
               className={styles["chat-input-send"]}
-              onClick={() => doSubmit(userInput)}
+              onClick={() => {
+                if (disabledSend) return;
+                doSubmit(userInput);
+              }}
             />
           )}
         </div>

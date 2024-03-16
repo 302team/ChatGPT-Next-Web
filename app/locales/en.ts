@@ -12,6 +12,10 @@ const en: LocaleType = {
       "Please visit [GPT302](https://dash.gpt302.com) to create your own robot",
     ApiTimeout: "Request failed, please try again",
     NetworkError: "Network Error",
+    PageOpenError: "Page Open Error",
+    Action: {
+      Retry: "Retry",
+    },
   },
   Auth: {
     Title: "Please enter the share code",
@@ -112,7 +116,6 @@ const en: LocaleType = {
     Model: {
       Selector: "Model Selector",
       Local: "Local",
-      GPTs: "App Store",
       KnowledgeBase: "Knowledge Base",
       SearchPlaceholder: "Please input value",
     },
@@ -488,7 +491,10 @@ const en: LocaleType = {
     NotShow: "Never Show Again",
     ConfirmNoShow: "Confirm to disable？You can enable it in settings later.",
   },
-
+  URLCommand: {
+    Code: "Detected access code from url, confirm to apply? ",
+    Settings: "Detected settings from url, confirm to apply?",
+  },
   UI: {
     Confirm: "Confirm",
     Cancel: "Cancel",
@@ -510,10 +516,15 @@ const en: LocaleType = {
     Topic: "Topic",
     Time: "Time",
   },
-
-  URLCommand: {
-    Code: "Detected access code from url, confirm to apply? ",
-    Settings: "Detected settings from url, confirm to apply?",
+  GPTs: {
+    PrefixName: "[App]",
+    Modal: {
+      Title: "App Store",
+      Subtitle: "",
+    },
+    Error: {
+      Deleted: "This App has been deleted.",
+    },
   },
   Config: {
     title: "Chatbot - GPT302",
