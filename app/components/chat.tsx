@@ -1323,7 +1323,7 @@ function _Chat(props: { promptStarters: string[] }) {
 
     const botHello = {
       ...BOT_HELLO,
-      content: session.mask.botHelloContent,
+      content: session.mask.botHelloContent ?? BOT_HELLO.content,
     } as ChatMessage;
     const copiedHello = Object.assign({}, botHello);
 
