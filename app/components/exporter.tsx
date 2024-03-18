@@ -560,7 +560,8 @@ export function ImagePreviewer(props: {
               {config.chatbotName || "GPT302"}
             </div>
             <div className={styles["sub-title"]}>
-              {config.chatbotDesc || Locale.Config.description}
+              {config.chatbotDesc ||
+                Locale.Config.description(config.isGpts ? "GPTs" : "AI")}
             </div>
             <div className={styles["icons"]}>
               <ExportAvatar avatar={config.avatar} />
