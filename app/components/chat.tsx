@@ -2029,7 +2029,7 @@ function _Chat(props: { promptStarters: string[] }) {
             />
           )}
 
-          {!showRecording && (
+          {/* {!showRecording && (
             <IconButton
               text=""
               icon={<VoiceIcon />}
@@ -2043,7 +2043,7 @@ function _Chat(props: { promptStarters: string[] }) {
               }}
               className={styles["chat-input-voice"]}
             />
-          )}
+          )} */}
 
           {couldStop ? (
             <ChatAction
