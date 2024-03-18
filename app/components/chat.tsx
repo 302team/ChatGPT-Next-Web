@@ -946,6 +946,7 @@ function useSpeakAndVoice(
     const file = new File([recordingBlob], fileName, {
       type: recordingBlob.type.split(";")[0],
     });
+    console.log("🚀 ~ useEffect ~ file:", file);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("model", "whisper-1");
