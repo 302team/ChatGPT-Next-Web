@@ -243,6 +243,7 @@ function ChatWindow() {
               });
             }
             config.update((config) => {
+              config.disablePromptHint = true;
               config.gptsConfig = {
                 ...(opt.gpts_msg as typeof config.gptsConfig),
               };
