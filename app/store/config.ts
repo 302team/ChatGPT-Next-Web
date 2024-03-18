@@ -110,6 +110,7 @@ export const CHATBOT_CONFIG = {
     sendMemory: true, // 历史摘要: 自动压缩聊天记录并作为上下文发送
   },
 
+  useGpts: true, // 是否开启 gpts 应用
   isGpts: false,
   gptsConfig: {
     author: "",

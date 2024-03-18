@@ -193,6 +193,7 @@ function ChatWindow() {
           config.update((conf) => {
             conf.chatbotInfo = opt.info ?? "";
             conf.isGpts = opt.is_gpts;
+            conf.useGpts = !!opt.use_gpts;
 
             const settings = opt.settings;
             console.warn(

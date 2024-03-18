@@ -38,7 +38,7 @@ export function AvatarPicker(props: {
 export function Avatar(props: { model?: ModelType; avatar?: string }) {
   if (props.model) {
     return (
-      <div className="no-dark">
+      <div className="no-dark mask-avatar">
         <Image src={Logo.src} alt="" width={30} height={30} />
         {/* {props.model?.startsWith("gpt-4") ? (
           <BlackBotIcon className="user-avatar" />
@@ -49,7 +49,7 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
     );
   } else if (props.avatar && regexUrl.test(props.avatar)) {
     return (
-      <div className="no-dark">
+      <div className="no-dark mask-avatar">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={props.avatar}

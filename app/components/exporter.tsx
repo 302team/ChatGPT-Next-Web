@@ -438,6 +438,16 @@ export function ImagePreviewer(props: {
 
   const previewRef = useRef<HTMLDivElement>(null);
 
+  const modelName = useMemo(() => {
+    if (config.isGpts) {
+      return config.gptsConfig.name;
+    } else if (mask.modelConfig.model.startsWith("gpt-4-gizmo")) {
+      return mask.modelName;
+    } else {
+      return mask.modelConfig.model;
+    }
+  }, [config, mask]);
+
   const copy = () => {
     showToast(Locale.Export.Image.Toast);
     const dom = previewRef.current;
@@ -563,7 +573,7 @@ export function ImagePreviewer(props: {
               {Locale.Exporter.Source}: GPT302
             </div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Model}: {mask.modelConfig.model}
+              {Locale.Exporter.Model}: {modelName}
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Topic}: {session.topic}

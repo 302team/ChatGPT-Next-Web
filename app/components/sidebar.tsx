@@ -212,6 +212,7 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
                 ...config.modelConfig,
                 model: `gpt-4-gizmo-${data.uuid}`,
               },
+              modelName: data.display_name,
               promptStarters,
             } as Mask,
             true,
@@ -373,13 +374,16 @@ export function SideBar(props: { className?: string }) {
             }}
             shadow
           />
-          <IconButton
-            icon={<PluginIcon />}
-            text={shouldNarrow ? undefined : Locale.GPTs.Modal.Title}
-            className={styles["sidebar-bar-button"]}
-            onClick={() => setShowGptsConfigModal(true)}
-            shadow
-          />
+
+          {config.useGpts && (
+            <IconButton
+              icon={<PluginIcon />}
+              text={shouldNarrow ? undefined : Locale.GPTs.Modal.Title}
+              className={styles["sidebar-bar-button"]}
+              onClick={() => setShowGptsConfigModal(true)}
+              shadow
+            />
+          )}
         </div>
       )}
 

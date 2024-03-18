@@ -19,6 +19,7 @@ export type Mask = {
   builtin: boolean;
   promptStarters?: string[];
   botHelloContent?: string;
+  modelName?: string;
 };
 
 export const DEFAULT_MASK_STATE = {

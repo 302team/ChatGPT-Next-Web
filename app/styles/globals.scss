@@ -353,6 +353,7 @@ pre {
   }
 }
 
+.mask-avatar,
 .user-avatar {
   height: 30px;
   min-height: 30px;
@@ -361,6 +362,9 @@ pre {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.user-avatar {
   border: var(--border-in-light);
   box-shadow: var(--card-shadow);
   border-radius: 11px;
