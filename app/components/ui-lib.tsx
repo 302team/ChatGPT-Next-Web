@@ -100,6 +100,7 @@ interface ModalProps {
   subtitle?: string;
   children?: any;
   actions?: React.ReactNode[];
+  headerActions?: React.ReactNode[];
   defaultMax?: boolean;
   footer?: React.ReactNode;
   containerClass?: string;
@@ -139,12 +140,22 @@ export function Modal(props: ModalProps) {
         </div>
 
         <div className={styles["modal-header-actions"]}>
-          <div
-            className={styles["modal-header-action"]}
-            onClick={() => setMax(!isMax)}
-          >
-            {isMax ? <MinIcon /> : <MaxIcon />}
-          </div>
+          {props.headerActions ? (
+            <>
+              {props.headerActions?.map((action, i) => (
+                <div key={i} className={styles["modal-header-action"]}>
+                  {action}
+                </div>
+              ))}
+            </>
+          ) : (
+            <div
+              className={styles["modal-header-action"]}
+              onClick={() => setMax(!isMax)}
+            >
+              {isMax ? <MinIcon /> : <MaxIcon />}
+            </div>
+          )}
           <div
             className={styles["modal-header-action"]}
             onClick={props.onClose}

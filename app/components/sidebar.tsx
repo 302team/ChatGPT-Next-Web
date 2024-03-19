@@ -1,6 +1,7 @@
 import { useEffect, useRef, useMemo, useState } from "react";
 
 import styles from "./home.module.scss";
+import uiStyles from "./ui-lib.module.scss";
 
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
@@ -15,10 +16,11 @@ import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
 import NextImage from "next/image";
 import BotIconDark from "../icons/logo-horizontal-dark.png";
+import ExportIcon from "../icons/share.svg";
 
 import Locale from "../locales";
 
-import { useAppConfig, useChatStore } from "../store";
+import { useAccessStore, useAppConfig, useChatStore } from "../store";
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
@@ -33,7 +35,7 @@ import {
 } from "../constant";
 
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { isIOS, openWindow, useMobileScreen } from "../utils";
+import { copyToClipboard, isIOS, openWindow, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { Modal, showConfirm, showToast } from "./ui-lib";
 import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
@@ -139,12 +141,35 @@ function useDragSideBar() {
 
 function AppDescription(props: { onClose: () => void }) {
   const config = useAppConfig();
+  const access = useAccessStore();
+
+  function ShareAction() {
+    return (
+      <div
+        className={uiStyles["modal-header-action"]}
+        onClick={() => {
+          const modelName = config.isGpts
+            ? config.gptsConfig.name
+            : config.modelConfig.model;
+          const msg = Locale.Export.ShareMessage(
+            access.pwd,
+            config.isGpts,
+            modelName,
+          );
+          copyToClipboard(msg);
+        }}
+      >
+        <ExportIcon />
+      </div>
+    );
+  }
 
   return (
     <div className="modal-mask app-desc-modal">
       <Modal
         title={Locale.Config.AppDescTitle}
         subtitle={Locale.Config.AppDescSubTitle}
+        headerActions={[<ShareAction key="share" />]}
         onClose={() => props.onClose()}
       >
         <div dangerouslySetInnerHTML={{ __html: config.chatbotInfo }}></div>

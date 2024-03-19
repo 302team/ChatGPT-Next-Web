@@ -820,6 +820,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-columns: max-content;
   padding: 20px;
+  align-items: flex-end;
   padding-bottom: 15px;
   box-sizing: border-box;
   font-size: 14px !important;
@@ -833,6 +834,7 @@
     color: #333;
     background-color: rgba(0, 0, 0, 0.02);
     cursor: pointer;
+    height: fit-content;
   }
 }
 

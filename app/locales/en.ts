@@ -145,6 +145,24 @@ const en: LocaleType = {
       Toast: "Capturing Image...",
       Modal: "Long press or right click to save image",
     },
+    ShareMessage: (pwd?: string, isGpts?: boolean, modelName?: string) => {
+      let url = location.href;
+      let msg = "Link: ";
+      if (pwd) {
+        url += `?pwd=${pwd}`;
+      }
+      msg += url;
+      if (pwd) {
+        msg += `\nShare code: ${pwd}`;
+      }
+
+      if (isGpts && modelName) {
+        msg += `\nApp: ${modelName}`;
+      }
+      msg += "\n---Shared by GPT302 user";
+
+      return msg;
+    },
   },
   Select: {
     Search: "Search",

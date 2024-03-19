@@ -143,6 +143,24 @@ const cn = {
       Toast: "正在生成截图",
       Modal: "长按或右键保存图片",
     },
+    ShareMessage: (pwd?: string, isGpts?: boolean, modelName?: string) => {
+      let url = location.href;
+      let msg = "链接: ";
+      if (pwd) {
+        url += `?pwd=${pwd}`;
+      }
+      msg += url;
+      if (pwd) {
+        msg += `\n分享码: ${pwd}`;
+      }
+
+      if (isGpts && modelName) {
+        msg += `\n应用: ${modelName}`;
+      }
+      msg += "\n---来自GPT302会员的分享";
+
+      return msg;
+    },
   },
   Select: {
     Search: "搜索消息",
