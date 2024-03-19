@@ -112,6 +112,7 @@ const en: LocaleType = {
       ToTextError: "Voice to text error!",
       StartSpeaking: "Start speaking",
       StopSpeaking: "Stop speaking",
+      NotSupport: "Your browser does not support the recording function",
     },
     Model: {
       Selector: "Model Selector",

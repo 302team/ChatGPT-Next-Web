@@ -459,13 +459,17 @@ export const useChatStore = createPersistStore(
               session.messages = session.messages.concat();
             });
           },
-          onFinish(message) {
-            console.warn("🚀 ~ onFinish ~ message:", message);
+          onFinish(message, hasError) {
+            console.warn(
+              "🚀 ~ onFinish ~ message:",
+              message,
+              "hasError",
+              hasError,
+            );
             botMessage.streaming = false;
-            if (message) {
-              botMessage.content = message;
-              get().onNewMessage(botMessage);
-            }
+            botMessage.content = message ?? "";
+            botMessage.isError = hasError as boolean;
+            get().onNewMessage(botMessage);
             ChatControllerPool.remove(session.id, botMessage.id);
           },
           onError(error) {

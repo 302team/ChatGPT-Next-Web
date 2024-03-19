@@ -822,12 +822,13 @@
   padding: 20px;
   padding-bottom: 15px;
   box-sizing: border-box;
+  font-size: 14px !important;
 
   &-item {
     padding: 15px;
     border: rgba(0, 0, 0, 0.03) 1px solid;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 14px !important;
     font-weight: normal;
     color: #333;
     background-color: rgba(0, 0, 0, 0.02);

@@ -150,8 +150,10 @@
   justify-content: flex-end;
   opacity: 1;
   cursor: pointer;
-  width: 110px;
+  width: 50px;
   height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
 
   img {
     width: auto;
@@ -163,6 +165,7 @@
 }
 
 .sidebar-title {
+  padding-right: 50px;
   font-size: 20px;
   font-weight: bold;
   animation: slide-in ease 0.3s;

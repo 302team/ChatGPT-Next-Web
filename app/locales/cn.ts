@@ -110,6 +110,7 @@ const cn = {
       ToTextError: "语音转文字出错！",
       StartSpeaking: "开始说话",
       StopSpeaking: "停止说话",
+      NotSupport: "您的浏览器不支持录音功能",
     },
     Model: {
       Selector: "选择模型",

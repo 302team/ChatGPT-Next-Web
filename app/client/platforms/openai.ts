@@ -150,6 +150,9 @@ export class ChatGPTApi implements LLMApi {
         let responseText = "";
         let remainText = "";
         let finished = false;
+        let isStreamDone = false;
+        let hasUncatchError = false;
+        let isAborted = false;
 
         // animate response to make it looks smooth
         function animateResponseText() {
@@ -176,11 +179,18 @@ export class ChatGPTApi implements LLMApi {
         const finish = () => {
           if (!finished) {
             finished = true;
-            options.onFinish(responseText + remainText);
+            options.onFinish(
+              responseText + remainText,
+              !isStreamDone || hasUncatchError || isAborted,
+            );
           }
         };
 
-        controller.signal.onabort = finish;
+        controller.signal.onabort = () => {
+          console.warn("🚀 ~ ChatGPTApi ~ chat ~ onabort");
+          isAborted = true;
+          finish();
+        };
 
         fetchEventSource(chatPath, {
           ...chatPayload,
@@ -227,6 +237,8 @@ export class ChatGPTApi implements LLMApi {
                     resJson.error?.message.includes("No config for gizmo")
                   ) {
                     errorMsg = Locale.GPTs.Error.Deleted;
+                  } else {
+                    hasUncatchError = true;
                   }
                 }
 
@@ -249,7 +261,17 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onmessage(msg) {
+            isStreamDone = msg.data === "[DONE]";
+
             if (msg.data === "[DONE]" || finished) {
+              console.warn(
+                "🚀🚀 ~ ChatGPTApi ~ onmessage ~ finished:",
+                finished,
+              );
+              console.warn(
+                "🚀🚀 ~ ChatGPTApi ~ onmessage ~ isStreamDone:",
+                isStreamDone,
+              );
               return finish();
             }
             const text = msg.data;
@@ -270,9 +292,11 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onclose() {
+            console.warn("🚀 ~ ChatGPTApi ~ fetchEventSource onclose ~");
             finish();
           },
           onerror(e) {
+            console.warn("🚀 ~ ChatGPTApi ~ fetchEventSource onerror ~ e:", e);
             options.onError?.(e);
             throw e;
           },
@@ -284,7 +308,7 @@ export class ChatGPTApi implements LLMApi {
 
         const resJson = await res.json();
         const message = this.extractMessage(resJson);
-        options.onFinish(message);
+        options.onFinish(message, false);
       }
     } catch (e) {
       console.log("[Request] failed to make a chat request", e);
