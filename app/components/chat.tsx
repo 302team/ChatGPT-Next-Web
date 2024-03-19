@@ -1575,6 +1575,9 @@ function _Chat(props: { promptStarters: string[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const DEBUG = !!window.location.origin.match("jomywu");
+  console.warn("🚀 ~ ========DEBUG======= ~", DEBUG);
+
   return (
     <div className={styles.chat} key={session.id}>
       <div
@@ -2029,7 +2032,7 @@ function _Chat(props: { promptStarters: string[] }) {
             />
           )}
 
-          {!showRecording && (
+          {DEBUG && (
             <IconButton
               text=""
               icon={<VoiceIcon />}
