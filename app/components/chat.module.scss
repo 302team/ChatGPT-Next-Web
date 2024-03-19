@@ -819,11 +819,17 @@
   gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-columns: max-content;
+  align-items: center;
   padding: 20px;
-  align-items: flex-end;
   padding-bottom: 15px;
   box-sizing: border-box;
-  font-size: 14px !important;
+  margin: 0;
+  list-style: none;
+
+  &-col {
+    max-width: unset;
+    width: auto;
+  }
 
   &-item {
     padding: 15px;
@@ -834,7 +840,7 @@
     color: #333;
     background-color: rgba(0, 0, 0, 0.02);
     cursor: pointer;
-    height: fit-content;
+    height: max-content;
   }
 }
 
@@ -850,6 +856,7 @@
 
     &-item {
       flex-shrink: 0;
+      text-wrap: nowrap;
     }
   }
 }

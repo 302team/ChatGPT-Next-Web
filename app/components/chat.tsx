@@ -121,6 +121,7 @@ import { ClientApi, MultimodalContent } from "../client/api";
 import Image from "next/image";
 
 import { LoadingOutlined, CloseOutlined } from "@ant-design/icons";
+import { Typography } from "antd";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -1898,19 +1899,19 @@ function _Chat(props: { promptStarters: string[] }) {
         {promptStarters.length > 0 &&
           messages.length === 1 &&
           context.length === 1 && (
-            <div className={styles["chat-prompt-list"]}>
+            <ul className={styles["chat-prompt-list"]}>
               {promptStarters.map((item, index) => (
-                <div
+                <li
                   key={index}
                   className={styles["chat-prompt-list-item"]}
                   onClick={() => {
                     doSubmit(item);
                   }}
                 >
-                  {item}
-                </div>
+                  <Typography.Text>{item}</Typography.Text>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
       </div>
 
