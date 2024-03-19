@@ -12,7 +12,7 @@ import React, {
 
 import mime from "mime";
 import { nanoid } from "nanoid";
-import RecordRTC from "recordrtc";
+import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
@@ -872,6 +872,17 @@ function useSpeakAndVoice(
   const [cancelRecording, setCancelRecording] = useState(false);
   const extArr = {};
 
+  const {
+    startRecording,
+    stopRecording,
+    // togglePauseResume,
+    recordingBlob,
+    isRecording,
+    // isPaused,
+    recordingTime,
+    // mediaRecorder
+  } = useAudioRecorder();
+
   const audioRef = useRef(new Audio());
   const speakContent = (content: string | MultimodalContent[]) => {
     if (fetchSpeechLoading) return;
@@ -923,91 +934,40 @@ function useSpeakAndVoice(
     };
   }, []);
 
-  const [recordRTC, setRecordRTC] = useState<RecordRTC | null>();
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
+  useEffect(() => {
+    if (cancelRecording) return;
+    if (!recordingBlob) return;
 
-  const stopRecording = (type?: string) => {
-    clearInterval(timerId as NodeJS.Timeout);
-    setIsRecording(false);
-    setRecordingTime(0);
+    // recordingBlob will be present at this point after 'stopRecording' has been called
+    setShowLoading(true);
 
-    if (type === "cancel") {
-      console.warn("🚀 ~ recording ~ Reset");
-      recordRTC?.reset();
-      recordRTC?.destroy();
-      setRecordRTC(null);
-    } else {
-      console.warn("🚀 ~ recording ~ Stop");
-      setShowLoading(true);
-      recordRTC?.stopRecording(async () => {
-        let recordingBlob = await recordRTC?.getBlob();
+    const fileName =
+      nanoid() + "." + recordingBlob.type.split(";")[0].split("/")[1];
+    const file = new File([recordingBlob], fileName, {
+      type: recordingBlob.type.split(";")[0],
+    });
+    console.log("🚀 ~ useEffect ~ file:", file);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("model", "whisper-1");
 
-        const fileName =
-          nanoid() + "." + recordingBlob.type.split(";")[0].split("/")[1];
-        const file = new File([recordingBlob], fileName, {
-          type: recordingBlob.type.split(";")[0],
-        });
-        console.log("🚀 ~ useEffect ~ type:", recordingBlob.type);
-        console.log("🚀 ~ useEffect ~ file:", file);
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("model", "whisper-1");
-
-        const api = new ClientApi(ModelProvider.GPT);
-        api.llm
-          .audioTranscriptions(formData)
-          .then((res) => res!.json())
-          .then((res) => {
-            if (res.text) {
-              setUserInput(res.text);
-              setShowRecording(false);
-            } else {
-              showToast(Locale.Chat.Speech.ToTextError);
-            }
-          })
-          .catch((err) => {
-            showToast(err);
-          })
-          .finally(() => {
-            setShowLoading(false);
-            setRecordRTC(null);
-          });
-      });
-    }
-  };
-
-  const startRecording = () => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      timerId = setInterval(() => {
-        setRecordingTime((prev) => (prev += 1));
-      }, 1000);
-      navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then((stream) => {
-          const options: RecordRTC.Options = {
-            type: "audio",
-            mimeType: "audio/wav",
-            numberOfAudioChannels: 1,
-            recorderType: RecordRTC.StereoAudioRecorder,
-          };
-
-          const rtc = new RecordRTC(stream, options);
-          setRecordRTC(rtc);
-          setIsRecording(true);
-          console.warn("🚀 ~ recording ~ Start");
-
-          rtc.startRecording();
-        })
-        // Error callback
-        .catch((err) => {
-          console.error(`The following getUserMedia error occurred: ${err}`);
-        });
-    } else {
-      showToast(Locale.Chat.Speech.NotSupport);
-    }
-  };
+    const api = new ClientApi(ModelProvider.GPT);
+    api.llm
+      .audioTranscriptions(formData)
+      .then((res) => res!.json())
+      .then((res) => {
+        if (res.text) {
+          setUserInput(res.text);
+          setShowRecording(false);
+        } else {
+          showToast(Locale.Chat.Speech.ToTextError);
+        }
+      })
+      .catch((err) => {
+        showToast(err);
+      })
+      .finally(() => setShowLoading(false));
+  }, [recordingBlob]);
 
   return {
     showLoading,
@@ -1024,6 +984,7 @@ function useSpeakAndVoice(
     showRecording,
     setShowRecording,
     isRecording,
+    recordingBlob,
     recordingTime,
     startRecording,
     stopRecording,
