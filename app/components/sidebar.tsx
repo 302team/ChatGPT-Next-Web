@@ -46,6 +46,10 @@ const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
 });
 
+const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
+  loading: () => null,
+});
+
 function useHotKey() {
   const chatStore = useChatStore();
 
@@ -258,7 +262,7 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
   };
 }
 
-export function GptsConfigModel(props: {
+export function GptsConfigModal(props: {
   style?: React.CSSProperties;
   onClose: () => void;
 }) {
@@ -316,10 +320,28 @@ export function GptsConfigModel(props: {
   );
 }
 
+export function MasksModal(props: {
+  style?: React.CSSProperties;
+  onClose: () => void;
+}) {
+  return (
+    <div className="modal-mask" style={props.style}>
+      <Modal
+        title={Locale.Mask.Name}
+        containerClass="gpts-selector"
+        onClose={() => props.onClose()}
+      >
+        <MaskPage onClose={props.onClose} />
+      </Modal>
+    </div>
+  );
+}
+
 export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
   const [showAppDescModal, setShowAppDescModal] = useState(false);
   const [showGptsConfigModal, setShowGptsConfigModal] = useState(false);
+  const [showMaskModal, setShowMaskModal] = useState(false);
 
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
@@ -388,15 +410,16 @@ export function SideBar(props: { className?: string }) {
             text={shouldNarrow ? undefined : Locale.Mask.Name}
             className={styles["sidebar-bar-button"]}
             onClick={() => {
-              if (config.dontShowMaskSplashScreen !== true) {
-                navigate(Path.NewChat + location.search, {
-                  state: { fromHome: true },
-                });
-              } else {
-                navigate(Path.Masks + location.search, {
-                  state: { fromHome: true },
-                });
-              }
+              setShowMaskModal(true);
+              // if (config.dontShowMaskSplashScreen !== true) {
+              //   navigate(Path.NewChat + location.search, {
+              //     state: { fromHome: true },
+              //   });
+              // } else {
+              //   navigate(Path.Masks + location.search, {
+              //     state: { fromHome: true },
+              //   });
+              // }
             }}
             shadow
           />
@@ -495,10 +518,12 @@ export function SideBar(props: { className?: string }) {
         <AppDescription onClose={() => setShowAppDescModal(false)} />
       )}
 
-      <GptsConfigModel
+      <GptsConfigModal
         style={{ display: showGptsConfigModal ? "flex" : "none" }}
         onClose={() => setShowGptsConfigModal(false)}
       />
+
+      {showMaskModal && <MasksModal onClose={() => setShowMaskModal(false)} />}
     </div>
   );
 }

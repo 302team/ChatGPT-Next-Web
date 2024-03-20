@@ -944,9 +944,7 @@ function useSpeakAndVoice(
 
     const fileName =
       nanoid() + "." + recordingBlob.type.split(";")[0].split("/")[1];
-    const file = new File([recordingBlob], fileName, {
-      type: recordingBlob.type.split(";")[0],
-    });
+    const file = new File([recordingBlob], fileName);
     console.log("🚀 ~ useEffect ~ file:", file);
     const formData = new FormData();
     formData.append("file", file);

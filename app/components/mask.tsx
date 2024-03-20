@@ -398,7 +398,7 @@ export function ContextPrompts(props: {
   );
 }
 
-export function MaskPage() {
+export function MaskPage(props: { onClose?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -487,13 +487,13 @@ export function MaskPage() {
                 onClick={() => importFromFile()}
               />
             </div>
-            <div className="window-action-button">
+            {/* <div className="window-action-button">
               <IconButton
                 icon={<CloseIcon />}
                 bordered
                 onClick={() => navigate(-1)}
               />
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -567,6 +567,7 @@ export function MaskPage() {
                     onClick={() => {
                       chatStore.newSession(m);
                       navigate(Path.Chat + location.search);
+                      props.onClose?.();
                     }}
                   />
                   {m.builtin ? (

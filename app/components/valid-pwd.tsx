@@ -104,6 +104,23 @@ export function ValidPwd(props: ValidPwdProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleConfirm = async () => {
+    if (submiting) return;
+    setSubmiting(true);
+
+    try {
+      await handleSubmit(userCode, (res) => {
+        props.onAuth?.(res.data);
+      });
+    } catch (error) {
+      console.log("🚀 ~ [valid pwd] submit error:", error);
+      showToast(Locale.Error.NetworkError);
+      accessStore.setRemember(false);
+    } finally {
+      setSubmiting(false);
+    }
+  };
+
   if (loading) return <Loading />;
 
   const themeMedia = window.matchMedia("(prefers-color-scheme: light)");
@@ -142,6 +159,11 @@ export function ValidPwd(props: ValidPwdProps) {
         onChange={(e) => {
           accessStore.update((access) => (access.pwd = e.currentTarget.value));
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleConfirm();
+          }
+        }}
       />
 
       {showError && (
@@ -156,22 +178,7 @@ export function ValidPwd(props: ValidPwdProps) {
           text={Locale.Auth.Confirm}
           type="primary"
           disabled={submiting}
-          onClick={async () => {
-            if (submiting) return;
-            setSubmiting(true);
-
-            try {
-              await handleSubmit(userCode, (res) => {
-                props.onAuth?.(res.data);
-              });
-            } catch (error) {
-              console.log("🚀 ~ [valid pwd] submit error:", error);
-              showToast(Locale.Error.NetworkError);
-              accessStore.setRemember(false);
-            } finally {
-              setSubmiting(false);
-            }
-          }}
+          onClick={handleConfirm}
         />
 
         <div>

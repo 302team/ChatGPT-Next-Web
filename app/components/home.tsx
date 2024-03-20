@@ -61,9 +61,9 @@ const NewChat = dynamic(async () => (await import("./new-chat")).NewChat, {
   loading: () => <Loading noLogo />,
 });
 
-const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
-  loading: () => <Loading noLogo />,
-});
+// const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
+//   loading: () => <Loading noLogo />,
+// });
 
 const ValidPwdPage = dynamic(
   async () => (await import("./valid-pwd")).ValidPwd,
@@ -265,7 +265,7 @@ function ChatWindow() {
             element={<Chat promptStarters={promptStarters} />}
           />
           <Route path={Path.NewChat} element={<NewChat />} />
-          <Route path={Path.Masks} element={<MaskPage />} />
+          {/* <Route path={Path.Masks} element={<MaskPage />} /> */}
           <Route
             path={Path.Chat}
             element={<Chat promptStarters={promptStarters} />}
