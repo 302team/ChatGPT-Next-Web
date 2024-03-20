@@ -948,6 +948,8 @@ function useSpeakAndVoice(
     console.log("🚀 ~ useEffect ~ file:", file);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("name", fileName);
+    formData.append("filename", fileName);
     formData.append("model", "whisper-1");
 
     const api = new ClientApi(ModelProvider.GPT);
