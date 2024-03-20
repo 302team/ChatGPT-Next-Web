@@ -112,6 +112,7 @@ export const CHATBOT_CONFIG = {
 
   showShareEntry: true,
   useGpts: true, // 是否开启 gpts 应用
+  openTTS: true, // 是否开启 语音功能 (语音转文字, 文字转语音)
   isGpts: false,
   gptsConfig: {
     author: "",

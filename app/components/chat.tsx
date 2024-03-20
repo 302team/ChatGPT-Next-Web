@@ -1788,29 +1788,31 @@ function _Chat(props: { promptStarters: string[] }) {
                                   )
                                 }
                               />
-                              <ChatAction
-                                text={
-                                  fetchSpeechLoading
-                                    ? "Load"
-                                    : speaking
-                                    ? Locale.Chat.Actions.Stop
-                                    : Locale.Chat.Actions.Speek
-                                }
-                                icon={
-                                  fetchSpeechLoading ? (
-                                    <LoadingOutlined />
-                                  ) : speaking ? (
-                                    <PauseIcon />
-                                  ) : (
-                                    <SpeakIcon />
-                                  )
-                                }
-                                onClick={() => {
-                                  speaking
-                                    ? cancelSpeak()
-                                    : speakContent(message.content);
-                                }}
-                              />
+                              {config.openTTS && (
+                                <ChatAction
+                                  text={
+                                    fetchSpeechLoading
+                                      ? "Load"
+                                      : speaking
+                                      ? Locale.Chat.Actions.Stop
+                                      : Locale.Chat.Actions.Speek
+                                  }
+                                  icon={
+                                    fetchSpeechLoading ? (
+                                      <LoadingOutlined />
+                                    ) : speaking ? (
+                                      <PauseIcon />
+                                    ) : (
+                                      <SpeakIcon />
+                                    )
+                                  }
+                                  onClick={() => {
+                                    speaking
+                                      ? cancelSpeak()
+                                      : speakContent(message.content);
+                                  }}
+                                />
+                              )}
                             </>
                           )}
                         </div>
@@ -2029,7 +2031,7 @@ function _Chat(props: { promptStarters: string[] }) {
             />
           )}
 
-          {!showRecording && (
+          {config.openTTS && !showRecording && (
             <IconButton
               text=""
               icon={<VoiceIcon />}
