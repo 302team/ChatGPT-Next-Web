@@ -342,8 +342,18 @@ export const useChatStore = createPersistStore(
         );
 
         if (deletingLastSession) {
+          const config = useAppConfig.getState();
           nextIndex = 0;
-          sessions.push(createEmptySession());
+          const session = createEmptySession();
+          if (config.isGpts) {
+            if (config.gptsConfig.logo_url) {
+              session.mask.avatar = config.gptsConfig.logo_url;
+            }
+            if (config.gptsConfig.description) {
+              session.mask.botHelloContent = config.gptsConfig.description;
+            }
+          }
+          sessions.push(session);
         }
 
         // for undo delete action
