@@ -2038,7 +2038,7 @@ function _Chat(props: { promptStarters: string[] }) {
             />
           )}
 
-          {config.openTTS && !showRecording && (
+          {/* {config.openTTS && !showRecording && (
             <IconButton
               text=""
               icon={<VoiceIcon />}
@@ -2048,7 +2048,7 @@ function _Chat(props: { promptStarters: string[] }) {
               }}
               className={styles["chat-input-voice"]}
             />
-          )}
+          )} */}
 
           {couldStop ? (
             <ChatAction
