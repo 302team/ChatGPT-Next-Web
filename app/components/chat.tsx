@@ -861,6 +861,7 @@ function useSpeakAndVoice(
   setUserInput: React.Dispatch<React.SetStateAction<string>>,
 ) {
   const chatStore = useChatStore();
+  const accessStore = useAccessStore();
   const [showLoading, setShowLoading] = useState(false);
 
   /* 文本转语音 */
@@ -954,7 +955,7 @@ function useSpeakAndVoice(
 
     const api = new ClientApi(ModelProvider.GPT);
     api.llm
-      .audioTranscriptions(formData)
+      .audioTranscriptions(formData, accessStore.baseUrl ?? "")
       .then((res) => res!.json())
       .then((res) => {
         if (res.text) {

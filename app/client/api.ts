@@ -85,7 +85,10 @@ export abstract class LLMApi {
   abstract usage(): Promise<LLMUsage>;
   abstract models(): Promise<LLMModel[]>;
   abstract audioSpeech(options: SpeechOptions): Promise<Response | void>;
-  abstract audioTranscriptions(formData: FormData): Promise<Response | void>;
+  abstract audioTranscriptions(
+    formData: FormData,
+    baseUrl?: string,
+  ): Promise<Response | void>;
 }
 
 type ProviderName = "openai" | "azure" | "claude" | "palm";

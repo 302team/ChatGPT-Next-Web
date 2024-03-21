@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 import { getServerSideConfig } from "../../config/server";
 
-
 const serverConfig = getServerSideConfig();
 
 // Danger! Do not hard code any secret value here!
@@ -15,6 +14,7 @@ const DANGER_CONFIG = {
   disableFastLink: serverConfig.disableFastLink,
   customModels: serverConfig.customModels,
   apiDomain: serverConfig.apiDomain,
+  baseUrl: serverConfig.baseUrl,
 };
 
 declare global {

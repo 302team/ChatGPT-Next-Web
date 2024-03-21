@@ -435,8 +435,13 @@ export class ChatGPTApi implements LLMApi {
     }
   }
 
-  async audioTranscriptions(formData: FormData) {
-    const res = await fetch(this.path(OpenaiPath.AudioTranscriptionsPath), {
+  async audioTranscriptions(formData: FormData, baseUrl?: string) {
+    let path = this.path(OpenaiPath.AudioTranscriptionsPath);
+    if (baseUrl) {
+      path = `${baseUrl}/${OpenaiPath.AudioTranscriptionsPath}`;
+    }
+
+    const res = await fetch(path, {
       method: "POST",
       headers: getHeadersNoCT(),
       body: formData,
