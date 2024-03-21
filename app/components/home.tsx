@@ -194,7 +194,7 @@ function ChatWindow() {
             conf.chatbotInfo = opt.info ?? "";
             conf.isGpts = opt.is_gpts;
             conf.useGpts = !!opt.use_gpts;
-            conf.openTTS = !!opt.open_tts;
+            conf.openTTS = opt.is_gpts ? true : !!opt.open_tts;
 
             const settings = opt.settings;
             console.warn(
