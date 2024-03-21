@@ -108,6 +108,7 @@ const en: LocaleType = {
       Speed: "speed",
       FetchAudioError: "FetchAudioError, please check interface or OSS",
       Recording: "Recording:",
+      ToTextEmpty: "Can't recognize",
       ToVoiceError: "Text to voice error!",
       ToTextError: "Voice to text error!",
       StartSpeaking: "Start speaking",

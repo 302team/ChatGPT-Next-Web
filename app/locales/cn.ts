@@ -107,6 +107,7 @@ const cn = {
       FetchAudioError: "获取音频文件出错，请检查接口或OSS配置",
       Recording: "录音中：",
       ToVoiceError: "文字转语音出错！",
+      ToTextEmpty: "无法识别",
       ToTextError: "语音转文字出错！",
       StartSpeaking: "开始说话",
       StopSpeaking: "停止说话",

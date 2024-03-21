@@ -857,9 +857,7 @@ function useUploadFile() {
   };
 }
 
-function useSpeakAndVoice(
-  setUserInput: React.Dispatch<React.SetStateAction<string>>,
-) {
+function useSpeakAndVoice(prosp: { doSubmit?: (userInput: string) => void }) {
   const chatStore = useChatStore();
   const accessStore = useAccessStore();
   const [showLoading, setShowLoading] = useState(false);
@@ -959,8 +957,10 @@ function useSpeakAndVoice(
       .then((res) => res!.json())
       .then((res) => {
         if (res.text) {
-          setUserInput(res.text);
-          setShowRecording(false);
+          prosp.doSubmit?.(res.text);
+          // setShowRecording(false);
+        } else if (res.text === "") {
+          showToast(Locale.Chat.Speech.ToTextEmpty);
         } else {
           showToast(Locale.Chat.Speech.ToTextError);
         }
@@ -1455,7 +1455,9 @@ function _Chat(props: { promptStarters: string[] }) {
     startRecording,
     stopRecording,
     setCancelRecording,
-  } = useSpeakAndVoice(setUserInput);
+  } = useSpeakAndVoice({
+    doSubmit: doSubmit,
+  });
 
   useCommand({
     fill: setUserInput,
