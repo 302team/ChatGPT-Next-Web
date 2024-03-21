@@ -950,6 +950,10 @@ function useSpeakAndVoice(prosp: { doSubmit?: (userInput: string) => void }) {
     formData.append("name", fileName);
     formData.append("filename", fileName);
     formData.append("model", "whisper-1");
+    formData.append(
+      "prompt",
+      `The voice language is most likely [${window.navigator.language}]`,
+    );
 
     const api = new ClientApi(ModelProvider.GPT);
     api.llm
