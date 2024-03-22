@@ -986,8 +986,8 @@ function useSpeakAndVoice(prosp: {
       .catch((err) => {
         console.error("🚀 ~ conver audio to wav error ~ err:", err);
         showToast(`${Locale.Chat.Speech.ConverError}: ${err.toString()}`);
-      })
-      .finally(() => setShowLoading(false));
+        setShowLoading(false);
+      });
   }, [recordingBlob]);
 
   return {
