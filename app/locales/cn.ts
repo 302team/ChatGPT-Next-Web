@@ -112,6 +112,7 @@ const cn = {
       StartSpeaking: "开始说话",
       StopSpeaking: "停止说话",
       NotSupport: "您的浏览器不支持录音功能",
+      ConverError: "音频格式转化失败",
     },
     Model: {
       Selector: "选择模型",

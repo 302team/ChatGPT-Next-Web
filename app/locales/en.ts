@@ -114,6 +114,7 @@ const en: LocaleType = {
       StartSpeaking: "Start speaking",
       StopSpeaking: "Stop speaking",
       NotSupport: "Your browser does not support the recording function",
+      ConverError: "Audio format conversion failed",
     },
     Model: {
       Selector: "Model Selector",

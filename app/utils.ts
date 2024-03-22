@@ -497,3 +497,118 @@ export const regexUrl = new RegExp(
   "^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$",
   "i",
 );
+
+export function copyAudioBlob(
+  arrBuffer: ArrayBuffer,
+): Promise<[AudioBuffer, number]> {
+  return new Promise((resolve) => {
+    var audioCtx = new AudioContext();
+    audioCtx.decodeAudioData(arrBuffer, function (audioBuffer) {
+      // audioBuffer就是AudioBuffer
+      // 声道数量和采样率
+      var channels = audioBuffer.numberOfChannels;
+      var rate = audioBuffer.sampleRate;
+
+      // 截取前3秒
+      var startOffset = 0;
+      var endOffset = rate * audioBuffer.duration;
+      // 3秒对应的帧数
+      var frameCount = endOffset - startOffset;
+
+      // 创建同样采用率、同样声道数量，长度是前3秒的空的AudioBuffer
+      var newAudioBuffer = new AudioContext().createBuffer(
+        channels,
+        endOffset - startOffset,
+        rate,
+      );
+      // 创建临时的Array存放复制的buffer数据
+      var anotherArray = new Float32Array(frameCount);
+      // 声道的数据的复制和写入
+      var offset = 0;
+      for (var channel = 0; channel < channels; channel++) {
+        audioBuffer.copyFromChannel(anotherArray, channel, startOffset);
+        newAudioBuffer.copyToChannel(anotherArray, channel, offset);
+      }
+
+      // newAudioBuffer就是全新的复制的3秒长度的AudioBuffer对象
+      resolve([newAudioBuffer, frameCount]);
+    });
+  });
+}
+
+/**
+ * Convert AudioBuffer to a Blob using WAVE representation
+ * var blob = bufferToWave(newAudioBuffer, frameCount);
+ * @param abuffer AudioBuffer
+ * @param len number
+ * @returns wav Blob
+ */
+export function convertAudioBufferToWave(abuffer: AudioBuffer, len: number) {
+  var numOfChan = abuffer.numberOfChannels,
+    length = len * numOfChan * 2 + 44,
+    buffer = new ArrayBuffer(length),
+    view = new DataView(buffer),
+    channels = [],
+    i,
+    sample,
+    offset = 0,
+    pos = 0;
+
+  // write WAVE header
+  // "RIFF"
+  setUint32(0x46464952);
+  // file length - 8
+  setUint32(length - 8);
+  // "WAVE"
+  setUint32(0x45564157);
+  // "fmt " chunk
+  setUint32(0x20746d66);
+  // length = 16
+  setUint32(16);
+  // PCM (uncompressed)
+  setUint16(1);
+  setUint16(numOfChan);
+  setUint32(abuffer.sampleRate);
+  // avg. bytes/sec
+  setUint32(abuffer.sampleRate * 2 * numOfChan);
+  // block-align
+  setUint16(numOfChan * 2);
+  // 16-bit (hardcoded in this demo)
+  setUint16(16);
+  // "data" - chunk
+  setUint32(0x61746164);
+  // chunk length
+  setUint32(length - pos - 4);
+
+  // write interleaved data
+  for (i = 0; i < abuffer.numberOfChannels; i++)
+    channels.push(abuffer.getChannelData(i));
+
+  while (pos < length) {
+    // interleave channels
+    for (i = 0; i < numOfChan; i++) {
+      // clamp
+      sample = Math.max(-1, Math.min(1, channels[i][offset]));
+      // scale to 16-bit signed int
+      sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+      // write 16-bit sample
+      view.setInt16(pos, sample, true);
+      pos += 2;
+    }
+    // next source sample
+    offset++;
+  }
+
+  // create Blob
+  return new Blob([buffer], { type: "audio/wav" });
+
+  function setUint16(data: number) {
+    view.setUint16(pos, data, true);
+    pos += 2;
+  }
+
+  function setUint32(data: number) {
+    view.setUint32(pos, data, true);
+    pos += 4;
+  }
+}

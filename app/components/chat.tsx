@@ -78,6 +78,8 @@ import {
   isImage,
   getMessageFiles,
   dataURLtoFile,
+  copyAudioBlob,
+  convertAudioBufferToWave,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -857,7 +859,10 @@ function useUploadFile() {
   };
 }
 
-function useSpeakAndVoice(prosp: { doSubmit?: (userInput: string) => void }) {
+function useSpeakAndVoice(prosp: {
+  doSubmit?: (userInput: string) => void;
+  setUserInput?: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const chatStore = useChatStore();
   const accessStore = useAccessStore();
   const [showLoading, setShowLoading] = useState(false);
@@ -937,40 +942,50 @@ function useSpeakAndVoice(prosp: { doSubmit?: (userInput: string) => void }) {
   useEffect(() => {
     if (cancelRecording) return;
     if (!recordingBlob) return;
-
     // recordingBlob will be present at this point after 'stopRecording' has been called
+
     setShowLoading(true);
 
-    const fileName =
-      nanoid() + "." + recordingBlob.type.split(";")[0].split("/")[1];
-    const file = new File([recordingBlob], fileName);
-    console.log("🚀 ~ useEffect ~ file:", file);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("name", fileName);
-    formData.append("filename", fileName);
-    formData.append("model", "whisper-1");
-    formData.append(
-      "prompt",
-      `The voice language is most likely [${window.navigator.language}]`,
-    );
+    recordingBlob
+      .arrayBuffer()
+      .then((arrayBuffer) => copyAudioBlob(arrayBuffer))
+      .then(([audioBuffer, frameCount]) => {
+        const blob = convertAudioBufferToWave(audioBuffer, frameCount);
 
-    const api = new ClientApi(ModelProvider.GPT);
-    api.llm
-      .audioTranscriptions(formData, accessStore.baseUrl ?? "")
-      .then((res) => res!.json())
-      .then((res) => {
-        if (res.text) {
-          prosp.doSubmit?.(res.text);
-          // setShowRecording(false);
-        } else if (res.text === "") {
-          showToast(Locale.Chat.Speech.ToTextEmpty);
-        } else {
-          showToast(Locale.Chat.Speech.ToTextError);
-        }
+        const fileName = nanoid() + "." + blob.type.split(";")[0].split("/")[1];
+        const file = new File([blob], fileName);
+        console.log("🚀 ~ useEffect ~ file:", file);
+
+        return file;
+      })
+      .then((file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("model", "whisper-1");
+
+        const api = new ClientApi(ModelProvider.GPT);
+        api.llm
+          .audioTranscriptions(formData, accessStore.baseUrl ?? "")
+          .then((res) => res!.json())
+          .then((res) => {
+            if (res.text) {
+              // prosp.setUserInput?.(res.text);
+              // setShowRecording(false);
+              prosp.doSubmit?.(res.text);
+            } else if (res.text === "") {
+              showToast(Locale.Chat.Speech.ToTextEmpty);
+            } else {
+              showToast(Locale.Chat.Speech.ToTextError);
+            }
+          })
+          .catch((err) => {
+            showToast(err);
+          })
+          .finally(() => setShowLoading(false));
       })
       .catch((err) => {
-        showToast(err);
+        console.error("🚀 ~ conver audio to wav error ~ err:", err);
+        showToast(`${Locale.Chat.Speech.ConverError}: ${err.toString()}`);
       })
       .finally(() => setShowLoading(false));
   }, [recordingBlob]);
@@ -1461,6 +1476,7 @@ function _Chat(props: { promptStarters: string[] }) {
     setCancelRecording,
   } = useSpeakAndVoice({
     doSubmit: doSubmit,
+    setUserInput: setUserInput,
   });
 
   useCommand({
@@ -2038,7 +2054,7 @@ function _Chat(props: { promptStarters: string[] }) {
             />
           )}
 
-          {/* {config.openTTS && !showRecording && (
+          {config.openTTS && !showRecording && (
             <IconButton
               text=""
               icon={<VoiceIcon />}
@@ -2048,7 +2064,7 @@ function _Chat(props: { promptStarters: string[] }) {
               }}
               className={styles["chat-input-voice"]}
             />
-          )} */}
+          )}
 
           {couldStop ? (
             <ChatAction
