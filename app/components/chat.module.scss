@@ -499,7 +499,7 @@
   display: grid;
   justify-content: left;
   grid-gap: 10px;
-  grid-template-columns: repeat(var(--image-count), auto);
+  grid-template-columns: repeat(min(5, max(6, var(--image-count)) / 2), auto);
   margin-top: 10px;
 }
 
@@ -508,6 +508,8 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  border-radius: 10px;
+  border: 1px solid hsla(0, 0%, 53%, 0.2);
 }
 
 .chat-message-item-image,
@@ -521,8 +523,14 @@
   $calc-image-width: calc(100vw / 3 * 2 / var(--image-count));
 
   .chat-message-item-image-multi {
-    width: $calc-image-width;
-    height: $calc-image-width;
+    width: min(
+      100px,
+      max(50px, 66.6666666667vw / var(--image-count))
+    ) !important;
+    height: min(
+      100px,
+      max(50px, 66.6666666667vw / var(--image-count))
+    ) !important;
   }
 
   .chat-message-item-image {
@@ -540,10 +548,10 @@
   );
 
   .chat-message-item-image-multi {
-    width: $image-width;
-    height: $image-width;
-    max-width: $max-image-width;
-    max-height: $max-image-width;
+    width: min(150px, max(50px, 200px / var(--image-count))) !important;
+    height: min(150px, max(50px, 200px / var(--image-count))) !important;
+    max-width: min(150px, max(50px, 200px / var(--image-count))) !important;
+    max-height: min(150px, max(50px, 200px / var(--image-count))) !important;
   }
 
   .chat-message-item-image {
@@ -685,7 +693,7 @@
   background-color: var(--white);
   color: var(--black);
   font-family: inherit;
-  padding: 10px 14px;
+  padding: 10px 120px 10px 14px;
   resize: none;
   outline: none;
   box-sizing: border-box;

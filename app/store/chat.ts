@@ -213,6 +213,11 @@ async function getUserContent(
   fileArr: FileRes[],
   type: "send" | "save",
 ): Promise<string | MultimodalContent[]> {
+  console.log("🚀 ~ fileArr:", fileArr);
+  // if (fileArr.length > 0) {
+
+  // }
+
   // 如果是gpt4-vision，
   if (modelConfig.model.includes("vision") && typeof content == "string") {
     const imgContent: MultimodalContent[] = [];
@@ -260,7 +265,7 @@ async function getUserContent(
           if (msg.type == "text") {
             sendContent += msg.text!;
           } else {
-            fileUrls += msg.file!.url + "\n";
+            fileUrls += msg.file?.url + "\n";
           }
         });
       }

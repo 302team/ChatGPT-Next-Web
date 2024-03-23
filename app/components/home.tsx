@@ -39,6 +39,9 @@ import {
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
 import { shouldOverwriteModel } from "./valid-pwd";
+import { ConfigProvider } from "antd";
+import zhCN from "antd/locale/zh_CN";
+import enUS from "antd/locale/en_US";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -345,11 +348,15 @@ export function Home() {
     return <Loading />;
   }
 
+  const lang = getLang();
+
   return (
     <ErrorBoundary>
-      <Router>
-        <Screen />
-      </Router>
+      <ConfigProvider locale={lang === "cn" ? zhCN : enUS}>
+        <Router>
+          <Screen />
+        </Router>
+      </ConfigProvider>
     </ErrorBoundary>
   );
 }

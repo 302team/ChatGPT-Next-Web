@@ -121,10 +121,10 @@ import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
 import { ClientApi, MultimodalContent } from "../client/api";
-import Image from "next/image";
+import NextImage from "next/image";
 
 import { LoadingOutlined, CloseOutlined } from "@ant-design/icons";
-import { Typography } from "antd";
+import { Typography, Image } from "antd";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -678,7 +678,7 @@ export function EditMessageModal(props: { onClose: () => void }) {
 export function DeleteImageButton(props: { deleteImage: () => void }) {
   return (
     <div className={styles["delete-image"]} onClick={props.deleteImage}>
-      <Image src={CleanIcon} alt="delete" width={16} height={16} />
+      <NextImage src={CleanIcon} alt="delete" width={16} height={16} />
     </div>
   );
 }
@@ -1727,45 +1727,42 @@ function _Chat(props: { promptStarters: string[] }) {
                         <IconButton
                           icon={<EditIcon />}
                           onClick={async () => {
+                            let inputContent = message.content;
+                            if (message.content instanceof Array) {
+                              inputContent = "";
+                              message.content.forEach((item) => {
+                                if (item.type == "text") {
+                                  inputContent = item.text as string;
+                                }
+                              });
+                            }
+
                             const newMessage = await showPrompt(
                               Locale.Chat.Actions.Edit,
-                              getMessageTextContent(message),
+                              inputContent as string,
                               10,
                             );
-                            let newContent: string | MultimodalContent[] =
-                              newMessage;
-                            const images = getMessageImages(message);
-                            const files = getMessageFiles(message);
-                            if (images.length > 0) {
-                              newContent = [{ type: "text", text: newMessage }];
-                              for (let i = 0; i < images.length; i++) {
-                                newContent.push({
-                                  type: "image_url",
-                                  image_url: {
-                                    url: images[i],
-                                  },
-                                });
-                              }
-                            }
-                            if (files.length > 0) {
-                              newContent = [{ type: "text", text: newMessage }];
-                              for (let i = 0; i < files.length; i++) {
-                                newContent.push({
-                                  type: "file",
-                                  file: {
-                                    name: files[i]!.name,
-                                    type: files[i]!.type,
-                                    url: files[i]!.url,
-                                  },
-                                });
-                              }
-                            }
                             chatStore.updateCurrentSession((session) => {
                               const m = session.mask.context
                                 .concat(session.messages)
                                 .find((m) => m.id === message.id);
                               if (m) {
-                                m.content = newContent;
+                                if (m.content instanceof Array) {
+                                  const newContent: MultimodalContent[] = [];
+                                  newContent.push({
+                                    type: "text",
+                                    text: newMessage,
+                                  });
+                                  m.content.forEach((item) => {
+                                    if (item.type != "text") {
+                                      newContent.push(item);
+                                    }
+                                  });
+                                  m.content = newContent;
+                                } else {
+                                  m.content = newMessage;
+                                }
+                                // m.content = newContent;
                               }
                             });
                           }}
@@ -1865,7 +1862,7 @@ function _Chat(props: { promptStarters: string[] }) {
                   )}
                   <div className={styles["chat-message-item"]}>
                     <Markdown
-                      content={getMessageTextContent(message, 0)}
+                      content={message.content}
                       loading={
                         (message.preview || message.streaming) &&
                         message.content.length === 0 &&
@@ -1880,14 +1877,7 @@ function _Chat(props: { promptStarters: string[] }) {
                       parentRef={scrollRef}
                       defaultShow={i >= messages.length - 6}
                     />
-                    {getMessageImages(message).length == 1 && (
-                      <img
-                        className={styles["chat-message-item-image"]}
-                        src={getMessageImages(message)[0]}
-                        alt=""
-                      />
-                    )}
-                    {getMessageImages(message).length > 1 && (
+                    {getMessageImages(message).length > 0 && (
                       <div
                         className={styles["chat-message-item-images"]}
                         style={
@@ -1898,7 +1888,7 @@ function _Chat(props: { promptStarters: string[] }) {
                       >
                         {getMessageImages(message).map((image, index) => {
                           return (
-                            <img
+                            <Image
                               className={
                                 styles["chat-message-item-image-multi"]
                               }

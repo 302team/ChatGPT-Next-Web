@@ -6,13 +6,16 @@ import RehypeKatex from "rehype-katex";
 import RemarkGfm from "remark-gfm";
 import RehypeHighlight from "rehype-highlight";
 import { useRef, useState, RefObject, useEffect, useMemo } from "react";
-import { copyToClipboard } from "../utils";
+import { copyToClipboard, isImage } from "../utils";
 import mermaid from "mermaid";
 
 import LoadingIcon from "../icons/three-dots.svg";
 import React from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { showImageModal } from "./ui-lib";
+import { MultimodalContent } from "../client/api";
+import { PluggableList } from "react-markdown/lib/react-markdown";
+import rehypeRaw from "rehype-raw";
 
 export function Mermaid(props: { code: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -116,25 +119,33 @@ function escapeDollarNumber(text: string) {
   return escapedText;
 }
 
-function _MarkDownContent(props: { content: string }) {
+function _MarkDownContent(props: { content: string; isHtml?: boolean }) {
   const escapedContent = useMemo(
     () => escapeDollarNumber(props.content),
     [props.content],
   );
 
+  const rehypePlugins: PluggableList = [
+    RehypeKatex,
+    [
+      RehypeHighlight,
+      {
+        detect: false,
+        ignoreMissing: true,
+      },
+    ],
+  ];
+  if (props.isHtml) {
+    rehypePlugins.push(
+      // @ts-ignore
+      rehypeRaw,
+    );
+  }
+
   return (
     <ReactMarkdown
       remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
-      rehypePlugins={[
-        RehypeKatex,
-        [
-          RehypeHighlight,
-          {
-            detect: false,
-            ignoreMissing: true,
-          },
-        ],
-      ]}
+      rehypePlugins={rehypePlugins}
       components={{
         pre: PreCode,
         p: (pProps) => <p {...pProps} dir="auto" />,
@@ -155,7 +166,9 @@ export const MarkdownContent = React.memo(_MarkDownContent);
 
 export function Markdown(
   props: {
-    content: string;
+    content: string | MultimodalContent[];
+    imgCount?: number;
+    isUser?: boolean;
     loading?: boolean;
     fontSize?: number;
     parentRef?: RefObject<HTMLDivElement>;
@@ -163,10 +176,63 @@ export function Markdown(
   } & React.DOMAttributes<HTMLDivElement>,
 ) {
   const mdRef = useRef<HTMLDivElement>(null);
+  const [className, setClassName] = useState("markdown-body");
+  const [msgContent, setMsgContent] = useState("");
+  const [isHtml, setIsHtml] = useState(false);
+  const updateAssistantClass = (imgCount: number) => {
+    if (imgCount == 3) {
+      setClassName(className + " multi-img-3");
+    } else if (imgCount >= 4) {
+      setClassName(className + " multi-img-4");
+    }
+  };
+  useEffect(() => {
+    updateAssistantClass(props.imgCount ?? 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.imgCount]);
+
+  useEffect(() => {
+    let msg = props.content;
+    if (!(typeof props.content === "string")) {
+      if (props.content instanceof Array) {
+        msg = "";
+        let imgCount_1 = 0;
+        props.content.forEach((content, index) => {
+          if (content.type == "text") {
+            msg += content.text + "\n";
+          } else if (content.type == "image_url") {
+            // msg += `[![${index}](${content.image_url!.url})](${
+            //   content.image_url!.url
+            // })`;
+            imgCount_1++;
+          } else if (content.type == "file") {
+            if (content.file!.type.includes("audio")) {
+              msg += `<audio class='msg-audio' preload='auto' controls><source src='${
+                content.file!.url
+              }'/></audio>`;
+              setIsHtml(true);
+            } else if (!isImage(content.file!.type)) {
+              msg += `[${content.file!.name}](${content.file!.url})` + "\n";
+            } else {
+              //
+            }
+          }
+        });
+        if (imgCount_1 > 0) {
+          if (props.isUser) {
+            setClassName(className + " user-multi-img");
+          } else {
+            updateAssistantClass(imgCount_1);
+          }
+        }
+      }
+    }
+    setMsgContent(msg as string);
+  }, [props.content]);
 
   return (
     <div
-      className="markdown-body"
+      className={className}
       style={{
         fontSize: `${props.fontSize ?? 14}px`,
       }}
@@ -178,7 +244,7 @@ export function Markdown(
       {props.loading ? (
         <LoadingIcon />
       ) : (
-        <MarkdownContent content={props.content} />
+        <MarkdownContent content={msgContent} isHtml={isHtml} />
       )}
     </div>
   );
