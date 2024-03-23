@@ -1,4 +1,4 @@
-import { trimTopic, getMessageTextContent, buildMessage } from "../utils";
+import { trimTopic, getMessageTextContent } from "../utils";
 
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
@@ -25,7 +25,6 @@ import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
-import type { AttachImages } from "../components/chat";
 
 export type ChatMessage = RequestMessage & {
   date: string;
@@ -72,14 +71,29 @@ export interface UploadFile {
   type: string;
   originFileObj: File;
   lastModified: number;
-  lastModifiedDate: string;
+  lastModifiedDate: Date;
   status: string;
   response: {
     fileUrl?: string;
+    base64?: string;
     data?: {
       url?: string;
     };
   };
+}
+
+export interface FileRes {
+  name: string;
+  type: string;
+  url: string;
+  base64: string;
+  fileObj: File;
+}
+
+export interface ExtAttr {
+  setAutoScroll: ((autoScroll: boolean) => void) | undefined;
+  uploadFiles: UploadFile[];
+  setUploadFiles: React.Dispatch<React.SetStateAction<UploadFile[]>>;
 }
 
 export const DEFAULT_TOPIC = Locale.Store.DefaultTopic;
@@ -164,21 +178,23 @@ function fillTemplateWith(input: string, modelConfig: ModelConfig) {
   return output;
 }
 
-async function getFileArr(uploadFiles: UploadFile[]) {
+async function getFileArr(uploadFiles: UploadFile[]): Promise<FileRes[]> {
   if (!uploadFiles || uploadFiles.length < 1) {
     return [];
   }
   const fileArr = [];
   for (const file of uploadFiles) {
     let url = "";
+    let imgBase64 = "";
     if (file.response && file.response.fileUrl) {
       url = file.response.fileUrl;
     } else if (file.response && file.response.data && file.response.data.url) {
       url = file.response.data.url;
     }
-    let imgBase64 = "";
     if (file.type?.includes("image")) {
-      imgBase64 = (await getBase64(file.originFileObj)) as string;
+      imgBase64 =
+        file.response.base64 ??
+        ((await getBase64(file.originFileObj)) as string);
     }
     const fileParam = {
       name: file.name,
@@ -190,6 +206,120 @@ async function getFileArr(uploadFiles: UploadFile[]) {
     fileArr.push(fileParam);
   }
   return fileArr;
+}
+async function getUserContent(
+  content: string | MultimodalContent[],
+  modelConfig: ModelConfig,
+  fileArr: FileRes[],
+  type: "send" | "save",
+): Promise<string | MultimodalContent[]> {
+  // 如果是gpt4-vision，
+  if (modelConfig.model.includes("vision") && typeof content == "string") {
+    const imgContent: MultimodalContent[] = [];
+    imgContent.push({
+      type: "text",
+      text: content,
+    });
+    if (fileArr.length > 0) {
+      for (const file of fileArr) {
+        // 如果类型为send，或内容不是base64
+        if (type == "send") {
+          imgContent.push({
+            type: "image_url",
+            image_url: {
+              url: file.base64,
+            },
+          });
+        } else if (file.url && file.url.startsWith("http")) {
+          imgContent.push({
+            type: "image_url",
+            image_url: {
+              url: file.url,
+            },
+          });
+        } else {
+          imgContent[0].text += "\n" + file.name;
+        }
+      }
+    }
+    return imgContent;
+  } else if (
+    modelConfig.model == "gpt-4-all" ||
+    modelConfig.model.includes("gpt-4-gizmo")
+  ) {
+    let sendContent = content;
+    if (type == "send") {
+      let fileUrls = "";
+      if (fileArr.length > 0) {
+        fileArr.forEach((file) => {
+          fileUrls += file.url + "\n";
+        });
+      } else if (content instanceof Array) {
+        sendContent = "";
+        content.forEach((msg) => {
+          if (msg.type == "text") {
+            sendContent += msg.text!;
+          } else {
+            fileUrls += msg.file!.url + "\n";
+          }
+        });
+      }
+      sendContent = fileUrls + sendContent;
+    } else {
+      if (typeof content == "string") {
+        sendContent = [];
+        sendContent.push({
+          type: "text",
+          text: content,
+        });
+        if (fileArr.length > 0) {
+          fileArr.forEach((file) => {
+            (sendContent as Array<any>).push({
+              type: "file",
+              file: {
+                name: file.name,
+                type: file.type,
+                url: file.url,
+              },
+            });
+          });
+        }
+      }
+    }
+    return sendContent;
+  } else if (modelConfig.model.includes("whisper")) {
+    let userContent = content;
+    if (typeof content == "string" && fileArr.length > 0) {
+      userContent = [];
+      userContent.push({
+        type: "text",
+        text: content,
+      });
+      fileArr.forEach((file) => {
+        (userContent as Array<any>).push({
+          type: "file",
+          file: {
+            name: file.name,
+            type: file.type,
+            url: file.url,
+          },
+        });
+      });
+    }
+    return userContent;
+  } else if (type == "send" && content instanceof Array) {
+    for (const msg of content) {
+      if (msg.type == "image_url") {
+        msg.image_url!.url = await getBase64FromUrl(msg.image_url!.url);
+      }
+    }
+    return content;
+  } else if (type == "save" || !(typeof content == "string")) {
+    return content;
+  }
+  // 模板替换
+  const userContent = fillTemplateWith(content, modelConfig);
+  return userContent;
 }
 
 async function getBase64FromUrl(url: string) {
@@ -402,36 +532,44 @@ export const useChatStore = createPersistStore(
         get().summarizeSession();
       },
 
-      async onUserInput(content: string, attachImages?: AttachImages[]) {
-        console.log("🚀 ~ onUserInput ~ attachImages:", attachImages);
+      async onUserInput(
+        content: string | MultimodalContent[],
+        extAttr: ExtAttr,
+      ) {
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
 
-        const userContent = fillTemplateWith(content, modelConfig);
+        const fileArr = await getFileArr(extAttr.uploadFiles);
+        extAttr?.setUploadFiles([]); // 删除文件
+        // 获取需要发送出去的用户内容
+        const userContent = await getUserContent(
+          content,
+          modelConfig,
+          fileArr,
+          "send",
+        );
+        console.log("[User Input] after pretreatment: ", userContent);
+        // 获取需要保存的用户内容，没有url的文件则只保存文件名
+        const saveUserContent = await getUserContent(
+          content,
+          modelConfig,
+          fileArr,
+          "save",
+        );
+
+        // const userContent = fillTemplateWith(content, modelConfig);
         console.log("[User Input] after template: ", userContent);
 
-        // let saveContent: string | MultimodalContent[];
-        // let mContent: string | MultimodalContent[] = userContent;
-
-        const { mContent, sContent } = buildMessage(
-          userContent,
-          modelConfig.model,
-          attachImages,
-        );
-        console.log("🚀 ~ onUserInput ~ mContent:", mContent);
-        console.log("🚀 ~ onUserInput ~ sContent:", sContent);
-
-        let userMessage: ChatMessage = createMessage({
+        const userMessage = createMessage({
           role: "user",
-          content: mContent,
+          content: userContent as string | MultimodalContent[],
+          model: modelConfig.model as ModelType,
         });
-
-        const botMessage: ChatMessage = createMessage({
+        const botMessage = createMessage({
           role: "assistant",
           streaming: true,
           model: modelConfig.model as ModelType,
         });
-
         // get recent messages
         const recentMessages = get().getMessagesWithMemory();
         const sendMessages = recentMessages.concat(userMessage);
@@ -441,8 +579,8 @@ export const useChatStore = createPersistStore(
         get().updateCurrentSession((session) => {
           const savedUserMessage = {
             ...userMessage,
-            content: sContent,
-          };
+            content: saveUserContent,
+          } as ChatMessage;
           session.messages = session.messages.concat([
             savedUserMessage,
             botMessage,
@@ -454,6 +592,24 @@ export const useChatStore = createPersistStore(
           api = new ClientApi(ModelProvider.GeminiPro);
         } else {
           api = new ClientApi(ModelProvider.GPT);
+        }
+        // make request
+        // midjourney 请求
+        if (modelConfig.model == "midjourney") {
+          // return this.fetchMidjourney(content, botMessage, extAttr);
+        } else if (modelConfig.model == "stable-diffusion") {
+          // return this.fetchStableDiffusion(content, botMessage, extAttr);
+        } else if (modelConfig.model.includes("dall-e")) {
+          // return this.imagesGenerations(content, botMessage, extAttr);
+        } else if (modelConfig.model.includes("whisper")) {
+          // return this.audioTranscriptions(
+          //   userContent as MultimodalContent[],
+          //   botMessage,
+          //   extAttr,
+          //   fileArr,
+          // );
+        } else if (modelConfig.model.includes("tts")) {
+          // return this.audioSpeech(content, botMessage, extAttr);
         }
 
         // make request
@@ -772,6 +928,64 @@ export const useChatStore = createPersistStore(
       clearAllData() {
         localStorage.clear();
         location.reload();
+      },
+
+      async audioTranscriptions(
+        userContent: MultimodalContent[],
+        botMessage: ChatMessage,
+        extAttr: ExtAttr,
+        fileArr: FileRes[],
+      ) {
+        let prompt = "";
+        let fileObj: File[] = [];
+        if (fileArr.length > 0) {
+          fileArr.forEach((file) => {
+            fileObj.push(file.fileObj);
+          });
+        }
+        for (const content of userContent) {
+          if (content.type == "text") {
+            prompt += content.text;
+          } else if (
+            content.type == "file" &&
+            content.file!.url &&
+            fileArr.length < 1
+          ) {
+            const file = await getFileFromUrl(
+              content.file!.url,
+              content.file!.name,
+            );
+            if (file != undefined) {
+              fileObj.push(file);
+            }
+          }
+        }
+        let formData = new FormData();
+        formData.append("model", botMessage.model!);
+        formData.append("prompt", prompt);
+        fileObj.forEach((file) => {
+          formData.append("file", file);
+        });
+        let resJson: any;
+        var api;
+        if (botMessage.model?.includes("gemini-pro")) {
+          api = new ClientApi(ModelProvider.GeminiPro);
+        } else {
+          api = new ClientApi(ModelProvider.GPT);
+        }
+        await api.llm
+          .audioTranscriptions(formData)
+          .then((res) => res!.json())
+          .then((res) => {
+            resJson = res;
+          });
+        botMessage.streaming = false;
+        botMessage.content = resJson?.text
+          ? resJson.text
+          : prettyObject(resJson);
+        get().onNewMessage(botMessage);
+
+        extAttr.setAutoScroll?.(true);
       },
 
       async audioSpeech(

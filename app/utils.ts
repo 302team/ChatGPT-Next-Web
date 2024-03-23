@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { showToast } from "./components/ui-lib";
 import Locale from "./locales";
 import { MultimodalContent, RequestMessage } from "./client/api";
-import { DEFAULT_MODELS } from "./constant";
-import { AttachImages } from "./components/chat";
 
 export function trimTopic(topic: string) {
   // Fix an issue where double quotes still show in the Indonesian language
@@ -354,7 +352,7 @@ export function isVisionModel(model: string) {
   );
 }
 
-export function isGizmoModel(model: string) {
+export function isSupportMultimodal(model: string) {
   return (
     model.includes("gpt-4-all") ||
     model.includes("gpt-4-gizmo-") ||
@@ -379,74 +377,6 @@ export const openWindow = (
       .join(","),
   );
 };
-
-export function buildMessage(
-  userContent: string,
-  model: string,
-  attachImages?: AttachImages[],
-) {
-  const content: {
-    mContent: string | MultimodalContent[];
-    sContent: string | MultimodalContent[];
-  } = {
-    mContent: userContent,
-    sContent: userContent,
-  };
-
-  if (isGizmoModel(model)) {
-    const c: MultimodalContent[] = [
-      {
-        type: "text",
-        text: userContent,
-      },
-    ];
-    content.mContent =
-      attachImages!.map((i) => i.fileUrl).join("\n") + "\n" + userContent;
-    content.sContent = c.concat(
-      attachImages!.map((item) => {
-        return {
-          type: "file",
-          file: {
-            name: item.name ?? "",
-            type: item.type ?? "",
-            url: item.fileUrl!,
-          },
-        };
-      }),
-    );
-  } else if (isVisionModel(model)) {
-    const c: MultimodalContent[] = [
-      {
-        type: "text",
-        text: userContent,
-      },
-    ];
-    content.mContent = c.concat(
-      attachImages!.map((url) => {
-        return {
-          type: "image_url",
-          image_url: {
-            url: url.dataUrl!,
-          },
-        };
-      }),
-    );
-    content.sContent = c.concat(
-      attachImages!.map((url) => {
-        return {
-          type: "image_url",
-          image_url: {
-            url: url.fileUrl!,
-          },
-        };
-      }),
-    );
-  } else {
-    // other model
-  }
-
-  return content;
-}
 
 export function isImage(type: string) {
   return /image\/(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif)/gi.test(type);

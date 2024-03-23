@@ -63,6 +63,7 @@ import {
   useAppConfig,
   DEFAULT_TOPIC,
   ModelType,
+  UploadFile,
 } from "../store";
 
 import {
@@ -73,7 +74,7 @@ import {
   getMessageTextContent,
   getMessageImages,
   isVisionModel,
-  isGizmoModel,
+  isSupportMultimodal,
   compressImage,
   isImage,
   getMessageFiles,
@@ -451,7 +452,7 @@ function useScrollToBottom(
 
 export function ChatActions(props: {
   uploadImage: () => void;
-  setAttachImages: (images: string[]) => void;
+  setUploadFiles: (images: string[]) => void;
   setUploading: (uploading: boolean) => void;
   showPromptModal: () => void;
   scrollToBottom: () => void;
@@ -492,7 +493,7 @@ export function ChatActions(props: {
     const show = isVisionModel(currentModel);
     setShowUploadImage(show);
     if (!show) {
-      props.setAttachImages([]);
+      props.setUploadFiles([]);
       props.setUploading(false);
     }
 
@@ -682,30 +683,60 @@ export function DeleteImageButton(props: { deleteImage: () => void }) {
   );
 }
 
-function useUploadFile() {
+function useUploadFile(extra: {
+  setAutoScroll?: (autoScroll: boolean) => void;
+}) {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
   const accessStore = useAccessStore();
-  const uploadUrl = `${accessStore.apiDomain}/gpt/api/upload/gpt/image`;
+  const uploadUrl = accessStore.fileUploadUrl;
 
-  const [attachImages, setAttachImages] = useState<AttachImages[]>([]);
   const [uploading, setUploading] = useState(false);
 
-  const [showUploadImage, setShowUploadImage] = useState(false);
+  const [showUploadAction, setShowUploadAction] = useState(false);
   const currentModel = session.mask.modelConfig.model;
-  const isGizmo = useMemo(() => isGizmoModel(currentModel), [currentModel]);
+  const isSupportMulti = useMemo(
+    () => isSupportMultimodal(currentModel),
+    [currentModel],
+  );
+
+  // ========================================
+  // const [uploadImages, setUploadImages] = useState<UploadFile[]>([]);
+  // const [uploadMaskImages, setUploadMaskImages] = useState([]);
+  const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
+  const exAttr = {
+    setAutoScroll: extra.setAutoScroll,
+    uploadFiles,
+    setUploadFiles,
+    // uploadImages,
+    // setUploadImages,
+    // uploadMaskImages,
+    // setUploadMaskImages,
+  };
+
+  const getAcceptFileType = (model: ModelType | string) => {
+    if (model.includes("vision")) {
+      return ".png, .jpg, .jpeg, .webp, .gif";
+    } else if (model.includes("whisper")) {
+      return ".flac, .mp3, .mp4, .mpeg, .mpga, .m4a, .ogg, .wav, .webm";
+    } else if (model == "gpt-4-all" || model.includes("gpt-4-gizmo")) {
+      return "*";
+    }
+    return "";
+  };
+  // ========================================
 
   useEffect(() => {
-    const gizmo = isGizmoModel(currentModel);
-    const show = isVisionModel(currentModel) || gizmo;
-    setShowUploadImage(show);
+    const isSupportMulti = isSupportMultimodal(currentModel);
+    const show = isVisionModel(currentModel) || isSupportMulti;
+    setShowUploadAction(show);
     if (!show) {
-      setAttachImages([]);
+      setUploadFiles([]);
       setUploading(false);
     }
   }, [currentModel]);
 
-  async function handleUpload(file: File): Promise<AttachImages> {
+  async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
       console.warn("🚀 ~ before compress ~ size:", file.size, file.type);
       let dataUrl = "";
@@ -731,11 +762,20 @@ function useUploadFile() {
         .then(async (res: any) => {
           if (res.code === 0) {
             const url = res.data.url;
+
             resolve({
-              type: file.type,
+              uid: nanoid(),
               name: file.name,
-              fileUrl: url,
-              dataUrl: dataUrl,
+              size: file.size,
+              type: file.type,
+              originFileObj: file,
+              lastModified: file.lastModified,
+              lastModifiedDate: new Date(file.lastModified),
+              status: "done",
+              response: {
+                base64: dataUrl,
+                fileUrl: url,
+              },
             });
           }
         })
@@ -746,23 +786,19 @@ function useUploadFile() {
   }
 
   async function uploadImage() {
-    const images: AttachImages[] = [];
-    // images.push(...attachImages);
+    const files: UploadFile[] = [];
 
-    images.push(
-      ...(await new Promise<AttachImages[]>((resolve, reject) => {
+    files.push(
+      ...(await new Promise<UploadFile[]>((resolve, reject) => {
         const fileInput = document.createElement("input");
         fileInput.id = "upload_file_input";
         fileInput.type = "file";
-        if (!isGizmo) {
-          fileInput.accept =
-            "image/png, image/jpeg, image/webp, image/heic, image/heif";
-        }
+        fileInput.accept = getAcceptFileType(currentModel);
         fileInput.multiple = true;
         fileInput.addEventListener("change", (event: any) => {
           setUploading(true);
           const files = event.target.files;
-          const imagesData: AttachImages[] = [];
+          const imagesData: UploadFile[] = [];
 
           const tasks = Array.from(files).map(async (file) => {
             return handleUpload(file as File)
@@ -798,25 +834,19 @@ function useUploadFile() {
       })),
     );
 
-    setAttachImages((prev) => [...prev, ...images]);
+    setUploadFiles((prev) => [...prev, ...files]);
   }
 
   async function dropUpload(files: File[]) {
-    if (!isGizmoModel(currentModel) && !isVisionModel(currentModel)) {
-      console.log(
-        "🚀 ~ dropUpload ~ : 当前模型不支持上传文件",
-        `is gpt-4-all model: ${isGizmoModel(currentModel)}`,
-        `is vision model: ${isVisionModel(currentModel)}`,
-      );
+    if (!isSupportMultimodal(currentModel) && !isVisionModel(currentModel)) {
       return false;
     }
 
     const filterdFiles = Array.from(files).filter((f) => {
-      return isGizmo ? true : isImage((f as File).type);
+      return isSupportMulti ? true : isImage((f as File).type);
     });
 
-    const images: AttachImages[] = [];
-    // images.push(...attachImages);
+    const images: UploadFile[] = [];
 
     if (uploading) return;
     setUploading(true);
@@ -829,7 +859,7 @@ function useUploadFile() {
 
     Promise.all(tasks)
       .then(() => {
-        setAttachImages((prev) => [...prev, ...images]);
+        setUploadFiles((prev) => [...prev, ...images]);
         setTimeout(() => {
           setUploading(false);
         }, 300);
@@ -845,17 +875,18 @@ function useUploadFile() {
   }
 
   return {
-    attachImages,
-    setAttachImages,
+    uploadFiles,
+    setUploadFiles,
     uploading,
     setUploading,
-    showUploadImage,
-    setShowUploadImage,
-    isGizmo,
+    showUploadAction,
+    setShowUploadAction,
+    isSupportMulti,
     handleUpload,
     dropUpload,
     pasteUpload,
     uploadImage,
+    exAttr,
   };
 }
 
@@ -1014,12 +1045,6 @@ function useSpeakAndVoice(prosp: {
   };
 }
 
-export interface AttachImages {
-  type?: string;
-  name?: string;
-  fileUrl?: string;
-  dataUrl?: string;
-}
 function _Chat(props: { promptStarters: string[] }) {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
@@ -1049,22 +1074,26 @@ function _Chat(props: { promptStarters: string[] }) {
   const isMobileScreen = useMobileScreen();
   const navigate = useNavigate();
   const location = useLocation();
+  const currentModel = session.mask.modelConfig.model;
 
   // upload file
   const {
-    attachImages,
+    uploadFiles,
     uploading,
-    showUploadImage,
-    isGizmo, // gpt-4-all 的模型支持多模态文件
-    setAttachImages,
+    showUploadAction,
+    setUploadFiles,
     dropUpload,
     pasteUpload,
     uploadImage,
-  } = useUploadFile();
+
+    exAttr,
+  } = useUploadFile({
+    setAutoScroll,
+  });
 
   const disabledSend = useMemo(() => {
-    return !userInput && !attachImages.length;
-  }, [userInput, attachImages]);
+    return !userInput && !uploadFiles.length;
+  }, [userInput, uploadFiles]);
 
   // prompt hints
   const promptStore = usePromptStore();
@@ -1142,10 +1171,8 @@ function _Chat(props: { promptStarters: string[] }) {
       return;
     }
     setIsLoading(true);
-    chatStore
-      .onUserInput(userInput, attachImages)
-      .then(() => setIsLoading(false));
-    setAttachImages([]);
+    chatStore.onUserInput(userInput, exAttr).then(() => setIsLoading(false));
+
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
     setPromptHints([]);
@@ -1300,21 +1327,10 @@ function _Chat(props: { promptStarters: string[] }) {
 
     // resend the message
     setIsLoading(true);
-    const textContent = getMessageTextContent(userMessage, 2);
-    const images = getMessageImages(userMessage);
-    const files = getMessageFiles(userMessage);
     chatStore
-      .onUserInput(
-        textContent,
-        isGizmo
-          ? files.map((i) => ({
-              dataUrl: i!.url,
-              fileUrl: i?.url,
-              name: i?.name,
-              type: i?.type,
-            }))
-          : images.map((i) => ({ dataUrl: i })),
-      )
+      .onUserInput(userMessage.content, {
+        ...exAttr,
+      })
       .then(() => setIsLoading(false));
     inputRef.current?.focus();
   };
@@ -1943,9 +1959,9 @@ function _Chat(props: { promptStarters: string[] }) {
       <div id="chatInputPanel" className={styles["chat-input-panel"]}>
         <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
 
-        {attachImages.length != 0 && (
+        {uploadFiles.length != 0 && (
           <div className={styles["attach-images"]}>
-            {attachImages.map((item, index) => {
+            {uploadFiles.map((item, index) => {
               let ext = mime.getExtension(item.type!);
               if (!ext) {
                 ext = item.name!.substring(item.name!.lastIndexOf(".") + 1);
@@ -1959,7 +1975,7 @@ function _Chat(props: { promptStarters: string[] }) {
                         <div
                           className={styles["attach-image"]}
                           style={{
-                            backgroundImage: `url("${item.dataUrl}")`,
+                            backgroundImage: `url("${item.response.base64}")`,
                             backgroundRepeat: "no-repeat",
                           }}
                         ></div>
@@ -1978,8 +1994,8 @@ function _Chat(props: { promptStarters: string[] }) {
                     <div className={styles["attach-image-mask"]}>
                       <DeleteImageButton
                         deleteImage={() => {
-                          setAttachImages(
-                            attachImages.filter((_, i) => i !== index),
+                          setUploadFiles(
+                            uploadFiles.filter((_, i) => i !== index),
                           );
                         }}
                       />
@@ -1992,12 +2008,12 @@ function _Chat(props: { promptStarters: string[] }) {
         )}
         <div
           className={`${styles["chat-input-panel-inner"]} ${
-            attachImages.length != 0
+            uploadFiles.length != 0
               ? styles["chat-input-panel-inner-attach"]
               : ""
           }`}
         >
-          {showUploadImage && (
+          {showUploadAction && (
             <ChatAction
               onClick={() => {
                 if (uploading || isRecording) {

@@ -43,6 +43,8 @@ const DEFAULT_ACCESS_STATE = {
   googleApiKey: "",
   googleApiVersion: "v1",
 
+  fileUploadUrl: "",
+
   // server config
   needCode: true,
   hideUserApiKey: false,
@@ -108,6 +110,9 @@ export const useAccessStore = createPersistStore(
         .then((res) => res.json())
         .then((res: DangerConfig) => {
           console.log("[Config] got config from server", res);
+          set(() => ({
+            fileUploadUrl: `${res.apiDomain}/gpt/api/upload/gpt/image`,
+          }));
           set(() => ({ ...res }));
         })
         .catch(() => {
