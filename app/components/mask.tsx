@@ -37,7 +37,7 @@ import Locale, { AllLangs, ALL_LANG_OPTIONS, Lang } from "../locales";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import chatStyle from "./chat.module.scss";
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import {
   copyToClipboard,
   downloadAs,
@@ -398,7 +398,10 @@ export function ContextPrompts(props: {
   );
 }
 
-export function MaskPage(props: { onClose?: () => void }) {
+export function MaskPage(props: {
+  style?: CSSProperties;
+  onClose?: () => void;
+}) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -459,7 +462,7 @@ export function MaskPage(props: { onClose?: () => void }) {
 
   return (
     <ErrorBoundary>
-      <div className={styles["mask-page"]}>
+      <div className={styles["mask-page"]} style={props.style}>
         <div className="window-header">
           <div className="window-header-title">
             <div className="window-header-main-title">

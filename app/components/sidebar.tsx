@@ -148,7 +148,10 @@ function useDragSideBar() {
   };
 }
 
-function AppDescription(props: { onClose: () => void }) {
+function AppDescription(props: {
+  isMobileScreen?: boolean;
+  onClose: () => void;
+}) {
   const config = useAppConfig();
   const access = useAccessStore();
 
@@ -269,6 +272,7 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
 
 export function GptsConfigModal(props: {
   style?: React.CSSProperties;
+  isMobileScreen?: boolean;
   onClose: () => void;
 }) {
   const windowSize = useWindowSize();
@@ -279,6 +283,7 @@ export function GptsConfigModal(props: {
   return (
     <div className="modal-mask" style={props.style}>
       <Modal
+        showMaxButton={!props.isMobileScreen}
         title={Locale.GPTs.Modal.Title}
         containerClass="gpts-selector"
         onClose={() => props.onClose()}
@@ -327,16 +332,25 @@ export function GptsConfigModal(props: {
 
 export function MasksModal(props: {
   style?: React.CSSProperties;
+  isMobileScreen?: boolean;
   onClose: () => void;
 }) {
+  const windowSize = useWindowSize();
+
   return (
     <div className="modal-mask" style={props.style}>
       <Modal
+        showMaxButton={!props.isMobileScreen}
         title={Locale.Mask.Name}
         containerClass="gpts-selector"
         onClose={() => props.onClose()}
       >
-        <MaskPage onClose={props.onClose} />
+        <MaskPage
+          onClose={props.onClose}
+          style={{
+            height: windowSize.height * 0.7,
+          }}
+        />
       </Modal>
     </div>
   );
@@ -344,17 +358,28 @@ export function MasksModal(props: {
 
 export function SettingsModal(props: {
   style?: React.CSSProperties;
+  isMobileScreen?: boolean;
   onClose: () => void;
 }) {
+  const windowSize = useWindowSize();
+
   return (
     <div className="modal-mask" style={props.style}>
       <Modal
+        showMaxButton={!props.isMobileScreen}
         title={Locale.Settings.Title}
         subtitle={Locale.Settings.SubTitle}
         containerClass="gpts-selector"
         onClose={() => props.onClose()}
       >
-        <Settings onClose={props.onClose} />
+        <Settings
+          onClose={props.onClose}
+          style={{
+            padding: 0,
+            paddingRight: "3px",
+            height: windowSize.height * 0.7,
+          }}
+        />
       </Modal>
     </div>
   );
@@ -539,17 +564,29 @@ export function SideBar(props: { className?: string }) {
       </div>
 
       {showAppDescModal && (
-        <AppDescription onClose={() => setShowAppDescModal(false)} />
+        <AppDescription
+          isMobileScreen={isMobileScreen}
+          onClose={() => setShowAppDescModal(false)}
+        />
       )}
 
       <GptsConfigModal
+        isMobileScreen={isMobileScreen}
         style={{ display: showGptsConfigModal ? "flex" : "none" }}
         onClose={() => setShowGptsConfigModal(false)}
       />
 
-      {showMaskModal && <MasksModal onClose={() => setShowMaskModal(false)} />}
+      {showMaskModal && (
+        <MasksModal
+          isMobileScreen={isMobileScreen}
+          onClose={() => setShowMaskModal(false)}
+        />
+      )}
       {showSettingsModal && (
-        <SettingsModal onClose={() => setShowSettingsModal(false)} />
+        <SettingsModal
+          isMobileScreen={isMobileScreen}
+          onClose={() => setShowSettingsModal(false)}
+        />
       )}
     </div>
   );

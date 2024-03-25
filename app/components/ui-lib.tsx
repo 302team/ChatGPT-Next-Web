@@ -13,7 +13,7 @@ import MinIcon from "../icons/min.svg";
 import Locale from "../locales";
 
 import { createRoot } from "react-dom/client";
-import React, { HTMLProps, useEffect, useState } from "react";
+import React, { HTMLProps, useEffect, useMemo, useState } from "react";
 import { IconButton } from "./button";
 import { Spin } from "antd";
 
@@ -102,6 +102,7 @@ interface ModalProps {
   actions?: React.ReactNode[];
   headerActions?: React.ReactNode[];
   defaultMax?: boolean;
+  showMaxButton?: boolean;
   footer?: React.ReactNode;
   containerClass?: string;
   onClose?: () => void;
@@ -121,6 +122,13 @@ export function Modal(props: ModalProps) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const showMaxButton = useMemo(() => {
+    if (props.showMaxButton == undefined) {
+      return true;
+    }
+    return !!props.showMaxButton;
+  }, [props.showMaxButton]);
 
   const [isMax, setMax] = useState(!!props.defaultMax);
 
@@ -148,14 +156,14 @@ export function Modal(props: ModalProps) {
                 </div>
               ))}
             </>
-          ) : (
+          ) : showMaxButton ? (
             <div
               className={styles["modal-header-action"]}
               onClick={() => setMax(!isMax)}
             >
               {isMax ? <MinIcon /> : <MaxIcon />}
             </div>
-          )}
+          ) : null}
           <div
             className={styles["modal-header-action"]}
             onClick={props.onClose}

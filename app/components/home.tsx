@@ -290,8 +290,15 @@ function Screen() {
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
 
+  const [windowHeight, setWindowHeight] = useState<number>();
+
   useEffect(() => {
     loadAsyncGoogleFont();
+  }, []);
+
+  useEffect(() => {
+    const h = document.body.clientHeight;
+    setWindowHeight(h);
   }, []);
 
   return (
@@ -303,6 +310,10 @@ function Screen() {
             shouldTightBorder ? styles["tight-container"] : styles.container
           } ${getLang() === "ar" ? styles["rtl-screen"] : ""}`
         }
+        style={{
+          // @ts-ignore
+          "--client-window-height": `${windowHeight}px`,
+        }}
       >
         {isAuth ? (
           <>

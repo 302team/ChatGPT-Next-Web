@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, CSSProperties } from "react";
 
 import styles from "./settings.module.scss";
 
@@ -568,7 +568,10 @@ function SyncItems() {
   );
 }
 
-export function Settings(props: { onClose?: () => void }) {
+export function Settings(props: {
+  style?: CSSProperties;
+  onClose?: () => void;
+}) {
   const navigate = useNavigate();
   const location = useLocation();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -687,7 +690,7 @@ export function Settings(props: { onClose?: () => void }) {
           </div>
         </div>
       </div> */}
-      <div className={styles["settings"]}>
+      <div className={styles["settings"]} style={props.style}>
         <List>
           <ListItem title={Locale.Settings.Avatar}>
             <Popover
