@@ -121,6 +121,11 @@ const cn = {
       SearchPlaceholder: "请输入名称",
     },
     Tips: "AI可能会犯错误。请考虑核实重要信息。",
+    Upload: {
+      Limit: (size: number | string) => {
+        return `文件不能超过${size}M`;
+      },
+    },
   },
   Export: {
     Title: "分享聊天记录",

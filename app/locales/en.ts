@@ -123,6 +123,11 @@ const en: LocaleType = {
       SearchPlaceholder: "Please input value",
     },
     Tips: "AI can make mistakes. Consider checking important information.",
+    Upload: {
+      Limit: (size: number | string) => {
+        return `File size cannot exceed ${size}M`;
+      },
+    },
   },
   Export: {
     Title: "Export Messages",

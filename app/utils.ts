@@ -73,14 +73,10 @@ export async function downloadAs(text: string, filename: string) {
       "data:text/plain;charset=utf-8," + encodeURIComponent(text),
     );
     element.setAttribute("download", filename);
-    element.setAttribute("download", filename);
 
     element.style.display = "none";
     document.body.appendChild(element);
-    element.style.display = "none";
-    document.body.appendChild(element);
 
-    element.click();
     element.click();
 
     document.body.removeChild(element);
@@ -355,6 +351,7 @@ export function isVisionModel(model: string) {
 
 export function isSupportMultimodal(model: string) {
   return (
+    true ||
     model.includes("gpt-4-all") ||
     model.includes("gpt-4-gizmo-") ||
     model.includes("claude-3-")

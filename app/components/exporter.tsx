@@ -511,7 +511,16 @@ export function ImagePreviewer(props: {
             showToast(Locale.Download.Failed);
           }
         } else {
-          showImageModal(blob);
+          try {
+            const link = document.createElement("a");
+            link.download = `${props.topic}.png`;
+            link.href = blob;
+            link.click();
+            refreshPreview();
+          } catch (error: any) {
+            showToast(`🚀 ~ download ~ error: ${error.toString()}`);
+            showImageModal(blob);
+          }
         }
       } else {
         const link = document.createElement("a");

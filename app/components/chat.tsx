@@ -740,6 +740,11 @@ function useUploadFile(extra: {
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
       console.warn("🚀 ~ before compress ~ size:", file.size, file.type);
+      if (file.size >= 20 * 1024 * 1024) {
+        showToast(Locale.Chat.Upload.Limit(20));
+        return reject(Locale.Chat.Upload.Limit(20));
+      }
+
       let dataUrl = "";
       let f = file;
       if (isImage(file.type)) {
