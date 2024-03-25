@@ -41,13 +41,18 @@ import { Modal, showConfirm, showToast } from "./ui-lib";
 import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
 
 import { Spin, Result, Button } from "antd";
+import { Loading } from "./home";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
 });
 
 const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
-  loading: () => null,
+  loading: () => <Loading noLogo />,
+});
+
+const Settings = dynamic(async () => (await import("./settings")).Settings, {
+  loading: () => <Loading noLogo />,
 });
 
 function useHotKey() {
@@ -337,11 +342,30 @@ export function MasksModal(props: {
   );
 }
 
+export function SettingsModal(props: {
+  style?: React.CSSProperties;
+  onClose: () => void;
+}) {
+  return (
+    <div className="modal-mask" style={props.style}>
+      <Modal
+        title={Locale.Settings.Title}
+        subtitle={Locale.Settings.SubTitle}
+        containerClass="gpts-selector"
+        onClose={() => props.onClose()}
+      >
+        <Settings onClose={props.onClose} />
+      </Modal>
+    </div>
+  );
+}
+
 export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
   const [showAppDescModal, setShowAppDescModal] = useState(false);
   const [showGptsConfigModal, setShowGptsConfigModal] = useState(false);
   const [showMaskModal, setShowMaskModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
@@ -460,13 +484,13 @@ export function SideBar(props: { className?: string }) {
             />
           </div> */}
           <div className={styles["sidebar-action"]}>
-            <Link to={Path.Settings + location.search}>
-              <IconButton
-                className={styles["sidebar-tail-button"]}
-                icon={<SettingsIcon />}
-                shadow
-              />
-            </Link>
+            <IconButton
+              className={styles["sidebar-tail-button"]}
+              icon={<SettingsIcon />}
+              onClick={() => setShowSettingsModal(true)}
+              shadow
+            />
+            <Link to={Path.Settings + location.search}></Link>
           </div>
           <div className={styles["sidebar-action"]}>
             <IconButton
@@ -524,6 +548,9 @@ export function SideBar(props: { className?: string }) {
       />
 
       {showMaskModal && <MasksModal onClose={() => setShowMaskModal(false)} />}
+      {showSettingsModal && (
+        <SettingsModal onClose={() => setShowSettingsModal(false)} />
+      )}
     </div>
   );
 }

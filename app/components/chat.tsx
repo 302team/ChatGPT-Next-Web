@@ -13,6 +13,7 @@ import React, {
 import mime from "mime";
 import { nanoid } from "nanoid";
 import { useAudioRecorder } from "react-audio-voice-recorder";
+import { useDropzone } from "react-dropzone";
 
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
@@ -695,7 +696,7 @@ function useUploadFile(extra: {
 
   const [showUploadAction, setShowUploadAction] = useState(false);
   const currentModel = session.mask.modelConfig.model;
-  const isSupportMulti = useMemo(
+  const supportMultimodal = useMemo(
     () => isSupportMultimodal(currentModel),
     [currentModel],
   );
@@ -727,8 +728,8 @@ function useUploadFile(extra: {
   // ========================================
 
   useEffect(() => {
-    const isSupportMulti = isSupportMultimodal(currentModel);
-    const show = isVisionModel(currentModel) || isSupportMulti;
+    const supportMultimodal = isSupportMultimodal(currentModel);
+    const show = isVisionModel(currentModel) || supportMultimodal;
     setShowUploadAction(show);
     if (!show) {
       setUploadFiles([]);
@@ -843,7 +844,7 @@ function useUploadFile(extra: {
     }
 
     const filterdFiles = Array.from(files).filter((f) => {
-      return isSupportMulti ? true : isImage((f as File).type);
+      return supportMultimodal ? true : isImage((f as File).type);
     });
 
     const images: UploadFile[] = [];
@@ -881,7 +882,7 @@ function useUploadFile(extra: {
     setUploading,
     showUploadAction,
     setShowUploadAction,
-    isSupportMulti,
+    supportMultimodal,
     handleUpload,
     dropUpload,
     pasteUpload,
@@ -1554,9 +1555,10 @@ function _Chat(props: { promptStarters: string[] }) {
   // edit / insert message modal
   const [isEditingMessage, setIsEditingMessage] = useState(false);
 
+  const { getRootProps } = useDropzone();
   // drag/drop
   useEffect(() => {
-    const dp = document.getElementById("chatInputPanel");
+    const dp = document.body;
 
     //多图上传
     dp?.addEventListener("drop", function (e: any) {
@@ -1946,7 +1948,11 @@ function _Chat(props: { promptStarters: string[] }) {
           )}
       </div>
 
-      <div id="chatInputPanel" className={styles["chat-input-panel"]}>
+      <div
+        id="chatInputPanel"
+        {...getRootProps}
+        className={styles["chat-input-panel"]}
+      >
         <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
 
         {uploadFiles.length != 0 && (

@@ -2,7 +2,7 @@
 
 require("../polyfill");
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import styles from "./home.module.scss";
 import BotIcon from "../icons/bot.svg";
@@ -52,9 +52,9 @@ export function Loading(props: { noLogo?: boolean }) {
   );
 }
 
-const Settings = dynamic(async () => (await import("./settings")).Settings, {
-  loading: () => <Loading noLogo />,
-});
+// const Settings = dynamic(async () => (await import("./settings")).Settings, {
+//   loading: () => <Loading noLogo />,
+// });
 
 const Chat = dynamic(async () => (await import("./chat")).Chat, {
   loading: () => <Loading noLogo />,
@@ -274,7 +274,7 @@ function ChatWindow() {
             path={Path.Chat}
             element={<Chat promptStarters={promptStarters} />}
           />
-          <Route path={Path.Settings} element={<Settings />} />
+          {/* <Route path={Path.Settings} element={<Settings />} /> */}
         </Routes>
       </div>
     </>

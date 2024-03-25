@@ -568,7 +568,7 @@ function SyncItems() {
   );
 }
 
-export function Settings() {
+export function Settings(props: { onClose?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -666,7 +666,7 @@ export function Settings() {
 
   return (
     <ErrorBoundary>
-      <div className="window-header" data-tauri-drag-region>
+      {/* <div className="window-header" data-tauri-drag-region>
         <div className="window-header-title">
           <div className="window-header-main-title">
             {Locale.Settings.Title}
@@ -686,7 +686,7 @@ export function Settings() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
       <div className={styles["settings"]}>
         <List>
           <ListItem title={Locale.Settings.Avatar}>
