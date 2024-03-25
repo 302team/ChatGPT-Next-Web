@@ -1,4 +1,9 @@
-import { trimTopic, getMessageTextContent } from "../utils";
+import {
+  trimTopic,
+  getMessageTextContent,
+  isSupportMultimodal,
+  isVisionModel,
+} from "../utils";
 
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
@@ -214,12 +219,10 @@ async function getUserContent(
   type: "send" | "save",
 ): Promise<string | MultimodalContent[]> {
   console.log("🚀 ~ fileArr:", fileArr);
-  // if (fileArr.length > 0) {
-
-  // }
+  const currentModel = modelConfig.model;
 
   // 如果是gpt4-vision，
-  if (modelConfig.model.includes("vision") && typeof content == "string") {
+  if (isVisionModel(currentModel) && typeof content == "string") {
     const imgContent: MultimodalContent[] = [];
     imgContent.push({
       type: "text",
@@ -232,7 +235,7 @@ async function getUserContent(
           imgContent.push({
             type: "image_url",
             image_url: {
-              url: file.base64,
+              url: currentModel === "glm-4v" ? file.url : file.base64,
             },
           });
         } else if (file.url && file.url.startsWith("http")) {
@@ -249,8 +252,9 @@ async function getUserContent(
     }
     return imgContent;
   } else if (
-    modelConfig.model == "gpt-4-all" ||
-    modelConfig.model.includes("gpt-4-gizmo")
+    // currentModel == "gpt-4-all" ||
+    // currentModel.includes("gpt-4-gizmo")
+    isSupportMultimodal(currentModel)
   ) {
     let sendContent = content;
     if (type == "send") {
@@ -292,7 +296,7 @@ async function getUserContent(
       }
     }
     return sendContent;
-  } else if (modelConfig.model.includes("whisper")) {
+  } else if (currentModel.includes("whisper")) {
     let userContent = content;
     if (typeof content == "string" && fileArr.length > 0) {
       userContent = [];

@@ -349,8 +349,7 @@ export function getMessageFiles(
 export function isVisionModel(model: string) {
   return (
     // model.startsWith("gpt-4-vision") ||
-    // model.startsWith("gemini-pro-vision") ||
-    model.includes("vision")
+    model.startsWith("glm-4v") || model.includes("vision")
   );
 }
 
