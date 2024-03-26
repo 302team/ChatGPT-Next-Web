@@ -351,7 +351,6 @@ export function isVisionModel(model: string) {
 
 export function isSupportMultimodal(model: string) {
   return (
-    true ||
     model.includes("gpt-4-all") ||
     model.includes("gpt-4-gizmo-") ||
     model.includes("claude-3-")
