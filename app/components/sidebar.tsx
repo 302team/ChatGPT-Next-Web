@@ -247,7 +247,9 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
               hideContext: true,
               modelConfig: {
                 ...config.modelConfig,
-                model: `gpt-4-gizmo-${data.uuid}`,
+                model: data.uuid.startsWith("g-")
+                  ? `gpt-4-gizmo-${data.uuid}`
+                  : data.uuid,
               },
               modelName: data.display_name,
               promptStarters,
