@@ -177,7 +177,7 @@ function ChatWindow() {
     }
     config.update((config) => (config.modelConfig = modelConf));
     chatStore.updateCurrentSession((session) => {
-      if (shouldOverwriteModel(session.mask.modelConfig.model)) {
+      if (!session.mask.isStoreModel) {
         session.mask.modelConfig = modelConf;
         session.mask.syncGlobalConfig = true;
       }

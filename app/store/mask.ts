@@ -20,6 +20,7 @@ export type Mask = {
   promptStarters?: string[];
   botHelloContent?: string;
   modelName?: string;
+  isStoreModel?: boolean; // 是否是应用商店的模型
 };
 
 export const DEFAULT_MASK_STATE = {
@@ -41,6 +42,7 @@ export const createEmptyMask = () =>
     builtin: false,
     createdAt: Date.now(),
     botHelloContent: Locale.Store.BotHello,
+    isStoreModel: false,
   }) as Mask;
 
 export const useMaskStore = createPersistStore(

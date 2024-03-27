@@ -343,17 +343,19 @@ export function getMessageFiles(
 }
 
 export function isVisionModel(model: string) {
+  const m = model.toLocaleLowerCase();
   return (
     // model.startsWith("gpt-4-vision") ||
-    model.startsWith("glm-4v") || model.includes("vision")
+    m.startsWith("glm-4v") || m.includes("vision")
   );
 }
 
 export function isSupportMultimodal(model: string) {
+  const m = model.toLocaleLowerCase();
   return (
-    model.includes("gpt-4-all") ||
-    model.includes("gpt-4-gizmo-") ||
-    model.includes("claude-3-")
+    m.includes("gpt-4-all") ||
+    m.includes("gpt-4-gizmo-") ||
+    m.includes("claude-3-")
   );
 }
 

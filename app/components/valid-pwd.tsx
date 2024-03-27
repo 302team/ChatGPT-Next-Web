@@ -20,10 +20,6 @@ import { openWindow } from "../utils";
 import { GPT302_WEBSITE_URL, ERROR_CODE, ERROR_CODE_TYPE } from "../constant";
 import { AuthType } from "../locales/cn";
 
-export const shouldOverwriteModel = (model: string) => {
-  return !model.includes("gpt-4-gizmo-");
-};
-
 interface ValidPwdProps {
   onAuth?: (opt: { info?: string }) => void;
 }
@@ -52,8 +48,8 @@ export function ValidPwd(props: ValidPwdProps) {
       console.log("🚀 ~ [valid pwd] ~ model:", model);
       if (model) {
         chatStore.updateCurrentSession((session) => {
-          // 普通机器人,
-          if (shouldOverwriteModel(session.mask.modelConfig.model)) {
+          // 除去应用商店的机器人。其他机器人都要覆盖
+          if (!session.mask.isStoreModel) {
             session.mask.modelConfig.model = model as ModelType;
             session.mask.syncGlobalConfig = true;
           }

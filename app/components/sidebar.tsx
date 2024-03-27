@@ -241,6 +241,7 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
             {
               ...emptyMask,
               syncGlobalConfig: false,
+              isStoreModel: true,
               avatar: data.display_url ?? DEFAULT_MASK_AVATAR,
               name: `${Locale.GPTs.PrefixName} ${data.display_name}`,
               botHelloContent: data.description || emptyMask.botHelloContent,
