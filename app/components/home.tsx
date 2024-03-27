@@ -38,7 +38,6 @@ import {
 } from "../store";
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
-import { shouldOverwriteModel } from "./valid-pwd";
 import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
