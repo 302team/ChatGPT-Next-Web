@@ -1213,7 +1213,13 @@ function _Chat(props: { promptStarters: string[] }) {
   const [status, setStatus] = useState(0);
   const couldStop = ChatControllerPool.hasPending();
   const stopAll = () => {
-    ChatControllerPool.stopAll();
+    const lastMessage = messages[messages.length - 1];
+    console.log("🚀 ~ stopAll ~ lastMessage:", lastMessage);
+    if (lastMessage.role === "assistant") {
+      onUserStop(lastMessage.id);
+    } else {
+      ChatControllerPool.stopAll();
+    }
     setStatus(Math.random() * 10);
   };
 
