@@ -344,10 +344,9 @@ export function getMessageFiles(
 
 export function isVisionModel(model: string) {
   const m = model.toLocaleLowerCase();
-  return (
-    // model.startsWith("gpt-4-vision") ||
-    m.startsWith("glm-4v") || m.includes("vision")
-  );
+  const visionKeywords = ["vision", "glm-4v"];
+
+  return visionKeywords.some((keyword) => m.includes(keyword));
 }
 
 export function isSupportMultimodal(model: string) {

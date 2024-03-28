@@ -40,12 +40,16 @@ export function ChatItem(props: {
       });
     }
   }, [props.selected]);
+
+  const { pathname: currentPath } = useLocation();
   return (
     <Draggable draggableId={`${props.id}`} index={props.index}>
       {(provided) => (
         <div
           className={`${styles["chat-item"]} ${
-            props.selected && styles["chat-item-selected"]
+            props.selected &&
+            (currentPath === Path.Chat || currentPath === Path.Home) &&
+            styles["chat-item-selected"]
           }`}
           onClick={props.onClick}
           ref={(ele) => {
