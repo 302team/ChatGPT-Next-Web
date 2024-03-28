@@ -30,7 +30,6 @@ export function ValidPwd(props: ValidPwdProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const pwd = searchParams.get("pwd") || "";
   const autoConfirm = searchParams.get("confirm");
-  console.log("🚀 ~ ValidPwd ~ autoConfirm:", autoConfirm === "true");
 
   const [loading, setLoading] = useState(true);
   const [submiting, setSubmiting] = useState(false);
@@ -38,10 +37,10 @@ export function ValidPwd(props: ValidPwdProps) {
   const [errorMsg, setErrorMsg] = useState("");
 
   const userCode = window.location.hostname.split(".")[0];
-  console.log("🚀 ~ [valid pwd] ~ user code:", userCode);
 
   async function handleSubmit(code: string, callback?: (res: any) => void) {
     const res = await accessStore.validPwd(code);
+    if (!res) return;
 
     if (res.code === 0) {
       const model = res?.data?.model;
@@ -73,10 +72,14 @@ export function ValidPwd(props: ValidPwdProps) {
       accessStore.update((access) => (access.pwd = pwd));
       setShowError(true);
     }
+
+    setLoading(false);
   }
 
   useEffect(() => {
     accessStore.update((access) => (access.userCode = userCode));
+    console.log("🚀 ~ ValidPwd ~ autoConfirm:", autoConfirm === "true");
+    console.log("🚀 ~ [valid pwd] ~ user code:", userCode);
 
     (async () => {
       try {
@@ -93,8 +96,6 @@ export function ValidPwd(props: ValidPwdProps) {
       } catch (error) {
         console.log("🚀 [valid pwd useEffect] catch error:", error);
         showToast(Locale.Error.NetworkError);
-      } finally {
-        setLoading(false);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -126,8 +127,8 @@ export function ValidPwd(props: ValidPwdProps) {
         ? BotIconDark
         : BotIconLight
       : config.theme === "dark"
-      ? BotIconLight
-      : BotIconDark;
+        ? BotIconLight
+        : BotIconDark;
 
   return (
     <div className={styles["auth-page"]}>

@@ -3,6 +3,7 @@ import {
   getMessageTextContent,
   isSupportMultimodal,
   isVisionModel,
+  isSpecImageModal,
 } from "../utils";
 
 import Locale, { getLang } from "../locales";
@@ -212,17 +213,24 @@ async function getFileArr(uploadFiles: UploadFile[]): Promise<FileRes[]> {
   }
   return fileArr;
 }
+
 async function getUserContent(
   content: string | MultimodalContent[],
   modelConfig: ModelConfig,
   fileArr: FileRes[],
   type: "send" | "save",
 ): Promise<string | MultimodalContent[]> {
-  console.log("🚀 ~ fileArr:", fileArr);
-  const currentModel = modelConfig.model;
+  const currentModel = modelConfig.model.toLocaleLowerCase();
+  console.log("🚀 ~ fileArr:", fileArr, currentModel);
+
+  // 特殊的能支持图片的模型,
+  // 这些模型支持识别图片, 格式与 gpt-4-vision 一样, 唯一区别就是它们用的是 url 而不是 base64
 
   // 如果是gpt4-vision，
-  if (isVisionModel(currentModel) && typeof content == "string") {
+  if (
+    (isSpecImageModal(currentModel) || isVisionModel(currentModel)) &&
+    typeof content == "string"
+  ) {
     const imgContent: MultimodalContent[] = [];
     imgContent.push({
       type: "text",
@@ -235,7 +243,7 @@ async function getUserContent(
           imgContent.push({
             type: "image_url",
             image_url: {
-              url: currentModel === "glm-4v" ? file.url : file.base64,
+              url: isSpecImageModal(currentModel) ? file.url : file.base64,
             },
           });
         } else if (file.url && file.url.startsWith("http")) {
@@ -251,11 +259,7 @@ async function getUserContent(
       }
     }
     return imgContent;
-  } else if (
-    // currentModel == "gpt-4-all" ||
-    // currentModel.includes("gpt-4-gizmo")
-    isSupportMultimodal(currentModel)
-  ) {
+  } else if (isSupportMultimodal(currentModel)) {
     let sendContent = content;
     if (type == "send") {
       let fileUrls = "";
@@ -319,7 +323,10 @@ async function getUserContent(
   } else if (type == "send" && content instanceof Array) {
     for (const msg of content) {
       if (msg.type == "image_url") {
-        msg.image_url!.url = await getBase64FromUrl(msg.image_url!.url);
+        let url = msg.image_url!.url;
+        msg.image_url!.url = isSpecImageModal(currentModel)
+          ? url
+          : await getBase64FromUrl(url);
       }
     }
     return content;
@@ -582,6 +589,7 @@ export const useChatStore = createPersistStore(
         // get recent messages
         const recentMessages = get().getMessagesWithMemory();
         const sendMessages = recentMessages.concat(userMessage);
+        console.log("🚀 ~ sendMessages:", sendMessages);
         const messageIndex = get().currentSession().messages.length + 1;
 
         // save user's and bot's message
@@ -724,16 +732,16 @@ export const useChatStore = createPersistStore(
               }),
             ]
           : shouldInjectCustomSystemPrompts
-          ? [
-              createMessage({
-                role: "system",
-                content: fillTemplateWith("", {
-                  ...modelConfig,
-                  template: modelConfig.injectCustomSystemPrompts,
+            ? [
+                createMessage({
+                  role: "system",
+                  content: fillTemplateWith("", {
+                    ...modelConfig,
+                    template: modelConfig.injectCustomSystemPrompts,
+                  }),
                 }),
-              }),
-            ]
-          : [];
+              ]
+            : [];
 
         if (shouldInjectSystemPrompts) {
           console.log(

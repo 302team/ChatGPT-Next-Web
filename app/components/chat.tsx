@@ -82,6 +82,7 @@ import {
   dataURLtoFile,
   copyAudioBlob,
   convertAudioBufferToWave,
+  isSpecImageModal,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -493,7 +494,7 @@ export function ChatActions(props: {
   const [showUploadImage, setShowUploadImage] = useState(false);
 
   useEffect(() => {
-    const show = isVisionModel(currentModel);
+    const show = isVisionModel(currentModel) || isSpecImageModal(currentModel);
     setShowUploadImage(show);
     if (!show) {
       props.setUploadFiles([]);
@@ -731,7 +732,10 @@ function useUploadFile(extra: {
 
   useEffect(() => {
     const supportMultimodal = isSupportMultimodal(currentModel);
-    const show = isVisionModel(currentModel) || supportMultimodal;
+    const show =
+      isVisionModel(currentModel) ||
+      supportMultimodal ||
+      isSpecImageModal(currentModel);
     setShowUploadAction(show);
     if (!show) {
       setUploadFiles([]);
@@ -846,7 +850,11 @@ function useUploadFile(extra: {
   }
 
   async function dropUpload(files: File[]) {
-    if (!isSupportMultimodal(currentModel) && !isVisionModel(currentModel)) {
+    if (
+      !isSupportMultimodal(currentModel) &&
+      !isVisionModel(currentModel) &&
+      !isSpecImageModal(currentModel)
+    ) {
       return false;
     }
 
@@ -1845,8 +1853,8 @@ function _Chat(props: { promptStarters: string[] }) {
                                     fetchSpeechLoading
                                       ? "Load"
                                       : speaking
-                                      ? Locale.Chat.Actions.Stop
-                                      : Locale.Chat.Actions.Speek
+                                        ? Locale.Chat.Actions.Stop
+                                        : Locale.Chat.Actions.Speek
                                   }
                                   icon={
                                     fetchSpeechLoading ? (

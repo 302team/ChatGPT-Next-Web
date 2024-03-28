@@ -349,6 +349,13 @@ export function isVisionModel(model: string) {
   return visionKeywords.some((keyword) => m.includes(keyword));
 }
 
+export function isSpecImageModal(model: string) {
+  const m = model.toLocaleLowerCase();
+  const visionKeywords = ["glm-4v", "yi-vl-plus"];
+
+  return visionKeywords.some((keyword) => m.includes(keyword));
+}
+
 export function isSupportMultimodal(model: string) {
   const m = model.toLocaleLowerCase();
   return (

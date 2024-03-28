@@ -12,6 +12,7 @@ import {
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 
 import {
+  buildMessages,
   ChatOptions,
   getHeaders,
   getHeadersNoCT,
@@ -89,10 +90,9 @@ export class ChatGPTApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
-    const visionModel = isVisionModel(options.config.model);
     const messages = options.messages.map((v) => ({
       role: v.role,
-      content: visionModel ? v.content : getMessageTextContent(v),
+      content: v.content,
     }));
 
     const modelConfig = {
@@ -103,8 +103,9 @@ export class ChatGPTApi implements LLMApi {
       },
     };
 
+    const sendMessages = buildMessages(messages, modelConfig.model);
     const requestPayload = {
-      messages,
+      messages: sendMessages,
       stream: options.config.stream,
       model: modelConfig.model,
       temperature: modelConfig.temperature,
@@ -116,7 +117,7 @@ export class ChatGPTApi implements LLMApi {
     };
 
     // add max_tokens to vision model
-    if (visionModel) {
+    if (options.config.model.includes("vision")) {
       Object.defineProperty(requestPayload, "max_tokens", {
         enumerable: true,
         configurable: true,
