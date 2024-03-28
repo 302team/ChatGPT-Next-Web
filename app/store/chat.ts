@@ -38,6 +38,7 @@ export type ChatMessage = RequestMessage & {
   isError?: boolean;
   id: string;
   model?: ModelType;
+  retryCount?: number;
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -97,8 +98,11 @@ export interface FileRes {
 }
 
 export interface ExtAttr {
-  setAutoScroll: ((autoScroll: boolean) => void) | undefined;
+  retryCount?: number;
   uploadFiles: UploadFile[];
+
+  onResend?: (messages: ChatMessage | ChatMessage[]) => void;
+  setAutoScroll: ((autoScroll: boolean) => void) | undefined;
   setUploadFiles: React.Dispatch<React.SetStateAction<UploadFile[]>>;
 }
 
@@ -633,6 +637,11 @@ export const useChatStore = createPersistStore(
         api.llm.chat({
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
+          retryCount: extAttr.retryCount ?? 0,
+          onRetry: () => {
+            console.warn("[Chat] onRetry", userMessage);
+            extAttr.onResend?.(userMessage);
+          },
           onUpdate(message) {
             botMessage.streaming = true;
             if (message) {
@@ -732,16 +741,16 @@ export const useChatStore = createPersistStore(
               }),
             ]
           : shouldInjectCustomSystemPrompts
-            ? [
-                createMessage({
-                  role: "system",
-                  content: fillTemplateWith("", {
-                    ...modelConfig,
-                    template: modelConfig.injectCustomSystemPrompts,
-                  }),
+          ? [
+              createMessage({
+                role: "system",
+                content: fillTemplateWith("", {
+                  ...modelConfig,
+                  template: modelConfig.injectCustomSystemPrompts,
                 }),
-              ]
-            : [];
+              }),
+            ]
+          : [];
 
         if (shouldInjectSystemPrompts) {
           console.log(

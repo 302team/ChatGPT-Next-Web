@@ -205,9 +205,15 @@ export class ChatGPTApi implements LLMApi {
               "[OpenAI] request response content type: ",
               contentType,
             );
+            console.log("[OpenAI] request retry count: ", options.retryCount);
 
             if (contentType?.startsWith("text/plain")) {
-              responseText = await res.clone().text();
+              if (options.retryCount !== undefined && options.retryCount < 1) {
+                options.onRetry?.();
+                return;
+              }
+
+              responseText = "Network error, please retry."; // await res.clone().text();
               return finish();
             }
 

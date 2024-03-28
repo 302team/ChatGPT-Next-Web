@@ -1187,7 +1187,16 @@ function _Chat(props: { promptStarters: string[] }) {
       return;
     }
     setIsLoading(true);
-    chatStore.onUserInput(userInput, exAttr).then(() => setIsLoading(false));
+
+    const resend = onResend as (messages: ChatMessage | ChatMessage[]) => void;
+
+    chatStore
+      .onUserInput(userInput, {
+        retryCount: 0,
+        onResend: resend,
+        ...exAttr,
+      })
+      .then(() => setIsLoading(false));
 
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
@@ -1347,10 +1356,15 @@ function _Chat(props: { promptStarters: string[] }) {
     deleteMessage(userMessage.id);
     deleteMessage(botMessage?.id);
 
+    if (botMessage && botMessage.retryCount == undefined) {
+      botMessage.retryCount = 1;
+    }
+
     // resend the message
     setIsLoading(true);
     chatStore
       .onUserInput(userMessage.content, {
+        retryCount: botMessage?.retryCount || 1,
         ...exAttr,
       })
       .then(() => setIsLoading(false));
@@ -1853,8 +1867,8 @@ function _Chat(props: { promptStarters: string[] }) {
                                     fetchSpeechLoading
                                       ? "Load"
                                       : speaking
-                                        ? Locale.Chat.Actions.Stop
-                                        : Locale.Chat.Actions.Speek
+                                      ? Locale.Chat.Actions.Stop
+                                      : Locale.Chat.Actions.Speek
                                   }
                                   icon={
                                     fetchSpeechLoading ? (

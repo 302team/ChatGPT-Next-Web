@@ -46,7 +46,9 @@ export interface LLMConfig {
 export interface ChatOptions {
   messages: RequestMessage[];
   config: LLMConfig;
+  retryCount?: number;
 
+  onRetry?: () => void;
   onUpdate?: (message: string, chunk: string) => void;
   onFinish: (message: string, isError?: boolean) => void;
   onError?: (err: Error) => void;
@@ -183,8 +185,8 @@ export function getHeaders() {
   const apiKey = isGoogle
     ? accessStore.googleApiKey
     : isAzure
-      ? accessStore.azureApiKey
-      : accessStore.openaiApiKey;
+    ? accessStore.azureApiKey
+    : accessStore.openaiApiKey;
   const clientConfig = getClientConfig();
   const makeBearer = (s: string) => `${isAzure ? "" : "Bearer "}${s.trim()}`;
   const validString = (x: string) => x && x.length > 0;
