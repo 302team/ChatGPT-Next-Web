@@ -231,11 +231,15 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
           const emptyMask = createEmptyMask();
 
           let promptStarters: string[] = [];
-          try {
-            if (data.detail) {
-              promptStarters = JSON.parse(data.detail);
-            }
-          } catch (error) {}
+          if (data.detail) {
+            try {
+              if (typeof data.detail === "string") {
+                promptStarters = JSON.parse(data.detail);
+              } else {
+                promptStarters = data.detail;
+              }
+            } catch (error) {}
+          }
 
           chatStore.newSession(
             {
