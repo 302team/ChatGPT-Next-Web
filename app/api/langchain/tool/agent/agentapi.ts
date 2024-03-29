@@ -253,7 +253,8 @@ export class AgentApi {
 
       var handler = await this.getHandler(reqBody);
 
-      let searchTool: Tool = new DuckDuckGo();
+      // 使用魔改过的 SearchApi
+      let searchTool: Tool = new SearchApi(apiKey, baseUrl); // new DuckDuckGo();
       if (process.env.CHOOSE_SEARCH_ENGINE) {
         switch (process.env.CHOOSE_SEARCH_ENGINE) {
           case "google":
@@ -293,8 +294,6 @@ export class AgentApi {
         //   description: searchAPITool.description,
         //   func: async (input: string) => searchAPITool.call(input),
         // });
-        // 使用魔改过的 SearchApi
-        searchTool = new SearchApi(apiKey, baseUrl);
       }
       if (process.env.GOOGLE_CSE_ID && process.env.GOOGLE_API_KEY) {
         let googleCustomSearchTool = new langchainTools["GoogleCustomSearch"]();
