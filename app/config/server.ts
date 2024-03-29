@@ -113,5 +113,10 @@ export const getServerSideConfig = () => {
     customModels,
 
     apiDomain: process.env.API_DOMAIN,
+
+    isStoreFileToLocal:
+      !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN &&
+      !process.env.R2_ACCOUNT_ID &&
+      !process.env.S3_ENDPOINT,
   };
 };

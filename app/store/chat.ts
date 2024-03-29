@@ -31,9 +31,16 @@ import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
+import { usePluginStore } from "./plugin";
+
+export interface ChatToolMessage {
+  toolName: string;
+  toolInput?: string;
+}
 
 export type ChatMessage = RequestMessage & {
   date: string;
+  toolMessages?: ChatToolMessage[];
   streaming?: boolean;
   isError?: boolean;
   id: string;
@@ -45,6 +52,7 @@ export function createMessage(override: Partial<ChatMessage>): ChatMessage {
   return {
     id: nanoid(),
     date: new Date().toLocaleString(),
+    toolMessages: new Array<ChatToolMessage>(),
     role: "user",
     content: "",
     ...override,
@@ -222,6 +230,7 @@ async function getUserContent(
   content: string | MultimodalContent[],
   modelConfig: ModelConfig,
   fileArr: FileRes[],
+  usePlugins: boolean | undefined,
   type: "send" | "save",
 ): Promise<string | MultimodalContent[]> {
   const currentModel = modelConfig.model.toLocaleLowerCase();
@@ -263,7 +272,7 @@ async function getUserContent(
       }
     }
     return imgContent;
-  } else if (isSupportMultimodal(currentModel)) {
+  } else if (isSupportMultimodal(currentModel) || usePlugins) {
     let sendContent = content;
     if (type == "send") {
       let fileUrls = "";
@@ -566,6 +575,7 @@ export const useChatStore = createPersistStore(
           content,
           modelConfig,
           fileArr,
+          session.mask.usePlugins,
           "send",
         );
         console.log("[User Input] after pretreatment: ", userContent);
@@ -574,6 +584,7 @@ export const useChatStore = createPersistStore(
           content,
           modelConfig,
           fileArr,
+          session.mask.usePlugins,
           "save",
         );
 
@@ -589,12 +600,26 @@ export const useChatStore = createPersistStore(
           role: "assistant",
           streaming: true,
           model: modelConfig.model as ModelType,
+          toolMessages: [],
         });
         // get recent messages
         const recentMessages = get().getMessagesWithMemory();
         const sendMessages = recentMessages.concat(userMessage);
         console.log("🚀 ~ sendMessages:", sendMessages);
         const messageIndex = get().currentSession().messages.length + 1;
+
+        // plugin
+        const config = useAppConfig.getState();
+        const pluginConfig = useAppConfig.getState().pluginConfig;
+        const pluginStore = usePluginStore.getState();
+        const allPlugins = pluginStore
+          .getAll()
+          .filter(
+            (m) =>
+              (!getLang() ||
+                m.lang === (getLang() == "cn" ? getLang() : "en")) &&
+              m.enable,
+          );
 
         // save user's and bot's message
         get().updateCurrentSession((session) => {
@@ -608,93 +633,210 @@ export const useChatStore = createPersistStore(
           ]);
         });
 
-        var api: ClientApi;
-        if (modelConfig.model.startsWith("gemini")) {
-          api = new ClientApi(ModelProvider.GeminiPro);
-        } else {
-          api = new ClientApi(ModelProvider.GPT);
-        }
-        // make request
-        // midjourney 请求
-        if (modelConfig.model == "midjourney") {
-          // return this.fetchMidjourney(content, botMessage, extAttr);
-        } else if (modelConfig.model == "stable-diffusion") {
-          // return this.fetchStableDiffusion(content, botMessage, extAttr);
-        } else if (modelConfig.model.includes("dall-e")) {
-          // return this.imagesGenerations(content, botMessage, extAttr);
-        } else if (modelConfig.model.includes("whisper")) {
-          // return this.audioTranscriptions(
-          //   userContent as MultimodalContent[],
-          //   botMessage,
-          //   extAttr,
-          //   fileArr,
-          // );
-        } else if (modelConfig.model.includes("tts")) {
-          // return this.audioSpeech(content, botMessage, extAttr);
-        }
+        var api: ClientApi = new ClientApi(ModelProvider.GPT);
+        if (
+          config.pluginConfig.enable &&
+          session.mask.usePlugins &&
+          allPlugins.length > 0 &&
+          modelConfig.model.startsWith("gpt") &&
+          modelConfig.model != "gpt-4-vision-preview"
+        ) {
+          console.log(
+            "[ToolAgent] start; plugins:",
+            allPlugins.map((i) => i.name).join(", "),
+          );
+          const pluginToolNames = allPlugins.map((m) => m.toolName);
 
-        // make request
-        api.llm.chat({
-          messages: sendMessages,
-          config: { ...modelConfig, stream: true },
-          retryCount: extAttr.retryCount ?? 0,
-          onRetry: () => {
-            console.warn("[Chat] onRetry", userMessage);
-            extAttr.onResend?.(userMessage);
-          },
-          onUpdate(message) {
-            botMessage.streaming = true;
-            if (message) {
-              botMessage.content = message;
-            }
-            get().updateCurrentSession((session) => {
-              session.messages = session.messages.concat();
-            });
-          },
-          onFinish(message, hasError) {
-            console.warn(
-              "🚀 ~ onFinish ~ message:",
-              message,
-              "hasError",
-              hasError,
-            );
-            botMessage.streaming = false;
-            botMessage.content = message ?? "";
-            botMessage.isError = hasError as boolean;
-            get().onNewMessage(botMessage);
-            ChatControllerPool.remove(session.id, botMessage.id);
-          },
-          onError(error) {
-            const isAborted = error.message.includes("aborted");
-            botMessage.content +=
-              Locale.Error.ApiTimeout +
-              "\n\n" +
-              prettyObject({
-                error: true,
-                message: error.message,
+          // TODO: Plugin chat
+          api.llm.toolAgentChat({
+            messages: sendMessages,
+            config: { ...modelConfig, stream: true },
+            agentConfig: { ...pluginConfig, useTools: pluginToolNames },
+            onUpdate(message) {
+              botMessage.streaming = true;
+              if (message) {
+                botMessage.content = message;
+              }
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
               });
-            botMessage.streaming = false;
-            userMessage.isError = !isAborted;
-            botMessage.isError = !isAborted;
-            get().updateCurrentSession((session) => {
-              session.messages = session.messages.concat();
-            });
-            ChatControllerPool.remove(
-              session.id,
-              botMessage.id ?? messageIndex,
-            );
+            },
+            onToolUpdate(toolName, toolInput) {
+              botMessage.streaming = true;
+              if (toolName && toolInput) {
+                botMessage.toolMessages!.push({
+                  toolName,
+                  toolInput,
+                });
+              }
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+            },
+            onFinish(message, hasError) {
+              console.warn("🚀 ~ onFinish ~ message:", message);
+              let content: string | MultimodalContent[] = message;
+              let _hasError = false;
 
-            console.error("[Chat] failed ", error);
-          },
-          onController(controller) {
-            // collect controller for stop/retry
-            ChatControllerPool.addController(
-              session.id,
-              botMessage.id ?? messageIndex,
-              controller,
-            );
-          },
-        });
+              try {
+                const resJson = JSON.parse(message);
+                console.log("🚀 ~ onFinish ~ resJson:", resJson);
+                if (resJson.error) {
+                  _hasError = true;
+                  content = prettyObject({
+                    error: true,
+                    message: message,
+                  });
+                } else {
+                  _hasError = false;
+                  content = [];
+
+                  if (resJson.type === "image") {
+                    content.push({
+                      type: "image_url",
+                      image_url: {
+                        url: resJson.url,
+                      },
+                    });
+
+                    // if (resJson.revised_prompt) {
+                    //   content.unshift({
+                    //     type: "text",
+                    //     text: Locale.Dall.RevisedPrompt(resJson.revised_prompt),
+                    //   });
+                    // }
+                  } else {
+                    content.push({
+                      type: "text",
+                      text: message,
+                    });
+                  }
+                }
+              } catch (error) {}
+              console.log("🚀 ~ onFinish ~ content:", content);
+
+              botMessage.streaming = false;
+              botMessage.content = content ?? "";
+              botMessage.isError = (hasError || _hasError) as boolean;
+              get().onNewMessage(botMessage);
+              ChatControllerPool.remove(session.id, botMessage.id);
+            },
+            onError(error) {
+              const isAborted = error.message.includes("aborted");
+              botMessage.content +=
+                "\n\n" +
+                prettyObject({
+                  error: true,
+                  message: error.message,
+                });
+              botMessage.streaming = false;
+              userMessage.isError = !isAborted;
+              botMessage.isError = !isAborted;
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+              ChatControllerPool.remove(
+                session.id,
+                botMessage.id ?? messageIndex,
+              );
+
+              console.error("[toolAgentChat] failed ", error);
+            },
+            onController(controller) {
+              // collect controller for stop/retry
+              ChatControllerPool.addController(
+                session.id,
+                botMessage.id ?? messageIndex,
+                controller,
+              );
+            },
+          });
+        } else {
+          if (modelConfig.model.startsWith("gemini")) {
+            api = new ClientApi(ModelProvider.GeminiPro);
+          }
+
+          // make request
+          // midjourney 请求
+          if (modelConfig.model == "midjourney") {
+            // return this.fetchMidjourney(content, botMessage, extAttr);
+          } else if (modelConfig.model == "stable-diffusion") {
+            // return this.fetchStableDiffusion(content, botMessage, extAttr);
+          } else if (modelConfig.model.includes("dall-e")) {
+            // return this.imagesGenerations(content, botMessage, extAttr);
+          } else if (modelConfig.model.includes("whisper")) {
+            // return this.audioTranscriptions(
+            //   userContent as MultimodalContent[],
+            //   botMessage,
+            //   extAttr,
+            //   fileArr,
+            // );
+          } else if (modelConfig.model.includes("tts")) {
+            // return this.audioSpeech(content, botMessage, extAttr);
+          }
+
+          // make request
+          api.llm.chat({
+            messages: sendMessages,
+            config: { ...modelConfig, stream: true },
+            onRetry: () => {
+              console.warn("[Chat] onRetry", userMessage);
+              extAttr.onResend?.(userMessage);
+            },
+            onUpdate(message) {
+              botMessage.streaming = true;
+              if (message) {
+                botMessage.content = message;
+              }
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+            },
+            onFinish(message, hasError) {
+              console.warn(
+                "🚀 ~ onFinish ~ message:",
+                message,
+                "hasError",
+                hasError,
+              );
+              botMessage.streaming = false;
+              botMessage.content = message ?? "";
+              botMessage.isError = hasError as boolean;
+              get().onNewMessage(botMessage);
+              ChatControllerPool.remove(session.id, botMessage.id);
+            },
+            onError(error) {
+              const isAborted = error.message.includes("aborted");
+              botMessage.content +=
+                Locale.Error.ApiTimeout +
+                "\n\n" +
+                prettyObject({
+                  error: true,
+                  message: error.message,
+                });
+              botMessage.streaming = false;
+              userMessage.isError = !isAborted;
+              botMessage.isError = !isAborted;
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+              ChatControllerPool.remove(
+                session.id,
+                botMessage.id ?? messageIndex,
+              );
+
+              console.error("[Chat] failed ", error);
+            },
+            onController(controller) {
+              // collect controller for stop/retry
+              ChatControllerPool.addController(
+                session.id,
+                botMessage.id ?? messageIndex,
+                controller,
+              );
+            },
+          });
+        }
       },
 
       getMemoryPrompt() {
@@ -741,16 +883,16 @@ export const useChatStore = createPersistStore(
               }),
             ]
           : shouldInjectCustomSystemPrompts
-          ? [
-              createMessage({
-                role: "system",
-                content: fillTemplateWith("", {
-                  ...modelConfig,
-                  template: modelConfig.injectCustomSystemPrompts,
+            ? [
+                createMessage({
+                  role: "system",
+                  content: fillTemplateWith("", {
+                    ...modelConfig,
+                    template: modelConfig.injectCustomSystemPrompts,
+                  }),
                 }),
-              }),
-            ]
-          : [];
+              ]
+            : [];
 
         if (shouldInjectSystemPrompts) {
           console.log(

@@ -548,6 +548,15 @@ const cn = {
       Deleted: "应用已被删除",
     },
   },
+  Dall: {
+    Num: "生成图片数量",
+    Quality: "图片质量",
+    ResponseFormat: "返回数据格式",
+    Size: "分辨率",
+    Style: "风格",
+    RevisedPrompt: (prompt: string) => `**修饰后的提示词:**\n${prompt}`,
+    FetchImageError: "无法获取图片或未配置OSS",
+  },
   Config: {
     title: "聊天机器人 - GPT302",
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,

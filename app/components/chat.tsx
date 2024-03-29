@@ -52,6 +52,7 @@ import RobotIcon from "../icons/robot.svg";
 import SpeakIcon from "../icons/speak.svg";
 import VoiceIcon from "../icons/voice.svg";
 import KeyboardIcon from "../icons/keyboard.svg";
+import CheckmarkIcon from "../icons/checkmark.svg";
 
 import {
   ChatMessage,
@@ -694,6 +695,7 @@ function useUploadFile(extra: {
   const session = chatStore.currentSession();
   const accessStore = useAccessStore();
   const uploadUrl = accessStore.fileUploadUrl;
+  const config = useAppConfig();
 
   const [uploading, setUploading] = useState(false);
 
@@ -733,15 +735,20 @@ function useUploadFile(extra: {
   useEffect(() => {
     const supportMultimodal = isSupportMultimodal(currentModel);
     const show =
+      // Vision 模型
       isVisionModel(currentModel) ||
+      // 多模态模型
       supportMultimodal ||
-      isSpecImageModal(currentModel);
+      // 类似 vision 的模型
+      isSpecImageModal(currentModel) ||
+      // 使用了插件
+      config.pluginConfig.enable;
     setShowUploadAction(show);
     if (!show) {
       setUploadFiles([]);
       setUploading(false);
     }
-  }, [currentModel]);
+  }, [currentModel, config.pluginConfig.enable]);
 
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
@@ -1867,8 +1874,8 @@ function _Chat(props: { promptStarters: string[] }) {
                                     fetchSpeechLoading
                                       ? "Load"
                                       : speaking
-                                      ? Locale.Chat.Actions.Stop
-                                      : Locale.Chat.Actions.Speek
+                                        ? Locale.Chat.Actions.Stop
+                                        : Locale.Chat.Actions.Speek
                                   }
                                   icon={
                                     fetchSpeechLoading ? (
@@ -1892,6 +1899,27 @@ function _Chat(props: { promptStarters: string[] }) {
                       </div>
                     )}
                   </div>
+                  {!isUser &&
+                    message.toolMessages &&
+                    message.toolMessages.map((tool, index) => (
+                      <div
+                        className={styles["chat-message-tools-status"]}
+                        key={index}
+                      >
+                        <div className={styles["chat-message-tools-name"]}>
+                          <CheckmarkIcon
+                            className={styles["chat-message-checkmark"]}
+                          />
+                          {tool.toolName}:
+                          <code
+                            className={styles["chat-message-tools-details"]}
+                          >
+                            {tool.toolInput}
+                          </code>
+                        </div>
+                      </div>
+                    ))}
+
                   {showTyping && (
                     <div className={styles["chat-message-status"]}>
                       {Locale.Chat.Typing}

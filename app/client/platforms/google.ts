@@ -1,5 +1,6 @@
 import { Google, REQUEST_TIMEOUT_MS } from "@/app/constant";
 import {
+  AgentChatOptions,
   ChatOptions,
   getHeaders,
   LLMApi,
@@ -274,6 +275,10 @@ export class GeminiProApi implements LLMApi {
   }
   path(path: string): string {
     return "/api/google/" + path;
+  }
+
+  toolAgentChat(options: AgentChatOptions): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
   async audioTranscriptions(formData: FormData) {

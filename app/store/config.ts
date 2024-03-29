@@ -121,6 +121,12 @@ export const CHATBOT_CONFIG = {
     logo_url: "",
     name: "",
   },
+
+  pluginConfig: {
+    enable: false, // 是否开启插件
+    maxIterations: 10, // 最大迭代数
+    returnIntermediateSteps: true, // 是否返回插件调用的中间步骤
+  },
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG &
@@ -129,6 +135,7 @@ export type ChatConfig = typeof DEFAULT_CONFIG &
 export type ChatbotSetting = typeof DEFAULT_SETTING;
 
 export type ModelConfig = ChatConfig["modelConfig"];
+export type PluginConfig = ChatConfig["pluginConfig"];
 
 export function limitNumber(
   x: number,

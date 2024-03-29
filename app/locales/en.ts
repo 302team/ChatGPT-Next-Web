@@ -552,6 +552,15 @@ const en: LocaleType = {
       Deleted: "This App has been deleted.",
     },
   },
+  Dall: {
+    Num: "Num",
+    Quality: "Quality",
+    ResponseFormat: "ResponseFormat",
+    Size: "Size",
+    Style: "Style",
+    RevisedPrompt: (prompt: string) => `**RevisedPrompt:**\n${prompt}`,
+    FetchImageError: "Can not fetch image or no OSS setting",
+  },
   Config: {
     title: "Chatbot - GPT302",
     description: (type: string = "AI") =>

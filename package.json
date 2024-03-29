@@ -19,19 +19,30 @@
     "@ant-design/icons": "^5.3.1",
     "@fortaine/fetch-event-source": "^3.0.6",
     "@hello-pangea/dnd": "^16.5.0",
+    "@langchain/community": "0.0.30",
+    "@langchain/openai": "0.0.14",
     "@next/third-parties": "^14.1.0",
     "@svgr/webpack": "^6.5.1",
     "@vercel/analytics": "^0.1.11",
     "@vercel/speed-insights": "^1.0.2",
     "antd": "^5.15.2",
+    "axios": "^1.6.8",
+    "cheerio": "^1.0.0-rc.12",
     "emoji-picker-react": "^4.5.15",
+    "encoding": "^0.1.13",
     "fuse.js": "^7.0.0",
+    "html-entities": "^2.4.0",
     "html-to-image": "^1.11.11",
+    "html-to-text": "^9.0.5",
+    "https-proxy-agent": "^7.0.2",
+    "langchain": "0.1.20",
     "mermaid": "^10.6.1",
     "mime": "^4.0.1",
     "nanoid": "^5.0.3",
     "next": "^13.4.9",
     "node-fetch": "^3.3.1",
+    "openai": "^4.28.4",
+    "pdf-parse": "^1.1.1",
     "react": "^18.2.0",
     "react-audio-voice-recorder": "^2.2.0",
     "react-dom": "^18.2.0",
@@ -51,6 +62,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "1.5.7",
+    "@types/html-to-text": "^9.0.4",
     "@types/node": "^20.9.0",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.7",
@@ -68,6 +80,8 @@
     "webpack": "^5.88.1"
   },
   "resolutions": {
-    "lint-staged/yaml": "^2.2.2"
+    "lint-staged/yaml": "^2.2.2",
+    "@langchain/core": "0.1.45",
+    "openai": "4.28.4"
   }
 }

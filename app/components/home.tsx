@@ -41,6 +41,7 @@ import { Prompt, usePromptStore } from "../store/prompt";
 import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
+import { usePluginStore } from "../store/plugin";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -150,6 +151,8 @@ function ChatWindow() {
   const [loading, setLoading] = useState(true);
   const [validPwdVisible, setValidPwdVisible] = useState(true);
   const promptStore = usePromptStore();
+  const pluginStore = usePluginStore();
+  const currentLang = getLang();
 
   useEffect(() => {
     if (accessStore.apiDomain) {
@@ -197,6 +200,7 @@ function ChatWindow() {
             conf.isGpts = opt.is_gpts;
             conf.useGpts = !!opt.use_gpts;
             conf.openTTS = opt.is_gpts ? true : !!opt.open_tts;
+            conf.pluginConfig.enable = !!opt.settings.enablePlugins;
 
             const settings = opt.settings;
             console.warn(
@@ -252,6 +256,17 @@ function ChatWindow() {
               };
             });
           }
+
+          const supportedLangs = ["cn"];
+          const allPlugins = pluginStore
+            .getAll()
+            .filter((m) =>
+              supportedLangs.includes(currentLang)
+                ? m.lang === currentLang
+                : m.lang === "en",
+            );
+          console.log("🚀 ~ ChatWindow ~ allPlugins:", allPlugins);
+
           setValidPwdVisible(false);
         }}
       />

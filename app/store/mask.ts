@@ -21,6 +21,8 @@ export type Mask = {
   botHelloContent?: string;
   modelName?: string;
   isStoreModel?: boolean; // 是否是应用商店的模型
+
+  usePlugins?: boolean;
 };
 
 export const DEFAULT_MASK_STATE = {
@@ -43,6 +45,9 @@ export const createEmptyMask = () =>
     createdAt: Date.now(),
     botHelloContent: Locale.Store.BotHello,
     isStoreModel: false,
+    usePlugins:
+      useAppConfig.getState().pluginConfig.enable &&
+      /^gpt(?!.*03\d{2}$).*$/.test(useAppConfig.getState().modelConfig.model),
   }) as Mask;
 
 export const useMaskStore = createPersistStore(

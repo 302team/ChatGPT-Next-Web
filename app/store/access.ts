@@ -123,37 +123,6 @@ export const useAccessStore = createPersistStore(
         });
     },
 
-    async fetchByCode(code: string) {
-      if (fetchCodeLoading) return;
-      fetchCodeLoading = true;
-
-      const codes = get().openaiApiKeys;
-
-      return fetch(`${get().apiDomain}/bot/${code}`, {
-        method: "get",
-        headers: {
-          ...getHeaders(),
-        },
-      })
-        .then((res) => res.json())
-        .then((res: any) => {
-          console.log("[Config] got config by code from server", res);
-          if (res.code === 0 && res.data && res.data.value) {
-            codes[code] = res.data.value;
-            set(() => ({
-              openaiApiKeys: codes,
-              openaiApiKey: res.data.value,
-            }));
-          }
-
-          fetchCodeLoading = false;
-          return res;
-        })
-        .catch(() => {
-          console.error("[Config] failed to fetch config by code");
-          fetchCodeLoading = false;
-        });
-    },
     async validPwd(code: string) {
       if (fetchCodeLoading) return;
       fetchCodeLoading = true;
