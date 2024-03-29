@@ -46,6 +46,7 @@ export type ChatMessage = RequestMessage & {
   id: string;
   model?: ModelType;
   retryCount?: number;
+  isTimeoutAborted?: boolean;
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -652,6 +653,12 @@ export const useChatStore = createPersistStore(
             messages: sendMessages,
             config: { ...modelConfig, stream: true },
             agentConfig: { ...pluginConfig, useTools: pluginToolNames },
+            onAborted: () => {
+              botMessage.isTimeoutAborted = true;
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+            },
             onUpdate(message) {
               botMessage.streaming = true;
               if (message) {
@@ -779,6 +786,13 @@ export const useChatStore = createPersistStore(
           api.llm.chat({
             messages: sendMessages,
             config: { ...modelConfig, stream: true },
+            retryCount: extAttr.retryCount ?? 0,
+            onAborted: () => {
+              botMessage.isTimeoutAborted = true;
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+            },
             onRetry: () => {
               console.warn("[Chat] onRetry", userMessage);
               extAttr.onResend?.(userMessage);
@@ -807,15 +821,15 @@ export const useChatStore = createPersistStore(
             },
             onError(error) {
               const isAborted = error.message.includes("aborted");
-              botMessage.content +=
-                Locale.Error.ApiTimeout +
-                "\n\n" +
-                prettyObject({
-                  error: true,
-                  message: error.message,
-                });
+              botMessage.content += "Network error, please retry.";
+              // Locale.Error.ApiTimeout +
+              // "\n\n" +
+              // prettyObject({
+              //   error: true,
+              //   message: error.message,
+              // });
               botMessage.streaming = false;
-              userMessage.isError = !isAborted;
+              // userMessage.isError = !isAborted;
               botMessage.isError = !isAborted;
               get().updateCurrentSession((session) => {
                 session.messages = session.messages.concat();

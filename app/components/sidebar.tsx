@@ -264,7 +264,7 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
     };
 
     window.addEventListener("message", messageListener);
-    return () => window.removeEventListener("resize", messageListener);
+    return () => window.removeEventListener("message", messageListener);
   }, []);
 
   return {

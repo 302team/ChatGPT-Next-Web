@@ -133,6 +133,9 @@ export class ChatGPTApi implements LLMApi {
     const controller = new AbortController();
     options.onController?.(controller);
 
+    let isAborted = false;
+    let finished = false;
+
     try {
       const chatPath = this.path(OpenaiPath.ChatPath);
       const chatPayload = {
@@ -143,18 +146,16 @@ export class ChatGPTApi implements LLMApi {
       };
 
       // make a fetch request
-      const requestTimeoutId = setTimeout(
-        () => controller.abort(),
-        REQUEST_TIMEOUT_MS,
-      );
+      const requestTimeoutId = setTimeout(() => {
+        controller.abort();
+        options.onAborted?.();
+      }, REQUEST_TIMEOUT_MS);
 
       if (shouldStream) {
         let responseText = "";
         let remainText = "";
-        let finished = false;
         let isStreamDone = false;
         let hasUncatchError = false;
-        let isAborted = false;
 
         // animate response to make it looks smooth
         function animateResponseText() {
@@ -162,7 +163,11 @@ export class ChatGPTApi implements LLMApi {
             responseText += remainText;
             console.log("[Response Animation] finished");
             if (responseText?.length === 0) {
-              options.onError?.(new Error("empty response from server"));
+              if (options.retryCount !== undefined && options.retryCount < 1) {
+                options.onRetry?.();
+              } else {
+                options.onError?.(new Error("empty response from server"));
+              }
             }
             return;
           }
@@ -228,12 +233,41 @@ export class ChatGPTApi implements LLMApi {
               const responseTexts = [responseText];
               let extraInfo = await res.clone().text();
               let errorMsg = "";
+              console.warn("[Chat Response] error. extraInfo", extraInfo);
 
               try {
                 const resJson = await res.clone().json();
+                if (resJson.error) {
+                  if (resJson.error?.type === "api_error") {
+                    const CODE =
+                      ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
+                    errorMsg =
+                      Locale.Auth[CODE as AuthType] || resJson.error.message;
+                  } else if (resJson.error?.param.startsWith("5")) {
+                    errorMsg = Locale.Auth.SERVER_ERROR;
+                  } else if (
+                    resJson.error?.message.includes("No config for gizmo")
+                  ) {
+                    errorMsg = Locale.GPTs.Error.Deleted;
+                  } else {
+                    // 除了自定义的错误信息, 其他错误都显示 "Network error, please retry."
+                    errorMsg = "Network error, please retry.";
+                    hasUncatchError = true;
+                  }
+                }
 
-                extraInfo = prettyObject(resJson);
+                // extraInfo = prettyObject(resJson);
               } catch {}
+
+              // 重试一次
+              if (
+                hasUncatchError &&
+                options.retryCount !== undefined &&
+                options.retryCount < 1
+              ) {
+                options.onRetry?.();
+                return;
+              }
 
               if (errorMsg) {
                 responseTexts.push(errorMsg);
@@ -241,9 +275,9 @@ export class ChatGPTApi implements LLMApi {
                 responseTexts.push(Locale.Error.Unauthorized);
               }
 
-              if (extraInfo) {
-                responseTexts.push(extraInfo);
-              }
+              // if (extraInfo) {
+              //   responseTexts.push(extraInfo);
+              // }
 
               responseText = responseTexts.join("\n\n");
 
@@ -344,6 +378,9 @@ export class ChatGPTApi implements LLMApi {
     const controller = new AbortController();
     options.onController?.(controller);
 
+    let isAborted = false;
+    let finished = false;
+
     try {
       let path = "/api/langchain/tool/agent/";
       const enableNodeJSPlugin = !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN;
@@ -356,18 +393,16 @@ export class ChatGPTApi implements LLMApi {
       };
 
       // make a fetch request
-      const requestTimeoutId = setTimeout(
-        () => controller.abort(),
-        REQUEST_TIMEOUT_MS,
-      );
+      const requestTimeoutId = setTimeout(() => {
+        controller.abort();
+        options.onAborted?.();
+      }, REQUEST_TIMEOUT_MS);
       // console.log("shouldStream", shouldStream);
 
       if (shouldStream) {
         let responseText = "";
-        let finished = false;
         // let isStreamDone = false;
         let hasUncatchError = false;
-        let isAborted = false;
 
         const finish = () => {
           if (!finished) {

@@ -54,6 +54,7 @@ export interface ChatOptions {
   config: LLMConfig;
   retryCount?: number;
 
+  onAborted?: () => void;
   onRetry?: () => void;
   onUpdate?: (message: string, chunk: string) => void;
   onFinish: (message: string, hasError?: boolean) => void;
@@ -65,6 +66,7 @@ export interface AgentChatOptions {
   messages: RequestMessage[];
   config: LLMConfig;
   agentConfig: LLMAgentConfig;
+  onAborted?: () => void;
   onToolUpdate?: (toolName: string, toolInput: string) => void;
   onUpdate?: (message: string, chunk: string) => void;
   onFinish: (message: string, hasError?: boolean) => void;

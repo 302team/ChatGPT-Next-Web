@@ -1288,7 +1288,11 @@ function _Chat(props: { promptStarters: string[] }) {
       e.preventDefault();
       return;
     }
-    if (shouldSubmit(e) && promptHints.length === 0) {
+    if (
+      shouldSubmit(e) &&
+      promptHints.length === 0 &&
+      (userInput.trim() || uploadFiles.length)
+    ) {
       doSubmit(userInput);
       e.preventDefault();
     }
@@ -1973,7 +1977,7 @@ function _Chat(props: { promptStarters: string[] }) {
                       : message.date.toLocaleString()}
                   </div>
                 </div>
-                {!isUser && message.isError && (
+                {!isUser && (message.isError || message.isTimeoutAborted) && (
                   <div className={styles["chat-message-actions"]}>
                     <div className={styles["chat-input-actions"]}>
                       <div className={styles["chat-message-retry"]}>
