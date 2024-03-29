@@ -44,7 +44,7 @@ export const CN_PLUGINS: BuiltinPlugin[] = [
   },
   {
     name: "DALL·E",
-    toolName: "dalle_image_generator",
+    toolName: "draw",
     lang: "cn",
     description:
       "DALL·E 可以根据自然语言的描述创建逼真的图像和艺术。使用本插件需要配置 Cloudflare R2 对象存储服务。",

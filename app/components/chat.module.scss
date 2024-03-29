@@ -577,12 +577,20 @@
     calc(var(--window-width) - var(--sidebar-width)) / 3 * 2 /
       var(--image-count)
   );
-
   .chat-message-item-image-multi {
-    width: min(150px, max(50px, 200px / var(--image-count))) !important;
-    height: min(150px, max(50px, 200px / var(--image-count))) !important;
-    max-width: min(150px, max(50px, 200px / var(--image-count))) !important;
-    max-height: min(150px, max(50px, 200px / var(--image-count))) !important;
+    width: min(300px, max(150px, 400px / var(--image-count))) !important;
+    height: min(300px, max(150px, 400px / var(--image-count))) !important;
+    max-width: min(300px, max(150px, 400px / var(--image-count))) !important;
+    max-height: min(300px, max(150px, 400px / var(--image-count))) !important;
+  }
+
+  .chat-message-item-images-user {
+    .chat-message-item-image-multi {
+      width: min(150px, max(50px, 200px / var(--image-count))) !important;
+      height: min(150px, max(50px, 200px / var(--image-count))) !important;
+      max-width: min(150px, max(50px, 200px / var(--image-count))) !important;
+      max-height: min(150px, max(50px, 200px / var(--image-count))) !important;
+    }
   }
 
   .chat-message-item-image {

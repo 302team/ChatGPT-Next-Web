@@ -19,7 +19,7 @@ export async function getFileFromUrl(
 }
 
 export class DallEAPIWrapper extends StructuredTool {
-  name = "dalle_image_generator";
+  name = "draw";
   n = 1;
   apiKey: string;
   baseURL?: string;

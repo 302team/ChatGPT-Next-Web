@@ -46,7 +46,7 @@ export const RU_PLUGINS: BuiltinPlugin[] = [
   },
   {
     name: "DALL·E",
-    toolName: "dalle_image_generator",
+    toolName: "draw",
     lang: "ru",
     description:
       "DALL-E 2 - это система искусственного интеллекта, которая может создавать реалистичные изображения и произведения искусства на основе описания на естественном языке. Для использования этого плагина требуется настройка службы хранения объектов Cloudflare R2.",

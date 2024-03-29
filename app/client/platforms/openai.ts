@@ -456,11 +456,21 @@ export class ChatGPTApi implements LLMApi {
             ) {
               const responseTexts = [responseText];
               let extraInfo = await res.clone().text();
+              console.warn(
+                "🚀 ~ [tool agent chat] ~ onopen ~ extraInfo:",
+                extraInfo,
+              );
               let errorMsg = "";
 
               try {
                 const resJson = await res.clone().json();
-                extraInfo = prettyObject(resJson);
+                console.warn(
+                  "🚀 ~ [tool agent chat] ~ onopen ~ resJson:",
+                  resJson,
+                );
+                errorMsg = "Network error, please retry.";
+
+                // extraInfo = prettyObject(resJson);
               } catch {}
 
               if (errorMsg) {
@@ -469,9 +479,9 @@ export class ChatGPTApi implements LLMApi {
                 responseTexts.push(Locale.Error.Unauthorized);
               }
 
-              if (extraInfo) {
-                responseTexts.push(extraInfo);
-              }
+              // if (extraInfo) {
+              //   responseTexts.push(extraInfo);
+              // }
 
               responseText = responseTexts.join("\n\n");
 

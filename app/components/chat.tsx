@@ -1948,7 +1948,7 @@ function _Chat(props: { promptStarters: string[] }) {
                     />
                     {getMessageImages(message).length > 0 && (
                       <div
-                        className={styles["chat-message-item-images"]}
+                        className={`${styles["chat-message-item-images"]} ${isUser && styles["chat-message-item-images-user"]}`}
                         style={
                           {
                             "--image-count": getMessageImages(message).length,
