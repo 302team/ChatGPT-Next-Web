@@ -301,7 +301,9 @@ export class ChatGPTApi implements LLMApi {
             const text = msg.data;
             try {
               const json = JSON.parse(text);
-              const choices = json.choices as Array<{ delta: { content: string } }>;
+              const choices = json.choices as Array<{
+                delta: { content: string };
+              }>;
               const delta = choices[0]?.delta?.content;
               const textmoderation = json?.prompt_filter_results;
 
@@ -309,9 +311,17 @@ export class ChatGPTApi implements LLMApi {
                 remainText += delta;
               }
 
-              if (textmoderation && textmoderation.length > 0 && ServiceProvider.Azure) {
-                const contentFilterResults = textmoderation[0]?.content_filter_results;
-                console.log(`[${ServiceProvider.Azure}] [Text Moderation] flagged categories result:`, contentFilterResults);
+              if (
+                textmoderation &&
+                textmoderation.length > 0 &&
+                ServiceProvider.Azure
+              ) {
+                const contentFilterResults =
+                  textmoderation[0]?.content_filter_results;
+                console.log(
+                  `[${ServiceProvider.Azure}] [Text Moderation] flagged categories result:`,
+                  contentFilterResults,
+                );
               }
             } catch (e) {
               console.error("[Request] parse error", text, msg);
@@ -471,7 +481,6 @@ export class ChatGPTApi implements LLMApi {
           onmessage(msg) {
             // isStreamDone = msg.data === "[DONE]";
             let response = JSON.parse(msg.data);
-            console.log("🚀 ~ ChatGPTApi ~ onmessage ~ response:", response);
             if (!response.isSuccess) {
               console.error("[Request]", msg.data);
               responseText = msg.data;
