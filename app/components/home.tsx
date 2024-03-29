@@ -200,7 +200,7 @@ function ChatWindow() {
             conf.isGpts = opt.is_gpts;
             conf.useGpts = !!opt.use_gpts;
             conf.openTTS = opt.is_gpts ? true : !!opt.open_tts;
-            conf.pluginConfig.enable = !!opt.enable_plugins;
+            conf.pluginConfig.enable = true; // !!opt.enable_plugins;
 
             const settings = opt.settings;
             console.warn(
