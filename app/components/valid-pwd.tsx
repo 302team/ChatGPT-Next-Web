@@ -92,6 +92,8 @@ export function ValidPwd(props: ValidPwdProps) {
           await handleSubmit(userCode, (res) => {
             props.onAuth?.(res.data);
           });
+        } else {
+          setLoading(false);
         }
       } catch (error) {
         console.log("🚀 [valid pwd useEffect] catch error:", error);
