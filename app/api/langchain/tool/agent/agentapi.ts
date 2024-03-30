@@ -249,7 +249,7 @@ export class AgentApi {
       if (!reqBody.isAzure && serverConfig.isAzure) {
         baseUrl = serverConfig.azureUrl || baseUrl;
       }
-      console.log("[baseUrl]", baseUrl);
+      console.log("[getApiHandler baseUrl]", baseUrl);
 
       var handler = await this.getHandler(reqBody);
 
@@ -411,6 +411,10 @@ export class AgentApi {
         agent: runnableAgent,
         tools,
       });
+      console.log(
+        "🚀 ~ [AgentApi getApiHandler] ~ executor.invoke input:",
+        reqBody.messages.slice(-1)[0].content,
+      );
 
       executor
         .invoke(

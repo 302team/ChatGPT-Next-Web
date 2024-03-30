@@ -66,7 +66,10 @@ export interface AgentChatOptions {
   messages: RequestMessage[];
   config: LLMConfig;
   agentConfig: LLMAgentConfig;
+  retryCount?: number;
+
   onAborted?: () => void;
+  onRetry?: () => void;
   onToolUpdate?: (toolName: string, toolInput: string) => void;
   onUpdate?: (message: string, chunk: string) => void;
   onFinish: (message: string, hasError?: boolean) => void;

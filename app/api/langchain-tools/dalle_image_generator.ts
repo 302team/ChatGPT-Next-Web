@@ -1,6 +1,7 @@
 import { StructuredTool } from "@langchain/core/tools";
 import { z } from "zod";
 import { getServerSideConfig } from "@/app/config/server";
+import { sleep } from "openai/core";
 
 export async function getFileFromUrl(
   fileUrl: string,
@@ -45,7 +46,6 @@ export class DallEAPIWrapper extends StructuredTool {
     this.callback = callback;
 
     this.noStorage = !!process.env.DALLE_NO_IMAGE_STORAGE;
-    console.log("🚀 ~ DallEAPIWrapper ~ this.noStorage:", this.noStorage);
     this.model = process.env.DALLE_MODEL ?? "dall-e-3";
     this.uploadFileUrl = `${
       getServerSideConfig().apiDomain
@@ -58,18 +58,34 @@ export class DallEAPIWrapper extends StructuredTool {
     const formData = new FormData();
     formData.append("file", file);
 
-    const fileUrl = await fetch(this.uploadFileUrl, {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then(async (res: any) => {
-        if (res.code === 0) {
-          return res.data.url;
-        }
-      });
+    let fileUrl = "";
+    let n = 0;
+    const upload = async () => {
+      return await fetch(this.uploadFileUrl, {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then(async (res: any) => {
+          if (res.code === 0) {
+            return res.data.url;
+          }
+          return "";
+        })
+        .catch((err) => {
+          console.error("[DALL-E] upload image error:", err);
+          return "";
+        });
+    };
 
-    return fileUrl;
+    while (!fileUrl && ++n <= 10) {
+      fileUrl = await upload();
+      if (!fileUrl) {
+        await sleep(1000);
+      }
+    }
+
+    return fileUrl ?? url;
   }
 
   schema = z.object({
@@ -137,7 +153,7 @@ export class DallEAPIWrapper extends StructuredTool {
           }),
         };
       }
-      console.log(requestOptions);
+      console.log("[DALL-E] Request", requestOptions);
       const response = await fetch(apiUrl, requestOptions);
       const json = await response.json();
       try {

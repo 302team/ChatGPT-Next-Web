@@ -46,6 +46,7 @@ async function handle(req: NextRequest) {
     );
 
     var dalleCallback = async (data: string) => {
+      console.log("🚀 ~ dalleCallback ~ data:", data);
       var response = new ResponseBody();
       response.message = data;
       await writer.ready;

@@ -164,6 +164,7 @@ export class ChatGPTApi implements LLMApi {
             console.log("[Response Animation] finished");
             if (responseText?.length === 0) {
               if (options.retryCount !== undefined && options.retryCount < 1) {
+                controller.abort();
                 options.onRetry?.();
               } else {
                 options.onError?.(new Error("empty response from server"));
@@ -202,6 +203,7 @@ export class ChatGPTApi implements LLMApi {
           finish();
         };
 
+        console.log("[OpenAI chat] request retry count: ", options.retryCount);
         fetchEventSource(chatPath, {
           ...chatPayload,
           async onopen(res) {
@@ -211,10 +213,10 @@ export class ChatGPTApi implements LLMApi {
               "[OpenAI] request response content type: ",
               contentType,
             );
-            console.log("[OpenAI] request retry count: ", options.retryCount);
 
             if (contentType?.startsWith("text/plain")) {
               if (options.retryCount !== undefined && options.retryCount < 1) {
+                controller.abort();
                 options.onRetry?.();
                 return;
               }
@@ -265,6 +267,7 @@ export class ChatGPTApi implements LLMApi {
                 options.retryCount !== undefined &&
                 options.retryCount < 1
               ) {
+                controller.abort();
                 options.onRetry?.();
                 return;
               }
@@ -432,17 +435,28 @@ export class ChatGPTApi implements LLMApi {
           finish();
         };
 
+        console.log(
+          "[OpenAI agentChat] request retry count: ",
+          options.retryCount,
+        );
         fetchEventSource(path, {
           ...chatPayload,
           async onopen(res) {
             clearTimeout(requestTimeoutId);
             const contentType = res.headers.get("content-type");
             console.log(
-              "[OpenAI] request response content type: ",
+              "[OpenAI agentChat] request response content type: ",
               contentType,
             );
+            console.log("[OpenAI agentChat] request response: ", res);
 
             if (contentType?.startsWith("text/plain")) {
+              if (options.retryCount !== undefined && options.retryCount < 1) {
+                controller.abort();
+                options.onRetry?.();
+                return;
+              }
+
               responseText = await res.clone().text();
               return finish();
             }
@@ -469,9 +483,20 @@ export class ChatGPTApi implements LLMApi {
                   resJson,
                 );
                 errorMsg = "Network error, please retry.";
-
+                hasUncatchError = true;
                 // extraInfo = prettyObject(resJson);
               } catch {}
+
+              // 重试一次
+              if (
+                hasUncatchError &&
+                options.retryCount !== undefined &&
+                options.retryCount < 1
+              ) {
+                controller.abort();
+                options.onRetry?.();
+                return;
+              }
 
               if (errorMsg) {
                 responseTexts.push(errorMsg);
@@ -479,20 +504,27 @@ export class ChatGPTApi implements LLMApi {
                 responseTexts.push(Locale.Error.Unauthorized);
               }
 
-              // if (extraInfo) {
-              //   responseTexts.push(extraInfo);
-              // }
-
               responseText = responseTexts.join("\n\n");
 
               return finish();
             }
           },
           onmessage(msg) {
+            // console.log("🚀 ~ [OpenAI agentChat] ~ onmessage ~ msg:", msg);
             // isStreamDone = msg.data === "[DONE]";
             let response = JSON.parse(msg.data);
+
+            // 匹配错误信息
+            if (response.message.match(/"error":/)) {
+              console.warn(
+                "🚀 ~ [OpenAI Request] ~ onmessage ~ response[errorMessage]:",
+                msg,
+              );
+              hasUncatchError = true;
+            }
+
             if (!response.isSuccess) {
-              console.error("[Request]", msg.data);
+              console.error("[OpenAI Request] onmessage error: ", msg.data);
               responseText = msg.data;
               hasUncatchError = true;
               throw Error(response.message);
@@ -519,9 +551,22 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onclose() {
-            finish();
+            console.warn("🚀 ~ [OpenAI agentChat] ~ onmessage ~ onclose");
+            // finish();
+            // 重试一次
+            if (
+              hasUncatchError &&
+              options.retryCount != undefined &&
+              options.retryCount < 1
+            ) {
+              controller.abort();
+              options.onRetry?.();
+            } else {
+              finish();
+            }
           },
           onerror(e) {
+            console.error("🚀 ~ [OpenAI agentChat] onerror:", e);
             options.onError?.(e);
             throw e;
           },

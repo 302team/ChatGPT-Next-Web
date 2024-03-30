@@ -637,7 +637,7 @@ export const useChatStore = createPersistStore(
         var api: ClientApi = new ClientApi(ModelProvider.GPT);
         if (
           config.pluginConfig.enable &&
-          session.mask.usePlugins &&
+          // session.mask.usePlugins && // 所有聊天窗口都可以使用插件
           allPlugins.length > 0 &&
           modelConfig.model.startsWith("gpt") &&
           modelConfig.model != "gpt-4-vision-preview"
@@ -653,11 +653,16 @@ export const useChatStore = createPersistStore(
             messages: sendMessages,
             config: { ...modelConfig, stream: true },
             agentConfig: { ...pluginConfig, useTools: pluginToolNames },
+            retryCount: extAttr.retryCount ?? 0,
             onAborted: () => {
               botMessage.isTimeoutAborted = true;
               get().updateCurrentSession((session) => {
                 session.messages = session.messages.concat();
               });
+            },
+            onRetry: () => {
+              console.warn("[AgentChat] onRetry", userMessage);
+              extAttr.onResend?.(userMessage);
             },
             onUpdate(message) {
               botMessage.streaming = true;
@@ -690,10 +695,11 @@ export const useChatStore = createPersistStore(
                 console.log("🚀 ~ onFinish ~ resJson:", resJson);
                 if (resJson.error) {
                   _hasError = true;
-                  content = prettyObject({
-                    error: true,
-                    message: message,
-                  });
+                  content = "Network error, please retry";
+                  // content = prettyObject({
+                  //   error: true,
+                  //   message: message,
+                  // });
                 } else {
                   _hasError = false;
                   content = [];

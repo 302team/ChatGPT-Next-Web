@@ -90,7 +90,7 @@ import dynamic from "next/dynamic";
 
 import { ChatControllerPool } from "../client/controller";
 import { Prompt, usePromptStore } from "../store/prompt";
-import Locale from "../locales";
+import Locale, { getLang } from "../locales";
 
 import { IconButton } from "./button";
 import styles from "./chat.module.scss";
@@ -128,6 +128,7 @@ import NextImage from "next/image";
 
 import { LoadingOutlined, CloseOutlined } from "@ant-design/icons";
 import { Typography, Image } from "antd";
+import { usePluginStore } from "../store/plugin";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -696,6 +697,13 @@ function useUploadFile(extra: {
   const accessStore = useAccessStore();
   const uploadUrl = accessStore.fileUploadUrl;
   const config = useAppConfig();
+  const allPlugins = usePluginStore()
+    .getAll()
+    .filter(
+      (m) =>
+        (!getLang() || m.lang === (getLang() == "cn" ? getLang() : "en")) &&
+        m.enable,
+    );
 
   const [uploading, setUploading] = useState(false);
 
@@ -741,14 +749,20 @@ function useUploadFile(extra: {
       supportMultimodal ||
       // 类似 vision 的模型
       isSpecImageModal(currentModel) ||
-      // 使用了插件
-      config.pluginConfig.enable;
+      // 开启了使用插件的功能
+      (config.pluginConfig.enable &&
+        // session.mask.usePlugins &&
+        allPlugins.length > 0 &&
+        currentModel.startsWith("gpt") &&
+        currentModel != "gpt-4-vision-preview");
+
     setShowUploadAction(show);
+
     if (!show) {
       setUploadFiles([]);
       setUploading(false);
     }
-  }, [currentModel, config.pluginConfig.enable]);
+  }, [currentModel, config.pluginConfig.enable, allPlugins.length]);
 
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
@@ -1929,67 +1943,69 @@ function _Chat(props: { promptStarters: string[] }) {
                       {Locale.Chat.Typing}
                     </div>
                   )}
-                  <div className={styles["chat-message-item"]}>
-                    <Markdown
-                      content={message.content}
-                      loading={
-                        (message.preview || message.streaming) &&
-                        message.content.length === 0 &&
-                        !isUser
-                      }
-                      onContextMenu={(e) => onRightClick(e, message)}
-                      onDoubleClickCapture={() => {
-                        if (!isMobileScreen) return;
-                        setUserInput(getMessageTextContent(message));
-                      }}
-                      fontSize={fontSize}
-                      parentRef={scrollRef}
-                      defaultShow={i >= messages.length - 6}
-                    />
-                    {getMessageImages(message).length > 0 && (
-                      <div
-                        className={`${styles["chat-message-item-images"]} ${isUser && styles["chat-message-item-images-user"]}`}
-                        style={
-                          {
-                            "--image-count": getMessageImages(message).length,
-                          } as React.CSSProperties
+                  <div className={styles["chat-message-item-container"]}>
+                    <div className={styles["chat-message-item"]}>
+                      <Markdown
+                        content={message.content}
+                        loading={
+                          (message.preview || message.streaming) &&
+                          message.content.length === 0 &&
+                          !isUser
                         }
-                      >
-                        {getMessageImages(message).map((image, index) => {
-                          return (
-                            <Image
-                              className={
-                                styles["chat-message-item-image-multi"]
-                              }
-                              key={index}
-                              src={image}
-                              alt=""
-                            />
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
+                        onContextMenu={(e) => onRightClick(e, message)}
+                        onDoubleClickCapture={() => {
+                          if (!isMobileScreen) return;
+                          setUserInput(getMessageTextContent(message));
+                        }}
+                        fontSize={fontSize}
+                        parentRef={scrollRef}
+                        defaultShow={i >= messages.length - 6}
+                      />
+                      {getMessageImages(message).length > 0 && (
+                        <div
+                          className={`${styles["chat-message-item-images"]} ${isUser && styles["chat-message-item-images-user"]}`}
+                          style={
+                            {
+                              "--image-count": getMessageImages(message).length,
+                            } as React.CSSProperties
+                          }
+                        >
+                          {getMessageImages(message).map((image, index) => {
+                            return (
+                              <Image
+                                className={
+                                  styles["chat-message-item-image-multi"]
+                                }
+                                key={index}
+                                src={image}
+                                alt=""
+                              />
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
 
-                  <div className={styles["chat-message-action-date"]}>
-                    {isContext
-                      ? Locale.Chat.IsContext
-                      : message.date.toLocaleString()}
+                    <div className={styles["chat-message-action-date"]}>
+                      {isContext
+                        ? Locale.Chat.IsContext
+                        : message.date.toLocaleString()}
+                    </div>
+
+                    {!isUser &&
+                      (message.isError || message.isTimeoutAborted) && (
+                        <div className={styles["chat-message-retry"]}>
+                          <div className={styles["chat-input-actions"]}>
+                            <ChatAction
+                              text=""
+                              icon={<ResetIcon2 />}
+                              onClick={() => onResend(message)}
+                            />
+                          </div>
+                        </div>
+                      )}
                   </div>
                 </div>
-                {!isUser && (message.isError || message.isTimeoutAborted) && (
-                  <div className={styles["chat-message-actions"]}>
-                    <div className={styles["chat-input-actions"]}>
-                      <div className={styles["chat-message-retry"]}>
-                        <ChatAction
-                          text=""
-                          icon={<ResetIcon2 />}
-                          onClick={() => onResend(message)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
               {shouldShowClearContextDivider && <ClearContextDivider />}
             </Fragment>
