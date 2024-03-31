@@ -566,9 +566,15 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onerror(e) {
-            console.error("🚀 ~ [OpenAI agentChat] onerror:", e);
-            options.onError?.(e);
-            throw e;
+            console.log("options.retryCount========", options.retryCount);
+            if (options.retryCount != undefined && options.retryCount < 1) {
+              controller.abort();
+              options.onRetry?.();
+              throw e;
+            } else {
+              options.onError?.(e);
+              throw e;
+            }
           },
           openWhenHidden: true,
         });

@@ -2,22 +2,7 @@ import { StructuredTool } from "@langchain/core/tools";
 import { z } from "zod";
 import { getServerSideConfig } from "@/app/config/server";
 import { sleep } from "openai/core";
-
-export async function getFileFromUrl(
-  fileUrl: string,
-  fileName: string,
-): Promise<File> {
-  let fileObj = undefined;
-  await fetch(fileUrl, {
-    method: "get",
-    body: null,
-  })
-    .then((response) => response.blob())
-    .then((blob) => {
-      fileObj = new File([blob], fileName);
-    });
-  return fileObj!;
-}
+import { getFileFromUrl } from "./utils";
 
 export class DallEAPIWrapper extends StructuredTool {
   name = "draw";
@@ -81,6 +66,7 @@ export class DallEAPIWrapper extends StructuredTool {
     while (!fileUrl && ++n <= 10) {
       fileUrl = await upload();
       if (!fileUrl) {
+        console.log("[DALL-E] upload image failed, retry:", n);
         await sleep(1000);
       }
     }

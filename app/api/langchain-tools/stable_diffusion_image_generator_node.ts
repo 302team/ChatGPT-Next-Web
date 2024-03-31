@@ -4,21 +4,6 @@ import { StableDiffusionWrapper } from "./stable_diffusion_image_generator";
 // import LocalFileStorage from "@/app/utils/local_file_storage";
 import fetch, { FormData, File } from "node-fetch";
 
-export async function getFileFromUrl(
-  fileUrl: string,
-  fileName: string,
-): Promise<File> {
-  let fileObj = undefined;
-  await fetch(fileUrl, {
-    method: "get",
-    body: null,
-  })
-    .then((response) => response.blob())
-    .then((blob) => {
-      fileObj = new File([blob], fileName);
-    });
-  return fileObj!;
-}
 export class StableDiffusionNodeWrapper extends StableDiffusionWrapper {
   async saveImage(imageBase64: string) {
     var fileName = `${Date.now()}.png`;

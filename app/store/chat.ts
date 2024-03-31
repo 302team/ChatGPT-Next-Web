@@ -110,7 +110,10 @@ export interface ExtAttr {
   retryCount?: number;
   uploadFiles: UploadFile[];
 
-  onResend?: (messages: ChatMessage | ChatMessage[]) => void;
+  onResend?: (
+    messages: ChatMessage | ChatMessage[],
+    retryCount?: number,
+  ) => void;
   setAutoScroll: ((autoScroll: boolean) => void) | undefined;
   setUploadFiles: React.Dispatch<React.SetStateAction<UploadFile[]>>;
 }
@@ -736,12 +739,13 @@ export const useChatStore = createPersistStore(
             },
             onError(error) {
               const isAborted = error.message.includes("aborted");
-              botMessage.content +=
-                "\n\n" +
-                prettyObject({
-                  error: true,
-                  message: error.message,
-                });
+              botMessage.content += "Network error, please retry.";
+              // botMessage.content +=
+              //   "\n\n" +
+              //   prettyObject({
+              //     error: true,
+              //     message: error.message,
+              //   });
               botMessage.streaming = false;
               userMessage.isError = !isAborted;
               botMessage.isError = !isAborted;
