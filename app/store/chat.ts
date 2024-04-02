@@ -832,6 +832,7 @@ export const useChatStore = createPersistStore(
             onError(error) {
               const isAborted = error.message.includes("aborted");
               botMessage.content += "Network error, please retry.";
+              // botMessage.content +=
               // Locale.Error.ApiTimeout +
               // "\n\n" +
               // prettyObject({

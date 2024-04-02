@@ -47,6 +47,8 @@ export interface OpenAIListModelResponse {
   }>;
 }
 
+const ERROR_MESSAGE = "Network error, please retry.";
+
 export class ChatGPTApi implements LLMApi {
   private disableListModels = true;
 
@@ -221,7 +223,7 @@ export class ChatGPTApi implements LLMApi {
                 return;
               }
 
-              responseText = "Network error, please retry."; // await res.clone().text();
+              responseText = ERROR_MESSAGE; // await res.clone().text();
               return finish();
             }
 
@@ -252,8 +254,8 @@ export class ChatGPTApi implements LLMApi {
                   ) {
                     errorMsg = Locale.GPTs.Error.Deleted;
                   } else {
-                    // 除了自定义的错误信息, 其他错误都显示 "Network error, please retry."
-                    errorMsg = "Network error, please retry.";
+                    // 除了自定义的错误信息, 其他错误都显示 Network error, please retry.
+                    errorMsg = ERROR_MESSAGE;
                     hasUncatchError = true;
                   }
                 }
@@ -482,7 +484,7 @@ export class ChatGPTApi implements LLMApi {
                   "🚀 ~ [tool agent chat] ~ onopen ~ resJson:",
                   resJson,
                 );
-                errorMsg = "Network error, please retry.";
+                errorMsg = ERROR_MESSAGE;
                 hasUncatchError = true;
                 // extraInfo = prettyObject(resJson);
               } catch {}
@@ -552,18 +554,18 @@ export class ChatGPTApi implements LLMApi {
           },
           onclose() {
             console.warn("🚀 ~ [OpenAI agentChat] ~ onmessage ~ onclose");
-            // finish();
+            finish();
             // 重试一次
-            if (
-              hasUncatchError &&
-              options.retryCount != undefined &&
-              options.retryCount < 1
-            ) {
-              controller.abort();
-              options.onRetry?.();
-            } else {
-              finish();
-            }
+            // if (
+            //   hasUncatchError &&
+            //   options.retryCount != undefined &&
+            //   options.retryCount < 1
+            // ) {
+            //   controller.abort();
+            //   options.onRetry?.();
+            // } else {
+            //   finish();
+            // }
           },
           onerror(e) {
             console.log("options.retryCount========", options.retryCount);
