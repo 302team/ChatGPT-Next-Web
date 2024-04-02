@@ -84,7 +84,7 @@ export const EN_PLUGINS: BuiltinPlugin[] = [
       "A class designed to interact with pdf file, extract information from the URL of a PDF file or summarize its content.",
     builtin: true,
     createdAt: 1700907315000,
-    enable: true,
+    enable: false,
     onlyNodeRuntime: true,
   },
   {
