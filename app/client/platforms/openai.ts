@@ -137,14 +137,12 @@ export class ChatGPTApi implements LLMApi {
 
     let isAborted = false;
     let finished = false;
+    const shouldRetry =
+      options.onRetry &&
+      options.retryCount !== undefined &&
+      options.retryCount < 1;
 
-    const retry = () => {
-      // 重试一次
-      if (options.retryCount !== undefined && options.retryCount < 1) {
-        controller.abort();
-        options.onRetry?.();
-      }
-    };
+    console.log("🚀 ~ [Request] chat ~ shouldRetry:", shouldRetry);
 
     try {
       const chatPath = this.path(OpenaiPath.ChatPath);
@@ -173,8 +171,9 @@ export class ChatGPTApi implements LLMApi {
             responseText += remainText;
             console.log("[Response Animation] finished");
             if (responseText?.length === 0) {
-              if (options.onRetry) {
-                retry();
+              if (shouldRetry) {
+                controller.abort();
+                options.onRetry?.();
               } else {
                 options.onError?.(new Error("empty response from server"));
               }
@@ -224,8 +223,9 @@ export class ChatGPTApi implements LLMApi {
             );
 
             if (contentType?.startsWith("text/plain")) {
-              if (options.onRetry) {
-                retry();
+              if (shouldRetry) {
+                controller.abort();
+                options.onRetry?.();
                 return;
               }
 
@@ -270,8 +270,9 @@ export class ChatGPTApi implements LLMApi {
               } catch {}
 
               // 重试一次
-              if (hasUncatchError && options.onRetry) {
-                retry();
+              if (hasUncatchError && shouldRetry) {
+                controller.abort();
+                options.onRetry?.();
                 return;
               }
 
@@ -398,14 +399,11 @@ export class ChatGPTApi implements LLMApi {
 
     let isAborted = false;
     let finished = false;
-
-    const retry = () => {
-      // 重试一次
-      if (options.retryCount !== undefined && options.retryCount < 1) {
-        controller.abort();
-        options.onRetry?.();
-      }
-    };
+    const shouldRetry =
+      options.onRetry &&
+      options.retryCount !== undefined &&
+      options.retryCount < 1;
+    console.log("🚀 ~ [Request] toolAgentChat ~ shouldRetry:", shouldRetry);
 
     try {
       let path = "/api/langchain/tool/agent/";
@@ -462,8 +460,9 @@ export class ChatGPTApi implements LLMApi {
             console.log("[OpenAI agentChat] request response: ", res);
 
             if (contentType?.startsWith("text/plain")) {
-              if (options.onRetry) {
-                retry();
+              if (shouldRetry) {
+                controller.abort();
+                options.onRetry?.();
                 return;
               }
 
@@ -497,8 +496,9 @@ export class ChatGPTApi implements LLMApi {
                 // extraInfo = prettyObject(resJson);
               } catch {}
 
-              if (hasUncatchError && options.onRetry) {
-                retry();
+              if (shouldRetry) {
+                controller.abort();
+                options.onRetry?.();
                 return;
               }
 
@@ -531,8 +531,11 @@ export class ChatGPTApi implements LLMApi {
               console.error("[OpenAI Request] onmessage error: ", msg.data);
               responseText = ERROR_MESSAGE;
               hasUncatchError = true;
-              if (options.onRetry) {
-                return retry();
+
+              if (shouldRetry) {
+                controller.abort();
+                options.onRetry?.();
+                return;
               } else {
                 return finish();
               }
@@ -565,8 +568,9 @@ export class ChatGPTApi implements LLMApi {
           onerror(e) {
             console.log("options.retryCount========", options.retryCount);
 
-            if (options.onRetry) {
-              retry();
+            if (shouldRetry) {
+              controller.abort();
+              options.onRetry?.();
               throw e;
             } else {
               options.onError?.(e);

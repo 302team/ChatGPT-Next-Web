@@ -770,7 +770,7 @@ export const useChatStore = createPersistStore(
           });
         } else {
           if (modelConfig.model.startsWith("gemini")) {
-            api = new ClientApi(ModelProvider.GeminiPro);
+            // api = new ClientApi(ModelProvider.GeminiPro);
           }
 
           // make request
@@ -1004,11 +1004,9 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
 
-        var api: ClientApi;
+        var api: ClientApi = new ClientApi(ModelProvider.GPT);
         if (modelConfig.model.startsWith("gemini")) {
-          api = new ClientApi(ModelProvider.GeminiPro);
-        } else {
-          api = new ClientApi(ModelProvider.GPT);
+          // api = new ClientApi(ModelProvider.GeminiPro);
         }
 
         // remove error messages if any
