@@ -188,6 +188,8 @@ function ChatWindow() {
 
   const [promptStarters, setPromptStarters] = useState<string[]>([]);
 
+  const debug = window.location.hostname.includes("bexn7r.chat302");
+
   if (loading) return <Loading />;
 
   if (validPwdVisible)
@@ -200,7 +202,7 @@ function ChatWindow() {
             conf.isGpts = opt.is_gpts;
             conf.useGpts = !!opt.use_gpts;
             conf.openTTS = opt.is_gpts ? true : !!opt.open_tts;
-            conf.pluginConfig.enable = !!opt.enable_plugins;
+            conf.pluginConfig.enable = debug;
 
             const settings = opt.settings;
             console.warn(
