@@ -39,7 +39,7 @@ export const CN_PLUGINS: BuiltinPlugin[] = [
     description: "用于与Wikipedia API交互和从Wikipedia API获取数据的工具。",
     builtin: true,
     createdAt: 1694235989000,
-    enable: false,
+    enable: true,
     onlyNodeRuntime: false,
   },
   {
@@ -71,7 +71,7 @@ export const CN_PLUGINS: BuiltinPlugin[] = [
     description: "使用 Arxiv 接口搜索并获取文章信息。",
     builtin: true,
     createdAt: 1699265115000,
-    enable: false,
+    enable: true,
     onlyNodeRuntime: false,
   },
   {
@@ -81,7 +81,7 @@ export const CN_PLUGINS: BuiltinPlugin[] = [
     description: "可以从pdf文件的url中提取信息或总结其内容。",
     builtin: true,
     createdAt: 1700907315000,
-    enable: false,
+    enable: true,
     onlyNodeRuntime: true,
   },
   {

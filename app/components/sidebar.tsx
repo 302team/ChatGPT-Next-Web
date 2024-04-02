@@ -241,6 +241,9 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
             } catch (error) {}
           }
 
+          const isGptsModel = data.uuid.startsWith("g-");
+          const model = isGptsModel ? `gpt-4-gizmo-${data.uuid}` : data.uuid;
+
           chatStore.newSession(
             {
               ...emptyMask,
@@ -252,12 +255,11 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
               hideContext: true,
               modelConfig: {
                 ...config.modelConfig,
-                model: data.uuid.startsWith("g-")
-                  ? `gpt-4-gizmo-${data.uuid}`
-                  : data.uuid,
+                model: model,
               },
               modelName: data.display_name,
               promptStarters,
+              isGptsModel: isGptsModel,
             } as Mask,
             true,
           );
@@ -461,24 +463,27 @@ export function SideBar(props: { className?: string }) {
 
       {!config.isGpts && (
         <div className={styles["sidebar-header-bar"]}>
-          <IconButton
-            icon={<MaskIcon />}
-            text={shouldNarrow ? undefined : Locale.Mask.Name}
-            className={styles["sidebar-bar-button"]}
-            onClick={() => {
-              setShowMaskModal(true);
-              // if (config.dontShowMaskSplashScreen !== true) {
-              //   navigate(Path.NewChat + location.search, {
-              //     state: { fromHome: true },
-              //   });
-              // } else {
-              //   navigate(Path.Masks + location.search, {
-              //     state: { fromHome: true },
-              //   });
-              // }
-            }}
-            shadow
-          />
+          {/* 非GPTs模型的GPTs机器人，也不要出现助手按钮 */}
+          {
+            <IconButton
+              icon={<MaskIcon />}
+              text={shouldNarrow ? undefined : Locale.Mask.Name}
+              className={styles["sidebar-bar-button"]}
+              onClick={() => {
+                setShowMaskModal(true);
+                // if (config.dontShowMaskSplashScreen !== true) {
+                //   navigate(Path.NewChat + location.search, {
+                //     state: { fromHome: true },
+                //   });
+                // } else {
+                //   navigate(Path.Masks + location.search, {
+                //     state: { fromHome: true },
+                //   });
+                // }
+              }}
+              shadow
+            />
+          }
 
           {config.useGpts && (
             <IconButton

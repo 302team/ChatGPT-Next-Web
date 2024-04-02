@@ -21,6 +21,7 @@ export type Mask = {
   botHelloContent?: string;
   modelName?: string;
   isStoreModel?: boolean; // 是否是应用商店的模型
+  isGptsModel?: boolean;
 
   usePlugins?: boolean;
 };

@@ -232,7 +232,7 @@ function ChatWindow() {
           });
 
           // 设置模型的 promptStarters
-          if (opt.is_gpts && opt.gpts_msg) {
+          if (opt.gpts_msg) {
             if (opt.gpts_msg.prompt_starters) {
               setPromptStarters(opt.gpts_msg.prompt_starters);
             }

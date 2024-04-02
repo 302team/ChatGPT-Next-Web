@@ -138,6 +138,14 @@ export class ChatGPTApi implements LLMApi {
     let isAborted = false;
     let finished = false;
 
+    const retry = () => {
+      // 重试一次
+      if (options.retryCount !== undefined && options.retryCount < 1) {
+        controller.abort();
+        options.onRetry?.();
+      }
+    };
+
     try {
       const chatPath = this.path(OpenaiPath.ChatPath);
       const chatPayload = {
@@ -165,9 +173,8 @@ export class ChatGPTApi implements LLMApi {
             responseText += remainText;
             console.log("[Response Animation] finished");
             if (responseText?.length === 0) {
-              if (options.retryCount !== undefined && options.retryCount < 1) {
-                controller.abort();
-                options.onRetry?.();
+              if (options.onRetry) {
+                retry();
               } else {
                 options.onError?.(new Error("empty response from server"));
               }
@@ -217,9 +224,8 @@ export class ChatGPTApi implements LLMApi {
             );
 
             if (contentType?.startsWith("text/plain")) {
-              if (options.retryCount !== undefined && options.retryCount < 1) {
-                controller.abort();
-                options.onRetry?.();
+              if (options.onRetry) {
+                retry();
                 return;
               }
 
@@ -264,13 +270,8 @@ export class ChatGPTApi implements LLMApi {
               } catch {}
 
               // 重试一次
-              if (
-                hasUncatchError &&
-                options.retryCount !== undefined &&
-                options.retryCount < 1
-              ) {
-                controller.abort();
-                options.onRetry?.();
+              if (hasUncatchError && options.onRetry) {
+                retry();
                 return;
               }
 
@@ -398,6 +399,14 @@ export class ChatGPTApi implements LLMApi {
     let isAborted = false;
     let finished = false;
 
+    const retry = () => {
+      // 重试一次
+      if (options.retryCount !== undefined && options.retryCount < 1) {
+        controller.abort();
+        options.onRetry?.();
+      }
+    };
+
     try {
       let path = "/api/langchain/tool/agent/";
       const enableNodeJSPlugin = !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN;
@@ -453,9 +462,8 @@ export class ChatGPTApi implements LLMApi {
             console.log("[OpenAI agentChat] request response: ", res);
 
             if (contentType?.startsWith("text/plain")) {
-              if (options.retryCount !== undefined && options.retryCount < 1) {
-                controller.abort();
-                options.onRetry?.();
+              if (options.onRetry) {
+                retry();
                 return;
               }
 
@@ -489,14 +497,8 @@ export class ChatGPTApi implements LLMApi {
                 // extraInfo = prettyObject(resJson);
               } catch {}
 
-              // 重试一次
-              if (
-                hasUncatchError &&
-                options.retryCount !== undefined &&
-                options.retryCount < 1
-              ) {
-                controller.abort();
-                options.onRetry?.();
+              if (hasUncatchError && options.onRetry) {
+                retry();
                 return;
               }
 
@@ -527,9 +529,13 @@ export class ChatGPTApi implements LLMApi {
 
             if (!response.isSuccess) {
               console.error("[OpenAI Request] onmessage error: ", msg.data);
-              responseText = msg.data;
+              responseText = ERROR_MESSAGE;
               hasUncatchError = true;
-              throw Error(response.message);
+              if (options.onRetry) {
+                return retry();
+              } else {
+                return finish();
+              }
             }
             if (msg.data === "[DONE]" || finished) {
               return finish();
@@ -555,23 +561,12 @@ export class ChatGPTApi implements LLMApi {
           onclose() {
             console.warn("🚀 ~ [OpenAI agentChat] ~ onmessage ~ onclose");
             finish();
-            // 重试一次
-            // if (
-            //   hasUncatchError &&
-            //   options.retryCount != undefined &&
-            //   options.retryCount < 1
-            // ) {
-            //   controller.abort();
-            //   options.onRetry?.();
-            // } else {
-            //   finish();
-            // }
           },
           onerror(e) {
             console.log("options.retryCount========", options.retryCount);
-            if (options.retryCount != undefined && options.retryCount < 1) {
-              controller.abort();
-              options.onRetry?.();
+
+            if (options.onRetry) {
+              retry();
               throw e;
             } else {
               options.onError?.(e);

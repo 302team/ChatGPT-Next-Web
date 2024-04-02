@@ -41,7 +41,7 @@ export const EN_PLUGINS: BuiltinPlugin[] = [
       "A tool for interacting with and fetching data from the Wikipedia API.",
     builtin: true,
     createdAt: 1694235989000,
-    enable: false,
+    enable: true,
     onlyNodeRuntime: false,
   },
   {
@@ -73,7 +73,7 @@ export const EN_PLUGINS: BuiltinPlugin[] = [
     description: "Arxiv search and get the article information.",
     builtin: true,
     createdAt: 1699265115000,
-    enable: false,
+    enable: true,
     onlyNodeRuntime: false,
   },
   {
@@ -84,7 +84,7 @@ export const EN_PLUGINS: BuiltinPlugin[] = [
       "A class designed to interact with pdf file, extract information from the URL of a PDF file or summarize its content.",
     builtin: true,
     createdAt: 1700907315000,
-    enable: false,
+    enable: true,
     onlyNodeRuntime: true,
   },
   {
