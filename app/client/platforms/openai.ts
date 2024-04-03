@@ -555,7 +555,11 @@ export class ChatGPTApi implements LLMApi {
                     inputJson.input ?? inputJson.prompt ?? response.message;
                 } catch (err) {}
 
-                options.onToolUpdate?.(response.toolName!, inputMessage);
+                let toolName = response.toolName;
+                if (toolName === "wikipedia-api") {
+                  toolName = "Wikipedia";
+                }
+                options.onToolUpdate?.(toolName, inputMessage);
               }
             } catch (e) {
               console.error("[Request] parse error", response, msg);
