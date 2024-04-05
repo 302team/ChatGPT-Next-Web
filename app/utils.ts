@@ -547,3 +547,94 @@ export function convertAudioBufferToWave(abuffer: AudioBuffer, len: number) {
     pos += 4;
   }
 }
+
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+export async function getFileFromUrlWithRetry(
+  fileUrl: string,
+  fileName: string,
+  maxRetryCount: number = 10,
+): Promise<File> {
+  const getImg = async (): Promise<File | undefined> => {
+    return await fetch(fileUrl, {
+      method: "get",
+      body: null,
+    })
+      .then((response) => response.blob())
+      .then((blob) => {
+        return new File([blob], fileName);
+      })
+      .catch((err) => {
+        console.log("[getFileFromUrl] err:", err);
+        return undefined;
+      });
+  };
+
+  let fileObj = undefined;
+  let n = 0;
+  while (++n <= maxRetryCount) {
+    fileObj = await getImg();
+    if (fileObj) {
+      break;
+    } else {
+      await sleep(1000);
+    }
+  }
+
+  return fileObj!;
+}
+
+export async function uploadFileWithRetry(
+  uploadUrl: string,
+  formData: FormData,
+  maxRetryCount: number = 10,
+): Promise<string> {
+  let fileUrl = "";
+  let n = 0;
+  const upload = async () => {
+    return await fetch(uploadUrl, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then(async (res: any) => {
+        if (res.code === 0) {
+          return res.data.url;
+        }
+        return "";
+      })
+      .catch((err) => {
+        console.error("upload image error:", err);
+        return "";
+      });
+  };
+
+  while (++n <= maxRetryCount) {
+    fileUrl = await upload();
+    if (fileUrl) {
+      break;
+    } else {
+      console.log("upload image failed, retry:", n);
+      await sleep(1000);
+    }
+  }
+
+  return fileUrl;
+}
+
+export async function uploadRemoteFile(
+  remoteFileUrl: string,
+  uploadUrl: string,
+  filename: string,
+): Promise<string> {
+  const remoteFile = await getFileFromUrlWithRetry(remoteFileUrl, filename);
+  // 下载失败的返回源文件地址
+  if (!remoteFile) return remoteFileUrl;
+
+  const formData = new FormData();
+  formData.append("file", remoteFile);
+
+  const url = await uploadFileWithRetry(uploadUrl, formData);
+  return url;
+}

@@ -198,6 +198,10 @@ export class ChatGPTApi implements LLMApi {
         const finish = () => {
           if (!finished) {
             finished = true;
+            console.log(
+              "🚀 ~ [OpenAI chat] ~ finish ~ !isStreamDone || hasUncatchError || isAborted:",
+              !isStreamDone || hasUncatchError || isAborted,
+            );
             options.onFinish(
               responseText + remainText,
               !isStreamDone || hasUncatchError || isAborted,

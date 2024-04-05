@@ -4,6 +4,7 @@ import {
   isSupportMultimodal,
   isVisionModel,
   isSpecImageModal,
+  uploadRemoteFile,
 } from "../utils";
 
 import Locale, { getLang } from "../locales";
@@ -32,6 +33,7 @@ import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
 import { usePluginStore } from "./plugin";
+import { useAccessStore } from "./access";
 
 export interface ChatToolMessage {
   toolName: string;
@@ -828,6 +830,19 @@ export const useChatStore = createPersistStore(
               botMessage.isError = hasError as boolean;
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
+              if (!hasError) {
+                console.log(
+                  "[OpenAi] chat finished, save media file to remote",
+                );
+                get()
+                  .saveMediaToRemote(message, botMessage)
+                  .then((newMessage) => {
+                    console.log(
+                      "[OpenAi] chat finished, save media file to remote end:",
+                      newMessage,
+                    );
+                  });
+              }
             },
             onError(error) {
               const isAborted = error.message.includes("aborted");
@@ -862,6 +877,84 @@ export const useChatStore = createPersistStore(
             },
           });
         }
+      },
+
+      async saveMediaToRemote(message: string, botMessage: ChatMessage) {
+        const uploadUrl = useAccessStore.getState().fileUploadUrl;
+
+        // 匹配 图片|视频|音频 链接
+        const imgReg =
+          /(?<=\!\[.*?\]\()(https?:\/\/.+(\.(png|jpe?g|webp|gif|svg|ico))?)(?=\))/gi;
+        const mediaReg =
+          /(?<=\[.*?\]\()(https?:\/\/.+\.(mp3|ogg|wav|acc|vorbis|silk|mp4|webm|avi|rmvb|3gp|flv))(?=\))/gi;
+
+        const imgUrls = message.match(imgReg);
+        const mediaUrls = message.match(mediaReg);
+
+        let newMessage = message;
+        let imgTasks: Promise<void>[] = [];
+        let mediaTasks: Promise<void>[] = [];
+
+        const imgHandler = async (url: string) => {
+          const originUrl = url;
+          const filename = Date.now() + ".png";
+
+          // 从远程下载图片
+          let newUrl = await uploadRemoteFile(url, uploadUrl, filename);
+
+          // 替换链接, 上传成功之后才替换.
+          if (newUrl !== url) {
+            newMessage = newMessage
+              .replaceAll(originUrl, newUrl)
+              .replaceAll(
+                `(${newUrl})`,
+                `(${newUrl})\n[${Locale.Export.Download}](${newUrl})\n`,
+              );
+          }
+        };
+
+        const mediaHandler = async (url: string) => {
+          const originUrl = url;
+          const filename =
+            url.split("/").pop()?.split("?")[0] || Date.now() + ".webm";
+
+          // 从远程下载媒体文件
+          let newUrl = await uploadRemoteFile(url, uploadUrl, filename);
+
+          // 替换链接, 上传成功之后才替换.
+          if (newUrl !== url) {
+            newMessage = newMessage
+              .replaceAll(originUrl, newUrl)
+              .replaceAll(
+                `(${newUrl})`,
+                `(${newUrl})  [${Locale.Export.Download}](${newUrl})\n`,
+              );
+          }
+        };
+
+        if (imgUrls && imgUrls.length) {
+          console.warn("🚀 ~ [OpenAi] ~ 图片:", imgUrls);
+          imgTasks = Array.from(new Set(imgUrls)).map(imgHandler);
+        }
+
+        if (mediaUrls && mediaUrls.length) {
+          console.warn("🚀 ~ [OpenAi] ~ 媒体文件:", mediaUrls);
+          mediaTasks = Array.from(new Set(mediaUrls)).map(mediaHandler);
+        }
+
+        await Promise.all([...imgTasks, ...mediaTasks])
+          .then(() => {
+            botMessage.content = newMessage;
+            // 修改消息
+            get().updateCurrentSession((session) => {
+              session.messages = session.messages.concat();
+            });
+          })
+          .catch((err) => {
+            console.error("🚀 ~ [OpenAi] ~ save media file ~ err:", err);
+          });
+
+        return newMessage;
       },
 
       getMemoryPrompt() {
