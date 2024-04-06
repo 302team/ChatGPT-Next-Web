@@ -2,6 +2,16 @@ import { BuiltinPlugin } from "./typing";
 
 export const CN_PLUGINS: BuiltinPlugin[] = [
   {
+    name: "智谱GLM-4V",
+    toolName: "glm-4v",
+    lang: "cn",
+    description: "智谱AI最新图像识别AI模型，来自清华大学",
+    builtin: true,
+    createdAt: 1693744292000,
+    enable: true,
+    onlyNodeRuntime: false,
+  },
+  {
     name: "搜索引擎",
     toolName: "web-search",
     lang: "cn",

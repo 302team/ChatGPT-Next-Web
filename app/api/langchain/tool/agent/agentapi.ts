@@ -329,6 +329,10 @@ export class AgentApi {
       });
 
       const pastMessages = new Array();
+      console.log(
+        "🚀 ~ AgentApi ~ reqBody.messages:",
+        JSON.stringify(reqBody.messages),
+      );
 
       reqBody.messages
         .slice(0, reqBody.messages.length - 1)

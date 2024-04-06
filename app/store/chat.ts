@@ -240,7 +240,13 @@ async function getUserContent(
   type: "send" | "save",
 ): Promise<string | MultimodalContent[]> {
   const currentModel = modelConfig.model.toLocaleLowerCase();
-  console.log("🚀 ~ fileArr:", fileArr, currentModel);
+  console.log(
+    "🚀 ~ usePlugins, fileArr, currentModel, content:",
+    usePlugins,
+    fileArr,
+    currentModel,
+    content,
+  );
 
   // 特殊的能支持图片的模型,
   // 这些模型支持识别图片, 格式与 gpt-4-vision 一样, 唯一区别就是它们用的是 url 而不是 base64
@@ -250,6 +256,7 @@ async function getUserContent(
     (isSpecImageModal(currentModel) || isVisionModel(currentModel)) &&
     typeof content == "string"
   ) {
+    console.log("1");
     const imgContent: MultimodalContent[] = [];
     imgContent.push({
       type: "text",
@@ -279,6 +286,7 @@ async function getUserContent(
     }
     return imgContent;
   } else if (isSupportMultimodal(currentModel) || usePlugins) {
+    console.log("2");
     let sendContent = content;
     if (type == "send") {
       let fileUrls = "";
@@ -320,6 +328,7 @@ async function getUserContent(
     }
     return sendContent;
   } else if (currentModel.includes("whisper")) {
+    console.log("3");
     let userContent = content;
     if (typeof content == "string" && fileArr.length > 0) {
       userContent = [];
@@ -340,18 +349,32 @@ async function getUserContent(
     }
     return userContent;
   } else if (type == "send" && content instanceof Array) {
+    console.log("4");
+    let imgContent: MultimodalContent[] = [];
     for (const msg of content) {
-      if (msg.type == "image_url") {
+      if (msg.type === "text") {
+        imgContent.push({
+          type: "text",
+          text: msg.text,
+        });
+      } else if (msg.type == "image_url") {
         let url = msg.image_url!.url;
-        msg.image_url!.url = isSpecImageModal(currentModel)
-          ? url
-          : await getBase64FromUrl(url);
+        imgContent.push({
+          type: "image_url",
+          image_url: {
+            url: isSpecImageModal(currentModel)
+              ? url
+              : await getBase64FromUrl(url),
+          },
+        });
       }
     }
-    return content;
+    return imgContent;
   } else if (type == "save" || !(typeof content == "string")) {
+    console.log("5");
     return content;
   }
+  console.log("6");
   // 模板替换
   const userContent = fillTemplateWith(content, modelConfig);
   return userContent;
@@ -581,7 +604,7 @@ export const useChatStore = createPersistStore(
           content,
           modelConfig,
           fileArr,
-          session.mask.usePlugins,
+          useAppConfig.getState().pluginConfig.enable,
           "send",
         );
         console.log("[User Input] after pretreatment: ", userContent);
@@ -590,7 +613,7 @@ export const useChatStore = createPersistStore(
           content,
           modelConfig,
           fileArr,
-          session.mask.usePlugins,
+          useAppConfig.getState().pluginConfig.enable,
           "save",
         );
 

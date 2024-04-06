@@ -46,9 +46,6 @@ export const createEmptyMask = () =>
     createdAt: Date.now(),
     botHelloContent: Locale.Store.BotHello,
     isStoreModel: false,
-    usePlugins:
-      useAppConfig.getState().pluginConfig.enable &&
-      /^gpt(?!.*03\d{2}$).*$/.test(useAppConfig.getState().modelConfig.model),
   }) as Mask;
 
 export const useMaskStore = createPersistStore(

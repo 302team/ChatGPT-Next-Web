@@ -1,4 +1,5 @@
-import { Tool } from "@langchain/core/tools";
+import { StructuredTool } from "@langchain/core/tools";
+import { z } from "zod";
 
 interface ModelConfig {
   temperature?: number;
@@ -32,16 +33,16 @@ interface GML_4v_Parameters extends ModelConfig {
   };
 }
 
-export class Glm4v extends Tool {
+export class Glm4vWrapper extends StructuredTool {
   static lc_name() {
     return "Glm4v";
   }
 
-  protected apiKey: string;
+  apiKey: string;
+  baseURL?: string;
+  model: string;
 
-  protected params: Partial<GML_4v_Parameters>;
-
-  constructor(apiKey: string, params: Partial<GML_4v_Parameters> = {}) {
+  constructor(apiKey: string, baseURL: string) {
     super(...arguments);
 
     if (!apiKey) {
@@ -51,38 +52,66 @@ export class Glm4v extends Tool {
     }
 
     this.apiKey = apiKey;
-    this.params = params;
+    this.baseURL = baseURL;
+    this.apiKey = apiKey;
+
+    this.model = "glm-4v";
   }
 
   name = "glm-4v";
 
-  /**
-   * Builds a URL for the GLM-4v request.
-   * @param parameters The parameters for the request.
-   * @returns A string representing the built URL.
-   */
-  protected buildUrl(searchQuery: string): string {
-    const preparedParams: [string, string][] = Object.entries({
-      engine: "google",
-      api_key: this.apiKey,
-      ...this.params,
-      q: searchQuery,
-    })
-      .filter(
-        ([key, value]) =>
-          value !== undefined && value !== null && key !== "apiKey",
-      )
-      .map(([key, value]) => [key, `${value}`]);
-
-    const searchParams = new URLSearchParams(preparedParams);
-    return `https://api.gpt302.com/searchapi/search?${searchParams}`;
-  }
+  schema = z.object({
+    content: z.array(
+      z.object({
+        type: z.enum(["text", "image_url", "file"]),
+        text: z.string().optional().describe("text content"),
+        image_url: z
+          .object({
+            url: z.string().optional().describe("image url"),
+          })
+          .optional(),
+      }),
+    ),
+    // messages: z
+    //   .array(
+    //     z.object({
+    //     }),
+    //   )
+    //   .describe(
+    //     "The messages to be processed. Each message is an object with a `role` (either `user` or `assistant`) and a `content` (either `text`, `image_url`).",
+    //   ),
+  });
 
   /** @ignore */
-  async _call(input: string) {
-    const resp = await fetch(this.buildUrl(input));
+  async _call(input: z.infer<typeof this.schema>) {
+    input.content.unshift({
+      type: "text",
+      text: "Please analyze the information in the picture in as much detail as possible",
+    });
+
+    const message = {
+      role: "user",
+      content: input.content,
+    };
+    console.log("🚀 ~ Glm4v ~ _call ~ input:", JSON.stringify(message));
+    const apiUrl = `${this.baseURL}/chat/completions`;
+
+    let requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: this.model,
+        messages: [message],
+      }),
+    };
+
+    const resp = await fetch(apiUrl, requestOptions);
 
     const json = await resp.json();
+    console.log("🚀 ~ Glm4vWrapper ~ _call ~ json:", json);
 
     if (json.error) {
       throw new Error(
@@ -98,9 +127,9 @@ export class Glm4v extends Tool {
     //
     // TODO:
 
-    return "No good search result found";
+    return JSON.stringify(json);
+    // return JSON.stringify({"choices":[{"finish_reason":"stop","index":0,"message":{"content":"在这张照片中，一只可爱的羊驼站在草地上微笑着。具体地，在碧绿的草地上，有一只可爱的羊驼，它吐着舌头微笑着，眼睛大而圆，呈现出黑色。羊驼的毛色是浅棕色的，身体又高又壮实。羊驼的身后是一片广阔的草地，远处还有几棵绿色的树木。上方是蔚蓝的天空，散布着白云和金色的太阳。阳光透过云层洒在大地上，给整个画面带来了温暖的感觉。","role":"assistant"}}],"created":1712396619,"id":"8537106975399363216","model":"glm-4v","request_id":"8537106975399363216","usage":{"completion_tokens":109,"prompt_tokens":1037,"total_tokens":1146}})
   }
 
-  description =
-    "a search engine. useful for when you need to answer questions about current events. input should be a search query.";
+  description = "智谱AI最新图像识别AI模型，来自清华大学";
 }

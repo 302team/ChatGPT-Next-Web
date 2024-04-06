@@ -563,6 +563,10 @@ export class ChatGPTApi implements LLMApi {
                 if (toolName === "wikipedia-api") {
                   toolName = "Wikipedia";
                 }
+                if (toolName === "glm-4v") {
+                  inputMessage =
+                    "Please analyze the information in the picture in as much detail as possible";
+                }
                 options.onToolUpdate?.(toolName, inputMessage);
               }
             } catch (e) {

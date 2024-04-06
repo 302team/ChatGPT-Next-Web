@@ -260,6 +260,7 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
               modelName: data.display_name,
               promptStarters,
               isGptsModel: isGptsModel,
+              usePlugins: false,
             } as Mask,
             true,
           );

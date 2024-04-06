@@ -2,6 +2,17 @@ import { BuiltinPlugin } from "./typing";
 
 export const EN_PLUGINS: BuiltinPlugin[] = [
   {
+    name: "GLM-4V",
+    toolName: "glm-4v",
+    lang: "en",
+    description:
+      "Zhipu AI's latest image recognition AI model, from Tsinghua University.",
+    builtin: true,
+    createdAt: 1693744292000,
+    enable: true,
+    onlyNodeRuntime: false,
+  },
+  {
     name: "WebSearch",
     toolName: "web-search",
     lang: "en",
