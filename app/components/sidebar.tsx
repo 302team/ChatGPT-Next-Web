@@ -17,6 +17,7 @@ import DragIcon from "../icons/drag.svg";
 import NextImage from "next/image";
 import BotIconDark from "../icons/logo-horizontal-dark.png";
 import ExportIcon from "../icons/share.svg";
+import SearchIcon from "../icons/search.svg";
 
 import Locale from "../locales";
 
@@ -42,6 +43,7 @@ import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
 
 import { Spin, Result, Button } from "antd";
 import { Loading } from "./home";
+import { SearchBar, SearchInputRef } from "./search-bar";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -413,6 +415,36 @@ export function SideBar(props: { className?: string }) {
     [isMobileScreen],
   );
 
+  // search
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const searchBarWrapRef = useRef<HTMLDivElement>(null);
+  const searchBarRef = useRef<SearchInputRef>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    if (shouldNarrow) stopSearch();
+  }, [shouldNarrow]);
+
+  const toggleSearchBar = () => {
+    if (searchBarWrapRef.current) {
+      if (showSearchBar) {
+        searchBarWrapRef.current.style.height = "0px";
+        searchBarWrapRef.current.style.marginBottom = "0px";
+        setShowSearchBar(false);
+      } else {
+        searchBarWrapRef.current.style.height = "36px";
+        searchBarWrapRef.current.style.marginBottom = "15px";
+        setShowSearchBar(true);
+      }
+    }
+  };
+
+  const stopSearch = () => {
+    setIsSearching(false);
+    searchBarRef.current?.clearInput();
+    // toggleSearchBar();
+  };
+
   useGptsConfigMessage({
     callback(data: any) {
       setShowGptsConfigModal(false);
@@ -499,28 +531,29 @@ export function SideBar(props: { className?: string }) {
       )}
 
       <div
-        className={styles["sidebar-body"]}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            // navigate(Path.Home + location.search);
-          }
-        }}
+        ref={searchBarWrapRef}
+        className={`${styles["sidebar-search-bar"]} ${isSearching ? styles["sidebar-search-bar-isSearching"] : ""}`}
       >
-        <ChatList narrow={shouldNarrow} />
+        {!shouldNarrow && (
+          <SearchBar ref={searchBarRef} setIsSearching={setIsSearching} />
+        )}
       </div>
+
+      {!isSearching && (
+        <div
+          className={styles["sidebar-body"]}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              // navigate(Path.Home + location.search);
+            }
+          }}
+        >
+          <ChatList narrow={shouldNarrow} />
+        </div>
+      )}
 
       <div className={styles["sidebar-tail"]}>
         <div className={styles["sidebar-actions"]}>
-          {/* <div className={styles["sidebar-action"] + " " + styles.mobile}>
-            <IconButton
-              icon={<DeleteIcon />}
-              onClick={async () => {
-                if (await showConfirm(Locale.Home.DeleteChat)) {
-                  chatStore.deleteSession(chatStore.currentSessionIndex);
-                }
-              }}
-            />
-          </div> */}
           <div className={styles["sidebar-action"]}>
             <IconButton
               className={styles["sidebar-tail-button"]}
@@ -538,6 +571,14 @@ export function SideBar(props: { className?: string }) {
               shadow
             />
           </div>
+          <div className={styles["sidebar-action"]}>
+            <IconButton
+              className={styles["sidebar-tail-button"]}
+              icon={<SearchIcon />}
+              onClick={() => toggleSearchBar()}
+              shadow
+            />
+          </div>
         </div>
         <div>
           <IconButton
@@ -547,6 +588,7 @@ export function SideBar(props: { className?: string }) {
             onClick={() => {
               chatStore.newSession();
               navigate(Path.Chat + location.search);
+              stopSearch();
               // if (config.dontShowMaskSplashScreen) {
               //   chatStore.newSession();
               //   navigate(Path.Chat + location.search);
@@ -559,7 +601,7 @@ export function SideBar(props: { className?: string }) {
         </div>
       </div>
 
-      <div className="powerd">
+      <div className={styles["powerd"]}>
         Powered By
         <NextImage
           src={BotIconDark}

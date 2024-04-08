@@ -380,21 +380,6 @@ pre {
   user-select: text;
 }
 
-.powerd {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 10px;
-  margin-bottom: -5px;
-  font-size: 13px;
-  color: var(--deep-gray);
-
-  img {
-    cursor: pointer;
-  }
-}
-
 .app-desc-content {
   margin: 0;
   font-size: 16px;
