@@ -853,19 +853,19 @@ export const useChatStore = createPersistStore(
               botMessage.isError = hasError as boolean;
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
-              if (!hasError) {
-                console.log(
-                  "[OpenAi] chat finished, save media file to remote",
-                );
-                get()
-                  .saveMediaToRemote(message, botMessage)
-                  .then((newMessage) => {
-                    console.log(
-                      "[OpenAi] chat finished, save media file to remote end:",
-                      newMessage,
-                    );
-                  });
-              }
+              // if (!hasError) {
+              //   console.log(
+              //     "[OpenAi] chat finished, save media file to remote",
+              //   );
+              //   get()
+              //     .saveMediaToRemote(message, botMessage)
+              //     .then((newMessage) => {
+              //       console.log(
+              //         "[OpenAi] chat finished, save media file to remote end:",
+              //         newMessage,
+              //       );
+              //     });
+              // }
             },
             onError(error) {
               const isAborted = error.message.includes("aborted");
