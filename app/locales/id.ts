@@ -5,7 +5,7 @@ const id: PartialLocaleType = {
   WIP: "Coming Soon...",
   Error: {
     Unauthorized:
-      "Indonesian (id): Silakan kunjungi [GPT302](https://dash.gpt302.com) untuk membuat robot Anda sendiri",
+      "Indonesian (id): Silakan kunjungi [302.AI](https://dash.302.ai) untuk membuat robot Anda sendiri",
   },
   Auth: {
     Title: "Se requiere código de acceso",
@@ -384,7 +384,7 @@ const id: PartialLocaleType = {
     Settings: "Pengaturan terdeteksi dari url, konfirmasi untuk diterapkan ?",
   },
   Config: {
-    title: "Chatbot - GPT302",
+    title: "Chatbot - 302.AI",
     description: "Buat robot AI milikmu sendiri hanya dengan satu klik",
   },
 };

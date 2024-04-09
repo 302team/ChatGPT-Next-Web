@@ -5,7 +5,7 @@ const ru: PartialLocaleType = {
   WIP: "Скоро...",
   Error: {
     Unauthorized:
-      "Пожалуйста, посетите [GPT302](https://dash.gpt302.com), чтобы создать своего собственного робота",
+      "Пожалуйста, посетите [302.AI](https://dash.302.ai), чтобы создать своего собственного робота",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} сообщений`,
@@ -241,7 +241,7 @@ const ru: PartialLocaleType = {
     Time: "Время",
   },
   Config: {
-    title: "Чат-бот - GPT302",
+    title: "Чат-бот - 302.AI",
     description: "Создайте своего собственного робота ИИ всего в один клик",
   },
 };

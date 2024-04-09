@@ -10,7 +10,7 @@ const sk: PartialLocaleType = {
   WIP: "Už čoskoro...",
   Error: {
     Unauthorized:
-      "Prosím, navštívte [GPT302](https://dash.gpt302.com) pre vytvorenie vlastného robota",
+      "Prosím, navštívte [302.AI](https://dash.302.ai) pre vytvorenie vlastného robota",
   },
   Auth: {
     Title: "Potrebný prístupový kód",
@@ -497,7 +497,7 @@ const sk: PartialLocaleType = {
     Settings: "Zistené nastavenia z URL, potvrdiť na aplikovanie?",
   },
   Config: {
-    title: "Chatbot - GPT302",
+    title: "Chatbot - 302.AI",
     description: "Vytvorte si vlastného AI robota jedným kliknutím",
   },
 };

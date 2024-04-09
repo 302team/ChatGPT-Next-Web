@@ -5,7 +5,7 @@ const tr: PartialLocaleType = {
   WIP: "Çalışma devam ediyor...",
   Error: {
     Unauthorized:
-      "Kendi robotunuzu oluşturmak için lütfen [GPT302](https://dash.gpt302.com) adresini ziyaret edin",
+      "Kendi robotunuzu oluşturmak için lütfen [302.AI](https://dash.302.ai) adresini ziyaret edin",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} mesaj`,
@@ -237,7 +237,7 @@ const tr: PartialLocaleType = {
     Time: "Zaman",
   },
   Config: {
-    title: "Sohbet robotu - GPT302",
+    title: "Sohbet robotu - 302.AI",
     description: "Sadece bir tıklama ile kendi AI robotunuzu oluşturun",
   },
 };

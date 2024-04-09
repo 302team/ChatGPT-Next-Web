@@ -5,7 +5,7 @@ const ar: PartialLocaleType = {
   WIP: "قريبًا...",
   Error: {
     Unauthorized:
-      "يرجى زيارة [GPT302](https://dash.gpt302.com) لإنشاء روبوتك الخاص",
+      "يرجى زيارة [302.AI](https://dash.302.ai) لإنشاء روبوتك الخاص",
   },
   Auth: {
     Title: "يتطلب رمز الوصول",
@@ -287,7 +287,7 @@ ${builtin} مدمجة، ${custom} تم تعريفها من قبل المستخد
     Time: "الوقت",
   },
   Config: {
-    title: "الروبوت المحادثة - GPT302",
+    title: "الروبوت المحادثة - 302.AI",
     description: "إنشاء روبوت ذكاء اصطناعي خاص بك بنقرة واحدة",
   },
 };

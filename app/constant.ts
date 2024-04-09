@@ -14,8 +14,8 @@ export const ANTHROPIC_BASE_URL = "https://api.anthropic.com";
 
 export const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
-export const GPT302_WEBSITE_URL = "https://www.gpt302.com";
-export const GPTS302_WEBSITE_URL = "https://gpts.gpt302.com/?simple_version=1";
+export const GPT302_WEBSITE_URL = "https://www.302.ai";
+export const GPTS302_WEBSITE_URL = "https://gpts.302.ai/?simple_version=1";
 
 export enum Path {
   Home = "/",

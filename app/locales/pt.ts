@@ -8,7 +8,7 @@ const pt: PartialLocaleType = {
   WIP: "Em breve...",
   Error: {
     Unauthorized:
-      "Por favor, visite [GPT302](https://dash.gpt302.com) para criar o seu próprio robô",
+      "Por favor, visite [302.AI](https://dash.302.ai) para criar o seu próprio robô",
   },
   Auth: {
     Title: "Necessário Código de Acesso",
@@ -480,7 +480,7 @@ const pt: PartialLocaleType = {
       "Configurações detectadas a partir da url, confirmar para aplicar?",
   },
   Config: {
-    title: "Chatbot - GPT302",
+    title: "Chatbot - 302.AI",
     description: "Crie o seu próprio robô de IA com apenas um clique",
   },
 };

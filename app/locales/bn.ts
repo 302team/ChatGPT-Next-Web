@@ -5,7 +5,7 @@ const bn: PartialLocaleType = {
   WIP: "শীঘ্রই আসছে...",
   Error: {
     Unauthorized:
-      "[GPT302](https://dash.gpt302.com) এ যান এবং আপনার নিজের রোবট তৈরি করুন",
+      "[302.AI](https://dash.302.aiযান এবং আপনার নিজের রোবট তৈরি করুন",
   },
   Auth: {
     Title: "অ্যাক্সেস কোড প্রয়োজন",
@@ -332,7 +332,7 @@ const bn: PartialLocaleType = {
     Time: "সময়",
   },
   Config: {
-    title: "চ্যাটবট - GPT302",
+    title: "চ্যাটবট - 302.AI",
     description: "একটি ক্লিকে নিজের জন্য এইআই রোবট তৈরি করুন",
   },
 };

@@ -568,7 +568,9 @@ export function ImagePreviewer(props: {
 
           <div>
             <div className={styles["main-title"]}>
-              {config.chatbotName || "GPT302"}
+              {!config.chatbotName || config.chatbotName === "GPT302"
+                ? "302.AI"
+                : config.chatbotName}
             </div>
             <div className={styles["sub-title"]}>
               {config.chatbotDesc ||
@@ -582,7 +584,7 @@ export function ImagePreviewer(props: {
           </div>
           <div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Source}: GPT302
+              {Locale.Exporter.Source}: 302.AI
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Model}: {modelName}

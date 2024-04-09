@@ -5,7 +5,7 @@ const es: PartialLocaleType = {
   WIP: "En construcción...",
   Error: {
     Unauthorized:
-      " Por favor, visita [GPT302](https://dash.gpt302.com) para crear tu propio robot",
+      " Por favor, visita [302.AI](https://dash.302.ai) para crear tu propio robot",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} mensajes`,
@@ -236,7 +236,7 @@ const es: PartialLocaleType = {
     Time: "Time",
   },
   Config: {
-    title: "Chatbot - GPT302",
+    title: "Chatbot - 302.AI",
     description: "Crea tu propio robot de IA con solo un clic",
   },
 };

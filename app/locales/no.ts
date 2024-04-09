@@ -5,7 +5,7 @@ const no: PartialLocaleType = {
   WIP: "Arbeid pågår ...",
   Error: {
     Unauthorized:
-      "Vennligst besøk [GPT302](https://dash.gpt302.com) for å opprette din egen robot",
+      "Vennligst besøk [302.AI](https://dash.302.ai) for å opprette din egen robot",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} meldinger`,
@@ -157,7 +157,7 @@ const no: PartialLocaleType = {
     Time: "Tid",
   },
   Config: {
-    title: "Chatbot - GPT302",
+    title: "Chatbot - 302.AI",
     description: "Lag din egen AI-robot med bare ett klikk",
   },
 };

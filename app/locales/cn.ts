@@ -6,8 +6,7 @@ const isApp = !!getClientConfig()?.isApp;
 const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
-    Unauthorized:
-      "请访问创[GPT302](https://dash.gpt302.com)建属于你自己的机器人",
+    Unauthorized: "请访问创[302.AI](https://dash.302.ai)建属于你自己的机器人",
     ApiTimeout: "请求失败，请重试",
     NetworkError: "网络错误",
     PageOpenError: "页面加载失败",
@@ -25,16 +24,16 @@ const cn = {
     Confirm: "确认",
     Later: "稍后再说",
     CAPTCHA_ERROR: "分享码错误",
-    CHATBOT_DISABLED_ERROR: `聊天机器人已禁用，更多信息请访问 <a href="https://dash.gpt302.com">GPT302</a>`,
-    CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问 <a href="https://dash.gpt302.com">GPT302</a>`,
+    CHATBOT_DISABLED_ERROR: `聊天机器人已禁用，更多信息请访问 <a href="https://dash.302.ai">302.AI</a>`,
+    CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问 <a href="https://dash.302.ai">302.AI</a>`,
     SERVER_ERROR: "内部错误, 请联系客服",
     BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
-    CHATBOT_DISABLED_ERROR2: `聊天机器人已禁用，更多信息请访问[GPT302](https://dash.gpt302.com)`,
+    CHATBOT_DISABLED_ERROR2: `聊天机器人已禁用，更多信息请访问[302.AI](https://dash.302.ai)`,
     TOTAL_QUOTA_ERROR:
-      "聊天机器人的总额度已达上限，请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人",
+      "聊天机器人的总额度已达上限，请访问[302.AI](https://dash.302.ai的机器人",
     DAILY_QUOTA_ERROR:
-      "聊天机器人的单日额度已达上限，请访问[GPT302](https://dash.gpt302.com)创建属于你自己的机器人",
+      "聊天机器人的单日额度已达上限，请访问[302.AI](https://dash.302.ai)创建属于你自己的机器人",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -576,7 +575,7 @@ const cn = {
     FetchImageError: "无法获取图片或未配置OSS",
   },
   Config: {
-    title: "聊天机器人 - GPT302",
+    title: "聊天机器人 - 302.AI",
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
     AppDescTitle: "说明",
     AppDescSubTitle: "AI机器人详情预览",

@@ -6,8 +6,7 @@ const isApp = !!getClientConfig()?.isApp;
 const tw = {
   WIP: "該功能仍在開發中……",
   Error: {
-    Unauthorized:
-      "請訪問[GPT302](https://dash.gpt302.com)創建屬於你自己的機器人",
+    Unauthorized: "請訪問[302.AI](https://dash.302.ai)創建屬於你自己的機器人",
   },
 
   Auth: {
@@ -480,7 +479,7 @@ const tw = {
     Time: "時間",
   },
   Config: {
-    title: "聊天機器人- GPT302",
+    title: "聊天機器人- 302.AI",
     description: "一鍵生成屬於自己的AI機器人",
   },
 };

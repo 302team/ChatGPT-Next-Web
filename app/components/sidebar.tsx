@@ -468,7 +468,9 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          {config.chatbotName || "GPT302"}
+          {!config.chatbotName || config.chatbotName === "GPT302"
+            ? "302.AI"
+            : config.chatbotName}
         </div>
         <div className={styles["sidebar-sub-title"]}>
           {config.chatbotDesc ||
