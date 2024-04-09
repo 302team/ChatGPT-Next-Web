@@ -1382,14 +1382,14 @@ function _Chat(props: { promptStarters: string[] }) {
     deleteMessage(botMessage?.id);
 
     if (botMessage && botMessage.retryCount == undefined) {
-      botMessage.retryCount = 1;
+      botMessage.retryCount = 0;
     }
 
     // resend the message
     setIsLoading(true);
     chatStore
       .onUserInput(userMessage.content, {
-        retryCount: botMessage?.retryCount || 1,
+        retryCount: botMessage?.retryCount || 0,
         ...exAttr,
       })
       .then(() => setIsLoading(false));
