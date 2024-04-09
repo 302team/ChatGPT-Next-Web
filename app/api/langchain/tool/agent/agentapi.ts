@@ -59,6 +59,7 @@ export interface RequestBody {
   maxIterations: number;
   returnIntermediateSteps: boolean;
   useTools: (undefined | string)[];
+  searchEngine?: string;
 }
 
 export class ResponseBody {
@@ -254,7 +255,11 @@ export class AgentApi {
       var handler = await this.getHandler(reqBody);
 
       // 使用魔改过的 SearchApi
-      let searchTool: Tool = new SearchApi(apiKey, baseUrl); // new DuckDuckGo();
+      let searchTool: Tool = new SearchApi(apiKey, baseUrl);
+      if (reqBody.searchEngine === "searchapi") {
+        // search api
+      }
+
       if (process.env.CHOOSE_SEARCH_ENGINE) {
         switch (process.env.CHOOSE_SEARCH_ENGINE) {
           case "google":

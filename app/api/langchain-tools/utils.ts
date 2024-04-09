@@ -82,3 +82,41 @@ export async function uploadFile(
 
   return fileUrl;
 }
+
+export async function getBase64FromUrl(url: string) {
+  let base64 = "";
+  let n = 0;
+  const getImg = async (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      fetch(url, {
+        method: "get",
+        headers: {
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Access-Control-Allow-Headers": "*",
+        },
+      })
+        .then((response) => response.blob())
+        .then((blob) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onload = () => {
+            resolve(reader.result as string);
+          };
+        });
+    });
+  };
+
+  while (++n <= 10) {
+    base64 = await getImg();
+    if (base64) {
+      break;
+    } else {
+      console.log("upload image failed, retry:", n);
+      await sleep(1000);
+    }
+  }
+
+  return base64;
+}

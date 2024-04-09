@@ -78,12 +78,14 @@ export class SearchApi extends Tool {
 
   protected apiKey: string;
   protected baseUrl: string;
+  protected searchEngine: string;
 
   protected params: Partial<SearchApiParameters>;
 
   constructor(
     apiKey: string | undefined = getEnvironmentVariable("SEARCHAPI_API_KEY"),
     baseUrl: string | undefined = getEnvironmentVariable("SEARCHAPI_BASE_URL"),
+    searchEngine: string | undefined = "google",
     params: Partial<SearchApiParameters> = {},
   ) {
     super(...arguments);
@@ -102,6 +104,7 @@ export class SearchApi extends Tool {
 
     this.apiKey = apiKey;
     this.baseUrl = baseUrl;
+    this.searchEngine = searchEngine;
     this.params = params;
   }
 
@@ -114,7 +117,7 @@ export class SearchApi extends Tool {
    */
   protected buildUrl(searchQuery: string): string {
     const preparedParams: [string, string][] = Object.entries({
-      engine: "google",
+      engine: this.searchEngine,
       api_key: this.apiKey,
       ...this.params,
       q: searchQuery,

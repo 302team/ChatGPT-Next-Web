@@ -41,7 +41,7 @@ import { Prompt, usePromptStore } from "../store/prompt";
 import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
-import { usePluginStore } from "../store/plugin";
+import { Plugin, usePluginStore } from "../store/plugin";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -257,15 +257,29 @@ function ChatWindow() {
             });
           }
 
+          let allPlugins: Plugin[] = [];
           const supportedLangs = ["cn"];
-          const allPlugins = pluginStore
-            .getAll()
-            .filter((m) =>
-              supportedLangs.includes(currentLang)
-                ? m.lang === currentLang
-                : m.lang === "en",
-            );
+          if (opt.settings.plugins && opt.settings.plugins.length) {
+            allPlugins = opt.settings.plugins;
+          } else if (!!opt.enable_plugins) {
+            // 如果开启了插件模式
+            allPlugins = pluginStore
+              .getBuildinPlugins()
+              .filter(
+                (m) =>
+                  (supportedLangs.includes(currentLang)
+                    ? m.lang === currentLang
+                    : m.lang === "en") && m.enable,
+              );
+          }
           console.log("🚀 ~ ChatWindow ~ allPlugins:", allPlugins);
+
+          // 情调
+          pluginStore.clearAll();
+          allPlugins.forEach((item) => {
+            // 重新添加
+            pluginStore.create(item);
+          });
 
           setValidPwdVisible(false);
         }}

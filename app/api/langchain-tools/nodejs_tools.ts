@@ -7,7 +7,8 @@ import { StableDiffusionNodeWrapper } from "@/app/api/langchain-tools/stable_dif
 import { Calculator } from "langchain/tools/calculator";
 import { WebBrowser } from "langchain/tools/webbrowser";
 import { WolframAlphaTool } from "@/app/api/langchain-tools/wolframalpha";
-import { Glm4vWrapper } from "@/app/api/langchain-tools/glm_4v";
+// import { Glm4vWrapper } from "@/app/api/langchain-tools/glm_4v";
+import { GPT4vWrapper } from "./gpt_4_vision";
 
 export class NodeJSTool {
   private apiKey: string | undefined;
@@ -50,7 +51,8 @@ export class NodeJSTool {
     const wolframAlphaTool = new WolframAlphaTool();
     const pdfBrowserTool = new PDFBrowser(this.model, this.embeddings);
 
-    const glm4vTool = new Glm4vWrapper(this.apiKey!, this.baseUrl);
+    // const glm4vTool = new Glm4vWrapper(this.apiKey!, this.baseUrl);
+    const gpt4vTool = new GPT4vWrapper(this.apiKey!, this.baseUrl);
 
     let tools = [
       calculatorTool,
@@ -61,7 +63,7 @@ export class NodeJSTool {
       wolframAlphaTool,
       pdfBrowserTool,
 
-      glm4vTool,
+      gpt4vTool,
     ];
     return tools;
   }

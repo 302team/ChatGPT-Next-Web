@@ -47,6 +47,7 @@ export interface LLMAgentConfig {
   maxIterations: number;
   returnIntermediateSteps: boolean;
   useTools?: (string | undefined)[];
+  searchEngine?: string;
 }
 
 export interface ChatOptions {

@@ -641,14 +641,7 @@ export const useChatStore = createPersistStore(
         const config = useAppConfig.getState();
         const pluginConfig = useAppConfig.getState().pluginConfig;
         const pluginStore = usePluginStore.getState();
-        const allPlugins = pluginStore
-          .getAll()
-          .filter(
-            (m) =>
-              (!getLang() ||
-                m.lang === (getLang() == "cn" ? getLang() : "en")) &&
-              m.enable,
-          );
+        const allPlugins = pluginStore.getUserPlugins().filter((i) => i.enable);
 
         // save user's and bot's message
         get().updateCurrentSession((session) => {
@@ -675,12 +668,23 @@ export const useChatStore = createPersistStore(
             allPlugins.map((i) => i.name).join(", "),
           );
           const pluginToolNames = allPlugins.map((m) => m.toolName);
+          const webSearchPlugin = allPlugins.find(
+            (m) => m.toolName === "web-search",
+          );
+          const searchEngine =
+            webSearchPlugin && webSearchPlugin.engine
+              ? webSearchPlugin.engine
+              : "searchapi";
 
           // TODO: Plugin chat
           api.llm.toolAgentChat({
             messages: sendMessages,
             config: { ...modelConfig, stream: true },
-            agentConfig: { ...pluginConfig, useTools: pluginToolNames },
+            agentConfig: {
+              ...pluginConfig,
+              useTools: pluginToolNames,
+              searchEngine,
+            },
             retryCount: extAttr.retryCount ?? 0,
             onAborted: () => {
               botMessage.isTimeoutAborted = true;

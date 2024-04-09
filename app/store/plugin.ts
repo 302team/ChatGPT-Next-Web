@@ -17,6 +17,7 @@ export type Plugin = {
   builtin: boolean;
   enable: boolean;
   onlyNodeRuntime: boolean;
+  engine?: string;
 };
 
 export const DEFAULT_PLUGIN_STATE = {
@@ -31,8 +32,11 @@ type PluginStore = PluginState & {
   enable: (id: string) => void;
   disable: (id: string) => void;
   delete: (id: string) => void;
+  clearAll: () => void;
   search: (text: string) => Plugin[];
   get: (id?: string) => Plugin | null;
+  getUserPlugins: () => Plugin[];
+  getBuildinPlugins: () => Plugin[];
   getAll: () => Plugin[];
 };
 
@@ -89,8 +93,33 @@ export const usePluginStore = create<PluginStore>()(
         pluginStatuses[id] = false;
         set(() => ({ pluginStatuses }));
       },
+      clearAll() {
+        set(() => ({
+          plugins: {},
+          pluginStatuses: {},
+        }));
+      },
       get(id) {
         return get().plugins[id ?? 1145141919810];
+      },
+      getUserPlugins() {
+        const userPlugins = Object.values(get().plugins).sort(
+          (a, b) => b.createdAt - a.createdAt,
+        );
+        return userPlugins;
+      },
+      getBuildinPlugins() {
+        const buildinPlugins = BUILTIN_PLUGINS.map(
+          (m) =>
+            ({
+              ...m,
+            }) as Plugin,
+        );
+        const pluginStatuses = get().pluginStatuses;
+        return buildinPlugins.map((e) => {
+          e.enable = pluginStatuses[e.id] ?? e.enable;
+          return e;
+        });
       },
       getAll() {
         const userPlugins = Object.values(get().plugins).sort(

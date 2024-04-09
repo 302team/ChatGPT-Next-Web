@@ -6,7 +6,8 @@ import { Calculator } from "langchain/tools/calculator";
 import { WebBrowser } from "langchain/tools/webbrowser";
 import { Embeddings } from "langchain/dist/embeddings/base.js";
 import { WolframAlphaTool } from "@/app/api/langchain-tools/wolframalpha";
-import { Glm4vWrapper } from "@/app/api/langchain-tools/glm_4v";
+// import { Glm4vWrapper } from "@/app/api/langchain-tools/glm_4v";
+import { GPT4vWrapper } from "./gpt_4_vision";
 
 export class EdgeTool {
   private apiKey: string | undefined;
@@ -48,7 +49,8 @@ export class EdgeTool {
     const arxivAPITool = new ArxivAPIWrapper();
     const wolframAlphaTool = new WolframAlphaTool();
 
-    const glm4vTool = new Glm4vWrapper(this.apiKey!, this.baseUrl);
+    // const glm4vTool = new Glm4vWrapper(this.apiKey!, this.baseUrl);
+    const gpt4vTool = new GPT4vWrapper(this.apiKey!, this.baseUrl);
 
     let tools = [
       calculatorTool,
@@ -58,7 +60,7 @@ export class EdgeTool {
       arxivAPITool,
       wolframAlphaTool,
 
-      glm4vTool,
+      gpt4vTool,
     ];
     return tools;
   }

@@ -35,6 +35,7 @@ declare global {
       GTM_ID?: string;
 
       API_DOMAIN?: string;
+      NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN?: string;
     }
   }
 }
@@ -114,9 +115,10 @@ export const getServerSideConfig = () => {
 
     apiDomain: process.env.API_DOMAIN,
 
-    isStoreFileToLocal:
-      !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN &&
-      !process.env.R2_ACCOUNT_ID &&
-      !process.env.S3_ENDPOINT,
+    enableNodeJSPlugin: !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN,
+    // isStoreFileToLocal:
+    //   !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN &&
+    //   !process.env.R2_ACCOUNT_ID &&
+    //   !process.env.S3_ENDPOINT,
   };
 };

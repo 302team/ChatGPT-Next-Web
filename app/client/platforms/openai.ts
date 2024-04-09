@@ -37,6 +37,9 @@ import {
   isVisionModel,
 } from "@/app/utils";
 import { AuthType } from "@/app/locales/cn";
+import { getServerSideConfig } from "@/app/config/server";
+
+const serverConfig = getServerSideConfig();
 
 export interface OpenAIListModelResponse {
   object: string;
@@ -393,6 +396,7 @@ export class ChatGPTApi implements LLMApi {
       maxIterations: options.agentConfig.maxIterations,
       returnIntermediateSteps: options.agentConfig.returnIntermediateSteps,
       useTools: options.agentConfig.useTools,
+      searchEngine: options.agentConfig.searchEngine,
     };
 
     console.log("[Request] openai payload: ", requestPayload);
@@ -408,10 +412,14 @@ export class ChatGPTApi implements LLMApi {
       options.retryCount !== undefined &&
       options.retryCount < 1;
     console.log("🚀 ~ [Request] toolAgentChat ~ shouldRetry:", shouldRetry);
+    console.log(
+      "🚀 ~ [Request] toolAgentChat ~ enableNodeJSPlugin:",
+      serverConfig.enableNodeJSPlugin,
+    );
 
     try {
       let path = "/api/langchain/tool/agent/";
-      const enableNodeJSPlugin = !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN;
+      const enableNodeJSPlugin = serverConfig.enableNodeJSPlugin; // !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN;
       path = enableNodeJSPlugin ? path + "nodejs" : path + "edge";
       const chatPayload = {
         method: "POST",
@@ -563,9 +571,8 @@ export class ChatGPTApi implements LLMApi {
                 if (toolName === "wikipedia-api") {
                   toolName = "Wikipedia";
                 }
-                if (toolName === "glm-4v") {
-                  inputMessage =
-                    "Please analyze the information in the picture in as much detail as possible";
+                if (toolName === "gpt-4v") {
+                  inputMessage = "Image recognition";
                 }
                 options.onToolUpdate?.(toolName, inputMessage);
               }
