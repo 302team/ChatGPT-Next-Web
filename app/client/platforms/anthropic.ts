@@ -1,5 +1,11 @@
 import { ACCESS_CODE_PREFIX, Anthropic, ApiPath } from "@/app/constant";
-import { ChatOptions, LLMApi, MultimodalContent } from "../api";
+import {
+  AgentChatOptions,
+  ChatOptions,
+  LLMApi,
+  MultimodalContent,
+  SpeechOptions,
+} from "../api";
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 import { getClientConfig } from "@/app/config/client";
 import { DEFAULT_API_HOST } from "@/app/constant";
@@ -366,6 +372,18 @@ export class ClaudeApi implements LLMApi {
     baseUrl = trimEnd(baseUrl, "/");
 
     return `${baseUrl}/${path}`;
+  }
+
+  toolAgentChat(options: AgentChatOptions): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  async audioTranscriptions(formData: FormData) {
+    throw new Error("Method not implemented.");
+  }
+
+  async audioSpeech(options: SpeechOptions) {
+    throw new Error("Method not implemented.");
   }
 }
 
