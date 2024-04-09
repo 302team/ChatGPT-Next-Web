@@ -872,6 +872,7 @@ function useUploadFile(extra: {
 
   async function dropUpload(files: File[]) {
     if (
+      !config.pluginConfig.enable &&
       !isSupportMultimodal(currentModel) &&
       !isVisionModel(currentModel) &&
       !isSpecImageModal(currentModel)
@@ -1620,21 +1621,27 @@ function _Chat(props: { promptStarters: string[] }) {
   useEffect(() => {
     const dp = document.body;
 
-    //多图上传
-    dp?.addEventListener("drop", function (e: any) {
+    function handleDrop(e: any) {
       e.stopPropagation();
       //阻止浏览器默认打开文件的操作
       e.preventDefault();
       const files = e.dataTransfer.files;
 
       dropUpload(files);
-    });
+    }
+
+    //多图上传
+    dp?.addEventListener("drop", handleDrop);
+
+    return () => {
+      dp?.removeEventListener("drop", handleDrop);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // paste event
   useEffect(() => {
-    document.addEventListener("paste", function (event) {
+    function handleParse(event: any) {
       var items = (event.clipboardData || window.clipboardData).items;
       var file = null;
       if (items && items.length) {
@@ -1655,7 +1662,12 @@ function _Chat(props: { promptStarters: string[] }) {
       }
 
       pasteUpload(file);
-    });
+    }
+
+    document.addEventListener("paste", handleParse);
+    return () => {
+      document.removeEventListener("paste", handleParse);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
