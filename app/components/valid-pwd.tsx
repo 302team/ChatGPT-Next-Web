@@ -40,6 +40,7 @@ export function ValidPwd(props: ValidPwdProps) {
 
   async function handleSubmit(code: string, callback?: (res: any) => void) {
     const res = await accessStore.validPwd(code);
+    console.log("🚀 ~ handleSubmit ~ res:", res);
     if (!res) return;
 
     if (res.code === 0) {
@@ -97,6 +98,9 @@ export function ValidPwd(props: ValidPwdProps) {
         }
       } catch (error) {
         console.log("🚀 [valid pwd useEffect] catch error:", error);
+        setErrorMsg(Locale.Error.NetworkError);
+        setShowError(true);
+        setLoading(false);
         showToast(Locale.Error.NetworkError);
       }
     })();

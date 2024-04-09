@@ -147,8 +147,10 @@ export const useAccessStore = createPersistStore(
             }));
           }
 
-          fetchCodeLoading = false;
           return res;
+        })
+        .finally(() => {
+          fetchCodeLoading = false;
         });
     },
   }),
