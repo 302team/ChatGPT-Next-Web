@@ -8,6 +8,8 @@ import {
 import { ChatMessage, ModelType, useAccessStore, useChatStore } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
 import { GeminiProApi } from "./platforms/google";
+import { ClaudeApi } from "./platforms/anthropic";
+
 import { getLang } from "../locales";
 import { isSpecImageModal } from "../utils";
 export const ROLES = ["system", "user", "assistant"] as const;
@@ -149,11 +151,16 @@ export class ClientApi {
   public llm: LLMApi;
 
   constructor(provider: ModelProvider = ModelProvider.GPT) {
-    if (provider === ModelProvider.GeminiPro) {
-      this.llm = new GeminiProApi();
-      return;
+    switch (provider) {
+      case ModelProvider.GeminiPro:
+        this.llm = new GeminiProApi();
+        break;
+      case ModelProvider.Claude:
+        this.llm = new ClaudeApi();
+        break;
+      default:
+        this.llm = new ChatGPTApi();
     }
-    this.llm = new ChatGPTApi();
   }
 
   config() {}

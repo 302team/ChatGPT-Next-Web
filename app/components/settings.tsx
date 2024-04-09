@@ -51,6 +51,7 @@ import Locale, {
 import { computedUsedStorage, copyToClipboard } from "../utils";
 import Link from "next/link";
 import {
+  Anthropic,
   Azure,
   Google,
   OPENAI_BASE_URL,
@@ -981,7 +982,7 @@ export function Settings(props: {
                     </Select>
                   </ListItem>
 
-                  {accessStore.provider === "OpenAI" ? (
+                  {accessStore.provider === ServiceProvider.OpenAI && (
                     <>
                       <ListItem
                         title={Locale.Settings.Access.OpenAI.Endpoint.Title}
@@ -1020,7 +1021,8 @@ export function Settings(props: {
                         />
                       </ListItem>
                     </>
-                  ) : accessStore.provider === "Azure" ? (
+                  )}
+                  {accessStore.provider === ServiceProvider.Azure && (
                     <>
                       <ListItem
                         title={Locale.Settings.Access.Azure.Endpoint.Title}
@@ -1079,7 +1081,8 @@ export function Settings(props: {
                         ></input>
                       </ListItem>
                     </>
-                  ) : accessStore.provider === "Google" ? (
+                  )}
+                  {accessStore.provider === ServiceProvider.Google && (
                     <>
                       <ListItem
                         title={Locale.Settings.Access.Google.Endpoint.Title}
@@ -1138,7 +1141,70 @@ export function Settings(props: {
                         ></input>
                       </ListItem>
                     </>
-                  ) : null}
+                  )}
+                  {accessStore.provider === ServiceProvider.Anthropic && (
+                    <>
+                      <ListItem
+                        title={Locale.Settings.Access.Anthropic.Endpoint.Title}
+                        subTitle={
+                          Locale.Settings.Access.Anthropic.Endpoint.SubTitle +
+                          Anthropic.ExampleEndpoint
+                        }
+                      >
+                        <input
+                          type="text"
+                          value={accessStore.anthropicUrl}
+                          placeholder={Anthropic.ExampleEndpoint}
+                          onChange={(e) =>
+                            accessStore.update(
+                              (access) =>
+                                (access.anthropicUrl = e.currentTarget.value),
+                            )
+                          }
+                        ></input>
+                      </ListItem>
+                      <ListItem
+                        title={Locale.Settings.Access.Anthropic.ApiKey.Title}
+                        subTitle={
+                          Locale.Settings.Access.Anthropic.ApiKey.SubTitle
+                        }
+                      >
+                        <PasswordInput
+                          value={accessStore.anthropicApiKey}
+                          type="text"
+                          placeholder={
+                            Locale.Settings.Access.Anthropic.ApiKey.Placeholder
+                          }
+                          onChange={(e) => {
+                            accessStore.update(
+                              (access) =>
+                                (access.anthropicApiKey =
+                                  e.currentTarget.value),
+                            );
+                          }}
+                        />
+                      </ListItem>
+                      <ListItem
+                        title={Locale.Settings.Access.Anthropic.ApiVerion.Title}
+                        subTitle={
+                          Locale.Settings.Access.Anthropic.ApiVerion.SubTitle
+                        }
+                      >
+                        <input
+                          type="text"
+                          value={accessStore.anthropicApiVersion}
+                          placeholder={Anthropic.Vision}
+                          onChange={(e) =>
+                            accessStore.update(
+                              (access) =>
+                                (access.anthropicApiVersion =
+                                  e.currentTarget.value),
+                            )
+                          }
+                        ></input>
+                      </ListItem>
+                    </>
+                  )}
                 </>
               )}
             </>

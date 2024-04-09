@@ -50,6 +50,20 @@ export interface OpenAIListModelResponse {
   }>;
 }
 
+interface RequestPayload {
+  messages: {
+    role: "system" | "user" | "assistant";
+    content: string | MultimodalContent[];
+  }[];
+  stream?: boolean;
+  model: string;
+  temperature: number;
+  presence_penalty: number;
+  frequency_penalty: number;
+  top_p: number;
+  max_tokens?: number;
+}
+
 const ERROR_MESSAGE = "Network error, please retry.";
 
 export class ChatGPTApi implements LLMApi {
