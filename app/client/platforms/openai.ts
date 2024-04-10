@@ -597,6 +597,7 @@ export class ChatGPTApi implements LLMApi {
 
                   const CODE = ERROR_CODE[err.err_code as ERROR_CODE_TYPE];
                   responseText = Locale.Auth[CODE as AuthType] || err.message;
+                  hasUncatchError = false;
                 } else {
                   // 除了自定义的错误信息, 其他错误都显示 Network error, please retry.
                   responseText = ERROR_MESSAGE;
@@ -606,7 +607,7 @@ export class ChatGPTApi implements LLMApi {
                 hasUncatchError = true;
               }
 
-              if (shouldRetry) {
+              if (hasUncatchError && shouldRetry) {
                 controller.abort();
                 options.onRetry?.();
                 return;

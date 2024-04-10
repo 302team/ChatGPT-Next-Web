@@ -91,7 +91,7 @@ export const CN_PLUGINS: BuiltinPlugin[] = [
     description: "可以从pdf文件的url中提取信息或总结其内容。",
     builtin: true,
     createdAt: 1700907315000,
-    enable: false,
+    enable: true,
     onlyNodeRuntime: true,
   },
   {
