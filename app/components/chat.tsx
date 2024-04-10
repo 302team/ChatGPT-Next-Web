@@ -66,6 +66,7 @@ import {
   DEFAULT_TOPIC,
   ModelType,
   UploadFile,
+  ExtAttr,
 } from "../store";
 
 import {
@@ -1335,6 +1336,7 @@ function _Chat(props: { promptStarters: string[] }) {
   };
 
   const onResend = (message: ChatMessage) => {
+    console.warn("🚀 ~ onResend ~ message:", message);
     // when it is resending a message
     // 1. for a user's message, find the next bot response
     // 2. for a bot's message, find the last user's input
@@ -1382,17 +1384,25 @@ function _Chat(props: { promptStarters: string[] }) {
     deleteMessage(userMessage.id);
     deleteMessage(botMessage?.id);
 
-    if (botMessage && botMessage.retryCount == undefined) {
-      botMessage.retryCount = 0;
+    if (userMessage && userMessage.retryCount == undefined) {
+      userMessage.retryCount = 0;
+    }
+    console.log("🚀 ~ onResend ~ userMessage:", userMessage);
+
+    const chatOption: ExtAttr = {
+      retryCount: userMessage.retryCount,
+      ...exAttr,
+    };
+    if (userMessage.retryCount! < 1) {
+      chatOption.onResend = onResend as (
+        messages: ChatMessage | ChatMessage[],
+      ) => void;
     }
 
     // resend the message
     setIsLoading(true);
     chatStore
-      .onUserInput(userMessage.content, {
-        retryCount: botMessage?.retryCount || 0,
-        ...exAttr,
-      })
+      .onUserInput(userMessage.content, chatOption)
       .then(() => setIsLoading(false));
     inputRef.current?.focus();
   };
@@ -2011,7 +2021,10 @@ function _Chat(props: { promptStarters: string[] }) {
                             <ChatAction
                               text=""
                               icon={<ResetIcon2 />}
-                              onClick={() => onResend(message)}
+                              onClick={() => {
+                                message.retryCount = 0;
+                                onResend(message);
+                              }}
                             />
                           </div>
                         </div>

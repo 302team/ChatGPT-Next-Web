@@ -840,7 +840,10 @@ export const useChatStore = createPersistStore(
               });
             },
             onRetry: () => {
-              console.warn("[Chat] onRetry", userMessage);
+              if (userMessage.retryCount == undefined) {
+                userMessage.retryCount = 0;
+              }
+              ++userMessage.retryCount;
               extAttr.onResend?.(userMessage);
             },
             onUpdate(message) {
