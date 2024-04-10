@@ -519,14 +519,37 @@ export class ChatGPTApi implements LLMApi {
               );
               let errorMsg = ERROR_MESSAGE;
 
+              // try {
+              //   const resJson = await res.clone().json();
+              //   console.warn(
+              //     "🚀 ~ [tool agent chat] ~ onopen ~ resJson:",
+              //     resJson,
+              //   );
+              //   errorMsg = ERROR_MESSAGE;
+              //   hasUncatchError = true;
+              //   // extraInfo = prettyObject(resJson);
+              // } catch {}
+
               try {
                 const resJson = await res.clone().json();
-                console.warn(
-                  "🚀 ~ [tool agent chat] ~ onopen ~ resJson:",
-                  resJson,
-                );
-                errorMsg = ERROR_MESSAGE;
-                hasUncatchError = true;
+                if (resJson.error) {
+                  if (resJson.error?.type === "api_error") {
+                    const CODE =
+                      ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
+                    errorMsg =
+                      Locale.Auth[CODE as AuthType] || resJson.error.message;
+                  } else if (resJson.error?.param.startsWith("5")) {
+                    errorMsg = Locale.Auth.SERVER_ERROR;
+                  } else if (
+                    resJson.error?.message.includes("No config for gizmo")
+                  ) {
+                    errorMsg = Locale.GPTs.Error.Deleted;
+                  } else {
+                    // 除了自定义的错误信息, 其他错误都显示 Network error, please retry.
+                    errorMsg = ERROR_MESSAGE;
+                    hasUncatchError = true;
+                  }
+                }
                 // extraInfo = prettyObject(resJson);
               } catch {}
 
