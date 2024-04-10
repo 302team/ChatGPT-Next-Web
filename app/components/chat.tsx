@@ -882,7 +882,9 @@ function useUploadFile(extra: {
     }
 
     const filterdFiles = Array.from(files).filter((f) => {
-      return supportMultimodal ? true : isImage((f as File).type);
+      return config.pluginConfig.enable || supportMultimodal
+        ? true
+        : isImage((f as File).type);
     });
 
     const images: UploadFile[] = [];
