@@ -585,9 +585,24 @@ export class ChatGPTApi implements LLMApi {
             }
 
             if (!response.isSuccess) {
-              console.error("[OpenAI Request] onmessage error: ", msg.data);
+              console.error("[OpenAI Request] onmessage error: ", response);
               responseText = ERROR_MESSAGE;
-              hasUncatchError = true;
+
+              const resJson = response;
+              if (resJson.error) {
+                if (resJson.error?.type === "api_error") {
+                  const err = resJson.error.error;
+
+                  const CODE = ERROR_CODE[err.err_code as ERROR_CODE_TYPE];
+                  responseText = Locale.Auth[CODE as AuthType] || err.message;
+                } else {
+                  // 除了自定义的错误信息, 其他错误都显示 Network error, please retry.
+                  responseText = ERROR_MESSAGE;
+                  hasUncatchError = true;
+                }
+              } else {
+                hasUncatchError = true;
+              }
 
               if (shouldRetry) {
                 controller.abort();

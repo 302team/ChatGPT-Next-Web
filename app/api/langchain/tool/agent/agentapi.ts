@@ -67,6 +67,7 @@ export class ResponseBody {
   message!: string;
   isToolMessage: boolean = false;
   toolName?: string;
+  error?: Error;
 }
 
 export interface ToolInput {
@@ -116,6 +117,7 @@ export class AgentApi {
         var response = new ResponseBody();
         response.isSuccess = false;
         response.message = err;
+        response.error = err;
         await writer.ready;
         await writer.write(
           encoder.encode(`data: ${JSON.stringify(response)}\n\n`),
@@ -141,6 +143,7 @@ export class AgentApi {
         var response = new ResponseBody();
         response.isSuccess = false;
         response.message = e.message;
+        response.error = e;
         await writer.ready;
         await writer.write(
           encoder.encode(`data: ${JSON.stringify(response)}\n\n`),
