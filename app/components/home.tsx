@@ -225,7 +225,7 @@ function ChatWindow() {
                 conf[key as keyof ChatbotSetting] =
                   settings[key as keyof ChatbotSetting];
               }
-              if (settings.chatbotName) {
+              if (settings.chatbotName && settings.chatbotName !== "GPT302") {
                 document.title = settings.chatbotName;
               }
             }
