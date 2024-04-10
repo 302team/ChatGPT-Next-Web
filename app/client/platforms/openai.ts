@@ -430,15 +430,17 @@ export class ChatGPTApi implements LLMApi {
       options.retryCount !== undefined &&
       options.retryCount < 1;
     console.log("🚀 ~ [Request] toolAgentChat ~ shouldRetry:", shouldRetry);
-    console.log(
-      "🚀 ~ [Request] toolAgentChat ~ enableNodeJSPlugin:",
-      serverConfig.enableNodeJSPlugin,
-    );
 
     try {
       let path = "/api/langchain/tool/agent/";
       const enableNodeJSPlugin = serverConfig.enableNodeJSPlugin; // !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN;
-      path = enableNodeJSPlugin ? path + "nodejs" : path + "edge";
+      console.log(
+        "🚀 ~ [Request] toolAgentChat ~ enableNodeJSPlugin:",
+        enableNodeJSPlugin,
+      );
+
+      // path = enableNodeJSPlugin ? path + "nodejs" : path + "edge";
+      path = path + "nodejs";
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
