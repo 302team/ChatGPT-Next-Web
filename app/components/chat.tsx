@@ -1201,7 +1201,8 @@ function _Chat(props: { promptStarters: string[] }) {
   };
 
   const doSubmit = (userInput: string) => {
-    // if (userInput.trim() === "") return;
+    if (userInput.trim() === "" && exAttr.uploadFiles.length === 0) return;
+
     const matchCommand = chatCommands.match(userInput);
     if (matchCommand.matched) {
       setUserInput("");
@@ -1254,7 +1255,6 @@ function _Chat(props: { promptStarters: string[] }) {
   const couldStop = ChatControllerPool.hasPending();
   const stopAll = () => {
     const lastMessage = messages[messages.length - 1];
-    console.log("🚀 ~ stopAll ~ lastMessage:", lastMessage);
     if (lastMessage.role === "assistant") {
       onUserStop(lastMessage.id);
     } else {
@@ -1387,7 +1387,6 @@ function _Chat(props: { promptStarters: string[] }) {
     if (userMessage && userMessage.retryCount == undefined) {
       userMessage.retryCount = 0;
     }
-    console.log("🚀 ~ onResend ~ userMessage:", userMessage);
 
     const chatOption: ExtAttr = {
       retryCount: userMessage.retryCount,

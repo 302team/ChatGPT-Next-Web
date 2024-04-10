@@ -691,8 +691,11 @@ export const useChatStore = createPersistStore(
               searchEngine,
             },
             retryCount: extAttr.retryCount ?? 0,
-            onAborted: () => {
+            onAborted: (message) => {
               botMessage.isTimeoutAborted = true;
+              if (message) {
+                botMessage.content = message;
+              }
               get().updateCurrentSession((session) => {
                 session.messages = session.messages.concat();
               });
@@ -836,8 +839,11 @@ export const useChatStore = createPersistStore(
             messages: sendMessages,
             config: { ...modelConfig, stream: true },
             retryCount: extAttr.retryCount ?? 0,
-            onAborted: () => {
+            onAborted: (message) => {
               botMessage.isTimeoutAborted = true;
+              if (message) {
+                botMessage.content = message;
+              }
               get().updateCurrentSession((session) => {
                 session.messages = session.messages.concat();
               });

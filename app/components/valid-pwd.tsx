@@ -40,12 +40,10 @@ export function ValidPwd(props: ValidPwdProps) {
 
   async function handleSubmit(code: string, callback?: (res: any) => void) {
     const res = await accessStore.validPwd(code);
-    console.log("🚀 ~ handleSubmit ~ res:", res);
     if (!res) return;
 
     if (res.code === 0) {
       const model = res?.data?.model;
-      console.log("🚀 ~ [valid pwd] ~ model:", model);
       if (model) {
         chatStore.updateCurrentSession((session) => {
           // 除去应用商店的机器人。其他机器人都要覆盖
@@ -79,8 +77,6 @@ export function ValidPwd(props: ValidPwdProps) {
 
   useEffect(() => {
     accessStore.update((access) => (access.userCode = userCode));
-    console.log("🚀 ~ ValidPwd ~ autoConfirm:", autoConfirm === "true");
-    console.log("🚀 ~ [valid pwd] ~ user code:", userCode);
 
     (async () => {
       try {

@@ -173,7 +173,11 @@ export class ChatGPTApi implements LLMApi {
       // make a fetch request
       const requestTimeoutId = setTimeout(() => {
         controller.abort();
-        options.onAborted?.();
+        if (shouldRetry) {
+          options.onRetry?.();
+        } else {
+          options.onAborted?.(ERROR_MESSAGE);
+        }
       }, REQUEST_TIMEOUT_MS);
 
       if (shouldStream) {
@@ -445,7 +449,11 @@ export class ChatGPTApi implements LLMApi {
       // make a fetch request
       const requestTimeoutId = setTimeout(() => {
         controller.abort();
-        options.onAborted?.();
+        if (shouldRetry) {
+          options.onRetry?.();
+        } else {
+          options.onAborted?.(ERROR_MESSAGE);
+        }
       }, REQUEST_TIMEOUT_MS);
       // console.log("shouldStream", shouldStream);
 
@@ -509,7 +517,7 @@ export class ChatGPTApi implements LLMApi {
                 "🚀 ~ [tool agent chat] ~ onopen ~ extraInfo:",
                 extraInfo,
               );
-              let errorMsg = "";
+              let errorMsg = ERROR_MESSAGE;
 
               try {
                 const resJson = await res.clone().json();
