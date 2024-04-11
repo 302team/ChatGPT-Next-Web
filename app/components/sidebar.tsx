@@ -182,7 +182,9 @@ function AppDescription(props: {
       <Modal
         title={Locale.Config.AppDescTitle}
         subtitle={Locale.Config.AppDescSubTitle}
-        headerActions={[<ShareAction key="share" />]}
+        headerActions={[
+          config.showShareEntry ? <ShareAction key="share" /> : null,
+        ]}
         onClose={() => props.onClose()}
       >
         <div dangerouslySetInnerHTML={{ __html: config.chatbotInfo }}></div>
@@ -498,26 +500,17 @@ export function SideBar(props: { className?: string }) {
       {!config.isGpts && (
         <div className={styles["sidebar-header-bar"]}>
           {/* 非GPTs模型的GPTs机器人，也不要出现助手按钮 */}
-          {
+          {!config.hideBuiltinMasks && (
             <IconButton
               icon={<MaskIcon />}
               text={shouldNarrow ? undefined : Locale.Mask.Name}
               className={styles["sidebar-bar-button"]}
               onClick={() => {
                 setShowMaskModal(true);
-                // if (config.dontShowMaskSplashScreen !== true) {
-                //   navigate(Path.NewChat + location.search, {
-                //     state: { fromHome: true },
-                //   });
-                // } else {
-                //   navigate(Path.Masks + location.search, {
-                //     state: { fromHome: true },
-                //   });
-                // }
               }}
               shadow
             />
-          }
+          )}
 
           {config.useGpts && (
             <IconButton

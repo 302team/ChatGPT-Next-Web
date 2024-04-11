@@ -222,8 +222,8 @@ function ChatWindow() {
               }
 
               for (let key in settings) {
-                conf[key as keyof ChatbotSetting] =
-                  settings[key as keyof ChatbotSetting];
+                // @ts-ignore
+                conf[key] = settings[key];
               }
               if (settings.chatbotName && settings.chatbotName !== "GPT302") {
                 document.title = settings.chatbotName;
@@ -232,7 +232,7 @@ function ChatWindow() {
           });
 
           // 设置模型的 promptStarters
-          if (opt.gpts_msg) {
+          if (opt.is_gpts || (opt.gpts_msg && opt.gpts_msg.name)) {
             if (opt.gpts_msg.prompt_starters) {
               setPromptStarters(opt.gpts_msg.prompt_starters);
             }

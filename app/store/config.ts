@@ -131,7 +131,8 @@ export const CHATBOT_CONFIG = {
 export type ChatConfig = typeof DEFAULT_CONFIG &
   typeof DEFAULT_SETTING &
   typeof CHATBOT_CONFIG;
-export type ChatbotSetting = typeof DEFAULT_SETTING;
+export type ChatbotSetting = Partial<typeof DEFAULT_SETTING> &
+  Partial<typeof CHATBOT_CONFIG>;
 
 export type ModelConfig = ChatConfig["modelConfig"];
 export type PluginConfig = ChatConfig["pluginConfig"];
