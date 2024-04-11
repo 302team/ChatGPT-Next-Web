@@ -344,7 +344,7 @@ export function getMessageFiles(
 
 export function isVisionModel(model: string) {
   const m = model.toLocaleLowerCase();
-  const visionKeywords = ["vision", "glm-4v"];
+  const visionKeywords = ["vision"];
 
   return visionKeywords.some((keyword) => m.includes(keyword));
 }
@@ -352,8 +352,10 @@ export function isVisionModel(model: string) {
 export function isSpecImageModal(model: string) {
   const m = model.toLocaleLowerCase();
   const visionKeywords = ["glm-4v", "yi-vl-plus"];
+  const isGpt4Turbo =
+    model.includes("gpt-4-turbo") && !model.includes("preview");
 
-  return visionKeywords.some((keyword) => m.includes(keyword));
+  return visionKeywords.some((keyword) => m.includes(keyword)) || isGpt4Turbo;
 }
 
 export function isSupportMultimodal(model: string) {

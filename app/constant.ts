@@ -126,6 +126,7 @@ export const GEMINI_SUMMARIZE_MODEL = "gemini-pro";
 
 export const KnowledgeCutOffDate: Record<string, string> = {
   default: "2021-09",
+  "gpt-4-turbo": "2023-12",
   "gpt-4-turbo-preview": "2023-12",
   "gpt-4-1106-preview": "2023-04",
   "gpt-4-0125-preview": "2023-12",
@@ -192,6 +193,24 @@ export const DEFAULT_MODELS = [
   },
   {
     name: "gpt-4-32k-0613",
+    available: true,
+    provider: {
+      id: "openai",
+      providerName: "OpenAI",
+      providerType: "openai",
+    },
+  },
+  {
+    name: "gpt-4-turbo",
+    available: true,
+    provider: {
+      id: "openai",
+      providerName: "OpenAI",
+      providerType: "openai",
+    },
+  },
+  {
+    name: "gpt-4-turbo-2024-04-09",
     available: true,
     provider: {
       id: "openai",
@@ -419,6 +438,18 @@ export const DEFAULT_MODELS = [
 
 export const CHAT_PAGE_SIZE = 15;
 export const MAX_RENDER_MSG_COUNT = 45;
+
+// some famous webdav endpoints
+export const internalWhiteWebDavEndpoints = [
+  "https://dav.jianguoyun.com/dav/",
+  "https://dav.dropdav.com/",
+  "https://dav.box.com/dav",
+  "https://nanao.teracloud.jp/dav/",
+  "https://webdav.4shared.com/",
+  "https://dav.idrivesync.com",
+  "https://webdav.yandex.com",
+  "https://app.koofr.net/dav/Koofr",
+];
 
 export const FILE_BASE64_ICON =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAXxJREFUeF7tm+ENgjAQhY8h3EeH0HXUJRzCJXQJXUc5IwkSgZS+a+7KI/EXpMLnu9fXqzQyfRzb06eZa9CnHyJyaD9P9MD/xmscAtBbKgbBK4BiEFIB3A1luf0ztrkSUgHsRMQKwmsErimECABMy8ErAFXZsCRMlOAZwEVEroOygEPwDED9Zm8NwTsAFYAphAgATCFEAWAGIRIAEwjRAMAhRAQAhRAVAAxCZAAQCNEBZEPwDOCcsPTeLE2MXgEkPPvkpbNrh9oBKB1V0mhfkwASm6KWHSFk91m72d0RRgGoutdGyo0AqACWAD3gS4AmGCUHcBYAEeA0iMwBms76qcoyCYIE8NlR6gchfYbRleXcWqAGAFmzQA0AqICcaZAKqMAE6QGcBTJaYvQAekD8JLh6EySAtQchKoAKWHkOYAmwBFgCy7fHa1gL0APoAfQAesDi/wjRBNkQYUPkZ2/Q6p1B1L5gN07/jTNoDkDfaInxCAAZhEr8YujvmFTAG2bcH1CZJ0dCAAAAAElFTkSuQmCC";
