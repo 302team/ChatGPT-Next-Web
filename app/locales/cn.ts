@@ -31,7 +31,7 @@ const cn = {
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
     CHATBOT_DISABLED_ERROR2: `聊天机器人已禁用，更多信息请访问[302.AI](https://dash.302.ai)`,
     TOTAL_QUOTA_ERROR:
-      "聊天机器人的总额度已达上限，请访问[302.AI](https://dash.302.ai的机器人",
+      "聊天机器人的总额度已达上限，请访问[302.AI](https://dash.302.ai)创建属于你自己的机器人",
     DAILY_QUOTA_ERROR:
       "聊天机器人的单日额度已达上限，请访问[302.AI](https://dash.302.ai)创建属于你自己的机器人",
   },
