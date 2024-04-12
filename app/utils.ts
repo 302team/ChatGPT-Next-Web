@@ -342,6 +342,7 @@ export function getMessageFiles(
   return urls;
 }
 
+// 具备视觉功能的模型({ type: "image_url", image_url: BASE64 })
 export function isVisionModel(model: string) {
   const m = model.toLocaleLowerCase();
   const visionKeywords = ["vision"];
@@ -349,6 +350,7 @@ export function isVisionModel(model: string) {
   return visionKeywords.some((keyword) => m.includes(keyword));
 }
 
+// 具备视觉功能的模型({ type: "image_url", image_url: URL })
 export function isSpecImageModal(model: string) {
   const m = model.toLocaleLowerCase();
   const visionKeywords = ["glm-4v", "yi-vl-plus"];
@@ -358,12 +360,26 @@ export function isSpecImageModal(model: string) {
   return visionKeywords.some((keyword) => m.includes(keyword)) || isGpt4Turbo;
 }
 
+// 具备多模态的模型
 export function isSupportMultimodal(model: string) {
   const m = model.toLocaleLowerCase();
   return (
     m.includes("gpt-4-all") ||
     m.includes("gpt-4-gizmo-") ||
     m.includes("claude-3-")
+  );
+}
+
+export function isSupportFunctionCall(model: string) {
+  const m = model.toLocaleLowerCase();
+  const functionCallKeywords = ["gpt-"];
+  const isGpt4VisionPreview = m.includes("gpt-4-vision-preview");
+  const isGpts /* GPTs */ = m.startsWith("gpt-4-gizmo");
+
+  return (
+    functionCallKeywords.some((keyword) => m.includes(keyword)) &&
+    !isGpt4VisionPreview &&
+    !isGpts
   );
 }
 

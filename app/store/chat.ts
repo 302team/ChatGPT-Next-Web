@@ -5,6 +5,7 @@ import {
   isVisionModel,
   isSpecImageModal,
   uploadRemoteFile,
+  isSupportFunctionCall,
 } from "../utils";
 
 import Locale, { getLang } from "../locales";
@@ -257,10 +258,7 @@ async function getUserContent(
   // 这些模型支持识别图片, 格式与 gpt-4-vision 一样, 唯一区别就是它们用的是 url 而不是 base64
 
   // 如果是gpt4-vision，
-  if (
-    (isSpecImageModal(currentModel) || isVisionModel(currentModel)) &&
-    typeof content == "string"
-  ) {
+  if (isVisionModel(currentModel) && typeof content == "string") {
     console.log("1");
     const imgContent: MultimodalContent[] = [];
     imgContent.push({
@@ -332,6 +330,8 @@ async function getUserContent(
       }
     }
     return sendContent;
+    // } else if (currentModel.includes("claude-3-haiku")) {
+    // claude-3-haiku-20240307
   } else if (currentModel.includes("whisper")) {
     console.log("3");
     let userContent = content;
@@ -381,7 +381,7 @@ async function getUserContent(
   }
   console.log("6");
   // 模板替换
-  const userContent = fillTemplateWith(content, modelConfig);
+  const userContent = fillTemplateWith(content as string, modelConfig);
   return userContent;
 }
 
@@ -665,8 +665,7 @@ export const useChatStore = createPersistStore(
           config.pluginConfig.enable &&
           // session.mask.usePlugins && // 所有聊天窗口都可以使用插件
           allPlugins.length > 0 &&
-          modelConfig.model.startsWith("gpt") &&
-          modelConfig.model != "gpt-4-vision-preview"
+          isSupportFunctionCall(modelConfig.model)
         ) {
           console.log(
             "[ToolAgent] start; plugins:",

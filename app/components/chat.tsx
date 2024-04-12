@@ -85,6 +85,7 @@ import {
   copyAudioBlob,
   convertAudioBufferToWave,
   isSpecImageModal,
+  isSupportFunctionCall,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -752,10 +753,9 @@ function useUploadFile(extra: {
       isSpecImageModal(currentModel) ||
       // 开启了使用插件的功能
       (config.pluginConfig.enable &&
-        // session.mask.usePlugins &&
         allPlugins.length > 0 &&
-        currentModel.startsWith("gpt") &&
-        currentModel != "gpt-4-vision-preview");
+        // 模型支持 function call
+        isSupportFunctionCall(currentModel));
 
     setShowUploadAction(show);
 
