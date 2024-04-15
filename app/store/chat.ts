@@ -256,9 +256,13 @@ async function getUserContent(
 
   // 特殊的能支持图片的模型,
   // 这些模型支持识别图片, 格式与 gpt-4-vision 一样, 唯一区别就是它们用的是 url 而不是 base64
+  console.log("🚀 ~ content:", content, currentModel);
 
   // 如果是gpt4-vision，
-  if (isVisionModel(currentModel) && typeof content == "string") {
+  if (
+    (isSpecImageModal(currentModel) || isVisionModel(currentModel)) &&
+    typeof content == "string"
+  ) {
     console.log("1");
     const imgContent: MultimodalContent[] = [];
     imgContent.push({
@@ -302,6 +306,8 @@ async function getUserContent(
         content.forEach((msg) => {
           if (msg.type == "text") {
             sendContent += msg.text!;
+          } else if (msg.type === "image_url") {
+            fileUrls += msg.image_url?.url + "\n";
           } else {
             fileUrls += msg.file?.url + "\n";
           }
@@ -330,8 +336,6 @@ async function getUserContent(
       }
     }
     return sendContent;
-    // } else if (currentModel.includes("claude-3-haiku")) {
-    // claude-3-haiku-20240307
   } else if (currentModel.includes("whisper")) {
     console.log("3");
     let userContent = content;
@@ -699,13 +703,13 @@ export const useChatStore = createPersistStore(
                 session.messages = session.messages.concat();
               });
             },
-            onRetry: () => {
-              if (userMessage.retryCount == undefined) {
-                userMessage.retryCount = 0;
-              }
-              ++userMessage.retryCount;
-              extAttr.onResend?.(userMessage);
-            },
+            // onRetry: () => {
+            //   if (userMessage.retryCount == undefined) {
+            //     userMessage.retryCount = 0;
+            //   }
+            //   ++userMessage.retryCount;
+            //   extAttr.onResend?.(userMessage);
+            // },
             onUpdate(message) {
               botMessage.streaming = true;
               if (message) {

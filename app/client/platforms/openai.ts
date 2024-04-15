@@ -387,7 +387,7 @@ export class ChatGPTApi implements LLMApi {
   async toolAgentChat(options: AgentChatOptions) {
     const messages = options.messages.map((v) => ({
       role: v.role,
-      content: getMessageTextContent(v),
+      content: v.content,
     }));
 
     const modelConfig = {
@@ -397,11 +397,38 @@ export class ChatGPTApi implements LLMApi {
         model: options.config.model,
       },
     };
+    const sendMessages = buildMessages(messages, modelConfig.model);
     const accessStore = useAccessStore.getState();
     const isAzure = accessStore.provider === ServiceProvider.Azure;
     let baseUrl = isAzure ? accessStore.azureUrl : accessStore.openaiUrl;
     const requestPayload = {
-      messages,
+      messages: sendMessages.map((message) => {
+        let content = message.content;
+        if (typeof content === "string") {
+          return {
+            role: message.role,
+            content: content,
+          };
+        }
+
+        let text = "";
+        for (const msg of content) {
+          if (msg.type === "text") {
+            if (text !== "") text += "\n";
+            text += msg.text;
+          } else if (msg.type === "image_url") {
+            if (text !== "") text += "\n";
+            text += `${msg.image_url?.url}`;
+          } else if (msg.type === "file") {
+            if (text !== "") text += "\n";
+            text += `${msg.file?.url}`;
+          }
+        }
+        return {
+          role: message.role,
+          content: text,
+        };
+      }),
       isAzure,
       azureApiVersion: accessStore.azureApiVersion,
       stream: options.config.stream,
