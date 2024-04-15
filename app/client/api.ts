@@ -11,7 +11,7 @@ import { GeminiProApi } from "./platforms/google";
 import { ClaudeApi } from "./platforms/anthropic";
 
 import { getLang } from "../locales";
-import { isSpecImageModal } from "../utils";
+import { isSpecImageModal, isVisionModel } from "../utils";
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
 
@@ -261,7 +261,7 @@ export function getHeadersNoCT() {
 
 // 当模型不是vision, 或者特殊的那几个处理图像的模型时，content只能是文本
 export function buildMessages(messages: RequestMessage[], model: string) {
-  if (!model.includes("vision") && !isSpecImageModal(model)) {
+  if (!isVisionModel(model) && !isSpecImageModal(model)) {
     const sendMessages = JSON.parse(
       JSON.stringify(messages),
     ) as RequestMessage[];

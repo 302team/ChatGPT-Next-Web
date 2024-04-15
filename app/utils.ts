@@ -366,8 +366,8 @@ export function isSupportMultimodal(model: string) {
   return (
     m.includes("gpt-4-all") ||
     m.includes("gpt-4-gizmo-") ||
-    m.includes("claude-3-") ||
-    m.includes("gemini-1.5-pro")
+    m.includes("claude-3-")
+    // m.includes("gemini-1.5-pro")
   );
 }
 
