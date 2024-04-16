@@ -280,12 +280,24 @@ async function getUserContent(
             },
           });
         } else if (file.url && file.url.startsWith("http")) {
-          imgContent.push({
-            type: "image_url",
-            image_url: {
-              url: file.url,
-            },
-          });
+          // 支持插件的, 当 file 类型处理
+          if (isSupportFunctionCall(currentModel) && usePlugins) {
+            imgContent.push({
+              type: "file",
+              file: {
+                name: file.name,
+                type: file.type,
+                url: file.url,
+              },
+            });
+          } else {
+            imgContent.push({
+              type: "image_url",
+              image_url: {
+                url: file.url,
+              },
+            });
+          }
         } else {
           imgContent[0].text += "\n" + file.name;
         }
@@ -297,7 +309,7 @@ async function getUserContent(
     let sendContent = content;
     if (type == "send") {
       let fileUrls = "";
-      if (fileArr.length > 0) {
+      if (typeof content === "string" && fileArr.length > 0) {
         fileArr.forEach((file) => {
           fileUrls += file.url + "\n";
         });
@@ -703,13 +715,18 @@ export const useChatStore = createPersistStore(
                 session.messages = session.messages.concat();
               });
             },
-            // onRetry: () => {
-            //   if (userMessage.retryCount == undefined) {
-            //     userMessage.retryCount = 0;
-            //   }
-            //   ++userMessage.retryCount;
-            //   extAttr.onResend?.(userMessage);
-            // },
+            onRetry: () => {
+              if (userMessage.retryCount == undefined) {
+                userMessage.retryCount = 0;
+              }
+              ++userMessage.retryCount;
+
+              const savedUserMessage = {
+                ...userMessage,
+                content: saveUserContent,
+              } as ChatMessage;
+              extAttr.onResend?.(savedUserMessage);
+            },
             onUpdate(message) {
               botMessage.streaming = true;
               if (message) {
@@ -856,7 +873,12 @@ export const useChatStore = createPersistStore(
                 userMessage.retryCount = 0;
               }
               ++userMessage.retryCount;
-              extAttr.onResend?.(userMessage);
+
+              const savedUserMessage = {
+                ...userMessage,
+                content: saveUserContent,
+              } as ChatMessage;
+              extAttr.onResend?.(savedUserMessage);
             },
             onUpdate(message) {
               botMessage.streaming = true;

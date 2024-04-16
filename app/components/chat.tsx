@@ -731,11 +731,13 @@ function useUploadFile(extra: {
   };
 
   const getAcceptFileType = (model: ModelType | string) => {
-    if (model.includes("vision")) {
+    if (isSupportFunctionCall(model) && config.pluginConfig.enable) return "*";
+
+    if (isVisionModel(model) || isSpecImageModal(model)) {
       return ".png, .jpg, .jpeg, .webp, .gif";
     } else if (model.includes("whisper")) {
       return ".flac, .mp3, .mp4, .mpeg, .mpga, .m4a, .ogg, .wav, .webm";
-    } else if (model == "gpt-4-all" || model.includes("gpt-4-gizmo")) {
+    } else if (isSupportMultimodal(model)) {
       return "*";
     }
     return "";
