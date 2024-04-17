@@ -67,6 +67,7 @@ import {
   ModelType,
   UploadFile,
   ExtAttr,
+  Model,
 } from "../store";
 
 import {
@@ -742,28 +743,28 @@ function useUploadFile(extra: {
   };
   // ========================================
 
-  useEffect(() => {
-    const supportMultimodal = isSupportMultimodal(currentModel);
-    const show =
-      // Vision 模型
-      isVisionModel(currentModel) ||
-      // 多模态模型
-      supportMultimodal ||
-      // 类似 vision 的模型
-      isSpecImageModal(currentModel) ||
-      // 开启了使用插件的功能
-      (config.pluginConfig.enable &&
-        allPlugins.length > 0 &&
-        // 模型支持 function call
-        isSupportFunctionCall(currentModel));
+  // useEffect(() => {
+  //   const supportMultimodal = isSupportMultimodal(currentModel);
+  //   const show =
+  //     // Vision 模型
+  //     isVisionModel(currentModel) ||
+  //     // 多模态模型
+  //     supportMultimodal ||
+  //     // 类似 vision 的模型
+  //     isSpecImageModal(currentModel) ||
+  //     // 开启了使用插件的功能
+  //     (config.pluginConfig.enable &&
+  //       allPlugins.length > 0 &&
+  //       // 模型支持 function call
+  //       isSupportFunctionCall(currentModel));
 
-    setShowUploadAction(show);
+  //   setShowUploadAction(show);
 
-    if (!show) {
-      setUploadFiles([]);
-      setUploading(false);
-    }
-  }, [currentModel, config.pluginConfig.enable, allPlugins.length]);
+  //   if (!show) {
+  //     setUploadFiles([]);
+  //     setUploading(false);
+  //   }
+  // }, [currentModel, config.pluginConfig.enable, allPlugins.length]);
 
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
@@ -1086,7 +1087,7 @@ function useSpeakAndVoice(prosp: {
   };
 }
 
-function _Chat(props: { promptStarters: string[] }) {
+function _Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
@@ -1115,7 +1116,8 @@ function _Chat(props: { promptStarters: string[] }) {
   const isMobileScreen = useMobileScreen();
   const navigate = useNavigate();
   const location = useLocation();
-  const currentModel = session.mask.modelConfig.model;
+
+  const enabledModelList = config.modelList.filter((i) => i.enable);
 
   // upload file
   const {
@@ -1204,6 +1206,10 @@ function _Chat(props: { promptStarters: string[] }) {
 
   const doSubmit = (userInput: string) => {
     if (userInput.trim() === "" && exAttr.uploadFiles.length === 0) return;
+    if (enabledModelList.length === 0) {
+      showToast(Locale.Chat.EnableModel);
+      return;
+    }
 
     const matchCommand = chatCommands.match(userInput);
     if (matchCommand.matched) {
@@ -1216,10 +1222,15 @@ function _Chat(props: { promptStarters: string[] }) {
 
     const resend = onResend as (messages: ChatMessage | ChatMessage[]) => void;
 
+    // 每次发送之前都清除所有聊天记录
+    chatStore.resetSession();
+
     chatStore
-      .onUserInput(userInput, {
+      .onCompetition(userInput, {
         retryCount: 0,
         onResend: resend,
+        isResend: false,
+        models: config.modelList.filter((m) => m.enable),
         ...exAttr,
       })
       .then(() => setIsLoading(false));
@@ -1256,12 +1267,7 @@ function _Chat(props: { promptStarters: string[] }) {
   const [status, setStatus] = useState(0);
   const couldStop = ChatControllerPool.hasPending();
   const stopAll = () => {
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage.role === "assistant") {
-      onUserStop(lastMessage.id);
-    } else {
-      ChatControllerPool.stopAll();
-    }
+    ChatControllerPool.stopAll();
     setStatus(Math.random() * 10);
   };
 
@@ -1337,8 +1343,8 @@ function _Chat(props: { promptStarters: string[] }) {
     deleteMessage(msgId);
   };
 
-  const onResend = (message: ChatMessage) => {
-    console.warn("🚀 ~ onResend ~ message:", message);
+  const onResend = (message: ChatMessage, botTarget?: string) => {
+    console.warn("🚀 ~ onResend ~ message:", message, botTarget);
     // when it is resending a message
     // 1. for a user's message, find the next bot response
     // 2. for a bot's message, find the last user's input
@@ -1357,9 +1363,12 @@ function _Chat(props: { promptStarters: string[] }) {
     let userMessage: ChatMessage | undefined;
     let botMessage: ChatMessage | undefined;
 
+    let retryCount = message.retryCount ?? 0;
+
     if (message.role === "assistant") {
       // if it is resending a bot's message, find the user input for it
       botMessage = message;
+      retryCount = botMessage.retryCount = message.retryCount ?? 0;
       for (let i = resendingIndex; i >= 0; i -= 1) {
         if (session.messages[i].role === "user") {
           userMessage = session.messages[i];
@@ -1369,10 +1378,15 @@ function _Chat(props: { promptStarters: string[] }) {
     } else if (message.role === "user") {
       // if it is resending a user's input, find the bot's response
       userMessage = message;
-      for (let i = resendingIndex; i < session.messages.length; i += 1) {
-        if (session.messages[i].role === "assistant") {
-          botMessage = session.messages[i];
-          break;
+      retryCount = userMessage.retryCount = message.retryCount ?? 0;
+      if (botTarget) {
+        botMessage = session.messages.find((m) => m.id === botTarget);
+      } else {
+        for (let i = resendingIndex; i < session.messages.length; i += 1) {
+          if (session.messages[i].role === "assistant") {
+            botMessage = session.messages[i];
+            break;
+          }
         }
       }
     }
@@ -1382,19 +1396,25 @@ function _Chat(props: { promptStarters: string[] }) {
       return;
     }
 
+    // 需要重发的模型列表
+    let resendModels: Model[] = [];
+
     // delete the original messages
-    deleteMessage(userMessage.id);
+    if (message.role === "user") {
+      deleteMessage(userMessage.id);
+      resendModels = config.modelList.filter((m) => m.enable);
+    } else {
+      resendModels = [getModel(message.model!)];
+    }
     deleteMessage(botMessage?.id);
 
-    if (userMessage && userMessage.retryCount == undefined) {
-      userMessage.retryCount = 0;
-    }
-
     const chatOption: ExtAttr = {
-      retryCount: userMessage.retryCount,
+      retryCount: retryCount,
       ...exAttr,
+      isResend: true,
+      models: resendModels,
     };
-    if (userMessage.retryCount! < 1) {
+    if (retryCount < 1) {
       chatOption.onResend = onResend as (
         messages: ChatMessage | ChatMessage[],
       ) => void;
@@ -1403,7 +1423,7 @@ function _Chat(props: { promptStarters: string[] }) {
     // resend the message
     setIsLoading(true);
     chatStore
-      .onUserInput(userMessage.content, chatOption)
+      .onCompetition(userMessage.content, chatOption)
       .then(() => setIsLoading(false));
     inputRef.current?.focus();
   };
@@ -1421,29 +1441,47 @@ function _Chat(props: { promptStarters: string[] }) {
     });
   };
 
+  const getModel = (model: string): Model => {
+    return config.modelList.find((m) => m.model === model) as Model;
+  };
+
+  const getModelNameWithRemark = (model: string) => {
+    const modelInfo = getModel(model);
+    if (!modelInfo) return model;
+
+    const remark = getLang() === "cn" ? modelInfo.remark : modelInfo.en_remark;
+    let modelStr = modelInfo.model;
+
+    if (remark) {
+      modelStr += `(${modelInfo.remark})`;
+    }
+
+    return modelStr;
+  };
+
   const context: RenderMessage[] = useMemo(() => {
     return session.mask.hideContext ? [] : session.mask.context.slice();
   }, [session.mask.context, session.mask.hideContext]);
   const accessStore = useAccessStore();
 
-  if (
-    context.length === 0 &&
-    session.messages.at(0)?.content !== BOT_HELLO.content
-  ) {
-    console.warn(session.mask.botHelloContent);
+  // if (
+  //   context.length === 0 &&
+  //   session.messages.at(0)?.content !== BOT_HELLO.content
+  // ) {
+  //   console.warn(session.mask.botHelloContent);
 
-    const botHello = {
-      ...BOT_HELLO,
-      content: session.mask.botHelloContent ?? BOT_HELLO.content,
-    } as ChatMessage;
-    const copiedHello = Object.assign({}, botHello);
+  //   const botHello = {
+  //     ...BOT_HELLO,
+  //     content: session.mask.botHelloContent ?? BOT_HELLO.content,
+  //   } as ChatMessage;
+  //   const copiedHello = Object.assign({}, botHello);
 
-    /* fix: 第一次打开聊天机器人提示要填key */
-    // if (!accessStore.isAuthorized()) {
-    //   copiedHello.content = Locale.Error.Unauthorized;
-    // }
-    context.push(copiedHello);
-  }
+  //   /* fix: 第一次打开聊天机器人提示要填key */
+  //   // if (!accessStore.isAuthorized()) {
+  //   //   copiedHello.content = Locale.Error.Unauthorized;
+  //   // }
+  //   context.push(copiedHello);
+  // }
 
   // preview messages
   const renderMessages = useMemo(() => {
@@ -1538,15 +1576,6 @@ function _Chat(props: { promptStarters: string[] }) {
 
   const autoFocus = !isMobileScreen; // wont auto focus on mobile screen
   const showMaxIcon = !isMobileScreen && !clientConfig?.isApp;
-
-  const promptStarters = useMemo(() => {
-    const maskPromptStarters = chatStore.currentSession().mask.promptStarters;
-    if (config.isGpts) {
-      return props.promptStarters;
-    } else {
-      return maskPromptStarters ?? [];
-    }
-  }, [props.promptStarters, chatStore, config.isGpts]);
 
   const {
     showLoading,
@@ -1872,6 +1901,12 @@ function _Chat(props: { promptStarters: string[] }) {
                       )}
                     </div>
 
+                    {!isUser && (
+                      <div className={styles["chat-message-model"]}>
+                        {getModelNameWithRemark(message.model!)}
+                      </div>
+                    )}
+
                     {showActions && (
                       <div className={styles["chat-message-actions"]}>
                         <div className={styles["chat-input-actions"]}>
@@ -2037,24 +2072,6 @@ function _Chat(props: { promptStarters: string[] }) {
             </Fragment>
           );
         })}
-
-        {promptStarters.length > 0 &&
-          messages.length === 1 &&
-          context.length === 1 && (
-            <ul className={styles["chat-prompt-list"]}>
-              {promptStarters.map((item, index) => (
-                <li
-                  key={index}
-                  className={styles["chat-prompt-list-item"]}
-                  onClick={() => {
-                    doSubmit(item);
-                  }}
-                >
-                  <Typography.Text>{item}</Typography.Text>
-                </li>
-              ))}
-            </ul>
-          )}
       </div>
 
       <div
@@ -2175,7 +2192,7 @@ function _Chat(props: { promptStarters: string[] }) {
             />
           )}
 
-          {config.openTTS && !showRecording && (
+          {/* {config.openTTS && !showRecording && (
             <IconButton
               text=""
               icon={<VoiceIcon />}
@@ -2185,7 +2202,7 @@ function _Chat(props: { promptStarters: string[] }) {
               }}
               className={styles["chat-input-voice"]}
             />
-          )}
+          )} */}
 
           {couldStop ? (
             <ChatAction
@@ -2248,10 +2265,8 @@ function _Chat(props: { promptStarters: string[] }) {
   );
 }
 
-export function Chat(props: { promptStarters: string[] }) {
+export function Chat() {
   const chatStore = useChatStore();
   const sessionIndex = chatStore.currentSessionIndex;
-  return (
-    <_Chat key={sessionIndex} promptStarters={props.promptStarters}></_Chat>
-  );
+  return <_Chat key={sessionIndex}></_Chat>;
 }

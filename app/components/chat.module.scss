@@ -396,6 +396,19 @@
   display: flex;
   align-items: center;
 
+  .chat-message-avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .chat-message-model {
+    position: absolute;
+    left: 50px;
+    margin-left: 6px;
+    font-size: 14px;
+    color: var(--deep-gray);
+  }
+
   .chat-message-actions {
     display: flex;
     box-sizing: border-box;
@@ -424,6 +437,11 @@
   &:hover {
     .chat-message-edit {
       opacity: 0.9;
+    }
+
+    .chat-message-model {
+      filter: blur(1px);
+      opacity: 0.3;
     }
 
     .chat-message-actions {

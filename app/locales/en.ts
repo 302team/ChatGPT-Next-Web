@@ -128,6 +128,7 @@ const en: LocaleType = {
         return `File size cannot exceed ${size}M`;
       },
     },
+    EnableModel: "Please activate the desired competitive model.",
   },
   Export: {
     Title: "Export Messages",
@@ -587,6 +588,10 @@ const en: LocaleType = {
     AppDescTitle: "Description",
     AppDescSubTitle: "AI Chat Robot detailed preview",
     AppDescContent: "",
+  },
+  Sidebar: {
+    Title: "Zero Shot Competition",
+    Description: "All models answer together.",
   },
 };
 

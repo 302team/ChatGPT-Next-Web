@@ -10,7 +10,7 @@ import {
 
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
-import { ModelConfig, ModelType, useAppConfig } from "./config";
+import { Model, ModelConfig, ModelType, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
 import {
   DEFAULT_INPUT_TEMPLATE,
@@ -113,8 +113,12 @@ export interface ExtAttr {
   retryCount?: number;
   uploadFiles: UploadFile[];
 
+  isResend?: boolean;
+  models?: Model[];
+
   onResend?: (
     messages: ChatMessage | ChatMessage[],
+    botTarget?: string,
     retryCount?: number,
   ) => void;
   setAutoScroll: ((autoScroll: boolean) => void) | undefined;
@@ -246,14 +250,6 @@ async function getUserContent(
   type: "send" | "save",
 ): Promise<string | MultimodalContent[]> {
   const currentModel = modelConfig.model.toLocaleLowerCase();
-  console.log(
-    "🚀 ~ usePlugins, fileArr, currentModel, content:",
-    usePlugins,
-    fileArr,
-    currentModel,
-    content,
-  );
-
   // 特殊的能支持图片的模型,
   // 这些模型支持识别图片, 格式与 gpt-4-vision 一样, 唯一区别就是它们用的是 url 而不是 base64
 
@@ -330,8 +326,6 @@ async function getUserContent(
       }
     }
     return sendContent;
-    // } else if (currentModel.includes("claude-3-haiku")) {
-    // claude-3-haiku-20240307
   } else if (currentModel.includes("whisper")) {
     console.log("3");
     let userContent = content;
@@ -922,6 +916,178 @@ export const useChatStore = createPersistStore(
             },
           });
         }
+      },
+
+      // 模型竞技场
+      async onCompetition(
+        content: string | MultimodalContent[],
+        extAttr: ExtAttr,
+      ) {
+        const session = get().currentSession();
+        const modelConfig = session.mask.modelConfig;
+
+        // 所有的模型配置
+        let modelConfigs = extAttr.models!.map((model) => {
+          return {
+            ...modelConfig,
+            model: model.model,
+          };
+        });
+
+        const fileArr = await getFileArr(extAttr.uploadFiles);
+        extAttr?.setUploadFiles([]); // 删除文件
+
+        // 获取需要发送出去的用户内容
+        // 如果模型中有支持多模态的话
+        const createAllUserContents = modelConfigs.map(async (modelConfig) => {
+          const userContent = await getUserContent(
+            content,
+            modelConfig,
+            fileArr,
+            false,
+            "send",
+          );
+
+          return userContent;
+        });
+
+        const allUserContents = await Promise.all(createAllUserContents);
+        console.log("[User Input] after pretreatment: ", allUserContents);
+
+        // 取多模态content 或者 取第一个content
+        const userContent =
+          allUserContents.find((item) => {
+            return item instanceof Array;
+          }) ?? allUserContents[0];
+        const userMessage = createMessage({
+          role: "user",
+          content: userContent as string | MultimodalContent[],
+          model: modelConfig.model as ModelType,
+        });
+
+        // 首次发消息, 保存记录
+        if (!extAttr.isResend) {
+          // 获取需要保存的用户内容，没有url的文件则只保存文件名
+          const saveUserContent = await getUserContent(
+            content,
+            // 需要保存的用户内容，就按照gpt-4-all模型来生成了
+            { ...(modelConfigs[0] as ModelConfig), model: "gpt-4-all" },
+            fileArr,
+            useAppConfig.getState().pluginConfig.enable,
+            "save",
+          );
+          get().updateCurrentSession((session) => {
+            const savedUserMessage = {
+              ...userMessage,
+              content: saveUserContent,
+            } as ChatMessage;
+            session.messages = session.messages.concat([savedUserMessage]);
+          });
+        }
+
+        // return;
+
+        allUserContents.map((userContent, i) => {
+          const modelConfig = modelConfigs[i];
+
+          const userMessage = createMessage({
+            role: "user",
+            content: userContent as string | MultimodalContent[],
+            model: modelConfig.model as ModelType,
+          });
+
+          const botMessage = createMessage({
+            role: "assistant",
+            streaming: true,
+            model: modelConfig.model as ModelType,
+            toolMessages: [],
+          });
+
+          const sendMessages = [userMessage];
+          console.log("🚀 ~ sendMessages:", sendMessages);
+          const messageIndex = get().currentSession().messages.length + 1;
+
+          // save user's and bot's message
+          get().updateCurrentSession((session) => {
+            session.messages = session.messages.concat([botMessage]);
+          });
+
+          var api: ClientApi = new ClientApi(ModelProvider.GPT);
+
+          if (modelConfig.model.startsWith("gemini")) {
+            // api = new ClientApi(ModelProvider.GeminiPro);
+          } else if (modelConfig.model.startsWith("claude")) {
+            // api = new ClientApi(ModelProvider.Claude);
+          }
+
+          // make request
+          api.llm.chat({
+            messages: sendMessages,
+            config: { ...modelConfig, stream: true },
+            retryCount: extAttr.retryCount ?? 0,
+            onAborted(message) {
+              botMessage.isTimeoutAborted = true;
+              if (message) {
+                botMessage.content = message;
+              }
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+            },
+            onRetry() {
+              if (botMessage.retryCount == undefined) {
+                botMessage.retryCount = 0;
+              }
+              ++botMessage.retryCount;
+              extAttr.onResend?.(botMessage);
+            },
+            onUpdate(message) {
+              botMessage.streaming = true;
+              if (message) {
+                botMessage.content = message;
+              }
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+            },
+            onFinish(message, hasError) {
+              console.warn(
+                "🚀 ~ onFinish ~ message:",
+                message,
+                "hasError",
+                hasError,
+              );
+              botMessage.streaming = false;
+              botMessage.content = message ?? "";
+              botMessage.isError = hasError as boolean;
+              get().onNewMessage(botMessage);
+              ChatControllerPool.remove(session.id, botMessage.id);
+            },
+            onError(error) {
+              const isAborted = error.message.includes("aborted");
+              botMessage.content += "Network error, please retry.";
+              botMessage.streaming = false;
+              // userMessage.isError = !isAborted;
+              botMessage.isError = !isAborted;
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat();
+              });
+              ChatControllerPool.remove(
+                session.id,
+                botMessage.id ?? messageIndex,
+              );
+
+              console.error("[Chat] failed ", error);
+            },
+            onController(controller) {
+              ChatControllerPool.addController(
+                session.id,
+                botMessage.id ?? messageIndex,
+                controller,
+              );
+            },
+          });
+        });
       },
 
       async saveMediaToRemote(message: string, botMessage: ChatMessage) {

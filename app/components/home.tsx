@@ -146,13 +146,9 @@ function ChatWindow() {
   const location = useLocation();
   const accessStore = useAccessStore();
   const chatStore = useChatStore();
-  const config = useAppConfig();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
   const [validPwdVisible, setValidPwdVisible] = useState(true);
-  const promptStore = usePromptStore();
-  const pluginStore = usePluginStore();
-  const currentLang = getLang();
 
   useEffect(() => {
     if (accessStore.apiDomain) {
@@ -161,33 +157,6 @@ function ChatWindow() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessStore.apiDomain]);
 
-  function setPromptConfig(prompts: Prompt[]) {
-    if (!prompts.length) return;
-
-    promptStore.clean();
-    prompts.forEach((prompt) => {
-      promptStore.add(prompt);
-    });
-  }
-  function setModelConfig(modelConfig: any) {
-    console.log("🚀 ~ setModelConfig ~ modelConfig:", modelConfig);
-    // 空对象
-    if (isEmptyObject(modelConfig)) return;
-    let modelConf: any = {};
-    for (let key in modelConfig) {
-      modelConf[key] = modelConfig[key];
-    }
-    config.update((config) => (config.modelConfig = modelConf));
-    chatStore.updateCurrentSession((session) => {
-      if (!session.mask.isStoreModel) {
-        session.mask.modelConfig = modelConf;
-        session.mask.syncGlobalConfig = true;
-      }
-    });
-  }
-
-  const [promptStarters, setPromptStarters] = useState<string[]>([]);
-
   if (loading) return <Loading />;
 
   if (validPwdVisible)
@@ -195,91 +164,7 @@ function ChatWindow() {
       <ValidPwdPage
         onAuth={(opt: any) => {
           accessStore.update((access) => (access.isAuth = true));
-          config.update((conf) => {
-            conf.chatbotInfo = opt.info ?? "";
-            conf.isGpts = opt.is_gpts;
-            conf.useGpts = !!opt.use_gpts;
-            conf.openTTS = opt.is_gpts ? true : !!opt.open_tts;
-            conf.pluginConfig.enable = !!opt.enable_plugins;
-
-            const settings = opt.settings;
-            console.warn(
-              "🚀 ~ config.update ~ isEmptyObject(settings):",
-              isEmptyObject(settings),
-              settings,
-            );
-
-            if (settings && !isEmptyObject(settings)) {
-              if (settings.modelConfig) {
-                settings.modelConfig.model = opt.model;
-                setModelConfig(settings.modelConfig);
-                // delete settings.modelConfig;
-              }
-
-              if (settings.prompts) {
-                setPromptConfig(settings.prompts);
-                // delete settings.prompts;
-              }
-
-              for (let key in settings) {
-                // @ts-ignore
-                conf[key] = settings[key];
-              }
-              if (settings.chatbotName && settings.chatbotName !== "GPT302") {
-                document.title = settings.chatbotName;
-              }
-            }
-          });
-
-          // 设置模型的 promptStarters
-          if (opt.is_gpts || (opt.gpts_msg && opt.gpts_msg.name)) {
-            if (opt.gpts_msg.prompt_starters) {
-              setPromptStarters(opt.gpts_msg.prompt_starters);
-            }
-            if (opt.gpts_msg.description) {
-              // setBotHelloContent(opt.gpts_msg.description);
-            }
-            if (opt.gpts_msg.logo_url) {
-              chatStore.updateCurrentSession((session) => {
-                session.mask.avatar = opt.gpts_msg.logo_url;
-              });
-            }
-            if (opt.gpts_msg.description) {
-              chatStore.updateCurrentSession((session) => {
-                session.mask.botHelloContent = opt.gpts_msg.description;
-              });
-            }
-            config.update((config) => {
-              config.disablePromptHint = true;
-              config.gptsConfig = {
-                ...(opt.gpts_msg as typeof config.gptsConfig),
-              };
-            });
-          }
-
-          let allPlugins: Plugin[] = [];
-          const supportedLangs = ["cn"];
-          if (opt.settings.plugins && opt.settings.plugins.length) {
-            allPlugins = opt.settings.plugins;
-          } else if (!!opt.enable_plugins) {
-            // 如果开启了插件模式
-            allPlugins = pluginStore
-              .getBuildinPlugins()
-              .filter(
-                (m) =>
-                  (supportedLangs.includes(currentLang)
-                    ? m.lang === currentLang
-                    : m.lang === "en") && m.enable,
-              );
-          }
-          console.log("🚀 ~ ChatWindow ~ allPlugins:", allPlugins);
-
-          // 情调
-          pluginStore.clearAll();
-          allPlugins.forEach((item) => {
-            // 重新添加
-            pluginStore.create(item);
-          });
+          chatStore.resetSession();
 
           setValidPwdVisible(false);
         }}
@@ -292,17 +177,9 @@ function ChatWindow() {
 
       <div className={styles["window-content"]} id={SlotID.AppBody}>
         <Routes>
-          <Route
-            path={Path.Home}
-            element={<Chat promptStarters={promptStarters} />}
-          />
+          <Route path={Path.Home} element={<Chat />} />
           <Route path={Path.NewChat} element={<NewChat />} />
-          {/* <Route path={Path.Masks} element={<MaskPage />} /> */}
-          <Route
-            path={Path.Chat}
-            element={<Chat promptStarters={promptStarters} />}
-          />
-          {/* <Route path={Path.Settings} element={<Settings />} /> */}
+          <Route path={Path.Chat} element={<Chat />} />
         </Routes>
       </div>
     </>

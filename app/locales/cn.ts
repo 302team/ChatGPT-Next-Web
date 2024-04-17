@@ -125,6 +125,7 @@ const cn = {
         return `文件不能超过${size}M`;
       },
     },
+    EnableModel: "请开启想要竞技的模型",
   },
   Export: {
     Title: "分享聊天记录",
@@ -580,6 +581,10 @@ const cn = {
     AppDescTitle: "说明",
     AppDescSubTitle: "AI机器人详情预览",
     AppDescContent: "",
+  },
+  Sidebar: {
+    Title: "Zero Shot 竞技",
+    Description: "所有模型一起回答",
   },
 };
 

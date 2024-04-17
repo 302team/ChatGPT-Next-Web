@@ -3,25 +3,15 @@ import { useEffect, useRef, useMemo, useState } from "react";
 import styles from "./home.module.scss";
 import uiStyles from "./ui-lib.module.scss";
 
-import { IconButton } from "./button";
-import SettingsIcon from "../icons/settings.svg";
-import QuestionIcon from "../icons/question.svg";
-import GithubIcon from "../icons/github.svg";
 import ChatGptIcon from "../icons/logo.png";
-import AddIcon from "../icons/add.svg";
-import CloseIcon from "../icons/close.svg";
-import DeleteIcon from "../icons/delete.svg";
-import MaskIcon from "../icons/mask.svg";
-import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
 import NextImage from "next/image";
 import BotIconDark from "../icons/logo-horizontal-dark.png";
 import ExportIcon from "../icons/share.svg";
-import SearchIcon from "../icons/search.svg";
 
 import Locale from "../locales";
 
-import { useAccessStore, useAppConfig, useChatStore } from "../store";
+import { useAppConfig, useChatStore } from "../store";
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
@@ -34,19 +24,15 @@ import {
   REPO_URL,
 } from "../constant";
 
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { copyToClipboard, isIOS, openWindow, useMobileScreen } from "../utils";
+import { useNavigate, useLocation } from "react-router-dom";
+import { isIOS, openWindow, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
-import { Modal, showConfirm, showToast } from "./ui-lib";
+import { Modal } from "./ui-lib";
 import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
 
 import { Spin, Result, Button } from "antd";
 import { Loading } from "./home";
-import { SearchBar, SearchInputRef } from "./search-bar";
-
-const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
-  loading: () => null,
-});
+import { SidebarModelList } from "./sidebar-model-list";
 
 const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
   loading: () => <Loading noLogo />,
@@ -149,50 +135,6 @@ function useDragSideBar() {
   };
 }
 
-function AppDescription(props: {
-  isMobileScreen?: boolean;
-  onClose: () => void;
-}) {
-  const config = useAppConfig();
-  const access = useAccessStore();
-
-  function ShareAction() {
-    return (
-      <div
-        className={uiStyles["modal-header-action"]}
-        onClick={() => {
-          const modelName = config.isGpts
-            ? config.gptsConfig.name
-            : config.modelConfig.model;
-          const msg = Locale.Export.ShareMessage(
-            access.pwd,
-            config.isGpts,
-            modelName,
-          );
-          copyToClipboard(msg);
-        }}
-      >
-        <ExportIcon />
-      </div>
-    );
-  }
-
-  return (
-    <div className="modal-mask app-desc-modal">
-      <Modal
-        title={Locale.Config.AppDescTitle}
-        subtitle={Locale.Config.AppDescSubTitle}
-        headerActions={[
-          config.showShareEntry ? <ShareAction key="share" /> : null,
-        ]}
-        onClose={() => props.onClose()}
-      >
-        <div dangerouslySetInnerHTML={{ __html: config.chatbotInfo }}></div>
-      </Modal>
-    </div>
-  );
-}
-
 export function useWindowSize() {
   // 第一步：声明能够体现视口大小变化的状态
   const [windowSize, setWindowSize] = useState({
@@ -212,135 +154,6 @@ export function useWindowSize() {
   }, []);
 
   return windowSize;
-}
-
-function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
-  const [gptsModel, setGptsModel] = useState();
-  const chatStore = useChatStore();
-  const config = useAppConfig();
-
-  useEffect(() => {
-    const messageListener = (e: any) => {
-      console.log("🚀 ~ messageListener ~ e:", e.data);
-      const res = e.data;
-      if (res) {
-        if (res.from === "auth" && res.data) {
-          const data = res.data;
-          setGptsModel({
-            ...data,
-            code: data.id,
-          });
-
-          const emptyMask = createEmptyMask();
-
-          let promptStarters: string[] = [];
-          if (data.detail) {
-            try {
-              if (typeof data.detail === "string") {
-                promptStarters = JSON.parse(data.detail);
-              } else {
-                promptStarters = data.detail;
-              }
-            } catch (error) {}
-          }
-
-          const isGptsModel = data.uuid.startsWith("g-");
-          const model = isGptsModel ? `gpt-4-gizmo-${data.uuid}` : data.uuid;
-
-          chatStore.newSession(
-            {
-              ...emptyMask,
-              syncGlobalConfig: false,
-              isStoreModel: true,
-              avatar: data.display_url ?? DEFAULT_MASK_AVATAR,
-              name: `${Locale.GPTs.PrefixName} ${data.display_name}`,
-              botHelloContent: data.description || emptyMask.botHelloContent,
-              hideContext: true,
-              modelConfig: {
-                ...config.modelConfig,
-                model: model,
-              },
-              modelName: data.display_name,
-              promptStarters,
-              isGptsModel: isGptsModel,
-              usePlugins: false,
-            } as Mask,
-            true,
-          );
-
-          props?.callback?.(data);
-        }
-      }
-    };
-
-    window.addEventListener("message", messageListener);
-    return () => window.removeEventListener("message", messageListener);
-  }, []);
-
-  return {
-    gptsModel,
-    setGptsModel,
-  };
-}
-
-export function GptsConfigModal(props: {
-  style?: React.CSSProperties;
-  isMobileScreen?: boolean;
-  onClose: () => void;
-}) {
-  const windowSize = useWindowSize();
-  const [spinning, setSpinning] = useState(true);
-  const [error, setError] = useState(false);
-  const [iframeSrc, setIframeSrc] = useState(GPTS302_WEBSITE_URL);
-
-  return (
-    <div className="modal-mask" style={props.style}>
-      <Modal
-        showMaxButton={!props.isMobileScreen}
-        title={Locale.GPTs.Modal.Title}
-        containerClass="gpts-selector"
-        onClose={() => props.onClose()}
-      >
-        <Spin spinning={spinning} className="gpts-selector-spin">
-          {error ? (
-            <Result
-              status="500"
-              subTitle={Locale.Error.PageOpenError}
-              extra={
-                <Button
-                  key="retry"
-                  onClick={() => {
-                    setIframeSrc("about:blank");
-                    setError(false);
-                    setSpinning(true);
-                    setIframeSrc(GPTS302_WEBSITE_URL);
-                  }}
-                >
-                  {Locale.Error.Action.Retry}
-                </Button>
-              }
-            />
-          ) : (
-            <iframe
-              width="100%"
-              frameBorder={0}
-              height={windowSize.height * 0.7}
-              src={iframeSrc}
-              title={Locale.GPTs.Modal.Title}
-              onLoad={() => {
-                setError(false);
-                setSpinning(false);
-              }}
-              onError={() => {
-                setError(true);
-                setSpinning(false);
-              }}
-            ></iframe>
-          )}
-        </Spin>
-      </Modal>
-    </div>
-  );
 }
 
 export function MasksModal(props: {
@@ -399,12 +212,6 @@ export function SettingsModal(props: {
 }
 
 export function SideBar(props: { className?: string }) {
-  const chatStore = useChatStore();
-  const [showAppDescModal, setShowAppDescModal] = useState(false);
-  const [showGptsConfigModal, setShowGptsConfigModal] = useState(false);
-  const [showMaskModal, setShowMaskModal] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
   const navigate = useNavigate();
@@ -415,45 +222,6 @@ export function SideBar(props: { className?: string }) {
     () => isIOS() && isMobileScreen,
     [isMobileScreen],
   );
-
-  // search
-  const [showSearchBar, setShowSearchBar] = useState(false);
-  const searchBarWrapRef = useRef<HTMLDivElement>(null);
-  const searchBarRef = useRef<SearchInputRef>(null);
-  const [isSearching, setIsSearching] = useState(false);
-
-  useEffect(() => {
-    if (shouldNarrow) stopSearch();
-  }, [shouldNarrow]);
-
-  const toggleSearchBar = () => {
-    if (searchBarWrapRef.current) {
-      if (showSearchBar) {
-        searchBarWrapRef.current.style.height = "0px";
-        searchBarWrapRef.current.style.marginBottom = "0px";
-        setShowSearchBar(false);
-      } else {
-        searchBarWrapRef.current.style.height = "36px";
-        searchBarWrapRef.current.style.marginBottom = "15px";
-        setShowSearchBar(true);
-      }
-    }
-  };
-
-  const stopSearch = () => {
-    setIsSearching(false);
-    searchBarRef.current?.clearInput();
-    // toggleSearchBar();
-  };
-
-  useGptsConfigMessage({
-    callback(data: any) {
-      setShowGptsConfigModal(false);
-      if (isMobileScreen) {
-        navigate(Path.Chat + location.search);
-      }
-    },
-  });
 
   useHotKey();
 
@@ -469,13 +237,10 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          {!config.chatbotName || config.chatbotName === "GPT302"
-            ? "302.AI"
-            : config.chatbotName}
+          {Locale.Sidebar.Title}
         </div>
         <div className={styles["sidebar-sub-title"]}>
-          {config.chatbotDesc ||
-            Locale.Config.description(config.isGpts ? "GPTs" : "AI")}
+          {Locale.Sidebar.Description}
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           {config.chatbotLogo && (
@@ -497,102 +262,8 @@ export function SideBar(props: { className?: string }) {
         </div>
       </div>
 
-      {!config.isGpts && (
-        <div className={styles["sidebar-header-bar"]}>
-          {/* 非GPTs模型的GPTs机器人，也不要出现助手按钮 */}
-          {!config.hideBuiltinMasks && (
-            <IconButton
-              icon={<MaskIcon />}
-              text={shouldNarrow ? undefined : Locale.Mask.Name}
-              className={styles["sidebar-bar-button"]}
-              onClick={() => {
-                setShowMaskModal(true);
-              }}
-              shadow
-            />
-          )}
-
-          {config.useGpts && (
-            <IconButton
-              icon={<PluginIcon />}
-              text={shouldNarrow ? undefined : Locale.GPTs.Modal.Title}
-              className={styles["sidebar-bar-button"]}
-              onClick={() => setShowGptsConfigModal(true)}
-              shadow
-            />
-          )}
-        </div>
-      )}
-
-      <div
-        ref={searchBarWrapRef}
-        className={`${styles["sidebar-search-bar"]} ${isSearching ? styles["sidebar-search-bar-isSearching"] : ""}`}
-      >
-        {!shouldNarrow && (
-          <SearchBar ref={searchBarRef} setIsSearching={setIsSearching} />
-        )}
-      </div>
-
-      {!isSearching && (
-        <div
-          className={styles["sidebar-body"]}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              // navigate(Path.Home + location.search);
-            }
-          }}
-        >
-          <ChatList narrow={shouldNarrow} />
-        </div>
-      )}
-
-      <div className={styles["sidebar-tail"]}>
-        <div className={styles["sidebar-actions"]}>
-          <div className={styles["sidebar-action"]}>
-            <IconButton
-              className={styles["sidebar-tail-button"]}
-              icon={<SettingsIcon />}
-              onClick={() => setShowSettingsModal(true)}
-              shadow
-            />
-            <Link to={Path.Settings + location.search}></Link>
-          </div>
-          <div className={styles["sidebar-action"]}>
-            <IconButton
-              className={styles["sidebar-tail-button"]}
-              icon={<QuestionIcon />}
-              onClick={() => setShowAppDescModal(true)}
-              shadow
-            />
-          </div>
-          <div className={styles["sidebar-action"]}>
-            <IconButton
-              className={styles["sidebar-tail-button"]}
-              icon={<SearchIcon />}
-              onClick={() => toggleSearchBar()}
-              shadow
-            />
-          </div>
-        </div>
-        <div>
-          <IconButton
-            className={styles["sidebar-tail-button"]}
-            icon={<AddIcon />}
-            text={shouldNarrow ? undefined : Locale.Home.NewChat}
-            onClick={() => {
-              chatStore.newSession();
-              navigate(Path.Chat + location.search);
-              stopSearch();
-              // if (config.dontShowMaskSplashScreen) {
-              //   chatStore.newSession();
-              //   navigate(Path.Chat + location.search);
-              // } else {
-              //   navigate(Path.NewChat + location.search);
-              // }
-            }}
-            shadow
-          />
-        </div>
+      <div className={styles["sidebar-body"]}>
+        <SidebarModelList narrow={shouldNarrow} />
       </div>
 
       <div className={styles["powerd"]}>
@@ -611,32 +282,6 @@ export function SideBar(props: { className?: string }) {
       >
         <DragIcon />
       </div>
-
-      {showAppDescModal && (
-        <AppDescription
-          isMobileScreen={isMobileScreen}
-          onClose={() => setShowAppDescModal(false)}
-        />
-      )}
-
-      <GptsConfigModal
-        isMobileScreen={isMobileScreen}
-        style={{ display: showGptsConfigModal ? "flex" : "none" }}
-        onClose={() => setShowGptsConfigModal(false)}
-      />
-
-      {showMaskModal && (
-        <MasksModal
-          isMobileScreen={isMobileScreen}
-          onClose={() => setShowMaskModal(false)}
-        />
-      )}
-      {showSettingsModal && (
-        <SettingsModal
-          isMobileScreen={isMobileScreen}
-          onClose={() => setShowSettingsModal(false)}
-        />
-      )}
     </div>
   );
 }

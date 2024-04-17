@@ -43,18 +43,6 @@ export function ValidPwd(props: ValidPwdProps) {
     if (!res) return;
 
     if (res.code === 0) {
-      const model = res?.data?.model;
-      if (model) {
-        chatStore.updateCurrentSession((session) => {
-          // 除去应用商店的机器人。其他机器人都要覆盖
-          if (!session.mask.isStoreModel) {
-            session.mask.modelConfig.model = model as ModelType;
-            session.mask.syncGlobalConfig = true;
-          }
-        });
-        config.update((config) => (config.modelConfig.model = model));
-      }
-
       searchParams.delete("pwd");
       searchParams.delete("confirm");
       setSearchParams(searchParams, { replace: true });
