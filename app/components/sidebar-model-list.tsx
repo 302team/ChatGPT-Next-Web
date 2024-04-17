@@ -12,7 +12,7 @@ function ModelItem(props: {
   return (
     <Row wrap={false} align="middle">
       <Col flex="auto" style={{ paddingRight: "10px" }}>
-        {props.model.model}
+        {props.model.show_name}
         {props.model.remark
           ? lang === "cn"
             ? ` (${props.model.remark})`

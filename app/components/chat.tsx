@@ -1450,7 +1450,7 @@ function _Chat() {
     if (!modelInfo) return model;
 
     const remark = getLang() === "cn" ? modelInfo.remark : modelInfo.en_remark;
-    let modelStr = modelInfo.model;
+    let modelStr = modelInfo.show_name;
 
     if (remark) {
       modelStr += `(${modelInfo.remark})`;
@@ -1765,25 +1765,6 @@ function _Chat() {
         <div
           className={`window-actions ${styles["chat-window-actions"]}  ${styles["chat-window-actions-right"]}`}
         >
-          {!isMobileScreen && (
-            <div className="window-action-button">
-              <IconButton
-                icon={<RenameIcon />}
-                bordered
-                onClick={() => setIsEditingMessage(true)}
-              />
-            </div>
-          )}
-          <div className="window-action-button">
-            <IconButton
-              icon={<ExportIcon />}
-              bordered
-              title={Locale.Chat.Actions.Export}
-              onClick={() => {
-                setShowExport(true);
-              }}
-            />
-          </div>
           {showMaxIcon && (
             <div className="window-action-button">
               <IconButton

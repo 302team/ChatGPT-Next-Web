@@ -583,7 +583,7 @@ const cn = {
     AppDescContent: "",
   },
   Sidebar: {
-    Title: "Zero Shot 竞技",
+    Title: "模型竞技场",
     Description: "所有模型一起回答",
   },
 };

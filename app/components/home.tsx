@@ -35,6 +35,7 @@ import {
   useChatStore,
   ModelType,
   BOT_HELLO,
+  Model,
 } from "../store";
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
@@ -146,6 +147,7 @@ function ChatWindow() {
   const location = useLocation();
   const accessStore = useAccessStore();
   const chatStore = useChatStore();
+  const appConfig = useAppConfig();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
   const [validPwdVisible, setValidPwdVisible] = useState(true);
@@ -165,6 +167,14 @@ function ChatWindow() {
         onAuth={(opt: any) => {
           accessStore.update((access) => (access.isAuth = true));
           chatStore.resetSession();
+
+          // 模型竞技场的模型
+          if (opt.zero_shot) {
+            const models = opt.zero_shot as Model[];
+            appConfig.update((config) => {
+              config.modelList = models;
+            });
+          }
 
           setValidPwdVisible(false);
         }}

@@ -33,138 +33,8 @@ export interface Model {
   is_default: boolean;
   enable: boolean;
   model: string;
+  show_name: string;
 }
-
-const models: Model[] = [
-  {
-    id: 10,
-    remark: "",
-    en_remark: "",
-    is_default: false,
-    enable: false,
-    model: "gpt-4-0125-preview",
-  },
-  {
-    id: 12,
-    remark: "",
-    en_remark: "",
-    is_default: false,
-    enable: false,
-    model: "gpt-4-1106-preview",
-  },
-  {
-    id: 17,
-    remark: "最便宜4.0",
-    en_remark: "Latest GPT4.0",
-    is_default: false,
-    enable: false,
-    model: "gpt-4-turbo-preview",
-  },
-  {
-    id: 18,
-    remark: "速度最快",
-    en_remark: "Multimodal GPT4.0",
-    is_default: false,
-    enable: false,
-    model: "gpt-4-vision-preview",
-  },
-  {
-    id: 32,
-    remark: "最便宜",
-    en_remark: "Cheapest GPT3.5",
-    is_default: false,
-    enable: false,
-    model: "gpt-3.5-turbo-0125",
-  },
-  {
-    id: 41,
-    remark: "",
-    en_remark: "",
-    is_default: false,
-    enable: false,
-    model: "claude-3-opus",
-  },
-  {
-    id: 43,
-    remark: "最便宜Claude 3",
-    en_remark: "Cheapest Claude 3",
-    is_default: false,
-    enable: false,
-    model: "claude-3-haiku",
-  },
-  {
-    id: 50,
-    remark: "阿里通义千问",
-    en_remark: "Tongyi Qianwen",
-    is_default: false,
-    enable: false,
-    model: "qwen-max",
-  },
-  {
-    id: 52,
-    remark: "智谱GLM-4",
-    en_remark: "ZHIPU GLM-4",
-    is_default: false,
-    enable: false,
-    model: "glm-4",
-  },
-  {
-    id: 60,
-    remark: "月之暗面kimi",
-    en_remark: "Moonshot kimi AI",
-    is_default: false,
-    enable: false,
-    model: "moonshot-v1-8k",
-  },
-  {
-    id: 65,
-    remark: "百川大模型",
-    en_remark: "Baichuan AI",
-    is_default: false,
-    enable: false,
-    model: "Baichuan2-53B",
-  },
-  {
-    id: 69,
-    remark: "零一万物",
-    en_remark: "01.AI",
-    is_default: false,
-    enable: false,
-    model: "yi-34b-chat-0205",
-  },
-  {
-    id: 72,
-    remark: "",
-    en_remark: "",
-    is_default: false,
-    enable: false,
-    model: "gemini-pro",
-  },
-  {
-    id: 73,
-    remark: "",
-    en_remark: "",
-    is_default: false,
-    enable: false,
-    model: "gemini-pro-vision",
-  },
-  {
-    id: 78,
-    remark: "百度文心一言",
-    en_remark: "Baidu ERNIE Bot",
-    is_default: false,
-    enable: false,
-    model: "ERNIE-4.0-8K",
-  },
-  {
-    id: 16,
-    remark: "官方ChatGPT Plus",
-    en_remark: "Official ChatGPT Plus",
-    is_default: true,
-    enable: false,
-    model: "gpt-4-all",
-  },
-];
 
 export const DEFAULT_CONFIG = {
   lastUpdate: Date.now(), // timestamp, to merge state
@@ -181,7 +51,7 @@ export const DEFAULT_CONFIG = {
   customModels: "",
   models: DEFAULT_MODELS as any as LLMModel[],
 
-  modelList: models,
+  modelList: [] as Model[],
 
   speech: {
     voice: "onyx",

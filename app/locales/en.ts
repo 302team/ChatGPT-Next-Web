@@ -590,7 +590,7 @@ const en: LocaleType = {
     AppDescContent: "",
   },
   Sidebar: {
-    Title: "Zero Shot Competition",
+    Title: "Model Arena",
     Description: "All models answer together.",
   },
 };
