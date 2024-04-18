@@ -827,7 +827,9 @@ export const useChatStore = createPersistStore(
               botMessage.content = content ?? "";
               botMessage.isError = (hasError || _hasError) as boolean;
               // 如果没有不包含中文,就弹翻译的提示
-              messageTranslate(message, botMessage);
+              if (!hasError) {
+                messageTranslate(message, botMessage);
+              }
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
             },
@@ -934,7 +936,9 @@ export const useChatStore = createPersistStore(
               botMessage.content = message ?? "";
               botMessage.isError = hasError as boolean;
               // 如果没有不包含中文,就弹翻译的提示
-              messageTranslate(message, botMessage);
+              if (!hasError) {
+                messageTranslate(message, botMessage);
+              }
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
               // if (!hasError) {

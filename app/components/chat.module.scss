@@ -427,8 +427,9 @@
 
   .chat-message-translate {
     position: absolute;
-    bottom: 0;
-    transform: translate(0px, 50%);
+    right: 0;
+    bottom: 17px;
+    transform: translate(130%, 0);
   }
 
   &:hover {
@@ -935,6 +936,24 @@
     &-item {
       flex-shrink: 0;
       text-wrap: nowrap;
+    }
+  }
+}
+
+.chat-message-mobile {
+  .chat-message-container {
+    .chat-message-translate {
+      bottom: 0;
+      left: 0;
+      right: unset;
+      transform: translate(0%, 50%);
+    }
+
+    .chat-message-retry {
+      bottom: 0;
+      left: 0;
+      right: unset;
+      transform: translate(0%, 50%);
     }
   }
 }

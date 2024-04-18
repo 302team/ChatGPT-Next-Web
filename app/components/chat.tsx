@@ -1809,7 +1809,9 @@ function _Chat(props: { promptStarters: string[] }) {
               <div
                 className={`${
                   isUser ? styles["chat-message-user"] : styles["chat-message"]
-                } ${message.isError ? `${styles["chat-message-error"]}` : ""} ${message.needTranslate ? "chat-translate-message" : ""}`}
+                } ${message.isError ? `${styles["chat-message-error"]}` : ""} ${
+                  message.needTranslate ? styles["chat-translate-message"] : ""
+                } ${isMobileScreen ? styles["chat-message-mobile"] : ""}`}
               >
                 <div className={styles["chat-message-container"]}>
                   <div className={styles["chat-message-header"]}>
