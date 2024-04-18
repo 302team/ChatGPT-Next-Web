@@ -7,6 +7,7 @@ import {
   uploadRemoteFile,
   isSupportFunctionCall,
 } from "../utils";
+import { franc } from "franc";
 
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
@@ -50,6 +51,7 @@ export type ChatMessage = RequestMessage & {
   model?: ModelType;
   retryCount?: number;
   isTimeoutAborted?: boolean;
+  needTranslate?: boolean;
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -442,6 +444,17 @@ async function getFileFromUrl(fileUrl: string, fileName: string) {
   return fileObj;
 }
 
+//判断字符串是否包含中文
+function hasChinese(str: string) {
+  const minLength = Math.min(10, str.length);
+
+  return (
+    franc(str, { minLength }) !== "und" &&
+    franc(str, { minLength }) === "cmn" &&
+    /[\u4E00-\u9FA5]+/g.test(str)
+  );
+}
+
 const DEFAULT_CHAT_STATE = {
   sessions: [createEmptySession()],
   currentSessionIndex: 0,
@@ -794,6 +807,9 @@ export const useChatStore = createPersistStore(
               botMessage.streaming = false;
               botMessage.content = content ?? "";
               botMessage.isError = (hasError || _hasError) as boolean;
+              // 如果没有不包含中文,就弹翻译的提示
+              botMessage.needTranslate =
+                typeof content === "string" && !hasChinese(content);
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
             },
@@ -899,6 +915,8 @@ export const useChatStore = createPersistStore(
               botMessage.streaming = false;
               botMessage.content = message ?? "";
               botMessage.isError = hasError as boolean;
+              // 如果没有不包含中文,就弹翻译的提示
+              botMessage.needTranslate = !hasChinese(message);
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
               // if (!hasError) {
@@ -948,6 +966,73 @@ export const useChatStore = createPersistStore(
             },
           });
         }
+      },
+
+      translate(userInput: string) {
+        if (!userInput || userInput.trim() == "") {
+          showToast(Locale.Chat.InputActions.InputTips);
+          return;
+        }
+        const session = get().currentSession();
+        const messages: ChatMessage[] = [];
+        const topicMessages = messages.concat(
+          createMessage({
+            role: "system",
+            content: Locale.Chat.InputActions.TranslateTo(navigator.language),
+          }),
+          createMessage({
+            role: "user",
+            content: userInput,
+          }),
+        );
+
+        const botMessage = createMessage({
+          role: "assistant",
+          streaming: true,
+          model: "gpt-3.5-turbo-0125",
+          toolMessages: [],
+        });
+
+        get().updateCurrentSession((session) => {
+          session.messages = session.messages.concat([botMessage]);
+        });
+
+        var api = new ClientApi(ModelProvider.GPT);
+        api.llm.chat({
+          messages: topicMessages,
+          config: {
+            model: "gpt-3.5-turbo-0125",
+          },
+          onUpdate(message) {
+            botMessage.streaming = true;
+            if (message) {
+              botMessage.content = message;
+            }
+            get().updateCurrentSession((session) => {
+              session.messages = session.messages.concat();
+            });
+          },
+          onFinish(message, hasError) {
+            botMessage.streaming = false;
+            botMessage.isError = hasError as boolean;
+            get().onNewMessage(botMessage);
+            ChatControllerPool.remove(session.id, botMessage.id);
+
+            if (message.length > 0) {
+              message = message
+                .replace("Translate the user input to English:", "")
+                .replace("Translate to English:", "")
+                .replace("Translate to:", "");
+              botMessage.content = message;
+            } else {
+              showToast(Locale.Chat.InputActions.TranslateError);
+            }
+          },
+          onError(error) {
+            console.log(error);
+            showToast(Locale.Chat.InputActions.TranslateError);
+          },
+        });
       },
 
       async saveMediaToRemote(message: string, botMessage: ChatMessage) {

@@ -83,6 +83,11 @@ const cn = {
       Settings: "对话设置",
       UploadImage: "上传图片",
       Waiting: "请稍等...",
+      Translate: "翻译",
+      InputTips: "请输入内容！",
+      TranslateTo: (target: string = navigator.language) =>
+        `检测用户输入的内容是不是 ${target}，如果不是，请翻译成 ${target}，标点符号也要转换。注意，你只需要输出翻译的结果即可，不要有任何其他的提示词。`,
+      TranslateError: "翻译出错！",
     },
     Rename: "重命名对话",
     Typing: "正在输入…",

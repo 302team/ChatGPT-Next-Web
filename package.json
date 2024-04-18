@@ -30,6 +30,7 @@
     "cheerio": "^1.0.0-rc.12",
     "emoji-picker-react": "^4.5.15",
     "encoding": "^0.1.13",
+    "franc": "^6.2.0",
     "fuse.js": "^7.0.0",
     "html-entities": "^2.4.0",
     "html-to-image": "^1.11.11",

@@ -86,6 +86,11 @@ const en: LocaleType = {
       Settings: "Settings",
       UploadImage: "Upload Images",
       Waiting: "Please wait...",
+      Translate: "Translate",
+      InputTips: "Please input content!",
+      TranslateTo: (target: string = navigator.language) =>
+        `Check if the user's input is ${target}. If not, please translate it into ${target}, including punctuation. Note, you only need to output the translation result without any other prompts.`,
+      TranslateError: "Translate Error",
     },
     Rename: "Rename Chat",
     Typing: "Typing…",

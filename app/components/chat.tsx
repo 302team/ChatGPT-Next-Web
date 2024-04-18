@@ -128,7 +128,11 @@ import { useAllModels } from "../utils/hooks";
 import { ClientApi, MultimodalContent } from "../client/api";
 import NextImage from "next/image";
 
-import { LoadingOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  LoadingOutlined,
+  CloseOutlined,
+  TranslationOutlined,
+} from "@ant-design/icons";
 import { Typography, Image } from "antd";
 import { usePluginStore } from "../store/plugin";
 
@@ -1805,7 +1809,7 @@ function _Chat(props: { promptStarters: string[] }) {
               <div
                 className={`${
                   isUser ? styles["chat-message-user"] : styles["chat-message"]
-                } ${message.isError ? `${styles["chat-message-error"]}` : ""}`}
+                } ${message.isError ? `${styles["chat-message-error"]}` : ""} ${message.needTranslate ? "chat-translate-message" : ""}`}
               >
                 <div className={styles["chat-message-container"]}>
                   <div className={styles["chat-message-header"]}>
@@ -2016,6 +2020,26 @@ function _Chat(props: { promptStarters: string[] }) {
                         ? Locale.Chat.IsContext
                         : message.date.toLocaleString()}
                     </div>
+
+                    {!isUser && !isContext && message.needTranslate && (
+                      <div className={styles["chat-message-translate"]}>
+                        <div className={styles["chat-input-actions"]}>
+                          <ChatAction
+                            text={Locale.Chat.InputActions.Translate}
+                            icon={
+                              <TranslationOutlined
+                                style={{ color: "#333333" }}
+                              />
+                            }
+                            onClick={() => {
+                              chatStore.translate(
+                                getMessageTextContent(message),
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     {!isUser &&
                       (message.isError || message.isTimeoutAborted) && (
