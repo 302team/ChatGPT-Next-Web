@@ -172,7 +172,10 @@ function ChatWindow() {
           if (opt.zero_shot) {
             const models = opt.zero_shot as Model[];
             appConfig.update((config) => {
-              config.modelList = models;
+              config.modelList = models.map((m) => {
+                m.enable = false;
+                return m;
+              });
             });
           }
 
