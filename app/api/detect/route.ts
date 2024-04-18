@@ -1,13 +1,12 @@
 import { NextResponse, NextRequest } from "next/server";
 
-export interface DetectData {
+interface DetectData {
   confidence: number;
   language: string;
   isReliable: boolean;
 }
 
-export const sleep = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function fetchWithRetry(
   api: () => Promise<Response>,
