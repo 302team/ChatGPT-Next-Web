@@ -2023,25 +2023,31 @@ function _Chat(props: { promptStarters: string[] }) {
                         : message.date.toLocaleString()}
                     </div>
 
-                    {!isUser && !isContext && message.needTranslate && (
-                      <div className={styles["chat-message-translate"]}>
-                        <div className={styles["chat-input-actions"]}>
-                          <ChatAction
-                            text={Locale.Chat.InputActions.Translate}
-                            icon={
-                              <TranslationOutlined
-                                style={{ color: "#333333" }}
-                              />
-                            }
-                            onClick={() => {
-                              chatStore.translate(
-                                getMessageTextContent(message),
-                              );
-                            }}
-                          />
+                    {!isUser &&
+                      !isContext &&
+                      message.needTranslate &&
+                      !message.isError &&
+                      !message.isTimeoutAborted &&
+                      !currentModel.includes("gemini-1.5") &&
+                      !currentModel.includes("ERNIE-4.0-8K") && (
+                        <div className={styles["chat-message-translate"]}>
+                          <div className={styles["chat-input-actions"]}>
+                            <ChatAction
+                              text={Locale.Chat.InputActions.Translate}
+                              icon={
+                                <TranslationOutlined
+                                  style={{ color: "#333333" }}
+                                />
+                              }
+                              onClick={() => {
+                                chatStore.translate(
+                                  getMessageTextContent(message),
+                                );
+                              }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {!isUser &&
                       (message.isError || message.isTimeoutAborted) && (

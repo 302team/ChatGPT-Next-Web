@@ -448,24 +448,24 @@ async function getFileFromUrl(fileUrl: string, fileName: string) {
 async function messageTranslate(str: string, botMessage: ChatMessage) {
   const minLength = Math.min(10, str.length);
 
-  const res = await fetch("/api/detect", {
+  const res = null; /* await fetch("/api/detect", {
     method: "post",
     body: JSON.stringify({
       q: str,
     }),
-  }).then((res) => res.json());
+  }).then((res) => res.json()); */
 
   let needTrans = false;
   if (res) {
-    needTrans = !(
-      navigator.language.includes(res.language) ||
-      res.language?.includes(navigator.language)
-    );
+    // needTrans = !(
+    //   navigator.language.includes(res.language) ||
+    //   res.language?.includes(navigator.language)
+    // );
   } else {
     needTrans =
-      franc(str, { minLength }) !== "und" &&
-      franc(str, { minLength }) === "cmn" &&
-      /[\u4E00-\u9FA5]+/g.test(str);
+      (franc(str, { minLength }) !== "und" &&
+        franc(str, { minLength }) !== "cmn") ||
+      !/[\u4E00-\u9FA5]+/g.test(str);
   }
 
   botMessage.needTranslate = needTrans;
