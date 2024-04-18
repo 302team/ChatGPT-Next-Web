@@ -482,7 +482,9 @@ export function SideBar(props: { className?: string }) {
             <img
               src={config.chatbotLogo}
               alt="LOGO"
-              onClick={() => openWindow(GPT302_WEBSITE_URL)}
+              onClick={() =>
+                openWindow(config.chatbotLink ?? GPT302_WEBSITE_URL)
+              }
             />
           )}
           {!config.chatbotLogo && (
@@ -491,7 +493,9 @@ export function SideBar(props: { className?: string }) {
               alt="logo"
               height={50}
               width={50}
-              onClick={() => openWindow(GPT302_WEBSITE_URL)}
+              onClick={() =>
+                openWindow(config.chatbotLink ?? GPT302_WEBSITE_URL)
+              }
             />
           )}
         </div>

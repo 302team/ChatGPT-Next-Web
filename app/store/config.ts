@@ -80,6 +80,7 @@ export const DEFAULT_SETTING = {
 
   chatbotName: "",
   chatbotDesc: "",
+  chatbotLink: "",
   chatbotLogo: "",
 };
 
