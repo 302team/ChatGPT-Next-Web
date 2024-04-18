@@ -445,14 +445,33 @@ async function getFileFromUrl(fileUrl: string, fileName: string) {
 }
 
 //判断字符串是否包含中文
-function hasChinese(str: string) {
+async function messageTranslate(str: string, botMessage: ChatMessage) {
   const minLength = Math.min(10, str.length);
 
-  return (
-    franc(str, { minLength }) !== "und" &&
-    franc(str, { minLength }) === "cmn" &&
-    /[\u4E00-\u9FA5]+/g.test(str)
-  );
+  const res = await fetch("/api/detect", {
+    method: "post",
+    body: JSON.stringify({
+      q: str,
+    }),
+  }).then((res) => res.json());
+
+  let needTrans = false;
+  if (res) {
+    needTrans = !(
+      navigator.language.includes(res.language) ||
+      res.language?.includes(navigator.language)
+    );
+  } else {
+    needTrans =
+      franc(str, { minLength }) !== "und" &&
+      franc(str, { minLength }) === "cmn" &&
+      /[\u4E00-\u9FA5]+/g.test(str);
+  }
+
+  botMessage.needTranslate = needTrans;
+  useChatStore.getState().updateCurrentSession((session) => {
+    session.messages = session.messages.concat();
+  });
 }
 
 const DEFAULT_CHAT_STATE = {
@@ -808,8 +827,7 @@ export const useChatStore = createPersistStore(
               botMessage.content = content ?? "";
               botMessage.isError = (hasError || _hasError) as boolean;
               // 如果没有不包含中文,就弹翻译的提示
-              botMessage.needTranslate =
-                typeof content === "string" && !hasChinese(content);
+              messageTranslate(message, botMessage);
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
             },
@@ -916,7 +934,7 @@ export const useChatStore = createPersistStore(
               botMessage.content = message ?? "";
               botMessage.isError = hasError as boolean;
               // 如果没有不包含中文,就弹翻译的提示
-              botMessage.needTranslate = !hasChinese(message);
+              messageTranslate(message, botMessage);
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
               // if (!hasError) {
@@ -1013,17 +1031,16 @@ export const useChatStore = createPersistStore(
             });
           },
           onFinish(message, hasError) {
-            botMessage.streaming = false;
-            botMessage.isError = hasError as boolean;
-            get().onNewMessage(botMessage);
-            ChatControllerPool.remove(session.id, botMessage.id);
-
             if (message.length > 0) {
               message = message
                 .replace("Translate the user input to English:", "")
                 .replace("Translate to English:", "")
                 .replace("Translate to:", "");
+              botMessage.streaming = false;
               botMessage.content = message;
+              botMessage.isError = hasError as boolean;
+              get().onNewMessage(botMessage);
+              ChatControllerPool.remove(session.id, botMessage.id);
             } else {
               showToast(Locale.Chat.InputActions.TranslateError);
             }
