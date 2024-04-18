@@ -6,6 +6,7 @@ import {
   isSpecImageModal,
   uploadRemoteFile,
   isSupportFunctionCall,
+  sleep,
 } from "../utils";
 
 import Locale, { getLang } from "../locales";
@@ -986,108 +987,124 @@ export const useChatStore = createPersistStore(
         }
 
         // return;
-
-        allUserContents.map((userContent, i) => {
-          const modelConfig = modelConfigs[i];
-
-          const userMessage = createMessage({
-            role: "user",
-            content: userContent as string | MultimodalContent[],
-            model: modelConfig.model as ModelType,
-          });
-
-          const botMessage = createMessage({
-            role: "assistant",
-            streaming: true,
-            model: modelConfig.model as ModelType,
-            toolMessages: [],
-          });
-
-          const sendMessages = [userMessage];
-          console.log("🚀 ~ sendMessages:", sendMessages);
-          const messageIndex = get().currentSession().messages.length + 1;
-
-          // save user's and bot's message
-          get().updateCurrentSession((session) => {
-            session.messages = session.messages.concat([botMessage]);
-          });
-
-          var api: ClientApi = new ClientApi(ModelProvider.GPT);
-
-          if (modelConfig.model.startsWith("gemini")) {
-            // api = new ClientApi(ModelProvider.GeminiPro);
-          } else if (modelConfig.model.startsWith("claude")) {
-            // api = new ClientApi(ModelProvider.Claude);
+        for (let i = 0; i < allUserContents.length; i++) {
+          if (i > 0 && i % 3 === 0) {
+            await sleep(3000);
+          } else {
+            await sleep(300);
           }
 
-          // make request
-          api.llm.chat({
-            messages: sendMessages,
-            config: { ...modelConfig, stream: true },
-            retryCount: extAttr.retryCount ?? 0,
-            onAborted(message) {
-              botMessage.isTimeoutAborted = true;
-              if (message) {
-                botMessage.content = message;
-              }
-              get().updateCurrentSession((session) => {
-                session.messages = session.messages.concat();
-              });
-            },
-            onRetry() {
-              if (botMessage.retryCount == undefined) {
-                botMessage.retryCount = 0;
-              }
-              ++botMessage.retryCount;
-              extAttr.onResend?.(botMessage);
-            },
-            onUpdate(message) {
-              botMessage.streaming = true;
-              if (message) {
-                botMessage.content = message;
-              }
-              get().updateCurrentSession((session) => {
-                session.messages = session.messages.concat();
-              });
-            },
-            onFinish(message, hasError) {
-              console.warn(
-                "🚀 ~ onFinish ~ message:",
-                message,
-                "hasError",
-                hasError,
-              );
-              botMessage.streaming = false;
-              botMessage.content = message ?? "";
-              botMessage.isError = hasError as boolean;
-              get().onNewMessage(botMessage);
-              ChatControllerPool.remove(session.id, botMessage.id);
-            },
-            onError(error) {
-              const isAborted = error.message.includes("aborted");
-              botMessage.content += "Network error, please retry.";
-              botMessage.streaming = false;
-              // userMessage.isError = !isAborted;
-              botMessage.isError = !isAborted;
-              get().updateCurrentSession((session) => {
-                session.messages = session.messages.concat();
-              });
-              ChatControllerPool.remove(
-                session.id,
-                botMessage.id ?? messageIndex,
-              );
+          const userContent = allUserContents[i];
+          const modelConfig = modelConfigs[i];
 
-              console.error("[Chat] failed ", error);
-            },
-            onController(controller) {
-              ChatControllerPool.addController(
-                session.id,
-                botMessage.id ?? messageIndex,
-                controller,
-              );
-            },
-          });
-        });
+          const task = () => {
+            return new Promise((resolve, reject) => {
+              const userMessage = createMessage({
+                role: "user",
+                content: userContent as string | MultimodalContent[],
+                model: modelConfig.model as ModelType,
+              });
+
+              const botMessage = createMessage({
+                role: "assistant",
+                streaming: true,
+                model: modelConfig.model as ModelType,
+                toolMessages: [],
+              });
+
+              const sendMessages = [userMessage];
+              console.log("🚀 ~ sendMessages:", sendMessages);
+              const messageIndex = get().currentSession().messages.length + 1;
+
+              // save user's and bot's message
+              get().updateCurrentSession((session) => {
+                session.messages = session.messages.concat([botMessage]);
+              });
+
+              var api: ClientApi = new ClientApi(ModelProvider.GPT);
+
+              if (modelConfig.model.startsWith("gemini")) {
+                // api = new ClientApi(ModelProvider.GeminiPro);
+              } else if (modelConfig.model.startsWith("claude")) {
+                // api = new ClientApi(ModelProvider.Claude);
+              }
+
+              // make request
+              api.llm.chat({
+                messages: sendMessages,
+                config: { ...modelConfig, stream: true },
+                retryCount: extAttr.retryCount ?? 0,
+                onAborted(message) {
+                  botMessage.isTimeoutAborted = true;
+                  if (message) {
+                    botMessage.content = message;
+                  }
+                  get().updateCurrentSession((session) => {
+                    session.messages = session.messages.concat();
+                  });
+                  reject(message);
+                },
+                onRetry() {
+                  if (botMessage.retryCount == undefined) {
+                    botMessage.retryCount = 0;
+                  }
+                  ++botMessage.retryCount;
+                  extAttr.onResend?.(botMessage);
+                },
+                onUpdate(message) {
+                  botMessage.streaming = true;
+                  if (message) {
+                    botMessage.content = message;
+                  }
+                  get().updateCurrentSession((session) => {
+                    session.messages = session.messages.concat();
+                  });
+                },
+                onFinish(message, hasError) {
+                  resolve(message);
+                  console.warn(
+                    "🚀 ~ onFinish ~ message:",
+                    message,
+                    "hasError",
+                    hasError,
+                  );
+                  botMessage.streaming = false;
+                  botMessage.content = message ?? "";
+                  botMessage.isError = hasError as boolean;
+                  get().onNewMessage(botMessage);
+                  ChatControllerPool.remove(session.id, botMessage.id);
+                },
+                onError(error) {
+                  const isAborted = error.message.includes("aborted");
+                  botMessage.content += "Network error, please retry.";
+                  botMessage.streaming = false;
+                  // userMessage.isError = !isAborted;
+                  botMessage.isError = !isAborted;
+                  get().updateCurrentSession((session) => {
+                    session.messages = session.messages.concat();
+                  });
+                  ChatControllerPool.remove(
+                    session.id,
+                    botMessage.id ?? messageIndex,
+                  );
+
+                  console.error("[Chat] failed ", error);
+                  reject(error);
+                },
+                onController(controller) {
+                  ChatControllerPool.addController(
+                    session.id,
+                    botMessage.id ?? messageIndex,
+                    controller,
+                  );
+                  reject("abort");
+                },
+              });
+            });
+          };
+
+          task();
+        }
       },
 
       async saveMediaToRemote(message: string, botMessage: ChatMessage) {
@@ -1299,6 +1316,7 @@ export const useChatStore = createPersistStore(
         get().updateCurrentSession((session) => {
           session.messages = [];
           session.memoryPrompt = "";
+          session.topic = DEFAULT_TOPIC;
         });
       },
 
