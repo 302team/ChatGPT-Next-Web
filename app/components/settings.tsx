@@ -53,6 +53,7 @@ import Link from "next/link";
 import {
   Anthropic,
   Azure,
+  FontSize,
   Google,
   OPENAI_BASE_URL,
   Path,
@@ -72,6 +73,7 @@ import { useSyncStore } from "../store/sync";
 import { nanoid } from "nanoid";
 import { useMaskStore } from "../store/mask";
 import { ProviderType } from "../utils/cloud";
+import { Button, Space } from "antd";
 
 function EditPromptModal(props: { id: string; onClose: () => void }) {
   const promptStore = usePromptStore();
@@ -800,7 +802,33 @@ export function Settings(props: {
             title={Locale.Settings.FontSize.Title}
             subTitle={Locale.Settings.FontSize.SubTitle}
           >
-            <InputRange
+            <Space.Compact>
+              <Button
+                onClick={() => {
+                  updateConfig((config) => (config.fontSize = FontSize.Normal));
+                }}
+              >
+                {Locale.Settings.FontSize.Normal}
+              </Button>
+              <Button
+                onClick={() => {
+                  updateConfig((config) => (config.fontSize = FontSize.Large));
+                }}
+              >
+                {Locale.Settings.FontSize.Large}
+              </Button>
+              <Button
+                onClick={() => {
+                  updateConfig(
+                    (config) => (config.fontSize = FontSize.ExtraLarge),
+                  );
+                }}
+              >
+                {Locale.Settings.FontSize.ExtraLarge}
+              </Button>
+            </Space.Compact>
+
+            {/* <InputRange
               title={`${config.fontSize ?? 14}px`}
               value={config.fontSize}
               min="12"
@@ -812,7 +840,7 @@ export function Settings(props: {
                     (config.fontSize = Number.parseInt(e.currentTarget.value)),
                 )
               }
-            ></InputRange>
+            ></InputRange> */}
           </ListItem>
 
           <ListItem

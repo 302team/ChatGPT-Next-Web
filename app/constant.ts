@@ -83,6 +83,12 @@ export enum ModelProvider {
   Claude = "Claude",
 }
 
+export const FontSize = {
+  Normal: 14,
+  Large: 22,
+  ExtraLarge: 30,
+};
+
 export const Anthropic = {
   ChatPath: "v1/messages",
   ChatPath1: "v1/complete",

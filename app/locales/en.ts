@@ -223,6 +223,9 @@ const en: LocaleType = {
     FontSize: {
       Title: "Font Size",
       SubTitle: "Adjust font size of chat content",
+      Normal: "Normal",
+      Large: "Large",
+      ExtraLarge: "Extra-Large",
     },
     InjectSystemPrompts: {
       Title: "Inject System Prompts",

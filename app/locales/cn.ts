@@ -220,6 +220,9 @@ const cn = {
     FontSize: {
       Title: "字体大小",
       SubTitle: "聊天内容的字体大小",
+      Normal: "正常",
+      Large: "大",
+      ExtraLarge: "特大",
     },
     InjectSystemPrompts: {
       Title: "注入系统级提示信息",
