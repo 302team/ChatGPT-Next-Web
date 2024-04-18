@@ -483,7 +483,7 @@ export function SideBar(props: { className?: string }) {
               src={config.chatbotLogo}
               alt="LOGO"
               onClick={() =>
-                openWindow(config.chatbotLink ?? GPT302_WEBSITE_URL)
+                openWindow(config.chatbotLink || GPT302_WEBSITE_URL)
               }
             />
           )}
@@ -494,7 +494,7 @@ export function SideBar(props: { className?: string }) {
               height={50}
               width={50}
               onClick={() =>
-                openWindow(config.chatbotLink ?? GPT302_WEBSITE_URL)
+                openWindow(config.chatbotLink || GPT302_WEBSITE_URL)
               }
             />
           )}
