@@ -4,6 +4,7 @@ import { DEFAULT_MODELS, OPENAI_BASE_URL, GEMINI_BASE_URL } from "../constant";
 import { collectModelTable } from "../utils/model";
 import { makeAzurePath } from "../azure";
 
+
 const serverConfig = getServerSideConfig();
 
 export async function requestOpenai(req: NextRequest) {
