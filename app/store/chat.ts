@@ -581,13 +581,15 @@ export const useChatStore = createPersistStore(
         return session;
       },
 
-      onNewMessage(message: ChatMessage) {
+      onNewMessage(message: ChatMessage, summarize = true) {
         get().updateCurrentSession((session) => {
           session.messages = session.messages.concat();
           session.lastUpdate = Date.now();
         });
         get().updateStat(message);
-        get().summarizeSession();
+        if (summarize) {
+          get().summarizeSession();
+        }
       },
 
       async onUserInput(
@@ -1058,7 +1060,7 @@ export const useChatStore = createPersistStore(
                   botMessage.streaming = false;
                   botMessage.content = message ?? "";
                   botMessage.isError = hasError as boolean;
-                  get().onNewMessage(botMessage);
+                  get().onNewMessage(botMessage, false);
                   ChatControllerPool.remove(session.id, botMessage.id);
                 },
                 onError(error) {
