@@ -120,7 +120,6 @@ export const Google = {
 export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lang
 export const DEFAULT_SYSTEM_TEMPLATE =
   "You are ChatGPT, a large language model trained by {{ServiceProvider}}. " +
-  "If the intention is not to translate, please reply in {{language}}. " +
   "Knowledge cutoff: {{cutoff}}. " +
   "Current model: {{model}}. " +
   "Current time: {{time}}. " +
