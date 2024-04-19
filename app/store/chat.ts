@@ -248,18 +248,11 @@ async function getUserContent(
   type: "send" | "save",
 ): Promise<string | MultimodalContent[]> {
   const currentModel = modelConfig.model.toLocaleLowerCase();
-  console.log(
-    "🚀 ~ usePlugins, fileArr, currentModel, content:",
-    usePlugins,
-    fileArr,
-    currentModel,
-    content,
-  );
-
+  if (typeof content === "string") {
+    content = fillTemplateWith(content as string, modelConfig);
+  }
   // 特殊的能支持图片的模型,
   // 这些模型支持识别图片, 格式与 gpt-4-vision 一样, 唯一区别就是它们用的是 url 而不是 base64
-  console.log("🚀 ~ content:", content, currentModel);
-
   // 如果是gpt4-vision，
   if (
     (isSpecImageModal(currentModel) || isVisionModel(currentModel)) &&
@@ -399,8 +392,8 @@ async function getUserContent(
   }
   console.log("6");
   // 模板替换
-  const userContent = fillTemplateWith(content as string, modelConfig);
-  return userContent;
+  // const userContent = fillTemplateWith(content as string, modelConfig);
+  return content;
 }
 
 async function getBase64FromUrl(url: string) {
