@@ -6,6 +6,9 @@ import {
   isSpecImageModal,
   uploadRemoteFile,
   isSupportFunctionCall,
+  compressBase64Image,
+  getBase64FromUrl,
+  getFileBase64,
 } from "../utils";
 import { franc } from "franc";
 
@@ -112,6 +115,7 @@ export interface FileRes {
 }
 
 export interface ExtAttr {
+  resend?: boolean;
   retryCount?: number;
   uploadFiles: UploadFile[];
 
@@ -226,7 +230,7 @@ async function getFileArr(uploadFiles: UploadFile[]): Promise<FileRes[]> {
     if (file.type?.includes("image")) {
       imgBase64 =
         file.response.base64 ??
-        ((await getBase64(file.originFileObj)) as string);
+        ((await getFileBase64(file.originFileObj)) as string);
     }
     const fileParam = {
       name: file.name,
@@ -241,189 +245,132 @@ async function getFileArr(uploadFiles: UploadFile[]): Promise<FileRes[]> {
 }
 
 async function getUserContent(
-  content: string | MultimodalContent[],
-  modelConfig: ModelConfig,
+  userInput: string,
   fileArr: FileRes[],
-  usePlugins: boolean | undefined,
-  type: "send" | "save",
-): Promise<string | MultimodalContent[]> {
-  const currentModel = modelConfig.model.toLocaleLowerCase();
-  if (typeof content === "string") {
-    content = fillTemplateWith(content as string, modelConfig);
-  }
-  // 特殊的能支持图片的模型,
-  // 这些模型支持识别图片, 格式与 gpt-4-vision 一样, 唯一区别就是它们用的是 url 而不是 base64
-  // 如果是gpt4-vision，
-  if (
-    (isSpecImageModal(currentModel) || isVisionModel(currentModel)) &&
-    typeof content == "string"
-  ) {
-    console.log("1");
-    const imgContent: MultimodalContent[] = [];
-    imgContent.push({
+  modelConfig: ModelConfig,
+) {
+  const content = fillTemplateWith(userInput, modelConfig);
+  const model = modelConfig.model;
+
+  if (fileArr.length > 0) {
+    const sendUserContent = []; // 发送出去的用户内容
+    const saveUserContent = []; // 保存的用户内容
+    let msg: MultimodalContent = {
       type: "text",
       text: content,
-    });
-    if (fileArr.length > 0) {
-      for (const file of fileArr) {
-        // 如果类型为send，或内容不是base64
-        if (type == "send") {
-          imgContent.push({
+    };
+    sendUserContent.push(msg);
+    saveUserContent.push(msg);
+    for (const file of fileArr) {
+      // 如果是gpt4-vision，或者claude模型，claude模型目前是根据中转接口来定的报文格式，以后要改成官方报文格式
+      if (
+        file.type.includes("image") &&
+        (isVisionModel(model) || isSpecImageModal(model))
+      ) {
+        if (file.url && file.url.startsWith("http")) {
+          msg = {
             type: "image_url",
             image_url: {
-              url: isSpecImageModal(currentModel) ? file.url : file.base64,
+              url: file.url,
             },
-          });
-        } else if (file.url && file.url.startsWith("http")) {
-          // 支持插件的, 当 file 类型处理
-          if (isSupportFunctionCall(currentModel) && usePlugins) {
-            imgContent.push({
-              type: "file",
-              file: {
-                name: file.name,
-                type: file.type,
-                url: file.url,
-              },
-            });
-          } else {
-            imgContent.push({
+          };
+          // 保存的消息是保存文件链接
+          saveUserContent.push(msg);
+          // 发送则需要判断是否发送链接
+          if (isSpecImageModal(model)) {
+            sendUserContent.push(msg);
+          } else if (file.base64) {
+            // gpt-4-vision 需要传递 base64 数据
+            sendUserContent.push({
               type: "image_url",
               image_url: {
-                url: file.url,
+                url: file.base64,
               },
             });
           }
-        } else {
-          imgContent[0].text += "\n" + file.name;
-        }
-      }
-    }
-    return imgContent;
-  } else if (isSupportMultimodal(currentModel) || usePlugins) {
-    console.log("2");
-    let sendContent = content;
-    if (type == "send") {
-      let fileUrls = "";
-      if (typeof content === "string" && fileArr.length > 0) {
-        fileArr.forEach((file) => {
-          fileUrls += file.url + "\n";
-        });
-      } else if (content instanceof Array) {
-        sendContent = "";
-        content.forEach((msg) => {
-          if (msg.type == "text") {
-            sendContent += msg.text!;
-          } else if (msg.type === "image_url") {
-            fileUrls += msg.image_url?.url + "\n";
-          } else {
-            fileUrls += msg.file?.url + "\n";
-          }
-        });
-      }
-      sendContent = fileUrls + sendContent;
-    } else {
-      if (typeof content == "string") {
-        sendContent = [];
-        sendContent.push({
-          type: "text",
-          text: content,
-        });
-        if (fileArr.length > 0) {
-          fileArr.forEach((file) => {
-            (sendContent as Array<any>).push({
-              type: "file",
-              file: {
-                name: file.name,
-                type: file.type,
-                url: file.url,
-              },
-            });
+        } else if (file.base64) {
+          // 发送出去是原图，提高识别率。
+          sendUserContent.push({
+            type: "image_url",
+            image_url: {
+              url: file.base64,
+            },
+          });
+          // 如果是base64，则需要压缩到100k以内保存。
+          saveUserContent.push({
+            type: "image_url",
+            image_url: {
+              url: await compressBase64Image(file.base64),
+            },
           });
         }
-      }
-    }
-    return sendContent;
-  } else if (currentModel.includes("whisper")) {
-    console.log("3");
-    let userContent = content;
-    if (typeof content == "string" && fileArr.length > 0) {
-      userContent = [];
-      userContent.push({
-        type: "text",
-        text: content,
-      });
-      fileArr.forEach((file) => {
-        (userContent as Array<any>).push({
+      } else {
+        msg = {
           type: "file",
           file: {
             name: file.name,
             type: file.type,
             url: file.url,
           },
-        });
-      });
-    }
-    return userContent;
-  } else if (type == "send" && content instanceof Array) {
-    console.log("4");
-    let imgContent: MultimodalContent[] = [];
-    for (const msg of content) {
-      if (msg.type === "text") {
-        imgContent.push({
-          type: "text",
-          text: msg.text,
-        });
-      } else if (msg.type == "image_url") {
-        let url = msg.image_url!.url;
-        imgContent.push({
-          type: "image_url",
-          image_url: {
-            url: isSpecImageModal(currentModel)
-              ? url
-              : await getBase64FromUrl(url),
-          },
-        });
+        };
+        sendUserContent.push(msg);
+        saveUserContent.push(msg);
       }
     }
-    return imgContent;
-  } else if (type == "save" || !(typeof content == "string")) {
-    console.log("5");
-    return content;
+    return {
+      sendUserContent,
+      saveUserContent,
+    };
   }
-  console.log("6");
-  // 模板替换
-  // const userContent = fillTemplateWith(content as string, modelConfig);
-  return content;
+  return {
+    sendUserContent: content,
+    saveUserContent: content,
+  };
 }
 
-async function getBase64FromUrl(url: string) {
-  let base64 = "";
-  await fetch(url, {
-    method: "get",
-    headers: {
-      "Access-Control-Allow-Credentials": "true",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "*",
-      "Access-Control-Allow-Headers": "*",
-    },
-  })
-    .then((response) => response.blob())
-    .then((blob) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onload = () => (base64 = reader.result as string);
-    });
-  return base64;
+async function getResendUserContent(
+  content: string | MultimodalContent[],
+  modelConfig: ModelConfig,
+) {
+  const model = modelConfig.model;
+  if (
+    (isVisionModel(model) || isSpecImageModal(model)) &&
+    content instanceof Array
+  ) {
+    const sendUserContent = []; // 发送出去的用户内容
+    const saveUserContent = []; // 保存的用户内容
+    for (const msg of content) {
+      if (msg.type == "text") {
+        sendUserContent.push(msg);
+        saveUserContent.push(msg);
+      } else if (msg.type == "image_url") {
+        // 保存不变
+        saveUserContent.push(msg);
+        // 发出去的要判断是否url, 如果是url，但是需要base64数据，则需要获取base64
+        if (msg.image_url?.url.startsWith("http") && !isSpecImageModal(model)) {
+          const imageData = await getBase64FromUrl(msg.image_url.url);
+          sendUserContent.push({
+            type: "image_url",
+            image_url: {
+              url: imageData.base64,
+            },
+          });
+        } else {
+          sendUserContent.push(msg);
+        }
+      }
+    }
+    return {
+      sendUserContent,
+      saveUserContent,
+    };
+  }
+  return {
+    sendUserContent: content,
+    saveUserContent: content,
+  };
 }
 
-function getBase64(file: File) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-}
 async function getFileFromUrl(fileUrl: string, fileName: string) {
   let fileObj = undefined;
   await fetch(fileUrl, {
@@ -645,30 +592,16 @@ export const useChatStore = createPersistStore(
 
         const fileArr = await getFileArr(extAttr.uploadFiles);
         extAttr?.setUploadFiles([]); // 删除文件
-        // 获取需要发送出去的用户内容
-        const userContent = await getUserContent(
-          content,
-          modelConfig,
-          fileArr,
-          useAppConfig.getState().pluginConfig.enable,
-          "send",
-        );
-        console.log("[User Input] after pretreatment: ", userContent);
-        // 获取需要保存的用户内容，没有url的文件则只保存文件名
-        const saveUserContent = await getUserContent(
-          content,
-          modelConfig,
-          fileArr,
-          useAppConfig.getState().pluginConfig.enable,
-          "save",
-        );
 
-        // const userContent = fillTemplateWith(content, modelConfig);
-        console.log("[User Input] after template: ", userContent);
+        const { sendUserContent, saveUserContent } = extAttr?.resend
+          ? await getResendUserContent(content, modelConfig)
+          : await getUserContent(content as string, fileArr, modelConfig);
+        console.log("[User Input] after pretreatment: ", sendUserContent);
+        console.log("[User Input] after pretreatment: ", saveUserContent);
 
         const userMessage = createMessage({
           role: "user",
-          content: userContent as string | MultimodalContent[],
+          content: sendUserContent as string | MultimodalContent[],
           model: modelConfig.model as ModelType,
         });
         const botMessage = createMessage({

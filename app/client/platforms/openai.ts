@@ -219,10 +219,10 @@ export class ChatGPTApi implements LLMApi {
         const finish = () => {
           if (!finished) {
             finished = true;
-            console.log(
-              "🚀 ~ [OpenAI chat] ~ finish ~ !isStreamDone || hasUncatchError || isAborted:",
-              !isStreamDone || hasUncatchError || isAborted,
-            );
+            // console.log(
+            //   "🚀 ~ [OpenAI chat] ~ finish ~ !isStreamDone || hasUncatchError || isAborted:",
+            //   !isStreamDone || hasUncatchError || isAborted,
+            // );
             options.onFinish(
               responseText + remainText,
               !isStreamDone || hasUncatchError || isAborted,
@@ -320,14 +320,14 @@ export class ChatGPTApi implements LLMApi {
             isStreamDone = msg.data === "[DONE]";
 
             if (msg.data === "[DONE]" || finished) {
-              console.warn(
-                "🚀🚀 ~ ChatGPTApi ~ onmessage ~ finished:",
-                finished,
-              );
-              console.warn(
-                "🚀🚀 ~ ChatGPTApi ~ onmessage ~ isStreamDone:",
-                isStreamDone,
-              );
+              // console.warn(
+              //   "🚀🚀 ~ ChatGPTApi ~ onmessage ~ finished:",
+              //   finished,
+              // );
+              // console.warn(
+              //   "🚀🚀 ~ ChatGPTApi ~ onmessage ~ isStreamDone:",
+              //   isStreamDone,
+              // );
               return finish();
             }
             const text = msg.data;
@@ -360,7 +360,7 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onclose() {
-            console.warn("🚀 ~ ChatGPTApi ~ fetchEventSource onclose ~");
+            // console.warn("🚀 ~ ChatGPTApi ~ fetchEventSource onclose ~");
             finish();
           },
           onerror(e) {

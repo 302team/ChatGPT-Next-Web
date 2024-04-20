@@ -1398,6 +1398,7 @@ function _Chat(props: { promptStarters: string[] }) {
 
     const chatOption: ExtAttr = {
       retryCount: userMessage.retryCount,
+      resend: true,
       ...exAttr,
     };
     if (userMessage.retryCount! < 1) {
@@ -1436,7 +1437,7 @@ function _Chat(props: { promptStarters: string[] }) {
     context.length === 0 &&
     session.messages.at(0)?.content !== BOT_HELLO.content
   ) {
-    console.warn(session.mask.botHelloContent);
+    // console.warn(session.mask.botHelloContent);
 
     const botHello = {
       ...BOT_HELLO,

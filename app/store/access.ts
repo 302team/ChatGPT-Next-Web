@@ -119,7 +119,7 @@ export const useAccessStore = createPersistStore(
       })
         .then((res) => res.json())
         .then((res: DangerConfig) => {
-          console.log("[Config] got config from server", res);
+          // console.log("[Config] got config from server", res);
           set(() => ({
             fileUploadUrl: `${res.apiDomain}/gpt/api/upload/gpt/image`,
           }));
@@ -150,7 +150,7 @@ export const useAccessStore = createPersistStore(
       })
         .then((res) => res.json())
         .then((res: any) => {
-          console.log("[Config] got config by code from server", res);
+          // console.log("[Config] got config by code from server", res);
           if (res.code === 0 && res.data && res.data.value) {
             set(() => ({
               openaiApiKey: res.data.value,

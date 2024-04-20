@@ -170,7 +170,7 @@ function ChatWindow() {
     });
   }
   function setModelConfig(modelConfig: any) {
-    console.log("🚀 ~ setModelConfig ~ modelConfig:", modelConfig);
+    // console.log("🚀 ~ setModelConfig ~ modelConfig:", modelConfig);
     // 空对象
     if (isEmptyObject(modelConfig)) return;
     let modelConf: any = {};
@@ -203,11 +203,11 @@ function ChatWindow() {
             conf.pluginConfig.enable = !!opt.enable_plugins;
 
             const settings = opt.settings;
-            console.warn(
-              "🚀 ~ config.update ~ isEmptyObject(settings):",
-              isEmptyObject(settings),
-              settings,
-            );
+            // console.warn(
+            //   "🚀 ~ config.update ~ isEmptyObject(settings):",
+            //   isEmptyObject(settings),
+            //   settings,
+            // );
 
             if (settings && !isEmptyObject(settings)) {
               if (settings.modelConfig) {
@@ -381,7 +381,7 @@ export function Home() {
   useHtmlLang();
 
   useEffect(() => {
-    console.log("[Config] got config from build time", getClientConfig());
+    // console.log("[Config] got config from build time", getClientConfig());
     useAccessStore.getState().fetch();
   }, []);
 
