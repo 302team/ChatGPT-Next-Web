@@ -8,10 +8,12 @@ import DragIcon from "../icons/drag.svg";
 import NextImage from "next/image";
 import BotIconDark from "../icons/logo-horizontal-dark.png";
 import ExportIcon from "../icons/share.svg";
+import QuestionIcon from "../icons/question.svg";
+import ResetIcon from "../icons/reload.svg";
 
 import Locale from "../locales";
 
-import { useAppConfig, useChatStore } from "../store";
+import { useAccessStore, useAppConfig, useChatStore } from "../store";
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
@@ -25,14 +27,13 @@ import {
 } from "../constant";
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { isIOS, openWindow, useMobileScreen } from "../utils";
+import { copyToClipboard, isIOS, openWindow, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { Modal } from "./ui-lib";
-import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
 
-import { Spin, Result, Button } from "antd";
 import { Loading } from "./home";
 import { SidebarModelList } from "./sidebar-model-list";
+import { IconButton } from "./button";
 
 const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
   loading: () => <Loading noLogo />,
@@ -211,11 +212,54 @@ export function SettingsModal(props: {
   );
 }
 
+function AppDescription(props: {
+  isMobileScreen?: boolean;
+  onClose: () => void;
+}) {
+  const config = useAppConfig();
+  const access = useAccessStore();
+
+  function ShareAction() {
+    return (
+      <div
+        className={uiStyles["modal-header-action"]}
+        onClick={() => {
+          const modelName = config.isGpts
+            ? config.gptsConfig.name
+            : config.modelConfig.model;
+          const msg = Locale.Export.ShareMessage(
+            access.pwd,
+            config.isGpts,
+            modelName,
+          );
+          copyToClipboard(msg);
+        }}
+      >
+        <ExportIcon />
+      </div>
+    );
+  }
+
+  return (
+    <div className="modal-mask app-desc-modal">
+      <Modal
+        title={Locale.Config.AppDescTitle}
+        subtitle={Locale.Config.AppDescSubTitle}
+        headerActions={[
+          config.showShareEntry ? <ShareAction key="share" /> : null,
+        ]}
+        onClose={() => props.onClose()}
+      >
+        <div dangerouslySetInnerHTML={{ __html: config.chatbotInfo }}></div>
+      </Modal>
+    </div>
+  );
+}
+
 export function SideBar(props: { className?: string }) {
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [showAppDescModal, setShowAppDescModal] = useState(false);
   const config = useAppConfig();
   const isMobileScreen = useMobileScreen();
   const isIOSMobile = useMemo(
@@ -270,6 +314,34 @@ export function SideBar(props: { className?: string }) {
         <SidebarModelList narrow={shouldNarrow} />
       </div>
 
+      <div className={styles["sidebar-tail"]}>
+        <div className={styles["sidebar-actions"]}>
+          <div className={styles["sidebar-action"]}>
+            <IconButton
+              className={styles["sidebar-tail-button"]}
+              icon={<ResetIcon />}
+              onClick={() => {
+                config.update((config) => {
+                  config.modelList = config.modelList.map((m) => ({
+                    ...m,
+                    enable: false,
+                  }));
+                });
+              }}
+              shadow
+            />
+          </div>
+          <div className={styles["sidebar-action"]}>
+            <IconButton
+              className={styles["sidebar-tail-button"]}
+              icon={<QuestionIcon />}
+              onClick={() => setShowAppDescModal(true)}
+              shadow
+            />
+          </div>
+        </div>
+      </div>
+
       <div className={styles["powerd"]}>
         Powered By
         <NextImage
@@ -286,6 +358,13 @@ export function SideBar(props: { className?: string }) {
       >
         <DragIcon />
       </div>
+
+      {showAppDescModal && (
+        <AppDescription
+          isMobileScreen={isMobileScreen}
+          onClose={() => setShowAppDescModal(false)}
+        />
+      )}
     </div>
   );
 }

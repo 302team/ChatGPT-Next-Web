@@ -281,77 +281,6 @@ function useSubmitHandler() {
 
 export type RenderPompt = Pick<Prompt, "title" | "content">;
 
-export function PromptHints(props: {
-  prompts: RenderPompt[];
-  onPromptSelect: (prompt: RenderPompt) => void;
-}) {
-  const noPrompts = props.prompts.length === 0;
-  const [selectIndex, setSelectIndex] = useState(0);
-  const selectedRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setSelectIndex(0);
-  }, [props.prompts.length]);
-
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (noPrompts || e.metaKey || e.altKey || e.ctrlKey) {
-        return;
-      }
-      // arrow up / down to select prompt
-      const changeIndex = (delta: number) => {
-        e.stopPropagation();
-        e.preventDefault();
-        const nextIndex = Math.max(
-          0,
-          Math.min(props.prompts.length - 1, selectIndex + delta),
-        );
-        setSelectIndex(nextIndex);
-        selectedRef.current?.scrollIntoView({
-          block: "center",
-        });
-      };
-
-      if (e.key === "ArrowUp") {
-        changeIndex(1);
-      } else if (e.key === "ArrowDown") {
-        changeIndex(-1);
-      } else if (e.key === "Enter") {
-        const selectedPrompt = props.prompts.at(selectIndex);
-        if (selectedPrompt) {
-          props.onPromptSelect(selectedPrompt);
-        }
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => window.removeEventListener("keydown", onKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.prompts.length, selectIndex]);
-
-  if (noPrompts) return null;
-  return (
-    <div className={styles["prompt-hints"]}>
-      {props.prompts.map((prompt, i) => (
-        <div
-          ref={i === selectIndex ? selectedRef : null}
-          className={
-            styles["prompt-hint"] +
-            ` ${i === selectIndex ? styles["prompt-hint-selected"] : ""}`
-          }
-          key={prompt.title + i.toString()}
-          onClick={() => props.onPromptSelect(prompt)}
-          onMouseEnter={() => setSelectIndex(i)}
-        >
-          <div className={styles["hint-title"]}>{prompt.title}</div>
-          <div className={styles["hint-content"]}>{prompt.content}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function ClearContextDivider() {
   const chatStore = useChatStore();
 
@@ -433,7 +362,7 @@ function useScrollToBottom(
 ) {
   // for auto-scroll
 
-  const [autoScroll, setAutoScroll] = useState(true);
+  const [autoScroll, setAutoScroll] = useState(false);
   function scrollDomToBottom() {
     const dom = scrollRef.current;
     if (dom) {
@@ -1219,6 +1148,7 @@ function _Chat() {
       return;
     }
     setIsLoading(true);
+    inputRef.current?.blur();
 
     const resend = onResend as (messages: ChatMessage | ChatMessage[]) => void;
 
@@ -1238,25 +1168,6 @@ function _Chat() {
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
     setPromptHints([]);
-    if (!isMobileScreen) inputRef.current?.focus();
-    setAutoScroll(true);
-  };
-
-  const onPromptSelect = (prompt: RenderPompt) => {
-    setTimeout(() => {
-      setPromptHints([]);
-
-      const matchedChatCommand = chatCommands.match(prompt.content);
-      if (matchedChatCommand.matched) {
-        // if user is selecting a chat command, just trigger it
-        matchedChatCommand.invoke();
-        setUserInput("");
-      } else {
-        // or fill the prompt
-        setUserInput(prompt.content);
-      }
-      inputRef.current?.focus();
-    }, 30);
   };
 
   // stop response
@@ -1420,12 +1331,14 @@ function _Chat() {
       ) => void;
     }
 
+    inputRef.current?.blur();
+    setAutoScroll(false);
+
     // resend the message
     setIsLoading(true);
     chatStore
       .onCompetition(userMessage.content, chatOption)
       .then(() => setIsLoading(false));
-    inputRef.current?.focus();
   };
 
   const onPinMessage = (message: ChatMessage) => {
@@ -1557,7 +1470,7 @@ function _Chat() {
     }
 
     setHitBottom(isHitBottom);
-    setAutoScroll(isHitBottom);
+    setAutoScroll(false);
   };
   function scrollToBottom() {
     setMsgRenderIndex(renderMessages.length - CHAT_PAGE_SIZE);
@@ -1791,7 +1704,10 @@ function _Chat() {
         className={styles["chat-body"]}
         ref={scrollRef}
         onScroll={(e) => onChatBodyScroll(e.currentTarget)}
-        onMouseDown={() => inputRef.current?.blur()}
+        onMouseDown={() => {
+          inputRef.current?.blur();
+          setAutoScroll(false);
+        }}
         onTouchStart={() => {
           inputRef.current?.blur();
           setAutoScroll(false);
@@ -2060,8 +1976,6 @@ function _Chat() {
         {...getRootProps}
         className={styles["chat-input-panel"]}
       >
-        <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
-
         {uploadFiles.length != 0 && (
           <div className={styles["attach-images"]}>
             {uploadFiles.map((item, index) => {
@@ -2172,18 +2086,6 @@ function _Chat() {
               }}
             />
           )}
-
-          {/* {config.openTTS && !showRecording && (
-            <IconButton
-              text=""
-              icon={<VoiceIcon />}
-              key="voice"
-              onClick={() => {
-                setShowRecording(true);
-              }}
-              className={styles["chat-input-voice"]}
-            />
-          )} */}
 
           {couldStop ? (
             <ChatAction
