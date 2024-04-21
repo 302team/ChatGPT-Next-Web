@@ -586,8 +586,8 @@ const en: LocaleType = {
     title: "Chatbot - 302.AI",
     description: (type: string = "AI") =>
       `Create your own ${type} robot with just one click`,
-    AppDescTitle: "Description",
-    AppDescSubTitle: "AI Chat Robot detailed preview",
+    AppDescTitle: "View Tool Information",
+    AppDescSubTitle: "Model Arena details preview",
     AppDescContent: "",
   },
   Sidebar: {

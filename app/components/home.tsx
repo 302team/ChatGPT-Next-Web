@@ -166,6 +166,8 @@ function ChatWindow() {
       <ValidPwdPage
         onAuth={(opt: any) => {
           accessStore.update((access) => (access.isAuth = true));
+          appConfig.update((config) => (config.chatbotInfo = opt.info ?? ""));
+
           chatStore.resetSession();
 
           // 模型竞技场的模型

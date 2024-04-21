@@ -579,8 +579,8 @@ const cn = {
   Config: {
     title: "聊天机器人 - 302.AI",
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
-    AppDescTitle: "说明",
-    AppDescSubTitle: "AI机器人详情预览",
+    AppDescTitle: "查看工具信息",
+    AppDescSubTitle: "模型竞技场详情预览",
     AppDescContent: "",
   },
   Sidebar: {
