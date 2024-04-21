@@ -202,6 +202,8 @@ function ChatWindow() {
             conf.openTTS = opt.is_gpts ? true : !!opt.open_tts;
             conf.pluginConfig.enable = !!opt.enable_plugins;
 
+            conf.fileSupportType = opt.file_support_type;
+
             const settings = opt.settings;
             // console.warn(
             //   "🚀 ~ config.update ~ isEmptyObject(settings):",

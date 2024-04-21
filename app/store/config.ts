@@ -73,6 +73,8 @@ export const DEFAULT_CONFIG = {
     lang: "zh-CN",
     voice: "Microsoft Huihui - Chinese (Simplified, PRC)",
   },
+
+  fileSupportType: 0,
 };
 
 export const DEFAULT_SETTING = {

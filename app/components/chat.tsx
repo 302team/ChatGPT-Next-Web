@@ -77,7 +77,6 @@ import {
   getMessageTextContent,
   getMessageImages,
   isVisionModel,
-  isSupportMultimodal,
   compressImage,
   isImage,
   getMessageFiles,
@@ -111,6 +110,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   CHAT_PAGE_SIZE,
   FILE_BASE64_ICON,
+  FILE_SUPPORT_TYPE,
   LAST_INPUT_KEY,
   ModelProvider,
   Path,
@@ -502,13 +502,6 @@ export function ChatActions(props: {
   const [showUploadImage, setShowUploadImage] = useState(false);
 
   useEffect(() => {
-    const show = isVisionModel(currentModel) || isSpecImageModal(currentModel);
-    setShowUploadImage(show);
-    if (!show) {
-      props.setUploadFiles([]);
-      props.setUploading(false);
-    }
-
     // if current model is not available
     // switch to first available model
     const isUnavaliableModel = !models.some((m) => m.name === currentModel);
@@ -715,10 +708,24 @@ function useUploadFile(extra: {
 
   const [showUploadAction, setShowUploadAction] = useState(false);
   const currentModel = session.mask.modelConfig.model;
-  const supportMultimodal = useMemo(
-    () => isSupportMultimodal(currentModel),
-    [currentModel],
-  );
+  const isStoreModel = session.mask.isStoreModel;
+  const isGptsModel = session.mask.isGptsModel;
+  // 模型是否支持视觉
+  const isSupportVision =
+    isSpecImageModal(currentModel) || isVisionModel(currentModel);
+
+  const supportMultimodal = useMemo(() => {
+    // 如果是从应用商店创建的
+    if (isStoreModel) {
+      // 所有 gpts 模型 || 部分国产模型 支持多模态
+      return isGptsModel || isSupportVision;
+    } else {
+      return (
+        config.fileSupportType === FILE_SUPPORT_TYPE.ALL ||
+        config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE
+      );
+    }
+  }, [isSupportVision, config.fileSupportType, isStoreModel, isGptsModel]);
 
   // ========================================
   // const [uploadImages, setUploadImages] = useState<UploadFile[]>([]);
@@ -737,26 +744,23 @@ function useUploadFile(extra: {
   const getAcceptFileType = (model: ModelType | string) => {
     if (isSupportFunctionCall(model) && config.pluginConfig.enable) return "*";
 
-    if (isVisionModel(model) || isSpecImageModal(model)) {
+    if (
+      config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE ||
+      (isStoreModel && isSupportVision)
+    ) {
       return ".png, .jpg, .jpeg, .webp, .gif";
+    } else if (config.fileSupportType === FILE_SUPPORT_TYPE.ALL) {
+      return "*";
     } else if (model.includes("whisper")) {
       return ".flac, .mp3, .mp4, .mpeg, .mpga, .m4a, .ogg, .wav, .webm";
-    } else if (isSupportMultimodal(model)) {
-      return "*";
     }
     return "";
   };
   // ========================================
 
   useEffect(() => {
-    const supportMultimodal = isSupportMultimodal(currentModel);
     const show =
-      // Vision 模型
-      isVisionModel(currentModel) ||
-      // 多模态模型
       supportMultimodal ||
-      // 类似 vision 的模型
-      isSpecImageModal(currentModel) ||
       // 开启了使用插件的功能
       (config.pluginConfig.enable &&
         allPlugins.length > 0 &&
@@ -769,7 +773,12 @@ function useUploadFile(extra: {
       setUploadFiles([]);
       setUploading(false);
     }
-  }, [currentModel, config.pluginConfig.enable, allPlugins.length]);
+  }, [
+    currentModel,
+    config.pluginConfig.enable,
+    allPlugins.length,
+    supportMultimodal,
+  ]);
 
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
@@ -878,19 +887,32 @@ function useUploadFile(extra: {
   }
 
   async function dropUpload(files: File[]) {
-    if (
-      !config.pluginConfig.enable &&
-      !isSupportMultimodal(currentModel) &&
-      !isVisionModel(currentModel) &&
-      !isSpecImageModal(currentModel)
-    ) {
+    if (!config.pluginConfig.enable && !supportMultimodal) {
       return false;
     }
 
     const filterdFiles = Array.from(files).filter((f) => {
-      return config.pluginConfig.enable || supportMultimodal
-        ? true
-        : isImage((f as File).type);
+      console.log("🚀 ~ filterdFiles ~ isStoreModel:", isStoreModel);
+      if (isStoreModel) {
+        // app store 的模型, 只有部分才支持
+        // gpts 模型支持所有文件类型,
+        // 视觉模型 仅支持图片类型
+        return isGptsModel || (isSupportVision && isImage((f as File).type));
+      } else {
+        if (config.pluginConfig.enable && isSupportFunctionCall(currentModel)) {
+          return true;
+        }
+
+        if (config.fileSupportType === FILE_SUPPORT_TYPE.ALL) {
+          return true;
+        }
+
+        if (config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE) {
+          return isImage((f as File).type);
+        }
+      }
+
+      return false;
     });
 
     const images: UploadFile[] = [];
@@ -928,7 +950,6 @@ function useUploadFile(extra: {
     setUploading,
     showUploadAction,
     setShowUploadAction,
-    supportMultimodal,
     handleUpload,
     dropUpload,
     pasteUpload,
@@ -1233,7 +1254,11 @@ function _Chat(props: { promptStarters: string[] }) {
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
     setPromptHints([]);
-    if (!isMobileScreen) inputRef.current?.focus();
+    if (isMobileScreen) {
+      inputRef.current?.blur();
+    } else {
+      inputRef.current?.focus();
+    }
     setAutoScroll(true);
   };
 

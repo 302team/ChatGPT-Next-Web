@@ -470,4 +470,12 @@ export const ERROR_CODE = {
   "-10006": "TOTAL_QUOTA_ERROR", // 聊天机器人总额度不足
   "-10007": "DAILY_QUOTA_ERROR", // 聊天机器人当天额度不足
 };
+
 export type ERROR_CODE_TYPE = keyof typeof ERROR_CODE;
+
+// 模型是否支持多模态, 支持的话支持哪些类型
+export const FILE_SUPPORT_TYPE = {
+  NOTHING: 0,
+  ALL: 1,
+  ONLY_IMAGE: 2,
+};

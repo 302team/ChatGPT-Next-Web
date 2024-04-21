@@ -1,7 +1,6 @@
 import {
   trimTopic,
   getMessageTextContent,
-  isSupportMultimodal,
   isVisionModel,
   isSpecImageModal,
   uploadRemoteFile,

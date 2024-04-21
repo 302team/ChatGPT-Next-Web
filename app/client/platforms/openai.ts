@@ -31,11 +31,6 @@ import {
 import { prettyObject } from "@/app/utils/format";
 import { getClientConfig } from "@/app/config/client";
 import { makeAzurePath } from "@/app/azure";
-import {
-  getMessageTextContent,
-  getMessageImages,
-  isVisionModel,
-} from "@/app/utils";
 import { AuthType } from "@/app/locales/cn";
 import { getServerSideConfig } from "@/app/config/server";
 
