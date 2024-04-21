@@ -34,8 +34,9 @@ export interface Model {
   enable: boolean;
   model: string;
   show_name: string;
-  en_model_type?: string;
-  model_type?: string;
+  en_model_type: string;
+  model_type: string;
+  model_logo?: string;
 }
 
 export const DEFAULT_CONFIG = {

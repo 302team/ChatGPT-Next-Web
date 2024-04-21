@@ -189,6 +189,7 @@ const cn = {
     DeleteToast: "已删除会话",
     Revert: "撤销",
     Search: "搜索聊天",
+    ZeroShot: "去竞技",
   },
   Settings: {
     Title: "设置",

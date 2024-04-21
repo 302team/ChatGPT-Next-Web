@@ -367,7 +367,7 @@ function useScrollToBottom(
     const dom = scrollRef.current;
     if (dom) {
       requestAnimationFrame(() => {
-        setAutoScroll(true);
+        // setAutoScroll(true);
         dom.scrollTo(0, dom.scrollHeight);
       });
     }
@@ -1785,14 +1785,12 @@ function _Chat() {
                         <>
                           {["system"].includes(message.role) ? (
                             <Avatar avatar="2699-fe0f" />
-                          ) : (
-                            <MaskAvatar
-                              avatar={session.mask.avatar}
-                              model={
-                                message.model ||
-                                (session.mask.modelConfig.model as ModelType)
-                              }
+                          ) : getModel(message.model!).model_logo ? (
+                            <Avatar
+                              avatar={getModel(message.model!).model_logo}
                             />
+                          ) : (
+                            <Avatar model={message.model} />
                           )}
                         </>
                       )}

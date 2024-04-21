@@ -10,6 +10,7 @@ import BotIconDark from "../icons/logo-horizontal-dark.png";
 import ExportIcon from "../icons/share.svg";
 import QuestionIcon from "../icons/question.svg";
 import ResetIcon from "../icons/reload.svg";
+import ArrowRightIcon from "../icons/arrow-right.svg";
 
 import Locale from "../locales";
 
@@ -261,6 +262,7 @@ export function SideBar(props: { className?: string }) {
   const { onDragStart, shouldNarrow } = useDragSideBar();
   const [showAppDescModal, setShowAppDescModal] = useState(false);
   const config = useAppConfig();
+  const navigate = useNavigate();
   const isMobileScreen = useMobileScreen();
   const isIOSMobile = useMemo(
     () => isIOS() && isMobileScreen,
@@ -340,6 +342,19 @@ export function SideBar(props: { className?: string }) {
             />
           </div>
         </div>
+        {isMobileScreen && (
+          <div>
+            <IconButton
+              className={styles["sidebar-tail-button"]}
+              icon={<ArrowRightIcon />}
+              text={shouldNarrow ? undefined : Locale.Home.ZeroShot}
+              onClick={() => {
+                navigate(Path.Chat);
+              }}
+              shadow
+            />
+          </div>
+        )}
       </div>
 
       <div className={styles["powerd"]}>
@@ -352,12 +367,12 @@ export function SideBar(props: { className?: string }) {
         />
       </div>
 
-      <div
+      {/* <div
         className={styles["sidebar-drag"]}
         onPointerDown={(e) => onDragStart(e as any)}
       >
         <DragIcon />
-      </div>
+      </div> */}
 
       {showAppDescModal && (
         <AppDescription

@@ -193,6 +193,7 @@ const en: LocaleType = {
     DeleteToast: "Chat Deleted",
     Revert: "Revert",
     Search: "Search Chat",
+    ZeroShot: "Go Arena",
   },
   Settings: {
     Title: "Settings",
