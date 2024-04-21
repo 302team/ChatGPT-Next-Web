@@ -438,7 +438,7 @@ export function SideBar(props: { className?: string }) {
         searchBarWrapRef.current.style.height = "0px";
         searchBarWrapRef.current.style.marginBottom = "0px";
       } else {
-        searchBarWrapRef.current.style.height = "36px";
+        searchBarWrapRef.current.style.height = "38px";
         searchBarWrapRef.current.style.marginBottom = "15px";
       }
     }
