@@ -385,7 +385,7 @@ function PromptInput(props: {
   return (
     <textarea
       className={styles["modal-input"]}
-      autoFocus
+      // autoFocus
       value={input}
       onInput={(e) => onInput(e.currentTarget.value)}
       rows={props.rows ?? 3}
