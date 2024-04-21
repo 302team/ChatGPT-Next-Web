@@ -10,7 +10,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { MaskAvatar } from "./mask";
 import { Mask } from "../store/mask";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, TouchEventHandler } from "react";
 import { showConfirm } from "./ui-lib";
 import { useMobileScreen } from "../utils";
 
@@ -26,16 +26,49 @@ export function ChatItem(props: {
   narrow?: boolean;
   mask: Mask;
 }) {
-  const draggableRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (props.selected && draggableRef.current) {
-      draggableRef.current?.scrollIntoView({
-        block: "center",
-      });
-    }
-  }, [props.selected]);
-
   const { pathname: currentPath } = useLocation();
+
+  const [moveStyle, setMoveStyle] = useState({});
+  const [startX, setStartX] = useState(0);
+
+  const handleTouchStart: TouchEventHandler = (e) => {
+    setStartX(e.targetTouches[0].pageX);
+  };
+
+  const handleTouchMove: TouchEventHandler = (e) => {
+    const target = e.targetTouches[0];
+    const moveX = target.pageX - startX;
+
+    const distance = moveX >= 0 ? 0 : moveX;
+
+    setMoveStyle({
+      transform: `translateX(${distance}px)`,
+      transition: "transform 0.3s ease-out",
+    });
+  };
+
+  const handleTouchEnd: TouchEventHandler = (e) => {
+    const distance = e.changedTouches[0].pageX - startX;
+
+    if (Math.abs(distance) < 200) {
+      // 如果没有超过阈值, 回归原位
+      setMoveStyle({
+        transform: `translateX(0px)`,
+        transition: "transform 0.3s ease-in",
+      });
+    } else {
+      // 删除该记录
+      setMoveStyle({
+        opacity: "0",
+        height: "0",
+        transition: "all 0.5s ease",
+      });
+      setTimeout(() => {
+        props.onDelete?.();
+      }, 450);
+    }
+  };
+
   return (
     <div
       className={`${styles["chat-item"]} ${
@@ -45,6 +78,10 @@ export function ChatItem(props: {
       }`}
       onClick={props.onClick}
       title={`${props.title}\n${Locale.ChatItem.ChatItemCount(props.count)}`}
+      style={moveStyle}
+      onTouchStartCapture={handleTouchStart}
+      onTouchMoveCapture={handleTouchMove}
+      onTouchEndCapture={handleTouchEnd}
     >
       {props.narrow ? (
         <div className={styles["chat-item-narrow"]}>
@@ -112,12 +149,12 @@ export function ChatList(props: { narrow?: boolean }) {
             selectSession(i);
           }}
           onDelete={async () => {
-            if (
-              (!props.narrow && !isMobileScreen) ||
-              (await showConfirm(Locale.Home.DeleteChat))
-            ) {
-              chatStore.deleteSession(i);
-            }
+            // if (
+            //   (!props.narrow && !isMobileScreen) ||
+            //   (await showConfirm(Locale.Home.DeleteChat))
+            // ) {
+            // }
+            chatStore.deleteSession(i);
           }}
           narrow={props.narrow}
           mask={item.mask}
