@@ -1785,7 +1785,8 @@ function _Chat() {
                         <>
                           {["system"].includes(message.role) ? (
                             <Avatar avatar="2699-fe0f" />
-                          ) : getModel(message.model!).model_logo ? (
+                          ) : getModel(message.model!) &&
+                            getModel(message.model!).model_logo ? (
                             <Avatar
                               avatar={getModel(message.model!).model_logo}
                             />
