@@ -1,4 +1,11 @@
-import { useEffect, useRef, useMemo, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useMemo,
+  useState,
+  TouchEventHandler,
+  MouseEventHandler,
+} from "react";
 
 import styles from "./home.module.scss";
 import uiStyles from "./ui-lib.module.scss";
@@ -417,7 +424,6 @@ export function SideBar(props: { className?: string }) {
   );
 
   // search
-  const [showSearchBar, setShowSearchBar] = useState(false);
   const searchBarWrapRef = useRef<HTMLDivElement>(null);
   const searchBarRef = useRef<SearchInputRef>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -426,16 +432,14 @@ export function SideBar(props: { className?: string }) {
     if (shouldNarrow) stopSearch();
   }, [shouldNarrow]);
 
-  const toggleSearchBar = () => {
+  const toggleSearchBar = (show: boolean) => {
     if (searchBarWrapRef.current) {
-      if (showSearchBar) {
+      if (!show) {
         searchBarWrapRef.current.style.height = "0px";
         searchBarWrapRef.current.style.marginBottom = "0px";
-        setShowSearchBar(false);
       } else {
         searchBarWrapRef.current.style.height = "36px";
         searchBarWrapRef.current.style.marginBottom = "15px";
-        setShowSearchBar(true);
       }
     }
   };
@@ -456,6 +460,41 @@ export function SideBar(props: { className?: string }) {
   });
 
   useHotKey();
+
+  const [startY, setStartY] = useState(0);
+
+  const handleTouchStart: TouchEventHandler = (e) => {
+    setStartY(e.targetTouches[0].pageY);
+  };
+
+  const handleTouchEnd: TouchEventHandler = (e) => {
+    const distance = e.changedTouches[0].pageY - startY;
+    console.log("🚀 ~ distance:", distance);
+
+    if (distance > 0) {
+      // 下滑时, 超过阈值才显示 搜索栏
+      if (Math.abs(distance) > 50) toggleSearchBar(true);
+    } else {
+      // 上滑时 超过阈值隐藏 搜索栏
+      if (Math.abs(distance) > 50) toggleSearchBar(false);
+    }
+  };
+
+  const handleMouseDown: MouseEventHandler = (e) => {
+    setStartY(e.pageY);
+  };
+
+  const handleMouseUp: MouseEventHandler = (e) => {
+    const distance = e.pageY - startY;
+
+    if (distance > 0) {
+      // 下滑时, 超过阈值才显示 搜索栏
+      if (Math.abs(distance) > 30) toggleSearchBar(true);
+    } else {
+      // 上滑时 超过阈值隐藏 搜索栏
+      if (Math.abs(distance) > 30) toggleSearchBar(false);
+    }
+  };
 
   return (
     <div
@@ -540,6 +579,10 @@ export function SideBar(props: { className?: string }) {
       {!isSearching && (
         <div
           className={styles["sidebar-body"]}
+          onTouchStartCapture={handleTouchStart}
+          onTouchEndCapture={handleTouchEnd}
+          onMouseDownCapture={handleMouseDown}
+          onMouseUpCapture={handleMouseUp}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               // navigate(Path.Home + location.search);
@@ -569,14 +612,14 @@ export function SideBar(props: { className?: string }) {
               shadow
             />
           </div>
-          <div className={styles["sidebar-action"]}>
+          {/* <div className={styles["sidebar-action"]}>
             <IconButton
               className={styles["sidebar-tail-button"]}
               icon={<SearchIcon />}
               onClick={() => toggleSearchBar()}
               shadow
             />
-          </div>
+          </div> */}
         </div>
         <div>
           <IconButton
