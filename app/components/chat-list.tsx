@@ -49,14 +49,9 @@ export function ChatItem(props: {
 
   const handleTouchEnd: TouchEventHandler = (e) => {
     const distance = e.changedTouches[0].pageX - startX;
+    console.log("🚀 ~ distance:", distance);
 
-    if (Math.abs(distance) < 200) {
-      // 如果没有超过阈值, 回归原位
-      setMoveStyle({
-        transform: `translateX(0px)`,
-        transition: "transform 0.3s ease-in",
-      });
-    } else {
+    if (distance < 0 && Math.abs(distance) > 200) {
       // 删除该记录
       setMoveStyle({
         opacity: "0",
@@ -66,6 +61,12 @@ export function ChatItem(props: {
       setTimeout(() => {
         props.onDelete?.();
       }, 450);
+    } else {
+      // 如果没有超过阈值, 回归原位
+      setMoveStyle({
+        transform: `translateX(0px)`,
+        transition: "transform 0.3s ease-in",
+      });
     }
   };
 
