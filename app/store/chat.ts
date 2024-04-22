@@ -621,6 +621,11 @@ export const useChatStore = createPersistStore(
         const pluginStore = usePluginStore.getState();
         const allPlugins = pluginStore.getUserPlugins().filter((i) => i.enable);
 
+        // 最新回复的顶到最前面
+        if (get().currentSessionIndex !== 0) {
+          get().moveSession(get().currentSessionIndex, 0);
+        }
+
         // save user's and bot's message
         get().updateCurrentSession((session) => {
           const savedUserMessage = {
