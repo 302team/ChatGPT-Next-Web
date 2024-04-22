@@ -323,7 +323,37 @@
   overflow-x: hidden;
 }
 
+.chat-item-wrap {
+  position: relative;
+  border-radius: 14px;
+  background-color: #fe3931;
+
+  .chat-item-touch-delete {
+    position: absolute;
+    top: 0;
+    right: 1px;
+    transition: all 0.3s ease-out;
+    transform-origin: right;
+    width: 68px;
+    height: 100%;
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-left: 1px solid #fff;
+
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
 .chat-item {
+  z-index: 1;
   padding: 10px 14px;
   background-color: var(--gray);
   border-radius: 10px;
