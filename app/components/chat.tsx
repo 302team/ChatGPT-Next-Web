@@ -1231,6 +1231,10 @@ function _Chat(props: { promptStarters: string[] }) {
 
   const doSubmit = (userInput: string) => {
     if (userInput.trim() === "" && exAttr.uploadFiles.length === 0) return;
+    // glm-4v 模型不输入文字不给发送
+    if (currentModel.includes("glm-4v") && userInput.trim() === "") {
+      return;
+    }
 
     const matchCommand = chatCommands.match(userInput);
     if (matchCommand.matched) {
