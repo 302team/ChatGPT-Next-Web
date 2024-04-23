@@ -26,6 +26,7 @@ export function ChatItem(props: {
   index: number;
   narrow?: boolean;
   mask: Mask;
+  isMobileScreen: boolean;
 }) {
   const { pathname: currentPath } = useLocation();
 
@@ -173,25 +174,27 @@ export function ChatItem(props: {
           </>
         )}
 
-        <div
-          className={styles["chat-item-delete"]}
-          onClickCapture={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        {!props.isMobileScreen && (
+          <div
+            className={styles["chat-item-delete"]}
+            onClickCapture={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
 
-            // 删除该记录
-            setWrapStyle({
-              opacity: "0.001",
-              backgroundColor: "#fe39312b",
-              transition: "all 0.5s ease",
-            });
-            setTimeout(() => {
-              props.onDelete?.();
-            }, 450);
-          }}
-        >
-          <DeleteIcon />
-        </div>
+              // 删除该记录
+              setWrapStyle({
+                opacity: "0.001",
+                backgroundColor: "#fe39312b",
+                transition: "all 0.5s ease",
+              });
+              setTimeout(() => {
+                props.onDelete?.();
+              }, 450);
+            }}
+          >
+            <DeleteIcon />
+          </div>
+        )}
       </div>
 
       <div
@@ -255,6 +258,7 @@ export function ChatList(props: { narrow?: boolean }) {
           }}
           narrow={props.narrow}
           mask={item.mask}
+          isMobileScreen={isMobileScreen}
         />
       ))}
     </div>
