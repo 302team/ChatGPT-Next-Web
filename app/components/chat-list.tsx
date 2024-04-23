@@ -85,7 +85,10 @@ export function ChatItem(props: {
         });
         setShowDeleteBtn(true);
       } else if (distance < 0 && Math.abs(distance) >= 200) {
-        // 删除该记录
+        setChatItemDeleteStyle({
+          opacity: 0,
+          transform: "scale(0)",
+        });
         setMoveStyle({
           opacity: "0",
           height: "0",
@@ -96,6 +99,7 @@ export function ChatItem(props: {
           backgroundColor: "#fe39312b",
           transition: "all 0.5s ease",
         });
+        // 删除该记录
         setTimeout(() => {
           props.onDelete?.();
         }, 450);
@@ -172,9 +176,18 @@ export function ChatItem(props: {
         <div
           className={styles["chat-item-delete"]}
           onClickCapture={(e) => {
-            props.onDelete?.();
             e.preventDefault();
             e.stopPropagation();
+
+            // 删除该记录
+            setWrapStyle({
+              opacity: "0.001",
+              backgroundColor: "#fe39312b",
+              transition: "all 0.5s ease",
+            });
+            setTimeout(() => {
+              props.onDelete?.();
+            }, 450);
           }}
         >
           <DeleteIcon />
