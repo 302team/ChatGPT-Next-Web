@@ -392,7 +392,7 @@ export function isVisionModel(model: string) {
 // 具备视觉功能的模型({ type: "image_url", image_url: URL })
 export function isSpecImageModal(model: string) {
   const m = model.toLocaleLowerCase();
-  const visionKeywords = ["glm-4v", "yi-vl-plus"];
+  const visionKeywords = ["glm-4v", "yi-vl-plus", "gemini-1.5-pro"];
   const isGpt4Turbo =
     model.includes("gpt-4-turbo") && !model.includes("preview");
 

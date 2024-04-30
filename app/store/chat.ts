@@ -36,6 +36,8 @@ import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
+import { identifyDefaultClaudeModel } from "../utils/checkers";
+
 import { usePluginStore } from "./plugin";
 import { useAccessStore } from "./access";
 
@@ -186,7 +188,7 @@ function fillTemplateWith(input: string, modelConfig: ModelConfig) {
     ServiceProvider: serviceProvider,
     cutoff,
     model: modelConfig.model,
-    time: new Date().toLocaleString(),
+    time: new Date().toString(),
     lang: getLang(),
     input: input,
     language: window.navigator.language,

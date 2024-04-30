@@ -36,6 +36,7 @@ import {
   ModelType,
   BOT_HELLO,
 } from "../store";
+import { identifyDefaultClaudeModel } from "../utils/checkers";
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
 import { ConfigProvider } from "antd";
@@ -357,29 +358,29 @@ function Screen() {
   );
 }
 
-export function useLoadData() {
-  const config = useAppConfig();
+// export function useLoadData() {
+//   const config = useAppConfig();
 
-  var api: ClientApi;
-  if (config.modelConfig.model.startsWith("gemini")) {
-    api = new ClientApi(ModelProvider.GeminiPro);
-  } else if (config.modelConfig.model.startsWith("claude")) {
-    api = new ClientApi(ModelProvider.Claude);
-  } else {
-    api = new ClientApi(ModelProvider.GPT);
-  }
-  useEffect(() => {
-    (async () => {
-      const models = await api.llm.models();
-      config.mergeModels(models);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-}
+//   var api: ClientApi;
+//   if (config.modelConfig.model.startsWith("gemini")) {
+//     api = new ClientApi(ModelProvider.GeminiPro);
+//   } else if (config.modelConfig.model.startsWith("claude")) {
+//     api = new ClientApi(ModelProvider.Claude);
+//   } else {
+//     api = new ClientApi(ModelProvider.GPT);
+//   }
+//   useEffect(() => {
+//     (async () => {
+//       const models = await api.llm.models();
+//       config.mergeModels(models);
+//     })();
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, []);
+// }
 
 export function Home() {
   useSwitchTheme();
-  useLoadData();
+  // useLoadData();
   useHtmlLang();
 
   useEffect(() => {
