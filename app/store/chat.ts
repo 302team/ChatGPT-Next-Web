@@ -660,7 +660,6 @@ export const useChatStore = createPersistStore(
               ? webSearchPlugin.engine
               : "searchapi";
 
-          // TODO: Plugin chat
           api.llm.toolAgentChat({
             messages: sendMessages,
             config: { ...modelConfig, stream: true },
@@ -1208,6 +1207,8 @@ export const useChatStore = createPersistStore(
         var api: ClientApi = new ClientApi(ModelProvider.GPT);
         if (modelConfig.model.startsWith("gemini")) {
           // api = new ClientApi(ModelProvider.GeminiPro);
+        } else if (modelConfig.model.startsWith("claude")) {
+          // api = new ClientApi(ModelProvider.Claude);
         }
 
         // remove error messages if any

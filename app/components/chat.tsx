@@ -511,22 +511,6 @@ export function ChatActions(props: {
   const [showModelSelector, setShowModelSelector] = useState(false);
   const [showUploadImage, setShowUploadImage] = useState(false);
 
-  useEffect(() => {
-    // if current model is not available
-    // switch to first available model
-    const isUnavaliableModel = !models.some((m) => m.name === currentModel);
-    if (isUnavaliableModel && models.length > 0) {
-      // show next model to default model if exist
-      let nextModel: ModelType = (
-        models.find((model) => model.isDefault) || models[0]
-      ).name;
-      chatStore.updateCurrentSession(
-        (session) => (session.mask.modelConfig.model = nextModel),
-      );
-      showToast(nextModel);
-    }
-  }, [chatStore, currentModel, models]);
-
   return (
     <div className={styles["chat-input-actions"]}>
       {couldStop && (
