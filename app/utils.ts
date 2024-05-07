@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { showToast } from "./components/ui-lib";
 import Locale from "./locales";
 import { MultimodalContent, RequestMessage } from "./client/api";
+import { UAParser } from "ua-parser-js";
 
 export function trimTopic(topic: string) {
   // Fix an issue where double quotes still show in the Indonesian language
@@ -754,4 +755,71 @@ export function getFileBase64(file: File) {
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+}
+
+export function getDevice(ua?: string) {
+  const parser = new UAParser(ua);
+
+  let device = "";
+  const result = parser.getResult();
+
+  if (result.device.vendor) {
+    device += `${result.device.vendor} ${result.device.model}`;
+  } else {
+    device += `${result.os.name} ${result.os.version}`;
+  }
+
+  if (result.browser.name && result.browser.version) {
+    device += ` ${result.browser.name}`;
+  }
+
+  return device;
+}
+
+/**
+ * 根据模板格式化日期格式
+ * @param {*} date 格式化的时间
+ * @param {*} fmt 格式化的模板 YYYY-MM-DD hh:mm:ss
+ */
+export function formatDate(date: Date, fmt: string) {
+  // 因为年份是4位数, 所以先匹配替换模板中的年份格式
+  if (/(Y+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, `${date.getFullYear()}`);
+  }
+
+  // 模板正则对象
+  let o = {
+    "M+": date.getMonth() + 1,
+    "D+": date.getDay(),
+    "h+": date.getHours(),
+    "m+": date.getMinutes(),
+    "s+": date.getSeconds(),
+  };
+
+  Object.entries(o).forEach(([key, value]) => {
+    // 先转换为字符串
+    let str = value + "";
+
+    // 动态生成模板正则, 匹配模板格式; 如果模板的月日是一位数 不需要补0
+    if (new RegExp(`(${key})`).test(fmt)) {
+      fmt = fmt.replace(
+        RegExp.$1,
+        RegExp.length === 1 ? str : /* 补零 */ padLeftZero(str),
+      );
+    }
+  });
+
+  // 返回替换之后的模板
+  return fmt;
+}
+
+/**
+ * 在字符串左侧添加0
+ * @param {*} str 需要填充的字符串
+ */
+export function padLeftZero(str: string) {
+  // 截取字符串的长度位数之后的字符串
+  // 如果传入的是 1 => 001 => 01
+  // 如果传入的是 11 => 0011 => 11
+  return ("00" + str).substr(str.length);
 }

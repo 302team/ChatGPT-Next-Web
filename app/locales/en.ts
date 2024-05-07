@@ -304,6 +304,28 @@ const en: LocaleType = {
         SubTitle:
           "Local data storage occupancy. The browser LocalStorage is only 5M. When the storage is almost full, it is recommended to export the data for backup and then delete it.",
       },
+
+      Actions: {
+        Upload: "Upload",
+        Download: "Download",
+      },
+      SyncToCloud: {
+        Title: "Upload chat records to the cloud.",
+        SubTitle:
+          "If it is the first time to upload, a synchronization password will be generated automatically.",
+      },
+      SyncFromCloud: {
+        Title: "Download chat records from the cloud.",
+        SubTitle:
+          "Please fill in the synchronization password. Please note that the current chat records will be overwritten.",
+      },
+      UploadSucceed: "Upload Succeed",
+      DownloadSucceed: "Download Succeed",
+      UploadFailed: "Upload Failed",
+      DownloadFailed: "Download Failed",
+      EmptyPwd: "Please enter password",
+      EmptyLogs: "No records",
+      Logs: "Sync Records",
     },
     Mask: {
       Splash: {

@@ -77,3 +77,33 @@
   font-size: 14px;
   color: var(--black);
 }
+
+.list-item-column {
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+
+  .list-item-right {
+    align-self: flex-end;
+  }
+}
+
+.list-item-right {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.input {
+  &:hover,
+  &:focus {
+    border-color: #d9d9d9;
+  }
+}
+
+.sync-pwd-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

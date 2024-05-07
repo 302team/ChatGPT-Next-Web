@@ -13,18 +13,14 @@ import uiStyles from "./ui-lib.module.scss";
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
 import QuestionIcon from "../icons/question.svg";
-import GithubIcon from "../icons/github.svg";
 import ChatGptIcon from "../icons/logo.png";
 import AddIcon from "../icons/add.svg";
-import CloseIcon from "../icons/close.svg";
-import DeleteIcon from "../icons/delete.svg";
 import MaskIcon from "../icons/mask.svg";
 import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
 import NextImage from "next/image";
 import BotIconDark from "../icons/logo-horizontal-dark.png";
 import ExportIcon from "../icons/share.svg";
-import SearchIcon from "../icons/search.svg";
 
 import Locale from "../locales";
 
@@ -34,6 +30,7 @@ import {
   DEFAULT_SIDEBAR_WIDTH,
   GPT302_WEBSITE_URL,
   GPTS302_WEBSITE_URL,
+  LAST_INPUT_TIME,
   MAX_SIDEBAR_WIDTH,
   MIN_SIDEBAR_WIDTH,
   NARROW_SIDEBAR_WIDTH,
@@ -48,8 +45,10 @@ import { Modal, showConfirm, showToast } from "./ui-lib";
 import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
 
 import { Spin, Result, Button } from "antd";
+import { SyncOutlined } from "@ant-design/icons";
 import { Loading } from "./home";
 import { SearchBar, SearchInputRef } from "./search-bar";
+import { useSyncStore } from "../store/sync";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -450,6 +449,41 @@ export function SideBar(props: { className?: string }) {
     // toggleSearchBar();
   };
 
+  // sync
+  const syncStore = useSyncStore();
+  const [syncLoading, setSyncLoading] = useState(false);
+  const handleSync = async () => {
+    if (syncLoading) return;
+    setSyncLoading(true);
+
+    try {
+      // 首先同步一下记录
+      await syncStore.getLogs(syncStore.syncPassword);
+
+      // 对比时间戳
+      if (syncStore.syncRecordList.length) {
+        const lastUpdateTime = localStorage.getItem(LAST_INPUT_TIME);
+        const record = syncStore.syncRecordList[0];
+
+        const diff = Number(lastUpdateTime) - Number(record.timestamp);
+
+        if (diff > 0) {
+          // 本地更新时间比较新, 上传
+          await syncStore.upload();
+        } else if (diff < 0) {
+          // 远程更新时间比较新, 下载
+          await syncStore.downloadFromIndex();
+        }
+      }
+      showToast(Locale.Settings.Sync.Success);
+    } catch (error) {
+      console.error("[Sync] error:", error);
+      showToast(Locale.Settings.Sync.Fail);
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
   useGptsConfigMessage({
     callback(data: any) {
       setShowGptsConfigModal(false);
@@ -612,14 +646,16 @@ export function SideBar(props: { className?: string }) {
               shadow
             />
           </div>
-          {/* <div className={styles["sidebar-action"]}>
-            <IconButton
-              className={styles["sidebar-tail-button"]}
-              icon={<SearchIcon />}
-              onClick={() => toggleSearchBar()}
-              shadow
-            />
-          </div> */}
+          {syncStore.syncPassword && (
+            <div className={styles["sidebar-action"]}>
+              <IconButton
+                className={styles["sidebar-tail-button"]}
+                icon={<SyncOutlined spin={syncLoading} />}
+                onClick={handleSync}
+                shadow
+              />
+            </div>
+          )}
         </div>
         <div>
           <IconButton

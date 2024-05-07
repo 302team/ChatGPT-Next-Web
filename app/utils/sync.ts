@@ -134,6 +134,10 @@ export function setLocalAppState(appState: AppState) {
   });
 }
 
+export function setLocalChatState(chatState: AppState[StoreKey.Chat]) {
+  LocalStateSetters[StoreKey.Chat](chatState);
+}
+
 export function mergeAppState(localState: AppState, remoteState: AppState) {
   Object.keys(localState).forEach(<T extends keyof AppState>(k: string) => {
     const key = k as T;

@@ -24,6 +24,7 @@ import {
   StoreKey,
   SUMMARIZE_MODEL,
   GEMINI_SUMMARIZE_MODEL,
+  LAST_INPUT_TIME,
 } from "../constant";
 import {
   ClientApi,
@@ -499,6 +500,8 @@ export const useChatStore = createPersistStore(
           currentSessionIndex: 0,
           sessions: [session].concat(state.sessions),
         }));
+
+        localStorage.setItem(LAST_INPUT_TIME, `${Date.now()}`);
       },
 
       nextSession(delta: number) {

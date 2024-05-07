@@ -300,6 +300,26 @@ const cn = {
         SubTitle:
           "本地数据存储占用情况，浏览器LocalStorage只有5M，存储快满时，建议把数据导出备份，然后删除",
       },
+
+      Actions: {
+        Upload: "上传",
+        Download: "下载",
+      },
+      SyncToCloud: {
+        Title: "上传聊天记录到云端",
+        SubTitle: "如果是第一次进行上传, 会自动生成同步密码",
+      },
+      SyncFromCloud: {
+        Title: "从云端下载聊天记录",
+        SubTitle: "请填写同步密码, 请注意, 当前聊天记录会被覆盖",
+      },
+      UploadSucceed: "上传成功",
+      DownloadSucceed: "下载成功",
+      UploadFailed: "上传失败",
+      DownloadFailed: "下载失败",
+      EmptyPwd: "请输入同步密码",
+      EmptyLogs: "暂无同步记录",
+      Logs: "同步记录",
     },
     Mask: {
       Splash: {

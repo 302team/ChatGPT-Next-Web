@@ -1,6 +1,5 @@
 import { getClientConfig } from "../config/client";
-import { Updater } from "../typing";
-import { ApiPath, STORAGE_KEY, StoreKey } from "../constant";
+import { ApiPath, LAST_INPUT_TIME, STORAGE_KEY, StoreKey } from "../constant";
 import { createPersistStore } from "../utils/store";
 import {
   AppState,
@@ -8,17 +7,27 @@ import {
   GetStoreState,
   mergeAppState,
   setLocalAppState,
+  setLocalChatState,
 } from "../utils/sync";
-import { downloadAs, readFromFile } from "../utils";
+import { downloadAs, getDevice, readFromFile } from "../utils";
 import { showToast } from "../components/ui-lib";
 import Locale from "../locales";
 import { createSyncClient, ProviderType } from "../utils/cloud";
 import { corsPath } from "../utils/cors";
+import { useAccessStore } from "./access";
+
+import UaParser from "ua-parser-js";
 
 export interface WebDavConfig {
   server: string;
   username: string;
   password: string;
+}
+
+export interface SyncRecordItem {
+  device: string;
+  timestamp: number;
+  log_url: string;
 }
 
 const isApp = !!getClientConfig()?.isApp;
@@ -43,6 +52,10 @@ const DEFAULT_SYNC_STATE = {
 
   lastSyncTime: 0,
   lastProvider: "",
+
+  // sync cloud password
+  syncPassword: "",
+  syncRecordList: [] as Array<SyncRecordItem>,
 };
 
 export const useSyncStore = createPersistStore(
@@ -115,6 +128,115 @@ export const useSyncStore = createPersistStore(
     async check() {
       const client = this.getClient();
       return await client.check();
+    },
+
+    async upload() {
+      const apiDomain = useAccessStore.getState().apiDomain;
+
+      try {
+        const state = getLocalAppState()[StoreKey.Chat];
+        const datePart = localStorage.getItem(LAST_INPUT_TIME) ?? Date.now();
+
+        const blob = new Blob([JSON.stringify(state)], {
+          type: "application/json",
+        });
+        const fileName = `Backup-${datePart}.json`;
+        const file = new File([blob], fileName, { type: blob.type });
+
+        const userCode = window.location.hostname.split(".")[0];
+        // 上传
+        // 如果有密码，就带密码上传
+        // 没密码，后端就需要创建密码，然后再上传
+        // 创建完密码，需要回显，并且显示到 “下载” 的输入框
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("share_code", userCode);
+        fd.append("sync_pwd", get().syncPassword);
+        fd.append("timestamp", `${datePart}`);
+        fd.append("device", getDevice());
+
+        // 上传.
+        const res = await fetch(
+          `${apiDomain}/gpt/api/chat/record/sync/upload`,
+          {
+            method: "POST",
+            body: fd,
+          },
+        ).then((res) => res.json());
+        if (res.code === 0) {
+          showToast(Locale.Settings.Sync.UploadSucceed);
+          get().update((store) => {
+            store.syncPassword = res.data.sync_pwd;
+            store.syncRecordList = [res.data.file_url]
+              .concat(store.syncRecordList)
+              .slice(0, 3);
+          });
+        } else {
+          showToast(`${Locale.Settings.Sync.UploadFailed}: ${res.msg}`);
+        }
+      } catch (e) {
+        console.error("[Upload]", e);
+        showToast(Locale.Settings.Sync.UploadFailed);
+      }
+    },
+
+    async getLogs(syncPwd: string) {
+      const apiDomain = useAccessStore.getState().apiDomain;
+      try {
+        const res = await fetch(`${apiDomain}/gpt/api/chat/record/sync/logs`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          },
+          body: new URLSearchParams({
+            share_code: window.location.hostname.split(".")[0],
+            sync_pwd: syncPwd,
+          }),
+        }).then((res) => res.json());
+
+        if (res.code === 0) {
+          const logs = res.data.logs;
+          get().update((store) => {
+            store.syncRecordList = logs;
+          });
+        } else {
+          showToast(`${Locale.Settings.Sync.DownloadFailed}: ${res.msg}`);
+        }
+      } catch (e) {
+        console.error("[Download]", e);
+        showToast(Locale.Settings.Sync.DownloadFailed);
+      }
+    },
+
+    async download(syncPwd: string) {
+      await this.getLogs(syncPwd);
+      this.downloadFromIndex(0);
+    },
+
+    async downloadFromIndex(index?: number) {
+      try {
+        const lasetLog = get().syncRecordList[index ?? 0];
+
+        if (!lasetLog) {
+          return showToast(Locale.Settings.Sync.EmptyLogs);
+        }
+        const rawContent = await fetch(lasetLog.log_url).then((res) => {
+          return res.json();
+        });
+
+        const remoteState = rawContent as AppState[StoreKey.Chat];
+        // 直接覆盖
+        // setLocalAppState(remoteState);
+        setLocalChatState(remoteState);
+        showToast(Locale.Settings.Sync.DownloadSucceed);
+
+        setTimeout(() => {
+          location.reload();
+        }, 500);
+      } catch (e) {
+        console.error("[Download]", e);
+        showToast(Locale.Settings.Sync.DownloadFailed);
+      }
     },
   }),
   {

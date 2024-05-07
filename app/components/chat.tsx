@@ -112,6 +112,7 @@ import {
   FILE_BASE64_ICON,
   FILE_SUPPORT_TYPE,
   LAST_INPUT_KEY,
+  LAST_INPUT_TIME,
   ModelProvider,
   Path,
   REQUEST_TIMEOUT_MS,
@@ -1253,6 +1254,7 @@ function _Chat(props: { promptStarters: string[] }) {
       .then(() => setIsLoading(false));
 
     localStorage.setItem(LAST_INPUT_KEY, userInput);
+    localStorage.setItem(LAST_INPUT_TIME, `${Date.now()}`);
     setUserInput("");
     setPromptHints([]);
     if (isMobileScreen) {

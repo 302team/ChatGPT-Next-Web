@@ -110,6 +110,7 @@ export const useAccessStore = createPersistStore(
     },
 
     fetch() {
+      console.log("fetch config");
       if (fetchState > 0 || getClientConfig()?.buildMode === "export") return;
       fetchState = 1;
       fetch("/api/config", {
