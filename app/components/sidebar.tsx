@@ -646,11 +646,16 @@ export function SideBar(props: { className?: string }) {
               shadow
             />
           </div>
-          {syncStore.syncPassword && (
+          {syncStore.enable && syncStore.syncPassword && (
             <div className={styles["sidebar-action"]}>
               <IconButton
                 className={styles["sidebar-tail-button"]}
-                icon={<SyncOutlined spin={syncLoading} />}
+                icon={
+                  <SyncOutlined
+                    style={{ fontSize: "16px", color: "#3D3D3D" }}
+                    spin={syncLoading}
+                  />
+                }
                 onClick={handleSync}
                 shadow
               />
