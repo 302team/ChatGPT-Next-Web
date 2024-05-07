@@ -199,6 +199,9 @@ export const useSyncStore = createPersistStore(
           const logs = res.data.logs;
           get().update((store) => {
             store.syncRecordList = logs;
+            if (logs.length > 0) {
+              store.syncPassword = syncPwd;
+            }
           });
         } else {
           showToast(`${Locale.Settings.Sync.DownloadFailed}: ${res.msg}`);

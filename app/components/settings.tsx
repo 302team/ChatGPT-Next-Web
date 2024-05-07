@@ -380,16 +380,9 @@ function SyncItems() {
     if (downloading) return;
 
     setDownloading(true);
-    syncStore
-      .download(syncFromCloudPwd)
-      .then((res) => {
-        syncStore.update((state) => {
-          state.syncPassword = syncFromCloudPwd;
-        });
-      })
-      .finally(() => {
-        setDownloading(false);
-      });
+    syncStore.download(syncFromCloudPwd).finally(() => {
+      setDownloading(false);
+    });
   };
 
   const [showLogsModal, setShowLogsModal] = useState(false);
