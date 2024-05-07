@@ -554,6 +554,7 @@ export function Settings(props: {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const config = useAppConfig();
   const updateConfig = config.update;
+  const syncStore = useSyncStore();
 
   const accessStore = useAccessStore();
 
@@ -720,7 +721,8 @@ export function Settings(props: {
           </ListItem>
         </List>
 
-        <SyncItems />
+        {syncStore.enable && <SyncItems />}
+
         <LocalStorage />
         <DangerItems />
       </div>

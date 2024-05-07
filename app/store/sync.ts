@@ -53,6 +53,7 @@ const DEFAULT_SYNC_STATE = {
   lastSyncTime: 0,
   lastProvider: "",
 
+  enable: true,
   // sync cloud password
   syncPassword: "",
   syncRecordList: [] as Array<SyncRecordItem>,
@@ -241,7 +242,7 @@ export const useSyncStore = createPersistStore(
   }),
   {
     name: StoreKey.Sync,
-    version: 1.2,
+    version: 1.3,
 
     migrate(persistedState, version) {
       const newState = persistedState as typeof DEFAULT_SYNC_STATE;
@@ -257,6 +258,10 @@ export const useSyncStore = createPersistStore(
         ) {
           newState.proxyUrl = "";
         }
+      }
+
+      if (version < 1.3) {
+        newState.enable = true;
       }
 
       return newState as any;

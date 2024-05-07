@@ -75,8 +75,6 @@ export const DEFAULT_CONFIG = {
   },
 
   fileSupportType: 0,
-
-  syncPwd: "",
 };
 
 export const DEFAULT_SETTING = {

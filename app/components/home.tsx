@@ -43,6 +43,7 @@ import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
 import { Plugin, usePluginStore } from "../store/plugin";
+import { useSyncStore } from "../store/sync";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -148,6 +149,7 @@ function ChatWindow() {
   const accessStore = useAccessStore();
   const chatStore = useChatStore();
   const config = useAppConfig();
+  const syncStore = useSyncStore();
   const isHome = location.pathname === Path.Home;
   const [loading, setLoading] = useState(true);
   const [validPwdVisible, setValidPwdVisible] = useState(true);
@@ -196,6 +198,8 @@ function ChatWindow() {
       <ValidPwdPage
         onAuth={(opt: any) => {
           accessStore.update((access) => (access.isAuth = true));
+          const settings = opt.settings;
+
           config.update((conf) => {
             conf.chatbotInfo = opt.info ?? "";
             conf.isGpts = opt.is_gpts;
@@ -205,7 +209,6 @@ function ChatWindow() {
 
             conf.fileSupportType = opt.file_support_type;
 
-            const settings = opt.settings;
             // console.warn(
             //   "🚀 ~ config.update ~ isEmptyObject(settings):",
             //   isEmptyObject(settings),
@@ -233,6 +236,12 @@ function ChatWindow() {
               }
             }
           });
+
+          if (settings && settings.showSync != undefined) {
+            syncStore.update((state) => {
+              state.enable = settings.showSync;
+            });
+          }
 
           // 设置模型的 promptStarters
           if (opt.is_gpts || (opt.gpts_msg && opt.gpts_msg.name)) {
@@ -277,7 +286,7 @@ function ChatWindow() {
           }
           console.log("🚀 ~ ChatWindow ~ allPlugins:", allPlugins);
 
-          // 情调
+          // 清掉
           pluginStore.clearAll();
           allPlugins.forEach((item) => {
             // 重新添加
