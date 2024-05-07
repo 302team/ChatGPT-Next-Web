@@ -356,7 +356,9 @@ function SyncItems() {
   );
   const [readonlySyncFromCloudPwd, setReadonlySyncFromCloudPwd] =
     useState(false);
+
   useEffect(() => {
+    setSyncFromCloudPwd(syncStore.syncPassword);
     // 如果已经同步过记录, 从云端下载 的密码输入框为只读
     setReadonlySyncFromCloudPwd(!!syncStore.syncPassword);
   }, [syncStore.syncPassword]);
@@ -366,14 +368,9 @@ function SyncItems() {
   const handleUpload = async () => {
     setUploading(true);
 
-    syncStore
-      .upload()
-      .then(() => {
-        setSyncFromCloudPwd(syncStore.syncPassword);
-      })
-      .finally(() => {
-        setUploading(false);
-      });
+    syncStore.upload().finally(() => {
+      setUploading(false);
+    });
   };
 
   const handleDownload = () => {

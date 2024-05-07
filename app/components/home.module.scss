@@ -326,7 +326,18 @@
 .chat-item-wrap {
   position: relative;
   border-radius: 14px;
-  background-color: #fe3931;
+  margin-bottom: 10px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 2px);
+    background-color: #fe3931;
+    border-radius: 14px;
+  }
 
   .chat-item-touch-delete {
     position: absolute;
@@ -356,8 +367,6 @@
   padding: 10px 14px;
   background-color: var(--gray);
   border-radius: 10px;
-  margin-bottom: 10px;
-  // box-shadow: var(--card-shadow);
   transition: background-color 0.3s ease;
   cursor: pointer;
   user-select: none;
