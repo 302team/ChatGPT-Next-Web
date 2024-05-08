@@ -50,6 +50,7 @@ export enum StoreKey {
   Mask = "mask-store",
   Plugin = "plugin-store",
   Prompt = "prompt-store",
+  SysPrompt = "sys-prompt-store",
   Update = "chat-update",
   Sync = "sync",
 }

@@ -135,7 +135,12 @@ export const useSyncStore = createPersistStore(
       const apiDomain = useAccessStore.getState().apiDomain;
 
       try {
-        const state = getLocalAppState()[StoreKey.Chat];
+        const appState = getLocalAppState();
+        const state = {
+          [StoreKey.Chat]: appState[StoreKey.Chat],
+          [StoreKey.SysPrompt]: appState[StoreKey.SysPrompt],
+        };
+
         const datePart = localStorage.getItem(LAST_INPUT_TIME) ?? Date.now();
 
         const blob = new Blob([JSON.stringify(state)], {
@@ -224,14 +229,21 @@ export const useSyncStore = createPersistStore(
         if (!lasetLog) {
           return showToast(Locale.Settings.Sync.EmptyLogs);
         }
-        const rawContent = await fetch(lasetLog.log_url).then((res) => {
+        let rawContent = await fetch(lasetLog.log_url).then((res) => {
           return res.json();
         });
 
-        const remoteState = rawContent as AppState[StoreKey.Chat];
+        // version < 1.4
+        if (!rawContent.hasOwnProperty(StoreKey.Chat)) {
+          rawContent = {
+            [StoreKey.Chat]: rawContent,
+          };
+        }
+
+        const remoteState = rawContent as AppState;
         // 直接覆盖
-        // setLocalAppState(remoteState);
-        setLocalChatState(remoteState);
+        setLocalAppState(remoteState);
+        // setLocalChatState(remoteState);
         showToast(Locale.Settings.Sync.DownloadSucceed);
 
         setTimeout(() => {
@@ -245,7 +257,7 @@ export const useSyncStore = createPersistStore(
   }),
   {
     name: StoreKey.Sync,
-    version: 1.3,
+    version: 1.4,
 
     migrate(persistedState, version) {
       const newState = persistedState as typeof DEFAULT_SYNC_STATE;
@@ -265,6 +277,9 @@ export const useSyncStore = createPersistStore(
 
       if (version < 1.3) {
         newState.enable = true;
+      }
+
+      if (version < 1.4) {
       }
 
       return newState as any;

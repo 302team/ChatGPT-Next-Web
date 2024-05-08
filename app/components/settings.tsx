@@ -24,6 +24,7 @@ import {
   ListItem,
   Modal,
   PasswordInput,
+  Input as TextareaInput,
   Popover,
   Select,
   showConfirm,
@@ -53,6 +54,7 @@ import {
 } from "../utils";
 import { FontSize, Path, STORAGE_KEY } from "../constant";
 import { usePromptStore } from "../store/prompt";
+import { SystemPrompt, useSysPromptStore } from "../store/sys-prompt";
 import { ErrorBoundary } from "./error";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarPicker } from "./emoji";
@@ -60,8 +62,14 @@ import { getClientConfig } from "../config/client";
 import { SyncRecordItem, useSyncStore } from "../store/sync";
 import { useMaskStore } from "../store/mask";
 import { ProviderType } from "../utils/cloud";
-import { Button, Space, Input, List as AList } from "antd";
-import { ClockCircleOutlined } from "@ant-design/icons";
+import { Button, Space, Input, List as AList, Divider } from "antd";
+import {
+  ClockCircleOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
+import { nanoid } from "nanoid";
 
 function DangerItems() {
   const chatStore = useChatStore();
@@ -475,6 +483,197 @@ function SyncItems() {
   );
 }
 
+function SystemPromptsModal(props: {
+  list: Array<SystemPrompt>;
+  onClose?: () => void;
+  onAdd: () => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <div className="modal-mask">
+      <Modal
+        title={Locale.Settings.Sync.Logs}
+        onClose={() => props.onClose?.()}
+      >
+        <Divider style={{ marginTop: 0 }}>
+          <Button
+            type="text"
+            icon={<PlusCircleOutlined />}
+            onClick={() => props.onAdd()}
+          >
+            {Locale.Settings.Sync.PromptActions.Add}
+          </Button>
+        </Divider>
+        <AList
+          size="small"
+          bordered
+          dataSource={props.list}
+          itemLayout="horizontal"
+          renderItem={(item, index) => (
+            <AList.Item>
+              <AList.Item.Meta
+                title={formatDate(
+                  new Date(item.createdAt),
+                  "YYYY-MM-DD hh:mm:ss",
+                )}
+                description={item.content}
+              />
+              <div>
+                <Space>
+                  <Button
+                    type="text"
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      props.onEdit(item.id);
+                    }}
+                  ></Button>
+                  <Button
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    onClick={() => {
+                      props.onDelete(item.id);
+                    }}
+                  ></Button>
+                </Space>
+              </div>
+            </AList.Item>
+          )}
+        />
+      </Modal>
+    </div>
+  );
+}
+
+function EditSystemPromptModal(props: {
+  type: "create" | "edit";
+  prompt: SystemPrompt | undefined;
+  onConfirm: (content: string) => void;
+  onClose?: () => void;
+}) {
+  const [content, setContent] = useState("");
+  useEffect(() => {
+    if (props.type === "edit" && props.prompt) {
+      setContent(props.prompt.content);
+    } else {
+      setContent("");
+    }
+  }, [props.type, props.prompt]);
+
+  return (
+    <div className="modal-mask">
+      <Modal
+        title={
+          props.type === "create"
+            ? Locale.Settings.Sync.PromptActions.Add
+            : Locale.Settings.Sync.PromptActions.Edit
+        }
+        onClose={props.onClose}
+        actions={[
+          <IconButton
+            key="confirm"
+            onClick={() => {
+              props.onConfirm(content);
+              setContent(() => "");
+              props.onClose?.();
+            }}
+            icon={<ConfirmIcon />}
+            bordered
+            text={Locale.UI.Confirm}
+          />,
+        ]}
+      >
+        <TextareaInput
+          value={content}
+          style={{
+            boxSizing: "border-box",
+            width: "100%",
+          }}
+          onInput={(e) => {
+            setContent(e.currentTarget.value);
+          }}
+        />
+      </Modal>
+    </div>
+  );
+}
+
+function SystemPrompts() {
+  const sysPromptStore = useSysPromptStore();
+
+  const [showManageModal, setShowManageModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [modalTye, setModalTye] = useState<"create" | "edit">("create");
+  const [editId, setEditId] = useState("");
+
+  return (
+    <>
+      <List>
+        <ListItem
+          title={Locale.Settings.Sync.Prompt.Title}
+          subTitle={Locale.Settings.Sync.Prompt.SubTitle}
+        >
+          <Button
+            onClick={() => {
+              setShowManageModal(true);
+            }}
+          >
+            {Locale.Settings.Sync.PromptActions.List}
+          </Button>
+        </ListItem>
+      </List>
+
+      {showManageModal && (
+        <SystemPromptsModal
+          list={Object.values(sysPromptStore.systemPrompts)}
+          onClose={() => setShowManageModal(false)}
+          onAdd={() => {
+            setModalTye("create");
+            setShowEditModal(true);
+          }}
+          onEdit={(id: string) => {
+            setModalTye("edit");
+            setEditId(id);
+            setShowEditModal(true);
+          }}
+          onDelete={(id: string) => {
+            sysPromptStore.removeSysPrompt(id);
+            sysPromptStore.update((store) => {
+              store.counter--;
+            });
+          }}
+        />
+      )}
+
+      {showEditModal && (
+        <EditSystemPromptModal
+          type={modalTye}
+          prompt={sysPromptStore.getSysPrompt(editId)}
+          onConfirm={(content) => {
+            if (modalTye === "create") {
+              sysPromptStore.addSysPrompt({
+                id: nanoid(),
+                content: content,
+                createdAt: Date.now(),
+              });
+              sysPromptStore.update((store) => {
+                store.counter++;
+              });
+            } else {
+              sysPromptStore.updateSysPrompt(editId, (prompt) => {
+                prompt.content = content;
+              });
+            }
+          }}
+          onClose={() => {
+            setShowEditModal(false);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
 function LocalStorage() {
   const syncStore = useSyncStore();
   const chatStore = useChatStore();
@@ -713,6 +912,8 @@ export function Settings(props: {
             ></input>
           </ListItem>
         </List>
+
+        <SystemPrompts />
 
         {syncStore.enable && <SyncItems />}
 

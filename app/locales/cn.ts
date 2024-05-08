@@ -320,6 +320,19 @@ const cn = {
       EmptyPwd: "请输入同步密码",
       EmptyLogs: "暂无同步记录",
       Logs: "同步记录",
+
+      Prompt: {
+        Title: "长期记忆",
+        SubTitle:
+          "让机器人记住关于你的信息, 此记忆可以本地储存或跟随聊天记录上传",
+      },
+      PromptActions: {
+        Title: "管理记忆",
+        List: "管理",
+        Edit: "编辑记忆",
+        Add: "添加记忆",
+        Delete: "删除记忆",
+      },
     },
     Mask: {
       Splash: {

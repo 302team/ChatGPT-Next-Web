@@ -326,6 +326,19 @@ const en: LocaleType = {
       EmptyPwd: "Please enter password",
       EmptyLogs: "No records",
       Logs: "Sync Records",
+
+      Prompt: {
+        Title: "Long-term memory",
+        SubTitle:
+          "Enable the robot to retain information about you, this memory can be stored locally or uploaded along with the chat records.",
+      },
+      PromptActions: {
+        Title: "Memory management",
+        List: "Manage",
+        Edit: "Edit Manage",
+        Add: "Add memory",
+        Delete: "Deleting memory",
+      },
     },
     Mask: {
       Splash: {

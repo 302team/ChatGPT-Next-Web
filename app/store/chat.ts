@@ -41,6 +41,7 @@ import { identifyDefaultClaudeModel } from "../utils/checkers";
 
 import { usePluginStore } from "./plugin";
 import { useAccessStore } from "./access";
+import { useSysPromptStore } from "./sys-prompt";
 
 export interface ChatToolMessage {
   toolName: string;
@@ -1088,6 +1089,8 @@ export const useChatStore = createPersistStore(
         const messages = session.messages.slice();
         const totalMessageCount = session.messages.length;
 
+        const sysPromptStore = useSysPromptStore.getState();
+
         // in-context prompts
         const contextPrompts = session.mask.context.slice();
 
@@ -1122,6 +1125,21 @@ export const useChatStore = createPersistStore(
                 }),
               ]
             : [];
+
+        if (
+          sysPromptStore.enable &&
+          Object.values(sysPromptStore.systemPrompts).length > 0
+        ) {
+          const promptContents = Object.entries(sysPromptStore.systemPrompts)
+            .map(([key, prompt]) => prompt.content)
+            .join("\n");
+          systemPrompts.push(
+            createMessage({
+              role: "system",
+              content: promptContents,
+            }),
+          );
+        }
 
         if (shouldInjectSystemPrompts) {
           console.log(

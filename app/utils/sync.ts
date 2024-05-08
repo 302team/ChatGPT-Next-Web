@@ -8,6 +8,7 @@ import { useMaskStore } from "../store/mask";
 import { usePromptStore } from "../store/prompt";
 import { StoreKey } from "../constant";
 import { merge } from "./merge";
+import { useSysPromptStore } from "../store/sys-prompt";
 
 type NonFunctionKeys<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? never : K;
@@ -36,6 +37,7 @@ const LocalStateSetters = {
   [StoreKey.Config]: useAppConfig.setState,
   [StoreKey.Mask]: useMaskStore.setState,
   [StoreKey.Prompt]: usePromptStore.setState,
+  [StoreKey.SysPrompt]: useSysPromptStore.setState,
 } as const;
 
 const LocalStateGetters = {
@@ -44,6 +46,8 @@ const LocalStateGetters = {
   [StoreKey.Config]: () => getNonFunctionFileds(useAppConfig.getState()),
   [StoreKey.Mask]: () => getNonFunctionFileds(useMaskStore.getState()),
   [StoreKey.Prompt]: () => getNonFunctionFileds(usePromptStore.getState()),
+  [StoreKey.SysPrompt]: () =>
+    getNonFunctionFileds(useSysPromptStore.getState()),
 } as const;
 
 export type AppState = {
@@ -116,6 +120,13 @@ const MergeStates: StateMerger = {
   },
   [StoreKey.Config]: mergeWithUpdate<AppState[StoreKey.Config]>,
   [StoreKey.Access]: mergeWithUpdate<AppState[StoreKey.Access]>,
+  [StoreKey.SysPrompt]: (localState, remoteState) => {
+    localState.systemPrompts = {
+      ...remoteState.systemPrompts,
+      ...localState.systemPrompts,
+    };
+    return localState;
+  },
 };
 
 export function getLocalAppState() {
@@ -130,7 +141,9 @@ export function getLocalAppState() {
 
 export function setLocalAppState(appState: AppState) {
   Object.entries(LocalStateSetters).forEach(([key, setter]) => {
-    setter(appState[key as keyof AppState]);
+    if (appState[key as keyof AppState]) {
+      setter(appState[key as keyof AppState]);
+    }
   });
 }
 
