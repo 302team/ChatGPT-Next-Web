@@ -748,8 +748,16 @@ export function Settings(props: {
   const config = useAppConfig();
   const updateConfig = config.update;
   const syncStore = useSyncStore();
-
   const accessStore = useAccessStore();
+
+  const [hidenPrompt, setHidenPrompt] = useState(false);
+  useEffect(() => {
+    const hide =
+      config.modelConfig.model.includes("deepseek-chat") ||
+      config.modelConfig.model.includes("yi-34b-chat-0205") ||
+      config.modelConfig.model.includes("Baichuan2-53B");
+    setHidenPrompt(hide);
+  }, [config.modelConfig.model]);
 
   useEffect(() => {
     const keydownEvent = (e: KeyboardEvent) => {
@@ -914,7 +922,7 @@ export function Settings(props: {
           </ListItem>
         </List>
 
-        <SystemPrompts />
+        {!hidenPrompt && <SystemPrompts />}
 
         {syncStore.enable && <SyncItems />}
 
