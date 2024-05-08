@@ -18,6 +18,10 @@ const en: LocaleType = {
     },
   },
   Auth: {
+    Warn: "Tips",
+    Login: "Login",
+    Register: "Sign up",
+    Unauthorized: `This robot is for demonstration purposes. Please visit <a href="https://dash.302.ai">302.AI</a> to create your own robot`,
     Title: "Please enter the share code",
     Tips: "The creator has enabled verification, please enter the share code below",
     SubTips: "Or enter your OpenAI or Google API Key",

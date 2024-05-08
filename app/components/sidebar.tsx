@@ -27,7 +27,9 @@ import Locale from "../locales";
 import { useAccessStore, useAppConfig, useChatStore } from "../store";
 
 import {
+  DASH_URL,
   DEFAULT_SIDEBAR_WIDTH,
+  DEMO_HOST,
   GPT302_WEBSITE_URL,
   GPTS302_WEBSITE_URL,
   LAST_INPUT_TIME,
@@ -44,7 +46,7 @@ import dynamic from "next/dynamic";
 import { Modal, showConfirm, showToast } from "./ui-lib";
 import { DEFAULT_MASK_AVATAR, Mask, createEmptyMask } from "../store/mask";
 
-import { Spin, Result, Button } from "antd";
+import { Spin, Result, Button, Space } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import { Loading } from "./home";
 import { SearchBar, SearchInputRef } from "./search-bar";
@@ -159,6 +161,9 @@ function AppDescription(props: {
   isMobileScreen?: boolean;
   onClose: () => void;
 }) {
+  // demo.xx.com
+  const isDemo = window.location.host.startsWith(DEMO_HOST);
+
   const config = useAppConfig();
   const access = useAccessStore();
 
@@ -189,11 +194,39 @@ function AppDescription(props: {
         title={Locale.Config.AppDescTitle}
         subtitle={Locale.Config.AppDescSubTitle}
         headerActions={[
-          config.showShareEntry ? <ShareAction key="share" /> : null,
+          !isDemo && config.showShareEntry ? <ShareAction key="share" /> : null,
         ]}
         onClose={() => props.onClose()}
+        footer={
+          isDemo && (
+            <Space>
+              <IconButton
+                key="register"
+                onClick={() => {
+                  openWindow(DASH_URL.REGISTER);
+                }}
+                bordered
+                text={Locale.Auth.Register}
+              />
+
+              <IconButton
+                key="login"
+                type="primary"
+                onClick={() => {
+                  openWindow(DASH_URL.LOGIN);
+                }}
+                bordered
+                text={Locale.Auth.Login}
+              />
+            </Space>
+          )
+        }
       >
-        <div dangerouslySetInnerHTML={{ __html: config.chatbotInfo }}></div>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: isDemo ? Locale.Auth.Unauthorized : config.chatbotInfo,
+          }}
+        ></div>
       </Modal>
     </div>
   );

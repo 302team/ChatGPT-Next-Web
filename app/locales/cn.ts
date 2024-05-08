@@ -6,7 +6,7 @@ const isApp = !!getClientConfig()?.isApp;
 const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
-    Unauthorized: "请访问创[302.AI](https://dash.302.ai)建属于你自己的机器人",
+    Unauthorized: "请访问[302.AI](https://dash.302.ai)创建属于你自己的机器人",
     ApiTimeout: "请求失败，请重试",
     NetworkError: "网络错误",
     PageOpenError: "页面加载失败",
@@ -15,6 +15,10 @@ const cn = {
     },
   },
   Auth: {
+    Warn: "提示",
+    Login: "登录",
+    Register: "注册",
+    Unauthorized: `此机器人为Demo展示。请访问<a href="https://dash.302.ai">302.AI</a>创建属于你自己的机器人`,
     Title: "需要分享码",
     Tips: "创建者开启了验证, 请在下方填入分享码",
     SubTips: "或者输入你的 OpenAI 或 Google API 密钥",

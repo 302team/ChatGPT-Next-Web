@@ -237,3 +237,9 @@ export const FILE_SUPPORT_TYPE = {
   ALL: 1,
   ONLY_IMAGE: 2,
 };
+
+export const DEMO_HOST = "demo.";
+export const DASH_URL = {
+  LOGIN: "https://dash.302.ai/login",
+  REGISTER: "https://dash.302.ai/register",
+};

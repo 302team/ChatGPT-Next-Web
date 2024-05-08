@@ -12,7 +12,7 @@ import { getCSSVar, isEmptyObject, useMobileScreen } from "../utils";
 
 import dynamic from "next/dynamic";
 
-import { ModelProvider, Path, SlotID } from "../constant";
+import { DEMO_HOST, ModelProvider, Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
@@ -145,6 +145,9 @@ const loadAsyncGoogleFont = () => {
 };
 
 function ChatWindow() {
+  // demo.xx.com
+  const isDemo = window.location.host.startsWith(DEMO_HOST);
+
   const location = useLocation();
   const accessStore = useAccessStore();
   const chatStore = useChatStore();
@@ -193,7 +196,7 @@ function ChatWindow() {
 
   if (loading) return <Loading />;
 
-  if (validPwdVisible)
+  if (!isDemo && validPwdVisible)
     return (
       <ValidPwdPage
         onAuth={(opt: any) => {

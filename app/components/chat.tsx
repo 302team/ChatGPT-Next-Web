@@ -85,6 +85,7 @@ import {
   convertAudioBufferToWave,
   isSpecImageModal,
   isSupportFunctionCall,
+  openWindow,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -105,10 +106,13 @@ import {
   showConfirm,
   showPrompt,
   showToast,
+  showModal,
 } from "./ui-lib";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   CHAT_PAGE_SIZE,
+  DASH_URL,
+  DEMO_HOST,
   FILE_BASE64_ICON,
   FILE_SUPPORT_TYPE,
   LAST_INPUT_KEY,
@@ -134,7 +138,7 @@ import {
   CloseOutlined,
   TranslationOutlined,
 } from "@ant-design/icons";
-import { Typography, Image } from "antd";
+import { Typography, Image, Space } from "antd";
 import { usePluginStore } from "../store/plugin";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
@@ -1114,6 +1118,41 @@ function useSpeakAndVoice(prosp: {
 function _Chat(props: { promptStarters: string[] }) {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
+  // demo.xx.com
+  const isDemo = window.location.host.startsWith(DEMO_HOST);
+  const showDemoModal = () => {
+    showModal({
+      title: Locale.Auth.Warn,
+      children: (
+        <div
+          dangerouslySetInnerHTML={{ __html: Locale.Auth.Unauthorized }}
+        ></div>
+      ),
+      footer: (
+        <Space>
+          <IconButton
+            key="register"
+            onClick={() => {
+              openWindow(DASH_URL.REGISTER);
+            }}
+            bordered
+            text={Locale.Auth.Register}
+          />
+
+          <IconButton
+            key="login"
+            type="primary"
+            onClick={() => {
+              openWindow(DASH_URL.LOGIN);
+            }}
+            bordered
+            text={Locale.Auth.Login}
+          />
+        </Space>
+      ),
+    });
+  };
+
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
   const config = useAppConfig();
@@ -1228,6 +1267,10 @@ function _Chat(props: { promptStarters: string[] }) {
   };
 
   const doSubmit = (userInput: string) => {
+    if (isDemo) {
+      return showDemoModal();
+    }
+
     if (userInput.trim() === "" && exAttr.uploadFiles.length === 0) return;
     // glm-4v 模型不输入文字不给发送
     if (currentModel.includes("glm-4v") && userInput.trim() === "") {
@@ -2181,7 +2224,7 @@ function _Chat(props: { promptStarters: string[] }) {
               : ""
           }`}
         >
-          {showUploadAction && (
+          {!isDemo && showUploadAction && (
             <ChatAction
               onClick={() => {
                 if (uploading || isRecording) {
@@ -2244,7 +2287,11 @@ function _Chat(props: { promptStarters: string[] }) {
               icon={<VoiceIcon />}
               key="voice"
               onClick={() => {
-                setShowRecording(true);
+                if (isDemo) {
+                  showDemoModal();
+                } else {
+                  setShowRecording(true);
+                }
               }}
               className={styles["chat-input-voice"]}
             />
