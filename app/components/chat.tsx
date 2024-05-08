@@ -1268,6 +1268,7 @@ function _Chat(props: { promptStarters: string[] }) {
 
   const doSubmit = (userInput: string) => {
     if (isDemo) {
+      inputRef.current?.blur();
       return showDemoModal();
     }
 
