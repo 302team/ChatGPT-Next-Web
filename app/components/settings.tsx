@@ -493,7 +493,7 @@ function SystemPromptsModal(props: {
   return (
     <div className="modal-mask">
       <Modal
-        title={Locale.Settings.Sync.Logs}
+        title={Locale.Settings.Sync.PromptActions.Title}
         onClose={() => props.onClose?.()}
       >
         <Divider style={{ marginTop: 0 }}>
@@ -585,6 +585,7 @@ function EditSystemPromptModal(props: {
       >
         <TextareaInput
           value={content}
+          placeholder={Locale.Settings.Sync.Prompt.Placeholder}
           style={{
             boxSizing: "border-box",
             width: "100%",

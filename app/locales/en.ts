@@ -335,6 +335,8 @@ const en: LocaleType = {
         Title: "Long-term memory",
         SubTitle:
           "Enable the robot to retain information about you, this memory can be stored locally or uploaded along with the chat records.",
+        Placeholder:
+          "For example: I am xxxx, I live in xxxx, I have a dog called xxxx",
       },
       PromptActions: {
         Title: "Memory management",
