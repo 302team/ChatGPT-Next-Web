@@ -330,6 +330,7 @@ const cn = {
         SubTitle:
           "让机器人记住关于你的信息, 此记忆可以本地储存或跟随聊天记录上传",
         Placeholder: "列如：我是xxx，我住在xxx，我养了一条狗叫xxx",
+        Required: "请输入记忆内容",
       },
       PromptActions: {
         Title: "管理记忆",

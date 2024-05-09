@@ -337,6 +337,7 @@ const en: LocaleType = {
           "Enable the robot to retain information about you, this memory can be stored locally or uploaded along with the chat records.",
         Placeholder:
           "For example: I am xxxx, I live in xxxx, I have a dog called xxxx",
+        Required: "Please enter the menories",
       },
       PromptActions: {
         Title: "Memory management",

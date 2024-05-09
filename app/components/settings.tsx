@@ -573,6 +573,10 @@ function EditSystemPromptModal(props: {
           <IconButton
             key="confirm"
             onClick={() => {
+              if (content.trim() === "") {
+                return showToast(Locale.Settings.Sync.Prompt.Required);
+              }
+
               props.onConfirm(content);
               setContent(() => "");
               props.onClose?.();
@@ -586,6 +590,7 @@ function EditSystemPromptModal(props: {
         <TextareaInput
           value={content}
           placeholder={Locale.Settings.Sync.Prompt.Placeholder}
+          required
           style={{
             boxSizing: "border-box",
             width: "100%",
