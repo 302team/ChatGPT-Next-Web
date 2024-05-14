@@ -25,6 +25,7 @@ import {
   SUMMARIZE_MODEL,
   GEMINI_SUMMARIZE_MODEL,
   LAST_INPUT_TIME,
+  FILE_SUPPORT_TYPE,
 } from "../constant";
 import {
   ClientApi,
@@ -254,6 +255,7 @@ async function getUserContent(
 ) {
   const content = fillTemplateWith(userInput, modelConfig);
   const model = modelConfig.model;
+  const config = useAppConfig.getState();
 
   if (fileArr.length > 0) {
     const sendUserContent = []; // 发送出去的用户内容
@@ -268,7 +270,8 @@ async function getUserContent(
       // 如果是gpt4-vision，或者claude模型，claude模型目前是根据中转接口来定的报文格式，以后要改成官方报文格式
       if (
         file.type.includes("image") &&
-        (isVisionModel(model) || isSpecImageModal(model))
+        // (isVisionModel(model) || isSpecImageModal(model))
+        config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE
       ) {
         if (file.url && file.url.startsWith("http")) {
           msg = {

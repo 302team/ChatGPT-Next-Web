@@ -400,17 +400,6 @@ export function isSpecImageModal(model: string) {
   return visionKeywords.some((keyword) => m.includes(keyword)) || isGpt4Turbo;
 }
 
-// 具备多模态的模型
-export function isSupportMultimodal(model: string) {
-  const m = model.toLocaleLowerCase();
-  return (
-    m.includes("gpt-4-all") ||
-    m.includes("gpt-4-gizmo-") ||
-    m.includes("claude-3-")
-    // m.includes("gemini-1.5-pro")
-  );
-}
-
 export function isSupportFunctionCall(model: string) {
   const m = model.toLocaleLowerCase();
   const functionCallKeywords = ["gpt-"];
