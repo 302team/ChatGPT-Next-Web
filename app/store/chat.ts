@@ -283,9 +283,7 @@ async function getUserContent(
           // 保存的消息是保存文件链接
           saveUserContent.push(msg);
           // 发送则需要判断是否发送链接
-          if (isSpecImageModal(model)) {
-            sendUserContent.push(msg);
-          } else if (file.base64) {
+          if (isVisionModel(model)) {
             // gpt-4-vision 需要传递 base64 数据
             sendUserContent.push({
               type: "image_url",
@@ -293,6 +291,8 @@ async function getUserContent(
                 url: file.base64,
               },
             });
+          } else {
+            sendUserContent.push(msg);
           }
         } else if (file.base64) {
           // 发送出去是原图，提高识别率。

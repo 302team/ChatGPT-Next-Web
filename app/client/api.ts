@@ -2,6 +2,7 @@ import { getClientConfig } from "../config/client";
 import {
   ACCESS_CODE_PREFIX,
   Azure,
+  FILE_SUPPORT_TYPE,
   ModelProvider,
   ServiceProvider,
 } from "../constant";
@@ -259,14 +260,22 @@ export function getHeadersNoCT() {
   return newHeaders;
 }
 
-export function buildMessages(messages: RequestMessage[], model: string) {
+export function buildMessages(
+  messages: RequestMessage[],
+  model: string,
+  fileSupportType: number,
+) {
   const sendMessages: RequestMessage[] = [];
   messages.forEach((msg) => {
     if (msg.content instanceof Array) {
       // 判断消息里是否有file
       const hasFile = msg.content.some((m) => m.type == "file");
       // 没有file，且模型是vision或claude，则直接传过去。
-      if (!hasFile && (isVisionModel(model) || isSpecImageModal(model))) {
+      if (
+        !hasFile &&
+        fileSupportType ===
+          FILE_SUPPORT_TYPE.ONLY_IMAGE /* (isVisionModel(model) || isSpecImageModal(model)) */
+      ) {
         sendMessages.push(msg);
       } else {
         let text = "";

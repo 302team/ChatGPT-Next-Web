@@ -122,7 +122,13 @@ export class ChatGPTApi implements LLMApi {
       },
     };
 
-    const sendMessages = buildMessages(messages, modelConfig.model);
+    const config = useAppConfig.getState();
+
+    const sendMessages = buildMessages(
+      messages,
+      modelConfig.model,
+      config.fileSupportType,
+    );
     const requestPayload = {
       messages: sendMessages,
       stream: options.config.stream,
@@ -396,8 +402,13 @@ export class ChatGPTApi implements LLMApi {
         model: options.config.model,
       },
     };
-    const sendMessages = buildMessages(messages, modelConfig.model);
+    const config = useAppConfig.getState();
     const accessStore = useAccessStore.getState();
+    const sendMessages = buildMessages(
+      messages,
+      modelConfig.model,
+      config.fileSupportType,
+    );
     const isAzure = accessStore.provider === ServiceProvider.Azure;
     let baseUrl = isAzure ? accessStore.azureUrl : accessStore.openaiUrl;
     const requestPayload = {
