@@ -160,7 +160,7 @@ function getSummarizeModel(currentModel: string) {
   if (currentModel.startsWith("gpt") || currentModel.startsWith("claude")) {
     return SUMMARIZE_MODEL;
   }
-  if (currentModel.startsWith("gemini-pro")) {
+  if (currentModel.startsWith("gemini")) {
     return GEMINI_SUMMARIZE_MODEL;
   }
   return currentModel;
