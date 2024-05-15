@@ -133,7 +133,6 @@ export function ValidPwd(props: ValidPwdProps) {
     if (shareid) {
       try {
         const query = decodeURIComponent(atob(shareid));
-        console.log("🚀 ~ useEffect ~ query:", query);
 
         const queryObj = parseQuery2Object(query);
         if (queryObj && !isEmptyObj(queryObj)) {
@@ -142,9 +141,6 @@ export function ValidPwd(props: ValidPwdProps) {
       } catch (error) {
         console.log(error);
       }
-
-      // searchParams.delete("shareid");
-      // setSearchParams(searchParams, { replace: true });
     }
 
     (async () => {

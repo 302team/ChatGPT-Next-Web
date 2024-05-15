@@ -157,11 +157,11 @@ export function MessageExporter() {
   ];
   const { currentStep, setCurrentStepIndex, currentStepIndex } =
     useSteps(steps);
-  const formats = ["url", "text", "image", "json"] as const;
+  const formats = ["text", "image", "json"] as const;
   type ExportFormat = (typeof formats)[number];
 
   const [exportConfig, setExportConfig] = useState({
-    format: "url" as ExportFormat,
+    format: "image" as ExportFormat,
     includeContext: true,
   });
 
