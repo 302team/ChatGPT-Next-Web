@@ -1,5 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import { ChatMessage, ModelType, useAppConfig, useChatStore } from "../store";
+import {
+  ChatMessage,
+  ModelType,
+  useAccessStore,
+  useAppConfig,
+  useChatStore,
+} from "../store";
 import Locale from "../locales";
 import styles from "./exporter.module.scss";
 import {
@@ -151,11 +157,11 @@ export function MessageExporter() {
   ];
   const { currentStep, setCurrentStepIndex, currentStepIndex } =
     useSteps(steps);
-  const formats = ["text", "image", "json"] as const;
+  const formats = ["url", "text", "image", "json"] as const;
   type ExportFormat = (typeof formats)[number];
 
   const [exportConfig, setExportConfig] = useState({
-    format: "image" as ExportFormat,
+    format: "url" as ExportFormat,
     includeContext: true,
   });
 
@@ -262,6 +268,8 @@ export function RenderExport(props: {
 }) {
   const domRef = useRef<HTMLDivElement>(null);
 
+  console.log("render 1");
+
   useEffect(() => {
     if (!domRef.current) return;
     const dom = domRef.current;
@@ -283,6 +291,7 @@ export function RenderExport(props: {
       };
     });
 
+    console.log("render");
     props.onRender(renderMsgs);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -310,63 +319,84 @@ export function PreviewActions(props: {
 }) {
   const [loading, setLoading] = useState(false);
   const [shouldExport, setShouldExport] = useState(false);
-  const config = useAppConfig();
-  const onRenderMsgs = (msgs: ChatMessage[]) => {
+  const accessStore = useAccessStore();
+  const chatStore = useChatStore();
+  const uploadUrl = accessStore.fileUploadUrl;
+
+  const onRenderMsgs = (msgs: ChatMessage[]) => {};
+
+  const share = async () => {
+    if (!props.messages?.length) return;
+
+    setLoading(true);
+    const msgs: ChatMessage[] = props.messages;
+    const currentSession = chatStore.currentSession();
+
+    currentSession.messages = msgs;
+
     setShouldExport(false);
+    let path = window.location.origin + "/#/chat";
+    let searchParams = "";
 
-    var api: ClientApi;
-    if (config.modelConfig.model.startsWith("gemini")) {
-      api = new ClientApi(ModelProvider.GeminiPro);
-    } else if (identifyDefaultClaudeModel(config.modelConfig.model)) {
-      api = new ClientApi(ModelProvider.Claude);
-    } else {
-      api = new ClientApi(ModelProvider.GPT);
-    }
+    const blob = new Blob([JSON.stringify(currentSession)], {
+      type: "application/json",
+    });
+    const fileName = `Backup-${Date.now()}.json`;
+    const file = new File([blob], fileName, { type: blob.type });
+    const formData = new FormData();
+    formData.append("file", file);
 
-    api
-      .share(msgs)
-      .then((res) => {
-        if (!res) return;
-        showModal({
-          title: Locale.Export.Share,
-          children: [
-            <input
-              type="text"
-              value={res}
-              key="input"
-              style={{
-                width: "100%",
-                maxWidth: "unset",
-              }}
-              readOnly
-              onClick={(e) => e.currentTarget.select()}
-            ></input>,
-          ],
-          actions: [
-            <IconButton
-              icon={<CopyIcon />}
-              text={Locale.Chat.Actions.Copy}
-              key="copy"
-              onClick={() => copyToClipboard(res)}
-            />,
-          ],
-        });
-        setTimeout(() => {
-          window.open(res, "_blank");
-        }, 800);
+    fetch(uploadUrl, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then(async (res: any) => {
+        if (res.code === 0) {
+          const url = res.data.url;
+          searchParams += `url=${url}`;
+          if (accessStore.pwd) {
+            searchParams += `&pwd=${accessStore.pwd}`;
+          }
+          searchParams += "&confirm=true";
+
+          const shareUrl = `${path}?shareid=${btoa(encodeURIComponent(searchParams))}`;
+
+          showModal({
+            title: Locale.Export.Share,
+            children: [
+              <input
+                type="text"
+                value={shareUrl}
+                key="input"
+                style={{
+                  width: "100%",
+                  maxWidth: "unset",
+                }}
+                readOnly
+                onClick={(e) => e.currentTarget.select()}
+              ></input>,
+            ],
+            actions: [
+              <IconButton
+                icon={<CopyIcon />}
+                text={Locale.Chat.Actions.Copy}
+                key="copy"
+                onClick={() => copyToClipboard(shareUrl)}
+              />,
+            ],
+          });
+        } else {
+          showToast(prettyObject(res));
+        }
       })
       .catch((e) => {
         console.error("[Share]", e);
         showToast(prettyObject(e));
       })
-      .finally(() => setLoading(false));
-  };
-
-  const share = async () => {
-    if (props.messages?.length) {
-      setLoading(true);
-      setShouldExport(true);
-    }
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -388,13 +418,14 @@ export function PreviewActions(props: {
           icon={<DownloadIcon />}
           onClick={props.download}
         ></IconButton>
-        {/* <IconButton
+        <IconButton
           text={Locale.Export.Share}
           bordered
           shadow
+          disabled={loading}
           icon={loading ? <LoadingIcon /> : <ShareIcon />}
           onClick={share}
-        ></IconButton> */}
+        ></IconButton>
       </div>
       <div
         style={{

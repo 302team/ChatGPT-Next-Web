@@ -3,6 +3,7 @@ import { IconButton } from "./button";
 
 import { useSearchParams } from "react-router-dom";
 import {
+  ChatMessage,
   ModelType,
   useAccessStore,
   useAppConfig,
@@ -19,22 +20,41 @@ import { Loading, showToast } from "./ui-lib";
 import { openWindow } from "../utils";
 import { GPT302_WEBSITE_URL, ERROR_CODE, ERROR_CODE_TYPE } from "../constant";
 import { AuthType } from "../locales/cn";
+import { isEmptyObj } from "openai/core";
+import { prettyObject } from "../utils/format";
 
 interface ValidPwdProps {
   onAuth?: (opt: { info?: string }) => void;
 }
+
+function parseQuery2Object(query: string) {
+  const vars = query.split("&");
+  const obj: Record<string, string> = {};
+
+  for (let i = 0; i < vars.length; i++) {
+    const [k, v] = vars[i].split("=");
+    obj[k] = v;
+  }
+
+  return obj;
+}
+
+let downloadState = 0;
+
 export function ValidPwd(props: ValidPwdProps) {
   const accessStore = useAccessStore();
   const chatStore = useChatStore();
   const config = useAppConfig();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const pwd = searchParams.get("pwd") || "";
-  const autoConfirm = searchParams.get("confirm");
 
   const [loading, setLoading] = useState(true);
   const [submiting, setSubmiting] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  let pwd = searchParams.get("pwd") || "";
+  let autoConfirm = searchParams.get("confirm") || "";
+  const shareid = searchParams.get("shareid") || "";
 
   const userCode = window.location.hostname.split(".")[0];
 
@@ -75,8 +95,57 @@ export function ValidPwd(props: ValidPwdProps) {
     setLoading(false);
   }
 
+  async function handleShare(queryObj: Record<string, string>) {
+    pwd = queryObj.pwd || "";
+    autoConfirm = queryObj.confirm || "";
+
+    if (downloadState !== 0) return;
+    downloadState = 1;
+
+    return fetch(queryObj.url)
+      .then((res) => res.json())
+      .then((res) => {
+        chatStore.newSession(res.mask, true);
+
+        chatStore.updateCurrentSession((session) => {
+          session.topic = res.topic;
+          session.messages = res.messages as ChatMessage[];
+        });
+
+        return res;
+      })
+      .then((res) => {
+        downloadState = 2;
+
+        searchParams.delete("shareid");
+        setSearchParams(searchParams, { replace: true });
+        return res;
+      })
+      .catch((err) => {
+        console.error("[download session error]", err);
+        showToast(prettyObject(err));
+      });
+  }
+
   useEffect(() => {
     accessStore.update((access) => (access.userCode = userCode));
+
+    if (shareid) {
+      try {
+        const query = decodeURIComponent(atob(shareid));
+        console.log("🚀 ~ useEffect ~ query:", query);
+
+        const queryObj = parseQuery2Object(query);
+        if (queryObj && !isEmptyObj(queryObj)) {
+          handleShare(queryObj);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      // searchParams.delete("shareid");
+      // setSearchParams(searchParams, { replace: true });
+    }
 
     (async () => {
       try {
