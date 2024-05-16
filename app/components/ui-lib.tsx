@@ -105,6 +105,7 @@ interface ModalProps {
   showMaxButton?: boolean;
   footer?: React.ReactNode;
   containerClass?: string;
+  className?: string;
   onClose?: () => void;
 }
 export function Modal(props: ModalProps) {
@@ -136,7 +137,7 @@ export function Modal(props: ModalProps) {
     <div
       className={
         styles["modal-container"] +
-        ` ${isMax && styles["modal-container-max"]} ${props.containerClass}`
+        ` modal-container ${isMax && styles["modal-container-max"]} ${props.containerClass}`
       }
     >
       <div className={styles["modal-header"]}>
@@ -191,7 +192,7 @@ export function Modal(props: ModalProps) {
 
 export function showModal(props: ModalProps) {
   const div = document.createElement("div");
-  div.className = "modal-mask";
+  div.className = "modal-mask " + props.className ?? "";
   document.body.appendChild(div);
 
   const root = createRoot(div);

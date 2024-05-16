@@ -1123,6 +1123,7 @@ function _Chat(props: { promptStarters: string[] }) {
   const showDemoModal = () => {
     showModal({
       title: Locale.Auth.Warn,
+      className: "demo-page-modal",
       children: (
         <div
           dangerouslySetInnerHTML={{ __html: Locale.Auth.Unauthorized }}

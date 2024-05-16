@@ -263,9 +263,14 @@ div.math {
     align-items: flex-end;
   }
 
-  &.app-desc-modal {
+  &.app-desc-modal,
+  &.demo-page-modal {
     @media screen and (max-width: 600px) {
       align-items: center;
+
+      .modal-container {
+        border-radius: 12px;
+      }
     }
   }
 }
