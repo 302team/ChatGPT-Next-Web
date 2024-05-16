@@ -321,6 +321,7 @@ export function PreviewActions(props: {
   const [shouldExport, setShouldExport] = useState(false);
   const accessStore = useAccessStore();
   const chatStore = useChatStore();
+  const configStore = useAppConfig();
   const uploadUrl = accessStore.fileUploadUrl;
 
   const onRenderMsgs = (msgs: ChatMessage[]) => {};
@@ -418,14 +419,16 @@ export function PreviewActions(props: {
           icon={<DownloadIcon />}
           onClick={props.download}
         ></IconButton>
-        <IconButton
-          text={Locale.Export.Share}
-          bordered
-          shadow
-          disabled={loading}
-          icon={loading ? <LoadingIcon /> : <ShareIcon />}
-          onClick={share}
-        ></IconButton>
+        {configStore.showShareEntry && (
+          <IconButton
+            text={Locale.Export.Share}
+            bordered
+            shadow
+            disabled={loading}
+            icon={loading ? <LoadingIcon /> : <ShareIcon />}
+            onClick={share}
+          ></IconButton>
+        )}
       </div>
       <div
         style={{
