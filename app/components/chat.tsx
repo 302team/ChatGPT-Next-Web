@@ -1824,16 +1824,18 @@ function _Chat(props: { promptStarters: string[] }) {
               />
             </div>
           )}
-          <div className="window-action-button">
-            <IconButton
-              icon={<ExportIcon />}
-              bordered
-              title={Locale.Chat.Actions.Export}
-              onClick={() => {
-                setShowExport(true);
-              }}
-            />
-          </div>
+          {config.showShareEntry && (
+            <div className="window-action-button">
+              <IconButton
+                icon={<ExportIcon />}
+                bordered
+                title={Locale.Chat.Actions.Export}
+                onClick={() => {
+                  setShowExport(true);
+                }}
+              />
+            </div>
+          )}
           {showMaxIcon && (
             <div className="window-action-button">
               <IconButton
@@ -2225,9 +2227,13 @@ function _Chat(props: { promptStarters: string[] }) {
               : ""
           }`}
         >
-          {!isDemo && showUploadAction && (
+          {(isDemo || showUploadAction) && (
             <ChatAction
               onClick={() => {
+                if (isDemo) {
+                  return showDemoModal();
+                }
+
                 if (uploading || isRecording) {
                   return;
                 }
