@@ -391,12 +391,12 @@ function Screen() {
 // }
 
 export function Home() {
+  const [langLoading, setLangLoading] = useState(false);
   useSwitchTheme();
   // useLoadData();
   useHtmlLang();
 
   useEffect(() => {
-    // console.log("[Config] got config from build time", getClientConfig());
     // try {
     //   let hash = window.location.hash;
     //   if (hash.includes("lang=")) {
@@ -407,11 +407,19 @@ export function Home() {
     //       localStorage.setItem("lang", lang === "zh-CN" ? "cn" : "en");
     //     }
     //   }
-    // } catch (error) {}
+    // } catch (error) {
+    // } finally {
+    //   setLangLoading(false);
+    // }
+    console.log("[Config] got config from build time", getClientConfig());
     useAccessStore.getState().fetch();
   }, []);
 
   if (!useHasHydrated()) {
+    return <Loading />;
+  }
+
+  if (langLoading) {
     return <Loading />;
   }
 
