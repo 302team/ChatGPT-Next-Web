@@ -9,7 +9,7 @@ import {
   useAppConfig,
   useChatStore,
 } from "../store";
-import Locale from "../locales";
+import Locale, { changeLang } from "../locales";
 
 import BotIconLight from "../icons/logo-horizontal-light.png";
 import BotIconDark from "../icons/logo-horizontal-dark.png";
@@ -52,6 +52,7 @@ export function ValidPwd(props: ValidPwdProps) {
   const [errorMsg, setErrorMsg] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const lang = searchParams.get("lang");
   let pwd = searchParams.get("pwd") || "";
   let autoConfirm = searchParams.get("confirm") || "";
   const shareid = searchParams.get("shareid") || "";
@@ -129,6 +130,14 @@ export function ValidPwd(props: ValidPwdProps) {
 
   useEffect(() => {
     accessStore.update((access) => (access.userCode = userCode));
+
+    if (lang) {
+      searchParams.delete("lang");
+      setSearchParams(searchParams);
+      const l = lang === "zh-CN" ? "cn" : "en";
+      localStorage.setItem("lang", l);
+      changeLang(l);
+    }
 
     if (shareid) {
       try {

@@ -397,6 +397,17 @@ export function Home() {
 
   useEffect(() => {
     // console.log("[Config] got config from build time", getClientConfig());
+    // try {
+    //   let hash = window.location.hash;
+    //   if (hash.includes("lang=")) {
+    //     const query = hash.split("?").pop();
+    //     const langRecord = query?.split("&").find((q) => q.includes("lang"));
+    //     if (langRecord) {
+    //       const lang = langRecord.split("=")[1];
+    //       localStorage.setItem("lang", lang === "zh-CN" ? "cn" : "en");
+    //     }
+    //   }
+    // } catch (error) {}
     useAccessStore.getState().fetch();
   }, []);
 
