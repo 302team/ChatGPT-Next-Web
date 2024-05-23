@@ -5,7 +5,7 @@ const ru: PartialLocaleType = {
   WIP: "Скоро...",
   Error: {
     Unauthorized:
-      "Пожалуйста, посетите [302.AI](https://dash.302.ai), чтобы создать своего собственного робота",
+      "Пожалуйста, посетите [302.AI](https://302.ai), чтобы создать своего собственного робота",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} сообщений`,

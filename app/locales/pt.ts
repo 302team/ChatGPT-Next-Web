@@ -8,7 +8,7 @@ const pt: PartialLocaleType = {
   WIP: "Em breve...",
   Error: {
     Unauthorized:
-      "Por favor, visite [302.AI](https://dash.302.ai) para criar o seu próprio robô",
+      "Por favor, visite [302.AI](https://302.ai) para criar o seu próprio robô",
   },
   Auth: {
     Title: "Necessário Código de Acesso",

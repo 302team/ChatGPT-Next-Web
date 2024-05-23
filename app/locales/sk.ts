@@ -10,7 +10,7 @@ const sk: PartialLocaleType = {
   WIP: "Už čoskoro...",
   Error: {
     Unauthorized:
-      "Prosím, navštívte [302.AI](https://dash.302.ai) pre vytvorenie vlastného robota",
+      "Prosím, navštívte [302.AI](https://302.ai) pre vytvorenie vlastného robota",
   },
   Auth: {
     Title: "Potrebný prístupový kód",

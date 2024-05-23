@@ -5,7 +5,7 @@ const de: PartialLocaleType = {
   WIP: "In Bearbeitung...",
   Error: {
     Unauthorized:
-      "Bitte besuchen Sie [302.AI](https://dash.302.ai), um Ihren eigenen Roboter zu erstellen",
+      "Bitte besuchen Sie [302.AI](https://302.ai), um Ihren eigenen Roboter zu erstellen",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} Nachrichten`,

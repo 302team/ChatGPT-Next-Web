@@ -5,7 +5,7 @@ const id: PartialLocaleType = {
   WIP: "Coming Soon...",
   Error: {
     Unauthorized:
-      "Indonesian (id): Silakan kunjungi [302.AI](https://dash.302.ai) untuk membuat robot Anda sendiri",
+      "Indonesian (id): Silakan kunjungi [302.AI](https://302.ai) untuk membuat robot Anda sendiri",
   },
   Auth: {
     Title: "Se requiere código de acceso",

@@ -6,7 +6,7 @@ const isApp = !!getClientConfig()?.isApp;
 const tw = {
   WIP: "該功能仍在開發中……",
   Error: {
-    Unauthorized: "請訪問[302.AI](https://dash.302.ai)創建屬於你自己的機器人",
+    Unauthorized: "請訪問[302.AI](https://302.ai)創建屬於你自己的機器人",
   },
 
   Auth: {
