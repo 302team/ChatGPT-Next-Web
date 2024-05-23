@@ -28,16 +28,16 @@ const cn = {
     Confirm: "确认",
     Later: "稍后再说",
     CAPTCHA_ERROR: "分享码错误",
-    CHATBOT_DISABLED_ERROR: `聊天机器人已禁用，更多信息请访问 <a href="https://302.ai">302.AI</a>`,
-    CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问 <a href="https://302.ai">302.AI</a>`,
+    CHATBOT_DISABLED_ERROR: `机器人已禁用，更多信息请访问 <a href="https://302.ai">302.AI</a>`,
+    CHATBOT_DELETE_ERROR: `机器人已删除，更多信息请访问 <a href="https://302.ai">302.AI</a>`,
     SERVER_ERROR: "内部错误, 请联系客服",
     BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
-    CHATBOT_DISABLED_ERROR2: `聊天机器人已禁用，更多信息请访问[302.AI](https://302.ai)`,
+    CHATBOT_DISABLED_ERROR2: `机器人已禁用，更多信息请访问[302.AI](https://302.ai)`,
     TOTAL_QUOTA_ERROR:
-      "聊天机器人的总额度已达上限，请访问[302.AI](https://302.ai)创建属于你自己的机器人",
+      "机器人的总额度已达上限，请访问[302.AI](https://302.ai)创建属于你自己的机器人",
     DAILY_QUOTA_ERROR:
-      "聊天机器人的单日额度已达上限，请访问[302.AI](https://302.ai)创建属于你自己的机器人",
+      "机器人的单日额度已达上限，请访问[302.AI](https://302.ai)创建属于你自己的机器人",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -623,6 +623,7 @@ const cn = {
   },
   Config: {
     title: "聊天机器人 - 302.AI",
+    GPTs: "应用",
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
     AppDescTitle: "说明",
     AppDescSubTitle: "AI机器人详情预览",

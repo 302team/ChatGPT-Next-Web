@@ -581,7 +581,9 @@ export function SideBar(props: { className?: string }) {
         </div>
         <div className={styles["sidebar-sub-title"]}>
           {config.chatbotDesc ||
-            Locale.Config.description(config.isGpts ? "GPTs" : "AI")}
+            Locale.Config.description(
+              config.isGpts ? Locale.Config.GPTs : "AI",
+            )}
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           {config.chatbotLogo && (

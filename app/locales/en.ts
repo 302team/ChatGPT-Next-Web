@@ -31,16 +31,16 @@ const en: LocaleType = {
     Confirm: "Confirm",
     Later: "Later",
     CAPTCHA_ERROR: "Share code incorrect",
-    CHATBOT_DISABLED_ERROR: `Chatbot is disabled, Please refer to <a href="https://302.ai">302.AI</a> for details`,
-    CHATBOT_DELETE_ERROR: `Chatbot is deleted, Please refer to  <a href="https://302.ai">302.AI</a> for details`,
+    CHATBOT_DISABLED_ERROR: `Robot is disabled, Please refer to <a href="https://302.ai">302.AI</a> for details`,
+    CHATBOT_DELETE_ERROR: `Robot is deleted, Please refer to  <a href="https://302.ai">302.AI</a> for details`,
     SERVER_ERROR: "Internal error, please contact customer service",
     BALANCE_LIMIT_ERROR: "The account balance is insufficient, please top up",
     TOKEN_EXPIRED_ERROR: "Token expired, please log in again",
-    CHATBOT_DISABLED_ERROR2: `Chatbot is disabled, Please refer to [302.AI](https://dash.302.air details`,
+    CHATBOT_DISABLED_ERROR2: `Robot is disabled, Please refer to [302.AI](https://dash.302.air details`,
     TOTAL_QUOTA_ERROR:
-      "Chatbot's total quota reached maximum limit. Please visit [302.AI](https://302.ai) to create your own robot",
+      "Robot's total quota reached maximum limit. Please visit [302.AI](https://302.ai) to create your own robot",
     DAILY_QUOTA_ERROR:
-      "Chatbot's daily quota reached maximum limit. Please visit [302.AI](https://302.ai) to create your own robot",
+      "Robot's daily quota reached maximum limit. Please visit [302.AI](https://302.ai) to create your own robot",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,
@@ -632,8 +632,9 @@ const en: LocaleType = {
   },
   Config: {
     title: "Chatbot - 302.AI",
+    GPTs: "App",
     description: (type: string = "AI") =>
-      `Create your own ${type} robot with just one click`,
+      `Create your own ${type} Robot with just one click`,
     AppDescTitle: "Description",
     AppDescSubTitle: "AI Chat Robot detailed preview",
     AppDescContent: "",
