@@ -5,7 +5,7 @@ const no: PartialLocaleType = {
   WIP: "Arbeid pågår ...",
   Error: {
     Unauthorized:
-      "Vennligst besøk [302.AI](https://dash.302.ai) for å opprette din egen robot",
+      "Vennligst besøk [302.AI](https://302.ai) for å opprette din egen robot",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} meldinger`,

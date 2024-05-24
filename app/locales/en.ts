@@ -9,7 +9,7 @@ const en: LocaleType = {
   WIP: "Coming Soon...",
   Error: {
     Unauthorized:
-      "Please visit [302.AI](https://dash.302.ai) to create your own robot",
+      "Please visit [302.AI](https://302.ai) to create your own robot",
     ApiTimeout: "Request failed, please try again",
     NetworkError: "Network Error",
     PageOpenError: "Page Open Error",
@@ -27,16 +27,16 @@ const en: LocaleType = {
     Confirm: "Confirm",
     Later: "Later",
     CAPTCHA_ERROR: "Share code incorrect",
-    CHATBOT_DISABLED_ERROR: `Chatbot is disabled, Please refer to <a href="https://dash.302.ai">302.AI</a> for details`,
-    CHATBOT_DELETE_ERROR: `Chatbot is deleted, Please refer to  <a href="https://dash.302.ai">302.AI</a> for details`,
+    CHATBOT_DISABLED_ERROR: `Chatbot is disabled, Please refer to <a href="https://302.ai">302.AI</a> for details`,
+    CHATBOT_DELETE_ERROR: `Chatbot is deleted, Please refer to  <a href="https://302.ai">302.AI</a> for details`,
     SERVER_ERROR: "Internal error, please contact customer service",
     BALANCE_LIMIT_ERROR: "The account balance is insufficient, please top up",
     TOKEN_EXPIRED_ERROR: "Token expired, please log in again",
     CHATBOT_DISABLED_ERROR2: `Chatbot is disabled, Please refer to [302.AI](https://dash.302.air details`,
     TOTAL_QUOTA_ERROR:
-      "Chatbot's total quota reached maximum limit. Please visit [302.AI](https://dash.302.ai) to create your own robot",
+      "Chatbot's total quota reached maximum limit. Please visit [302.AI](https://302.ai) to create your own robot",
     DAILY_QUOTA_ERROR:
-      "Chatbot's daily quota reached maximum limit. Please visit [302.AI](https://dash.302.ai) to create your own robot",
+      "Chatbot's daily quota reached maximum limit. Please visit [302.AI](https://302.ai) to create your own robot",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,

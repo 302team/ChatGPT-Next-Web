@@ -5,7 +5,7 @@ const vi: PartialLocaleType = {
   WIP: "Sắp ra mắt...",
   Error: {
     Unauthorized:
-      "Vui lòng truy cập [302.AI](https://dash.302.ai) để tạo ra robot của riêng bạn",
+      "Vui lòng truy cập [302.AI](https://302.ai) để tạo ra robot của riêng bạn",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} tin nhắn`,

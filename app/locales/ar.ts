@@ -4,8 +4,7 @@ import type { PartialLocaleType } from "./index";
 const ar: PartialLocaleType = {
   WIP: "قريبًا...",
   Error: {
-    Unauthorized:
-      "يرجى زيارة [302.AI](https://dash.302.ai) لإنشاء روبوتك الخاص",
+    Unauthorized: "يرجى زيارة [302.AI](https://302.ai) لإنشاء روبوتك الخاص",
   },
   Auth: {
     Title: "يتطلب رمز الوصول",

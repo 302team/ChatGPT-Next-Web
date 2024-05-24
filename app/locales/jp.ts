@@ -5,7 +5,7 @@ const jp: PartialLocaleType = {
   WIP: "この機能は開発中です",
   Error: {
     Unauthorized:
-      "自分自身のロボットを作成するには、[302.AI](https://dash.302.ai) をご覧ください",
+      "自分自身のロボットを作成するには、[302.AI](https://302.ai) をご覧ください",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 通のチャット`,
