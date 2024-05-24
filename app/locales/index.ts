@@ -81,9 +81,28 @@ merge(fallbackLang, targetLang);
 
 export default fallbackLang as LocaleType;
 
+function getLangFromSearchParams() {
+  let lang = "";
+  try {
+    let hash = window.location.hash;
+    if (hash.includes("lang=")) {
+      const query = hash.split("?").pop();
+      const langRecord = query?.split("&").find((q) => q.includes("lang"));
+      if (langRecord) {
+        const locale = langRecord.split("=")[1];
+        lang = locale === "zh-CN" ? "cn" : "en";
+        localStorage.setItem("lang", lang);
+      }
+    }
+  } catch (error) {}
+
+  return lang;
+}
+
 function getItem(key: string) {
   try {
-    return localStorage.getItem(key);
+    // const lang = getLangFromSearchParams();
+    return /* lang ? lang : */ localStorage.getItem(key);
   } catch {
     return null;
   }
