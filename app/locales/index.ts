@@ -101,8 +101,8 @@ function getLangFromSearchParams() {
 
 function getItem(key: string) {
   try {
-    // const lang = getLangFromSearchParams();
-    return /* lang ? lang : */ localStorage.getItem(key);
+    const lang = getLangFromSearchParams();
+    return lang ? lang : localStorage.getItem(key);
   } catch {
     return null;
   }
