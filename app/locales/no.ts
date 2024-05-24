@@ -156,10 +156,6 @@ const no: PartialLocaleType = {
     Topic: "Emne",
     Time: "Tid",
   },
-  Config: {
-    title: "Chatbot - 302.AI",
-    description: "Lag din egen AI-robot med bare ett klikk",
-  },
 };
 
 export default no;

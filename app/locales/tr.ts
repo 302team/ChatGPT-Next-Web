@@ -236,10 +236,6 @@ const tr: PartialLocaleType = {
     Topic: "Konu",
     Time: "Zaman",
   },
-  Config: {
-    title: "Sohbet robotu - 302.AI",
-    description: "Sadece bir tıklama ile kendi AI robotunuzu oluşturun",
-  },
 };
 
 export default tr;

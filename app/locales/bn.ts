@@ -331,10 +331,6 @@ const bn: PartialLocaleType = {
     Topic: "টপিক",
     Time: "সময়",
   },
-  Config: {
-    title: "চ্যাটবট - 302.AI",
-    description: "একটি ক্লিকে নিজের জন্য এইআই রোবট তৈরি করুন",
-  },
 };
 
 export default bn;

@@ -232,10 +232,6 @@ const ko: PartialLocaleType = {
     Topic: "주제",
     Time: "시간",
   },
-  Config: {
-    title: "챗봇 - 302.AI",
-    description: "한 번의 클릭으로 나만의 AI 로봇을 만들어보세요",
-  },
 };
 
 export default ko;

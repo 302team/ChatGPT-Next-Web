@@ -496,10 +496,6 @@ const sk: PartialLocaleType = {
     Code: "Zistený prístupový kód z URL, potvrdiť na aplikovanie?",
     Settings: "Zistené nastavenia z URL, potvrdiť na aplikovanie?",
   },
-  Config: {
-    title: "Chatbot - 302.AI",
-    description: "Vytvorte si vlastného AI robota jedným kliknutím",
-  },
 };
 
 export default sk;

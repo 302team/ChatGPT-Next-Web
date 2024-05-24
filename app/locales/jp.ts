@@ -298,10 +298,6 @@ const jp: PartialLocaleType = {
     Topic: "トピック",
     Time: "時間",
   },
-  Config: {
-    title: "チャットボット -302.AI",
-    description: "たった一つのクリックで自分自身のAIロボットを作成する",
-  },
 };
 
 export default jp;

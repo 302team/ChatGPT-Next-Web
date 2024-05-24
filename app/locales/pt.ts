@@ -479,10 +479,6 @@ const pt: PartialLocaleType = {
     Settings:
       "Configurações detectadas a partir da url, confirmar para aplicar?",
   },
-  Config: {
-    title: "Chatbot - 302.AI",
-    description: "Crie o seu próprio robô de IA com apenas um clique",
-  },
 };
 
 export default pt;

@@ -480,7 +480,11 @@ const tw = {
   },
   Config: {
     title: "聊天機器人- 302.AI",
-    description: "一鍵生成屬於自己的AI機器人",
+    GPTs: "應用",
+    description: (type: string = "AI") => `一鍵生成屬於自己的${type}機器人`,
+    AppDescTitle: "説明",
+    AppDescSubTitle: "機器人詳情概覽",
+    AppDescContent: "",
   },
 };
 
