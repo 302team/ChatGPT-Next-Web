@@ -651,8 +651,8 @@ export const useChatStore = createPersistStore(
         if (
           config.pluginConfig.enable &&
           // session.mask.usePlugins && // 所有聊天窗口都可以使用插件
-          allPlugins.length > 0 &&
-          isSupportFunctionCall(modelConfig.model)
+          allPlugins.length > 0 /* &&
+          isSupportFunctionCall(modelConfig.model) */
         ) {
           console.log(
             "[ToolAgent] start; plugins:",
