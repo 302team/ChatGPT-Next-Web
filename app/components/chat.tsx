@@ -764,10 +764,9 @@ function useUploadFile(extra: {
     const show =
       supportMultimodal ||
       // 开启了使用插件的功能
-      (config.pluginConfig.enable &&
-        allPlugins.length > 0 &&
+      (config.pluginConfig.enable && allPlugins.length > 0); /* &&
         // 模型支持 function call
-        isSupportFunctionCall(currentModel));
+        isSupportFunctionCall(currentModel) */
 
     setShowUploadAction(show);
 
