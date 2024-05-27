@@ -504,10 +504,20 @@ export class ChatGPTApi implements LLMApi {
         const finish = () => {
           if (!finished) {
             finished = true;
-            options.onFinish(
-              responseText,
-              /* !isStreamDone || */ hasUncatchError || isAborted,
-            );
+
+            if (responseText?.length === 0) {
+              if (shouldRetry) {
+                controller.abort();
+                options.onRetry?.();
+              } else {
+                options.onFinish("empty response from server", true);
+              }
+            } else {
+              options.onFinish(
+                responseText,
+                /* !isStreamDone || */ hasUncatchError || isAborted,
+              );
+            }
           }
         };
 
