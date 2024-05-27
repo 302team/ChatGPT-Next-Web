@@ -117,13 +117,20 @@ export const Google = {
 };
 
 export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lang
-export const DEFAULT_SYSTEM_TEMPLATE =
-  "You are ChatGPT, a large language model trained by {{ServiceProvider}}. " +
-  "Knowledge cutoff: {{cutoff}}. " +
-  "Current model: {{model}}. " +
-  "Current time: {{time}}. " +
-  "Latex inline: (\\x^2\\) " +
-  "Latex block: $$e=mc^2$$";
+export const DEFAULT_SYSTEM_TEMPLATE = (model: string) => {
+  let template = "";
+  if (model.startsWith("gpt")) {
+    template +=
+      "You are ChatGPT, a large language model trained by {{ServiceProvider}}. ";
+  }
+
+  template += "Current model: {{model}}. ";
+  template += "Current time: {{time}}. ";
+  template += "Latex inline: (\\x^2\\) ";
+  template += "Latex block: $$e=mc^2$$";
+
+  return template;
+};
 
 export const SUMMARIZE_MODEL = "gpt-3.5-turbo-0125";
 export const GEMINI_SUMMARIZE_MODEL = "gemini-pro";

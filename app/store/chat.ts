@@ -1099,12 +1099,12 @@ export const useChatStore = createPersistStore(
 
         // system prompts, to get close to OpenAI Web ChatGPT
         const shouldInjectSystemPrompts =
-          modelConfig.enableInjectSystemPrompts &&
-          session.mask.modelConfig.model.startsWith("gpt-");
+          modelConfig.enableInjectSystemPrompts; /* &&
+          session.mask.modelConfig.model.startsWith("gpt-"); */
 
         const shouldInjectCustomSystemPrompts =
-          modelConfig.enableInjectCustomSystemPrompts &&
-          session.mask.modelConfig.model.startsWith("gpt-");
+          modelConfig.enableInjectCustomSystemPrompts; /* &&
+          session.mask.modelConfig.model.startsWith("gpt-"); */
 
         var systemPrompts: ChatMessage[] = [];
         systemPrompts = shouldInjectSystemPrompts
@@ -1113,7 +1113,7 @@ export const useChatStore = createPersistStore(
                 role: "system",
                 content: fillTemplateWith("", {
                   ...modelConfig,
-                  template: DEFAULT_SYSTEM_TEMPLATE,
+                  template: DEFAULT_SYSTEM_TEMPLATE(modelConfig.model),
                 }),
               }),
             ]
