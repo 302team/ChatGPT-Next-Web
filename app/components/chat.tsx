@@ -744,7 +744,8 @@ function useUploadFile(extra: {
   };
 
   const getAcceptFileType = (model: ModelType | string) => {
-    if (isSupportFunctionCall(model) && config.pluginConfig.enable) return "*";
+    if (/* isSupportFunctionCall(model) && */ config.pluginConfig.enable)
+      return "*";
 
     if (
       config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE ||
@@ -900,7 +901,10 @@ function useUploadFile(extra: {
         // 视觉模型 仅支持图片类型
         return isGptsModel || (isSupportVision && isImage((f as File).type));
       } else {
-        if (config.pluginConfig.enable && isSupportFunctionCall(currentModel)) {
+        if (
+          config.pluginConfig
+            .enable /* && isSupportFunctionCall(currentModel) */
+        ) {
           return true;
         }
 
