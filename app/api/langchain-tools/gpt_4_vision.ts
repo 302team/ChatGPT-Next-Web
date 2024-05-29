@@ -4,7 +4,7 @@ import { getBase64FromUrl } from "./utils";
 
 export class GPT4vWrapper extends StructuredTool {
   static lc_name() {
-    return "GPT_4o";
+    return "GPT_4V";
   }
 
   apiKey: string;
@@ -27,7 +27,7 @@ export class GPT4vWrapper extends StructuredTool {
     this.model = "gpt-4o";
   }
 
-  name = "gpt-4o";
+  name = "gpt-4v";
 
   schema = z.object({
     content: z.array(
@@ -54,7 +54,7 @@ export class GPT4vWrapper extends StructuredTool {
       role: "user",
       content: input.content,
     };
-    console.log("🚀 ~ GPT-4o ~ _call ~ input:", JSON.stringify(message));
+    console.log("🚀 ~ GPT-4V ~ _call ~ input:", JSON.stringify(message));
     const apiUrl = `${this.baseURL}/chat/completions`;
 
     let requestOptions = {
@@ -72,7 +72,7 @@ export class GPT4vWrapper extends StructuredTool {
     const resp = await fetch(apiUrl, requestOptions);
 
     const json = await resp.json();
-    console.log("🚀 ~ GPT4oWrapper ~ _call ~ json:", json);
+    console.log("🚀 ~ GPT4vWrapper ~ _call ~ json:", json);
 
     if (json.error) {
       throw new Error(
@@ -83,5 +83,6 @@ export class GPT4vWrapper extends StructuredTool {
     return JSON.stringify(json);
   }
 
-  description = "The fastest and most affordable flagship model";
+  description =
+    "OpenAi most advanced, multimodal flagship model that’s cheaper and faster than GPT-4 Turbo. Currently points to gpt-4o-2024-05-13.";
 }
