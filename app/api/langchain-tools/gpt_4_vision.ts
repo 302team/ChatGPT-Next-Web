@@ -4,7 +4,7 @@ import { getBase64FromUrl } from "./utils";
 
 export class GPT4vWrapper extends StructuredTool {
   static lc_name() {
-    return "GPT_4V";
+    return "GPT_4o";
   }
 
   apiKey: string;
@@ -16,7 +16,7 @@ export class GPT4vWrapper extends StructuredTool {
 
     if (!apiKey) {
       throw new Error(
-        "GPT-4-vision requires an API key. Please set it as OPENAI_API_KEY in your .env file.",
+        "GPT-4o requires an API key. Please set it as OPENAI_API_KEY in your .env file.",
       );
     }
 
@@ -24,10 +24,10 @@ export class GPT4vWrapper extends StructuredTool {
     this.baseURL = baseURL;
     this.apiKey = apiKey;
 
-    this.model = "gpt-4-vision-preview";
+    this.model = "gpt-4o";
   }
 
-  name = "gpt-4v";
+  name = "gpt-4o";
 
   schema = z.object({
     content: z.array(
@@ -54,7 +54,7 @@ export class GPT4vWrapper extends StructuredTool {
       role: "user",
       content: input.content,
     };
-    console.log("🚀 ~ GPT-4V ~ _call ~ input:", JSON.stringify(message));
+    console.log("🚀 ~ GPT-4o ~ _call ~ input:", JSON.stringify(message));
     const apiUrl = `${this.baseURL}/chat/completions`;
 
     let requestOptions = {
@@ -72,7 +72,7 @@ export class GPT4vWrapper extends StructuredTool {
     const resp = await fetch(apiUrl, requestOptions);
 
     const json = await resp.json();
-    console.log("🚀 ~ GPT4vWrapper ~ _call ~ json:", json);
+    console.log("🚀 ~ GPT4oWrapper ~ _call ~ json:", json);
 
     if (json.error) {
       throw new Error(
@@ -83,5 +83,5 @@ export class GPT4vWrapper extends StructuredTool {
     return JSON.stringify(json);
   }
 
-  description = "智谱AI最新图像识别AI模型，来自清华大学";
+  description = "The fastest and most affordable flagship model";
 }
