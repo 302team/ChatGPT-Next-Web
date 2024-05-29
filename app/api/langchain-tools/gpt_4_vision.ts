@@ -16,7 +16,7 @@ export class GPT4vWrapper extends StructuredTool {
 
     if (!apiKey) {
       throw new Error(
-        "GPT-4o requires an API key. Please set it as OPENAI_API_KEY in your .env file.",
+        "GPT-4-vision requires an API key. Please set it as OPENAI_API_KEY in your .env file.",
       );
     }
 
@@ -24,7 +24,7 @@ export class GPT4vWrapper extends StructuredTool {
     this.baseURL = baseURL;
     this.apiKey = apiKey;
 
-    this.model = "gpt-4o";
+    this.model = "gpt-4-vision-preview";
   }
 
   name = "gpt-4v";
@@ -84,5 +84,5 @@ export class GPT4vWrapper extends StructuredTool {
   }
 
   description =
-    "OpenAi most advanced, multimodal flagship model that’s cheaper and faster than GPT-4 Turbo. Currently points to gpt-4o-2024-05-13.";
+    "GPT-4 model with the ability to understand images, in addition to all other GPT-4 Turbo capabilities.";
 }
