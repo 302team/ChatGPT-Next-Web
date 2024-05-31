@@ -129,6 +129,8 @@ export const CHATBOT_CONFIG = {
     maxIterations: 10, // 最大迭代数
     returnIntermediateSteps: true, // 是否返回插件调用的中间步骤
   },
+
+  region: 0,
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG &

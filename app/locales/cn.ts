@@ -601,6 +601,7 @@ const cn = {
     Source: "来源",
     Topic: "主题",
     Time: "时间",
+    ModelName: "文心一言",
   },
   GPTs: {
     PrefixName: "[应用]",

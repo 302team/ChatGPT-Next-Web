@@ -31,6 +31,7 @@ import {
   DEFAULT_SIDEBAR_WIDTH,
   DEMO_HOST,
   GPT302_WEBSITE_URL,
+  GPTS302_WEBSITE_CN_URL,
   GPTS302_WEBSITE_URL,
   LAST_INPUT_TIME,
   MAX_SIDEBAR_WIDTH,
@@ -323,6 +324,7 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
 }
 
 export function GptsConfigModal(props: {
+  isChina: number;
   style?: React.CSSProperties;
   isMobileScreen?: boolean;
   onClose: () => void;
@@ -330,7 +332,9 @@ export function GptsConfigModal(props: {
   const windowSize = useWindowSize();
   const [spinning, setSpinning] = useState(true);
   const [error, setError] = useState(false);
-  const [iframeSrc, setIframeSrc] = useState(GPTS302_WEBSITE_URL);
+  const [iframeSrc, setIframeSrc] = useState(
+    props.isChina === 0 ? GPTS302_WEBSITE_CN_URL : GPTS302_WEBSITE_URL,
+  );
 
   return (
     <div className="modal-mask" style={props.style}>
@@ -352,7 +356,11 @@ export function GptsConfigModal(props: {
                     setIframeSrc("about:blank");
                     setError(false);
                     setSpinning(true);
-                    setIframeSrc(GPTS302_WEBSITE_URL);
+                    setIframeSrc(
+                      props.isChina === 0
+                        ? GPTS302_WEBSITE_CN_URL
+                        : GPTS302_WEBSITE_URL,
+                    );
                   }}
                 >
                   {Locale.Error.Action.Retry}
@@ -743,6 +751,7 @@ export function SideBar(props: { className?: string }) {
       )}
 
       <GptsConfigModal
+        isChina={config.region}
         isMobileScreen={isMobileScreen}
         style={{ display: showGptsConfigModal ? "flex" : "none" }}
         onClose={() => setShowGptsConfigModal(false)}

@@ -42,7 +42,11 @@ import { toBlob, toPng } from "html-to-image";
 import { DEFAULT_MASK_AVATAR } from "../store/mask";
 
 import { prettyObject } from "../utils/format";
-import { EXPORT_MESSAGE_CLASS_NAME, ModelProvider } from "../constant";
+import {
+  DEMO_HOST,
+  EXPORT_MESSAGE_CLASS_NAME,
+  ModelProvider,
+} from "../constant";
 import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
 import { getMessageTextContent } from "../utils";
@@ -472,11 +476,14 @@ export function ImagePreviewer(props: {
   const session = chatStore.currentSession();
   const mask = session.mask;
   const config = useAppConfig();
+  const isDemo = window.location.host.startsWith(DEMO_HOST);
 
   const previewRef = useRef<HTMLDivElement>(null);
 
   const modelName = useMemo(() => {
-    if (config.isGpts) {
+    if (isDemo) {
+      return Locale.Exporter.ModelName;
+    } else if (config.isGpts) {
       return config.gptsConfig.name;
     } else if (mask.modelConfig.model.startsWith("gpt-4-gizmo")) {
       return mask.modelName;

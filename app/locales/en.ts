@@ -610,6 +610,7 @@ const en: LocaleType = {
     Source: "Source",
     Topic: "Topic",
     Time: "Time",
+    ModelName: "ERNIE-Bot-4",
   },
   GPTs: {
     PrefixName: "[App]",

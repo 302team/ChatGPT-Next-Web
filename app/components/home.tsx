@@ -213,6 +213,8 @@ function ChatWindow() {
 
             conf.fileSupportType = opt.file_support_type;
 
+            conf.region = opt.region == undefined ? 0 : opt.region;
+
             // console.warn(
             //   "🚀 ~ config.update ~ isEmptyObject(settings):",
             //   isEmptyObject(settings),
@@ -393,11 +395,12 @@ function Screen() {
 
 export function Home() {
   const [langLoading, setLangLoading] = useState(false);
-  useSwitchTheme();
+  // useSwitchTheme();
   // useLoadData();
   useHtmlLang();
 
   useEffect(() => {
+    document.body.classList.add("light");
     // try {
     //   let hash = window.location.hash;
     //   if (hash.includes("lang=")) {
