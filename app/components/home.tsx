@@ -12,7 +12,7 @@ import { getCSSVar, isEmptyObject, useMobileScreen } from "../utils";
 
 import dynamic from "next/dynamic";
 
-import { DEMO_HOST, ModelProvider, Path, SlotID } from "../constant";
+import { DEMO_HOST, ModelProvider, Path, Region, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
@@ -213,7 +213,8 @@ function ChatWindow() {
 
             conf.fileSupportType = opt.file_support_type;
 
-            conf.region = opt.region == undefined ? 0 : opt.region;
+            conf.region =
+              opt.region == undefined ? Region.Overseas : opt.region;
 
             // console.warn(
             //   "🚀 ~ config.update ~ isEmptyObject(settings):",

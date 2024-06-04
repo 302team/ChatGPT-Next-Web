@@ -30,6 +30,7 @@ import {
   DASH_URL,
   DEFAULT_SIDEBAR_WIDTH,
   DEMO_HOST,
+  GPT302_WEBSITE_CN_URL,
   GPT302_WEBSITE_URL,
   GPTS302_WEBSITE_CN_URL,
   GPTS302_WEBSITE_URL,
@@ -39,6 +40,7 @@ import {
   NARROW_SIDEBAR_WIDTH,
   Path,
   REPO_URL,
+  Region,
 } from "../constant";
 
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -599,7 +601,12 @@ export function SideBar(props: { className?: string }) {
               src={config.chatbotLogo}
               alt="LOGO"
               onClick={() =>
-                openWindow(config.chatbotLink || GPT302_WEBSITE_URL)
+                openWindow(
+                  config.chatbotLink ||
+                    (config.region === Region.China
+                      ? GPT302_WEBSITE_CN_URL
+                      : GPT302_WEBSITE_URL),
+                )
               }
             />
           )}
@@ -610,7 +617,12 @@ export function SideBar(props: { className?: string }) {
               height={50}
               width={50}
               onClick={() =>
-                openWindow(config.chatbotLink || GPT302_WEBSITE_URL)
+                openWindow(
+                  config.chatbotLink ||
+                    (config.region === Region.China
+                      ? GPT302_WEBSITE_CN_URL
+                      : GPT302_WEBSITE_URL),
+                )
               }
             />
           )}
