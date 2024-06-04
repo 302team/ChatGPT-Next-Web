@@ -212,6 +212,7 @@ function ChatWindow() {
             conf.pluginConfig.enable = !!opt.enable_plugins;
 
             conf.fileSupportType = opt.file_support_type;
+            conf.multimodalType4Models = opt.models_file_support_type || {};
 
             conf.region =
               opt.region == undefined ? Region.Overseas : opt.region;

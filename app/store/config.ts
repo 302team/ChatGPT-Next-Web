@@ -75,6 +75,7 @@ export const DEFAULT_CONFIG = {
   },
 
   fileSupportType: 0,
+  multimodalType4Models: {} as Record<string, number>,
 };
 
 export const DEFAULT_SETTING = {

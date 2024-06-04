@@ -712,22 +712,25 @@ function useUploadFile(extra: {
   const currentModel = session.mask.modelConfig.model;
   const isStoreModel = session.mask.isStoreModel;
   const isGptsModel = session.mask.isGptsModel;
-  // 模型是否支持视觉
-  const isSupportVision =
-    isSpecImageModal(currentModel) || isVisionModel(currentModel);
 
   const supportMultimodal = useMemo(() => {
     // 如果是从应用商店创建的
     if (isStoreModel) {
       // 所有 gpts 模型 || 部分国产模型 支持多模态
-      return isGptsModel || isSupportVision;
+      return isGptsModel || currentModel in config.multimodalType4Models;
     } else {
       return (
         config.fileSupportType === FILE_SUPPORT_TYPE.ALL ||
         config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE
       );
     }
-  }, [isSupportVision, config.fileSupportType, isStoreModel, isGptsModel]);
+  }, [
+    config.fileSupportType,
+    config.multimodalType4Models,
+    currentModel,
+    isStoreModel,
+    isGptsModel,
+  ]);
 
   // ========================================
   // const [uploadImages, setUploadImages] = useState<UploadFile[]>([]);
@@ -744,16 +747,21 @@ function useUploadFile(extra: {
   };
 
   const getAcceptFileType = (model: ModelType | string) => {
-    if (/* isSupportFunctionCall(model) && */ config.pluginConfig.enable)
+    if (
+      config.pluginConfig.enable ||
+      config.fileSupportType === FILE_SUPPORT_TYPE.ALL ||
+      (isStoreModel &&
+        config.multimodalType4Models[currentModel] === FILE_SUPPORT_TYPE.ALL)
+    )
       return "*";
 
     if (
       config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE ||
-      (isStoreModel && isSupportVision)
+      (isStoreModel &&
+        config.multimodalType4Models[currentModel] ===
+          FILE_SUPPORT_TYPE.ONLY_IMAGE)
     ) {
       return ".png, .jpg, .jpeg, .webp, .gif";
-    } else if (config.fileSupportType === FILE_SUPPORT_TYPE.ALL) {
-      return "*";
     } else if (model.includes("whisper")) {
       return ".flac, .mp3, .mp4, .mpeg, .mpga, .m4a, .ogg, .wav, .webm";
     }
@@ -894,17 +902,23 @@ function useUploadFile(extra: {
     }
 
     const filterdFiles = Array.from(files).filter((f) => {
-      console.log("🚀 ~ filterdFiles ~ isStoreModel:", isStoreModel);
       if (isStoreModel) {
         // app store 的模型, 只有部分才支持
         // gpts 模型支持所有文件类型,
         // 视觉模型 仅支持图片类型
-        return isGptsModel || (isSupportVision && isImage((f as File).type));
+        return (
+          /* gpts模型 */
+          isGptsModel ||
+          /* 非gpts模型，该模型支持所有类型 */
+          config.multimodalType4Models[currentModel] ===
+            FILE_SUPPORT_TYPE.ALL ||
+          /* 非gpts模型，并且该模型支持图片上传 */
+          (config.multimodalType4Models[currentModel] ===
+            FILE_SUPPORT_TYPE.ONLY_IMAGE &&
+            isImage((f as File).type))
+        );
       } else {
-        if (
-          config.pluginConfig
-            .enable /* && isSupportFunctionCall(currentModel) */
-        ) {
+        if (config.pluginConfig.enable) {
           return true;
         }
 
