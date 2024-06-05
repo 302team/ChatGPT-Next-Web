@@ -747,23 +747,27 @@ function useUploadFile(extra: {
   };
 
   const getAcceptFileType = (model: ModelType | string) => {
-    if (
-      config.pluginConfig.enable ||
-      config.fileSupportType === FILE_SUPPORT_TYPE.ALL ||
-      (isStoreModel &&
-        config.multimodalType4Models[currentModel] === FILE_SUPPORT_TYPE.ALL)
-    )
-      return "*";
-
-    if (
-      config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE ||
-      (isStoreModel &&
+    if (isStoreModel) {
+      if (
         config.multimodalType4Models[currentModel] ===
-          FILE_SUPPORT_TYPE.ONLY_IMAGE)
-    ) {
-      return ".png, .jpg, .jpeg, .webp, .gif";
-    } else if (model.includes("whisper")) {
-      return ".flac, .mp3, .mp4, .mpeg, .mpga, .m4a, .ogg, .wav, .webm";
+        FILE_SUPPORT_TYPE.ONLY_IMAGE
+      ) {
+        return ".png, .jpg, .jpeg, .webp, .gif";
+      } else if (
+        config.multimodalType4Models[currentModel] === FILE_SUPPORT_TYPE.ALL
+      ) {
+        return "*";
+      }
+    } else {
+      if (config.pluginConfig.enable) {
+        return "*";
+      } else if (config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE) {
+        return ".png, .jpg, .jpeg, .webp, .gif";
+      } else if (config.fileSupportType === FILE_SUPPORT_TYPE.ALL) {
+        return "*";
+      } else if (model.includes("whisper")) {
+        return ".flac, .mp3, .mp4, .mpeg, .mpga, .m4a, .ogg, .wav, .webm";
+      }
     }
     return "";
   };

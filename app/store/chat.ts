@@ -649,6 +649,7 @@ export const useChatStore = createPersistStore(
 
         var api: ClientApi = new ClientApi(ModelProvider.GPT);
         if (
+          !session.mask.isStoreModel &&
           config.pluginConfig.enable &&
           // session.mask.usePlugins && // 所有聊天窗口都可以使用插件
           allPlugins.length > 0 /* &&
