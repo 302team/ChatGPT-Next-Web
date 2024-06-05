@@ -744,7 +744,13 @@ export function SideBar(props: { className?: string }) {
           src={BotIconDark}
           height={13}
           alt=""
-          onClick={() => openWindow(GPT302_WEBSITE_URL)}
+          onClick={() =>
+            openWindow(
+              config.region === Region.China
+                ? GPT302_WEBSITE_CN_URL
+                : GPT302_WEBSITE_URL,
+            )
+          }
         />
       </div>
 

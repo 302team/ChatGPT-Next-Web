@@ -5,6 +5,7 @@ import {
   DEFAULT_INPUT_TEMPLATE,
   DEFAULT_MODELS,
   DEFAULT_SIDEBAR_WIDTH,
+  Region,
   StoreKey,
 } from "../constant";
 import { createPersistStore } from "../utils/store";
@@ -131,7 +132,7 @@ export const CHATBOT_CONFIG = {
     returnIntermediateSteps: true, // 是否返回插件调用的中间步骤
   },
 
-  region: 0,
+  region: Region.Overseas,
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG &

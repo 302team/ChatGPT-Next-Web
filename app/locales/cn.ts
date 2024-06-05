@@ -1,12 +1,17 @@
 import { getClientConfig } from "../config/client";
-import { SubmitKey } from "../store/config";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
 
-const isApp = !!getClientConfig()?.isApp;
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
 
 const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
-    Unauthorized: "请访问[302.AI](https://302.ai)创建属于你自己的机器人",
+    Unauthorized: `请访问[${homeText}](${homeLink})创建属于你自己的机器人`,
     ApiTimeout: "请求失败，请重试",
     NetworkError: "网络错误",
     PageOpenError: "页面加载失败",
@@ -18,7 +23,7 @@ const cn = {
     Warn: "提示",
     Login: "登录",
     Register: "注册",
-    Unauthorized: `此机器人为Demo展示。请访问<a href="https://302.ai">302.AI</a>创建属于你自己的机器人`,
+    Unauthorized: `此机器人为Demo展示。请访问<a href="${homeLink}">${homeText}</a>创建属于你自己的机器人`,
     Title: "需要分享码",
     Tips: "创建者开启了验证, 请在下方填入分享码",
     SubTips: "或者输入你的 OpenAI 或 Google API 密钥",
@@ -28,16 +33,14 @@ const cn = {
     Confirm: "确认",
     Later: "稍后再说",
     CAPTCHA_ERROR: "分享码错误",
-    CHATBOT_DISABLED_ERROR: `机器人已禁用，更多信息请访问 <a href="https://302.ai">302.AI</a>`,
-    CHATBOT_DELETE_ERROR: `机器人已删除，更多信息请访问 <a href="https://302.ai">302.AI</a>`,
+    CHATBOT_DISABLED_ERROR: `机器人已禁用，更多信息请访问 <a href="${homeLink}">${homeText}</a>`,
+    CHATBOT_DELETE_ERROR: `机器人已删除，更多信息请访问 <a href="${homeLink}">${homeText}</a>`,
     SERVER_ERROR: "内部错误, 请联系客服",
     BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
-    CHATBOT_DISABLED_ERROR2: `机器人已禁用，更多信息请访问[302.AI](https://302.ai)`,
-    TOTAL_QUOTA_ERROR:
-      "机器人的总额度已达上限，请访问[302.AI](https://302.ai)创建属于你自己的机器人",
-    DAILY_QUOTA_ERROR:
-      "机器人的单日额度已达上限，请访问[302.AI](https://302.ai)创建属于你自己的机器人",
+    CHATBOT_DISABLED_ERROR2: `机器人已禁用，更多信息请访问[${homeText}](${homeLink})`,
+    TOTAL_QUOTA_ERROR: `机器人的总额度已达上限，请访问[${homeText}](${homeLink})创建属于你自己的机器人`,
+    DAILY_QUOTA_ERROR: `机器人的单日额度已达上限，请访问[${homeText}](${homeLink})创建属于你自己的机器人`,
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
