@@ -3,9 +3,6 @@ import type { PartialLocaleType } from "./index";
 
 const ar: PartialLocaleType = {
   WIP: "قريبًا...",
-  Error: {
-    Unauthorized: "يرجى زيارة [302.AI](https://302.ai) لإنشاء روبوتك الخاص",
-  },
   Auth: {
     Title: "يتطلب رمز الوصول",
     Tips: "الباني فعّل التحقق، الرجاء إدخال رمز الوصول أدناه",
@@ -284,10 +281,6 @@ ${builtin} مدمجة، ${custom} تم تعريفها من قبل المستخد
     Messages: "الرسائل",
     Topic: "الموضوع",
     Time: "الوقت",
-  },
-  Config: {
-    title: "الروبوت المحادثة - 302.AI",
-    description: "إنشاء روبوت ذكاء اصطناعي خاص بك بنقرة واحدة",
   },
 };
 

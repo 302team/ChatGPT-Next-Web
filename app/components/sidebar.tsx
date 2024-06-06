@@ -18,6 +18,7 @@ import { useAccessStore, useAppConfig, useChatStore } from "../store";
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
+  GPT302_WEBSITE_CN_URL,
   GPT302_WEBSITE_URL,
   GPTS302_WEBSITE_URL,
   MAX_SIDEBAR_WIDTH,
@@ -25,6 +26,7 @@ import {
   NARROW_SIDEBAR_WIDTH,
   Path,
   REPO_URL,
+  Region,
 } from "../constant";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -294,7 +296,11 @@ export function SideBar(props: { className?: string }) {
               src={config.chatbotLogo}
               alt="LOGO"
               onClick={() =>
-                openWindow(config.chatbotLink || GPT302_WEBSITE_URL)
+                openWindow(
+                  config.chatbotLink || config.region === Region.China
+                    ? GPT302_WEBSITE_CN_URL
+                    : GPT302_WEBSITE_URL,
+                )
               }
             />
           )}
@@ -305,7 +311,11 @@ export function SideBar(props: { className?: string }) {
               height={50}
               width={50}
               onClick={() =>
-                openWindow(config.chatbotLink || GPT302_WEBSITE_URL)
+                openWindow(
+                  config.chatbotLink || config.region === Region.China
+                    ? GPT302_WEBSITE_CN_URL
+                    : GPT302_WEBSITE_URL,
+                )
               }
             />
           )}
@@ -363,7 +373,13 @@ export function SideBar(props: { className?: string }) {
           src={BotIconDark}
           height={13}
           alt=""
-          onClick={() => openWindow(GPT302_WEBSITE_URL)}
+          onClick={() =>
+            openWindow(
+              config.region === Region.China
+                ? GPT302_WEBSITE_CN_URL
+                : GPT302_WEBSITE_URL,
+            )
+          }
         />
       </div>
 

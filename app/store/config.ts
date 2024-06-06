@@ -5,6 +5,7 @@ import {
   DEFAULT_INPUT_TEMPLATE,
   DEFAULT_MODELS,
   DEFAULT_SIDEBAR_WIDTH,
+  Region,
   StoreKey,
 } from "../constant";
 import { createPersistStore } from "../utils/store";
@@ -65,6 +66,12 @@ export const DEFAULT_CONFIG = {
     lang: "zh-CN",
     voice: "Microsoft Huihui - Chinese (Simplified, PRC)",
   },
+
+  fileSupportType: 0,
+  multimodalType4Models: {} as Record<string, number>, // 多模态模型类型
+  supportPluginModelList: [] as Array<string>, // 支持插件的模型列表
+
+  region: Region.Overseas,
 };
 
 export const DEFAULT_SETTING = {

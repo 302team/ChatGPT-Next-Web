@@ -5,9 +5,6 @@ const isApp = !!getClientConfig()?.isApp;
 
 const tw = {
   WIP: "該功能仍在開發中……",
-  Error: {
-    Unauthorized: "請訪問[302.AI](https://302.ai)創建屬於你自己的機器人",
-  },
 
   Auth: {
     Title: "需要密碼",
@@ -477,10 +474,6 @@ const tw = {
     Messages: "訊息",
     Topic: "主題",
     Time: "時間",
-  },
-  Config: {
-    title: "聊天機器人- 302.AI",
-    description: "一鍵生成屬於自己的AI機器人",
   },
 };
 

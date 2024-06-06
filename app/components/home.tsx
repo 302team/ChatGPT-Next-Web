@@ -12,7 +12,7 @@ import { getCSSVar, isEmptyObject, useMobileScreen } from "../utils";
 
 import dynamic from "next/dynamic";
 
-import { ModelProvider, Path, SlotID } from "../constant";
+import { ModelProvider, Path, Region, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
@@ -166,7 +166,16 @@ function ChatWindow() {
       <ValidPwdPage
         onAuth={(opt: any) => {
           accessStore.update((access) => (access.isAuth = true));
-          appConfig.update((config) => (config.chatbotInfo = opt.info ?? ""));
+          appConfig.update((config) => {
+            config.chatbotInfo = opt.info ?? "";
+
+            config.fileSupportType = opt.file_support_type;
+            config.multimodalType4Models = opt.models_file_support_type || {};
+            config.supportPluginModelList = opt.support_plugin_model_list || [];
+
+            config.region =
+              opt.region == undefined ? Region.Overseas : opt.region;
+          });
 
           chatStore.resetSession();
 

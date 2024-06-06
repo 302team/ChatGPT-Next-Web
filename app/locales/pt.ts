@@ -6,10 +6,6 @@ const isApp = !!getClientConfig()?.isApp;
 
 const pt: PartialLocaleType = {
   WIP: "Em breve...",
-  Error: {
-    Unauthorized:
-      "Por favor, visite [302.AI](https://302.ai) para criar o seu próprio robô",
-  },
   Auth: {
     Title: "Necessário Código de Acesso",
     Tips: "O criador ativou a verificação, por favor insira o código de acesso abaixo",
@@ -478,10 +474,6 @@ const pt: PartialLocaleType = {
     Code: "Código de acesso detectado a partir da url, confirmar para aplicar? ",
     Settings:
       "Configurações detectadas a partir da url, confirmar para aplicar?",
-  },
-  Config: {
-    title: "Chatbot - 302.AI",
-    description: "Crie o seu próprio robô de IA com apenas um clique",
   },
 };
 

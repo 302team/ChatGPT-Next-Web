@@ -3,10 +3,6 @@ import { PartialLocaleType } from "./index";
 
 const bn: PartialLocaleType = {
   WIP: "শীঘ্রই আসছে...",
-  Error: {
-    Unauthorized:
-      "[302.AI](https://dash.302.aiযান এবং আপনার নিজের রোবট তৈরি করুন",
-  },
   Auth: {
     Title: "অ্যাক্সেস কোড প্রয়োজন",
     Tips: " সৃষ্টিকর্তা যাচাইকরণ সক্রিয় করেছেন, দয়া করে নিচে অ্যাক্সেস কোড প্রবেশ করান",
@@ -330,10 +326,6 @@ const bn: PartialLocaleType = {
     Messages: "বার্তা",
     Topic: "টপিক",
     Time: "সময়",
-  },
-  Config: {
-    title: "চ্যাটবট - 302.AI",
-    description: "একটি ক্লিকে নিজের জন্য এইআই রোবট তৈরি করুন",
   },
 };
 

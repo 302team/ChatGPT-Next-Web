@@ -3,10 +3,6 @@ import type { PartialLocaleType } from "./index";
 
 const jp: PartialLocaleType = {
   WIP: "この機能は開発中です",
-  Error: {
-    Unauthorized:
-      "自分自身のロボットを作成するには、[302.AI](https://302.ai) をご覧ください",
-  },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 通のチャット`,
   },
@@ -297,10 +293,6 @@ const jp: PartialLocaleType = {
     Messages: "メッセージ",
     Topic: "トピック",
     Time: "時間",
-  },
-  Config: {
-    title: "チャットボット -302.AI",
-    description: "たった一つのクリックで自分自身のAIロボットを作成する",
   },
 };
 

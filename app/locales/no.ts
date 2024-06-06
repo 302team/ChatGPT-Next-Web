@@ -3,10 +3,6 @@ import type { PartialLocaleType } from "./index";
 
 const no: PartialLocaleType = {
   WIP: "Arbeid pågår ...",
-  Error: {
-    Unauthorized:
-      "Vennligst besøk [302.AI](https://302.ai) for å opprette din egen robot",
-  },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} meldinger`,
   },
@@ -155,10 +151,6 @@ const no: PartialLocaleType = {
     Messages: "Meldingar",
     Topic: "Emne",
     Time: "Tid",
-  },
-  Config: {
-    title: "Chatbot - 302.AI",
-    description: "Lag din egen AI-robot med bare ett klikk",
   },
 };
 

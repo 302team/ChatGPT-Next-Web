@@ -4,10 +4,6 @@ import type { PartialLocaleType } from "./index";
 
 const ko: PartialLocaleType = {
   WIP: "곧 출시 예정...",
-  Error: {
-    Unauthorized:
-      "자신의 로봇을 만들려면 [302.AI](https://302.ai) 을 방문하십시오",
-  },
   ChatItem: {
     ChatItemCount: (count: number) => `${count}개의 메시지`,
   },
@@ -231,10 +227,6 @@ const ko: PartialLocaleType = {
     Messages: "메시지",
     Topic: "주제",
     Time: "시간",
-  },
-  Config: {
-    title: "챗봇 - 302.AI",
-    description: "한 번의 클릭으로 나만의 AI 로봇을 만들어보세요",
   },
 };
 

@@ -1,12 +1,19 @@
 import { getClientConfig } from "../config/client";
-import { SubmitKey } from "../store/config";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
+
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
 
 const isApp = !!getClientConfig()?.isApp;
 
 const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
-    Unauthorized: "请访问创[302.AI](https://302.ai)建属于你自己的机器人",
+    Unauthorized: `请访问创[${homeText}](${homeLink})建属于你自己的机器人`,
     ApiTimeout: "请求失败，请重试",
     NetworkError: "网络错误",
     PageOpenError: "页面加载失败",
@@ -24,16 +31,14 @@ const cn = {
     Confirm: "确认",
     Later: "稍后再说",
     CAPTCHA_ERROR: "分享码错误",
-    CHATBOT_DISABLED_ERROR: `聊天机器人已禁用，更多信息请访问 <a href="https://302.ai">302.AI</a>`,
-    CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问 <a href="https://302.ai">302.AI</a>`,
+    CHATBOT_DISABLED_ERROR: `聊天机器人已禁用，更多信息请访问 <a href="${homeLink}$">${homeText}</a>`,
+    CHATBOT_DELETE_ERROR: `聊天机器人已删除，更多信息请访问 <a href="${homeLink}$">${homeText}</a>`,
     SERVER_ERROR: "内部错误, 请联系客服",
     BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
-    CHATBOT_DISABLED_ERROR2: `聊天机器人已禁用，更多信息请访问[302.AI](https://302.ai)`,
-    TOTAL_QUOTA_ERROR:
-      "聊天机器人的总额度已达上限，请访问[302.AI](https://302.ai)创建属于你自己的机器人",
-    DAILY_QUOTA_ERROR:
-      "聊天机器人的单日额度已达上限，请访问[302.AI](https://302.ai)创建属于你自己的机器人",
+    CHATBOT_DISABLED_ERROR2: `聊天机器人已禁用，更多信息请访问[${homeText}](${homeLink})`,
+    TOTAL_QUOTA_ERROR: `聊天机器人的总额度已达上限，请访问[${homeText}](${homeLink})创建属于你自己的机器人`,
+    DAILY_QUOTA_ERROR: `聊天机器人的单日额度已达上限，请访问[${homeText}](${homeLink})创建属于你自己的机器人`,
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -164,7 +169,7 @@ const cn = {
       if (isGpts && modelName) {
         msg += `\n应用: ${modelName}`;
       }
-      msg += "\n---来自302.AI会员的分享";
+      msg += `\n---来自${homeText}会员的分享`;
 
       return msg;
     },
@@ -577,7 +582,7 @@ const cn = {
     FetchImageError: "无法获取图片或未配置OSS",
   },
   Config: {
-    title: "模型竞技场 - 302.AI",
+    title: `模型竞技场 - ${homeText}`,
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
     AppDescTitle: "查看工具信息",
     AppDescSubTitle: "模型竞技场详情预览",

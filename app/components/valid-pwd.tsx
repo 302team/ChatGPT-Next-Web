@@ -17,7 +17,13 @@ import { useEffect, useState } from "react";
 import NextImage from "next/image";
 import { Loading, showToast } from "./ui-lib";
 import { openWindow } from "../utils";
-import { GPT302_WEBSITE_URL, ERROR_CODE, ERROR_CODE_TYPE } from "../constant";
+import {
+  GPT302_WEBSITE_URL,
+  ERROR_CODE,
+  ERROR_CODE_TYPE,
+  Region,
+  GPT302_WEBSITE_CN_URL,
+} from "../constant";
 import { AuthType } from "../locales/cn";
 
 interface ValidPwdProps {
@@ -127,7 +133,13 @@ export function ValidPwd(props: ValidPwdProps) {
           src={logoSrc}
           width={120}
           alt=""
-          onClick={() => openWindow(GPT302_WEBSITE_URL)}
+          onClick={() =>
+            openWindow(
+              config.region === Region.China
+                ? GPT302_WEBSITE_CN_URL
+                : GPT302_WEBSITE_URL,
+            )
+          }
         />
       </div>
 

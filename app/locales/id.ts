@@ -3,10 +3,6 @@ import { PartialLocaleType } from "./index";
 
 const id: PartialLocaleType = {
   WIP: "Coming Soon...",
-  Error: {
-    Unauthorized:
-      "Indonesian (id): Silakan kunjungi [302.AI](https://302.ai) untuk membuat robot Anda sendiri",
-  },
   Auth: {
     Title: "Se requiere código de acceso",
     Tips: "Pembuat telah mengaktifkan verifikasi, silakan masukkan kode akses di bawah ini",
@@ -382,10 +378,6 @@ const id: PartialLocaleType = {
   URLCommand: {
     Code: "Kode akses terdeteksi dari url, konfirmasi untuk mendaftar ? ",
     Settings: "Pengaturan terdeteksi dari url, konfirmasi untuk diterapkan ?",
-  },
-  Config: {
-    title: "Chatbot - 302.AI",
-    description: "Buat robot AI milikmu sendiri hanya dengan satu klik",
   },
 };
 

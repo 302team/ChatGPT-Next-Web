@@ -3,10 +3,6 @@ import type { PartialLocaleType } from "./index";
 
 const fr: PartialLocaleType = {
   WIP: "Prochainement...",
-  Error: {
-    Unauthorized:
-      "Veuillez visiter [302.AI](https://dash.302.aiur créer votre propre robot",
-  },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages en total`,
   },
@@ -303,10 +299,6 @@ const fr: PartialLocaleType = {
     Messages: "Messages",
     Topic: "Sujet",
     Time: "Temps",
-  },
-  Config: {
-    title: "Chatbot - 302.AI",
-    description: "Créez votre propre robot IA en un seul clic",
   },
 };
 

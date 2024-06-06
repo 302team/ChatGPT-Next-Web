@@ -8,10 +8,6 @@ import type { PartialLocaleType } from "./index";
 const isApp = !!getClientConfig()?.isApp;
 const sk: PartialLocaleType = {
   WIP: "Už čoskoro...",
-  Error: {
-    Unauthorized:
-      "Prosím, navštívte [302.AI](https://302.ai) pre vytvorenie vlastného robota",
-  },
   Auth: {
     Title: "Potrebný prístupový kód",
     Tips: "Tvorca aktivoval overenie, prosím, zadajte prístupový kód nižšie",
@@ -495,10 +491,6 @@ const sk: PartialLocaleType = {
   URLCommand: {
     Code: "Zistený prístupový kód z URL, potvrdiť na aplikovanie?",
     Settings: "Zistené nastavenia z URL, potvrdiť na aplikovanie?",
-  },
-  Config: {
-    title: "Chatbot - 302.AI",
-    description: "Vytvorte si vlastného AI robota jedným kliknutím",
   },
 };
 

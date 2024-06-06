@@ -15,7 +15,15 @@ export const ANTHROPIC_BASE_URL = "https://api.anthropic.com";
 export const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
 export const GPT302_WEBSITE_URL = "https://www.302.ai";
+export const GPT302_WEBSITE_CN_URL = "https://302ai.cn";
+
 export const GPTS302_WEBSITE_URL = "https://gpts.302.ai/?simple_version=1";
+export const GPTS302_WEBSITE_CN_URL = "https://gpts.302ai.cn/?simple_version=1";
+
+export const Region = {
+  China: 0,
+  Overseas: 1,
+};
 
 export enum Path {
   Home = "/",
@@ -466,3 +474,17 @@ export const ERROR_CODE = {
   "-10007": "DAILY_QUOTA_ERROR", // 聊天机器人当天额度不足
 };
 export type ERROR_CODE_TYPE = keyof typeof ERROR_CODE;
+
+// 模型是否支持多模态, 支持的话支持哪些类型
+export const FILE_SUPPORT_TYPE = {
+  NOTHING: 0,
+  ALL: 1,
+  ONLY_IMAGE: 2,
+};
+
+export const DASH_URL = {
+  LOGIN: "https://dash.302.ai/login",
+  REGISTER: "https://dash.302.ai/register",
+  LOGIN_CN: "https://dash.302ai.cn/login",
+  REGISTER_CN: "https://dash.302ai.cn/register",
+};
