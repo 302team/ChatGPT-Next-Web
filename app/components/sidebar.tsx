@@ -288,12 +288,14 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
 
           const isGptsModel = data.uuid.startsWith("g-");
           const model = isGptsModel ? `gpt-4-gizmo-${data.uuid}` : data.uuid;
+          const isStoreModelSupportPlugin = config.supportPluginModelList.some(
+            (m) => new RegExp(m).test(model),
+          );
 
           chatStore.newSession(
             {
               ...emptyMask,
               syncGlobalConfig: false,
-              isStoreModel: true,
               avatar: data.display_url ?? DEFAULT_MASK_AVATAR,
               name: `${Locale.GPTs.PrefixName} ${data.display_name}`,
               botHelloContent: data.description || emptyMask.botHelloContent,
@@ -304,8 +306,9 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
               },
               modelName: data.display_name,
               promptStarters,
+              isStoreModel: true,
               isGptsModel: isGptsModel,
-              usePlugins: false,
+              usePlugins: isStoreModelSupportPlugin,
             } as Mask,
             true,
           );

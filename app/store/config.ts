@@ -76,7 +76,8 @@ export const DEFAULT_CONFIG = {
   },
 
   fileSupportType: 0,
-  multimodalType4Models: {} as Record<string, number>,
+  multimodalType4Models: {} as Record<string, number>, // 多模态模型类型
+  supportPluginModelList: [] as Array<string>, // 支持插件的模型列表
 };
 
 export const DEFAULT_SETTING = {

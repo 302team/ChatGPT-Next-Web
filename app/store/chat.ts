@@ -649,11 +649,12 @@ export const useChatStore = createPersistStore(
 
         var api: ClientApi = new ClientApi(ModelProvider.GPT);
         if (
-          !session.mask.isStoreModel &&
-          config.pluginConfig.enable &&
-          // session.mask.usePlugins && // 所有聊天窗口都可以使用插件
-          allPlugins.length > 0 /* &&
-          isSupportFunctionCall(modelConfig.model) */
+          // 应用商店创建的模型, 需要根据后端控制是否支持插件调用
+          (session.mask.isStoreModel && session.mask.usePlugins) ||
+          // 或者
+          (!session.mask.isStoreModel &&
+            config.pluginConfig.enable &&
+            allPlugins.length > 0)
         ) {
           console.log(
             "[ToolAgent] start; plugins:",

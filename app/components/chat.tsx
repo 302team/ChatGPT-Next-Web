@@ -712,12 +712,19 @@ function useUploadFile(extra: {
   const currentModel = session.mask.modelConfig.model;
   const isStoreModel = session.mask.isStoreModel;
   const isGptsModel = session.mask.isGptsModel;
+  const isStoreModelSupportPlugin = config.supportPluginModelList.some((m) =>
+    new RegExp(m).test(currentModel),
+  );
 
   const supportMultimodal = useMemo(() => {
     // 如果是从应用商店创建的
     if (isStoreModel) {
       // 所有 gpts 模型 || 部分国产模型 支持多模态
-      return isGptsModel || currentModel in config.multimodalType4Models;
+      return (
+        isGptsModel ||
+        isStoreModelSupportPlugin ||
+        currentModel in config.multimodalType4Models
+      );
     } else {
       return (
         config.fileSupportType === FILE_SUPPORT_TYPE.ALL ||
@@ -727,6 +734,7 @@ function useUploadFile(extra: {
   }, [
     config.fileSupportType,
     config.multimodalType4Models,
+    isStoreModelSupportPlugin,
     currentModel,
     isStoreModel,
     isGptsModel,
@@ -749,14 +757,15 @@ function useUploadFile(extra: {
   const getAcceptFileType = (model: ModelType | string) => {
     if (isStoreModel) {
       if (
+        isStoreModelSupportPlugin ||
+        config.multimodalType4Models[currentModel] === FILE_SUPPORT_TYPE.ALL
+      ) {
+        return "*";
+      } else if (
         config.multimodalType4Models[currentModel] ===
         FILE_SUPPORT_TYPE.ONLY_IMAGE
       ) {
         return ".png, .jpg, .jpeg, .webp, .gif";
-      } else if (
-        config.multimodalType4Models[currentModel] === FILE_SUPPORT_TYPE.ALL
-      ) {
-        return "*";
       }
     } else {
       if (config.pluginConfig.enable) {
@@ -776,10 +785,8 @@ function useUploadFile(extra: {
   useEffect(() => {
     const show =
       supportMultimodal ||
-      // 开启了使用插件的功能
-      (config.pluginConfig.enable && allPlugins.length > 0); /* &&
-        // 模型支持 function call
-        isSupportFunctionCall(currentModel) */
+      // 非应用商店的模型, 开启了使用插件的功能
+      (!isStoreModel && config.pluginConfig.enable && allPlugins.length > 0);
 
     setShowUploadAction(show);
 
@@ -789,6 +796,7 @@ function useUploadFile(extra: {
     }
   }, [
     currentModel,
+    isStoreModel,
     config.pluginConfig.enable,
     allPlugins.length,
     supportMultimodal,

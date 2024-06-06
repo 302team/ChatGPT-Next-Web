@@ -175,7 +175,7 @@ const cn = {
       if (isGpts && modelName) {
         msg += `\n应用: ${modelName}`;
       }
-      msg += "\n---来自302.AI会员的分享";
+      msg += `\n---来自${homeText}会员的分享`;
 
       return msg;
     },

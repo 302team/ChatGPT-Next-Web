@@ -180,7 +180,7 @@ const en: LocaleType = {
       if (isGpts && modelName) {
         msg += `\nApp: ${modelName}`;
       }
-      msg += "\n---Shared by 302.AI user";
+      msg += `\n---Shared by ${homeText} user`;
 
       return msg;
     },
