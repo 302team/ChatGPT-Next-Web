@@ -1,11 +1,17 @@
-import { SubmitKey } from "../store/config";
 import type { PartialLocaleType } from "./index";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
+
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
 
 const es: PartialLocaleType = {
   WIP: "En construcción...",
   Error: {
-    Unauthorized:
-      " Por favor, visita [302.AI](https://302.ai) para crear tu propio robot",
+    Unauthorized: ` Por favor, visita [${homeText}](${homeLink}) para crear tu propio robot`,
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} mensajes`,

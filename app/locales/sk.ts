@@ -1,16 +1,19 @@
-import { getClientConfig } from "../config/client";
-import { SubmitKey } from "../store/config";
-import { LocaleType } from "./index";
 import type { PartialLocaleType } from "./index";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
+
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
 
 // if you are adding a new translation, please use PartialLocaleType instead of LocaleType
 
-const isApp = !!getClientConfig()?.isApp;
 const sk: PartialLocaleType = {
   WIP: "Už čoskoro...",
   Error: {
-    Unauthorized:
-      "Prosím, navštívte [302.AI](https://302.ai) pre vytvorenie vlastného robota",
+    Unauthorized: `Prosím, navštívte [${homeText}](${homeLink}) pre vytvorenie vlastného robota`,
   },
   Auth: {
     Title: "Potrebný prístupový kód",

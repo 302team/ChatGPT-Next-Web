@@ -46,6 +46,7 @@ import {
   DEMO_HOST,
   EXPORT_MESSAGE_CLASS_NAME,
   ModelProvider,
+  Region,
 } from "../constant";
 import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
@@ -611,7 +612,9 @@ export function ImagePreviewer(props: {
           <div>
             <div className={styles["main-title"]}>
               {!config.chatbotName || config.chatbotName === "GPT302"
-                ? "302.AI"
+                ? config.region === Region.China
+                  ? "302AI.CN"
+                  : "302.AI"
                 : config.chatbotName}
             </div>
             <div className={styles["sub-title"]}>
@@ -628,7 +631,8 @@ export function ImagePreviewer(props: {
           </div>
           <div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Source}: 302.AI
+              {Locale.Exporter.Source}:{" "}
+              {config.region === Region.China ? "302AI.CN" : "302.AI"}
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Model}: {modelName}

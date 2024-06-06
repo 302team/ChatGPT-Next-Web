@@ -1,11 +1,17 @@
-import { SubmitKey } from "../store/config";
-import { PartialLocaleType } from "./index";
+import type { PartialLocaleType } from "./index";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
+
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
 
 const id: PartialLocaleType = {
   WIP: "Coming Soon...",
   Error: {
-    Unauthorized:
-      "Indonesian (id): Silakan kunjungi [302.AI](https://302.ai) untuk membuat robot Anda sendiri",
+    Unauthorized: `Indonesian (id): Silakan kunjungi [${homeText}](${homeLink}) untuk membuat robot Anda sendiri`,
   },
   Auth: {
     Title: "Se requiere código de acceso",

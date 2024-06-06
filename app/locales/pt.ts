@@ -1,14 +1,17 @@
-import { SubmitKey } from "../store/config";
-import { PartialLocaleType } from "../locales/index";
-import { getClientConfig } from "../config/client";
+import type { PartialLocaleType } from "./index";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
 
-const isApp = !!getClientConfig()?.isApp;
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
 
 const pt: PartialLocaleType = {
   WIP: "Em breve...",
   Error: {
-    Unauthorized:
-      "Por favor, visite [302.AI](https://302.ai) para criar o seu próprio robô",
+    Unauthorized: `Por favor, visite [${homeText}](${homeLink}) para criar o seu próprio robô`,
   },
   Auth: {
     Title: "Necessário Código de Acesso",

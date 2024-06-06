@@ -1,12 +1,17 @@
-import { getClientConfig } from "../config/client";
-import { SubmitKey } from "../store/config";
+// import type { PartialLocaleType } from "./index";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
 
-const isApp = !!getClientConfig()?.isApp;
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
 
 const tw = {
   WIP: "該功能仍在開發中……",
   Error: {
-    Unauthorized: "請訪問[302.AI](https://302.ai)創建屬於你自己的機器人",
+    Unauthorized: `請訪問[${homeText}](${homeLink})創建屬於你自己的機器人`,
   },
 
   Auth: {
@@ -479,7 +484,7 @@ const tw = {
     Time: "時間",
   },
   Config: {
-    title: "聊天機器人- 302.AI",
+    title: `聊天機器人- ${homeText}`,
     GPTs: "應用",
     description: (type: string = "AI") => `一鍵生成屬於自己的${type}機器人`,
     AppDescTitle: "説明",

@@ -1,12 +1,17 @@
-import { SubmitKey } from "../store/config";
-
 import type { PartialLocaleType } from "./index";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
+
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
 
 const ko: PartialLocaleType = {
   WIP: "곧 출시 예정...",
   Error: {
-    Unauthorized:
-      "자신의 로봇을 만들려면 [302.AI](https://302.ai) 을 방문하십시오",
+    Unauthorized: `자신의 로봇을 만들려면 [${homeText}](${homeLink}) 을 방문하십시오`,
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count}개의 메시지`,
