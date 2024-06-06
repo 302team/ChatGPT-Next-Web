@@ -120,6 +120,7 @@ import {
   ModelProvider,
   Path,
   REQUEST_TIMEOUT_MS,
+  Region,
   UNFINISHED_INPUT,
 } from "../constant";
 import { Avatar } from "./emoji";
@@ -1146,6 +1147,10 @@ function useSpeakAndVoice(prosp: {
 
 function _Chat(props: { promptStarters: string[] }) {
   type RenderMessage = ChatMessage & { preview?: boolean };
+  const chatStore = useChatStore();
+  const session = chatStore.currentSession();
+  const config = useAppConfig();
+  const fontSize = config.fontSize;
 
   // demo.xx.com
   const isDemo = window.location.host.startsWith(DEMO_HOST);
@@ -1163,7 +1168,11 @@ function _Chat(props: { promptStarters: string[] }) {
           <IconButton
             key="register"
             onClick={() => {
-              openWindow(DASH_URL.REGISTER);
+              openWindow(
+                config.region === Region.China
+                  ? DASH_URL.REGISTER_CN
+                  : DASH_URL.REGISTER,
+              );
             }}
             bordered
             text={Locale.Auth.Register}
@@ -1173,7 +1182,11 @@ function _Chat(props: { promptStarters: string[] }) {
             key="login"
             type="primary"
             onClick={() => {
-              openWindow(DASH_URL.LOGIN);
+              openWindow(
+                config.region === Region.China
+                  ? DASH_URL.LOGIN_CN
+                  : DASH_URL.LOGIN,
+              );
             }}
             bordered
             text={Locale.Auth.Login}
@@ -1183,13 +1196,7 @@ function _Chat(props: { promptStarters: string[] }) {
     });
   };
 
-  const chatStore = useChatStore();
-  const session = chatStore.currentSession();
-  const config = useAppConfig();
-  const fontSize = config.fontSize;
-
   const [showExport, setShowExport] = useState(false);
-
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);

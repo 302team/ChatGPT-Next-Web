@@ -257,4 +257,6 @@ export const DEMO_HOST = "demo.";
 export const DASH_URL = {
   LOGIN: "https://dash.302.ai/login",
   REGISTER: "https://dash.302.ai/register",
+  LOGIN_CN: "https://dash.302ai.cn/login",
+  REGISTER_CN: "https://dash.302ai.cn/register",
 };

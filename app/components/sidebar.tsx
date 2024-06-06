@@ -206,7 +206,11 @@ function AppDescription(props: {
               <IconButton
                 key="register"
                 onClick={() => {
-                  openWindow(DASH_URL.REGISTER);
+                  openWindow(
+                    config.region === Region.China
+                      ? DASH_URL.REGISTER_CN
+                      : DASH_URL.REGISTER,
+                  );
                 }}
                 bordered
                 text={Locale.Auth.Register}
@@ -216,7 +220,11 @@ function AppDescription(props: {
                 key="login"
                 type="primary"
                 onClick={() => {
-                  openWindow(DASH_URL.LOGIN);
+                  openWindow(
+                    config.region === Region.China
+                      ? DASH_URL.LOGIN_CN
+                      : DASH_URL.LOGIN,
+                  );
                 }}
                 bordered
                 text={Locale.Auth.Login}
