@@ -16,7 +16,7 @@ export type Plugin = {
   description: string;
   builtin: boolean;
   enable: boolean;
-  onlyNodeRuntime: boolean;
+  onlyNodeRuntime?: boolean;
   engine?: string;
 };
 

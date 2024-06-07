@@ -282,8 +282,8 @@ function ChatWindow() {
           const supportedLangs = ["cn"];
           if (opt.settings.plugins && opt.settings.plugins.length) {
             allPlugins = opt.settings.plugins;
-          } else if (!!opt.enable_plugins) {
-            // 如果开启了插件模式
+          } else {
+            // 使用内置插件
             allPlugins = pluginStore
               .getBuildinPlugins()
               .filter(
