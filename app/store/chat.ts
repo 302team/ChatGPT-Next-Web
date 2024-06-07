@@ -628,7 +628,19 @@ export const useChatStore = createPersistStore(
         const config = useAppConfig.getState();
         const pluginConfig = useAppConfig.getState().pluginConfig;
         const pluginStore = usePluginStore.getState();
-        const allPlugins = pluginStore.getUserPlugins().filter((i) => i.enable);
+
+        const currentLang = getLang();
+        // 应用商店的模型, 使用内置插件
+        const allPlugins = session.mask.isStoreModel
+          ? pluginStore
+              .getBuildinPlugins()
+              .filter(
+                (m) =>
+                  (["cn"].includes(currentLang)
+                    ? m.lang === currentLang
+                    : m.lang === "en") && m.enable,
+              )
+          : pluginStore.getUserPlugins().filter((i) => i.enable);
 
         // 最新回复的顶到最前面
         if (get().currentSessionIndex !== 0) {
