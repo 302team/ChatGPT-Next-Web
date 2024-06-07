@@ -113,6 +113,7 @@ import {
   CHAT_PAGE_SIZE,
   DASH_URL,
   DEMO_HOST,
+  DEMO_HOST_CN,
   FILE_BASE64_ICON,
   FILE_SUPPORT_TYPE,
   LAST_INPUT_KEY,
@@ -1152,8 +1153,10 @@ function _Chat(props: { promptStarters: string[] }) {
   const config = useAppConfig();
   const fontSize = config.fontSize;
 
-  // demo.xx.com
-  const isDemo = window.location.host.startsWith(DEMO_HOST);
+  // demo.xx.com / demo-chat.xx.cn
+  const isDemo =
+    window.location.host.startsWith(DEMO_HOST) ||
+    window.location.host.startsWith(DEMO_HOST_CN);
   const showDemoModal = () => {
     showModal({
       title: Locale.Auth.Warn,

@@ -254,6 +254,8 @@ export const FILE_SUPPORT_TYPE = {
 };
 
 export const DEMO_HOST = "demo.";
+export const DEMO_HOST_CN = "demo-chat";
+export const CN_HOST = "302ai.cn";
 export const DASH_URL = {
   LOGIN: "https://dash.302.ai/login",
   REGISTER: "https://dash.302.ai/register",

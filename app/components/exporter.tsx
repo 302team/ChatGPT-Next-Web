@@ -44,6 +44,7 @@ import { DEFAULT_MASK_AVATAR } from "../store/mask";
 import { prettyObject } from "../utils/format";
 import {
   DEMO_HOST,
+  DEMO_HOST_CN,
   EXPORT_MESSAGE_CLASS_NAME,
   ModelProvider,
   Region,
@@ -477,7 +478,9 @@ export function ImagePreviewer(props: {
   const session = chatStore.currentSession();
   const mask = session.mask;
   const config = useAppConfig();
-  const isDemo = window.location.host.startsWith(DEMO_HOST);
+  const isDemo =
+    window.location.host.startsWith(DEMO_HOST) ||
+    window.location.host.startsWith(DEMO_HOST_CN);
 
   const previewRef = useRef<HTMLDivElement>(null);
 

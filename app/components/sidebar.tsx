@@ -30,6 +30,7 @@ import {
   DASH_URL,
   DEFAULT_SIDEBAR_WIDTH,
   DEMO_HOST,
+  DEMO_HOST_CN,
   GPT302_WEBSITE_CN_URL,
   GPT302_WEBSITE_URL,
   GPTS302_WEBSITE_CN_URL,
@@ -165,7 +166,9 @@ function AppDescription(props: {
   onClose: () => void;
 }) {
   // demo.xx.com
-  const isDemo = window.location.host.startsWith(DEMO_HOST);
+  const isDemo =
+    window.location.host.startsWith(DEMO_HOST) ||
+    window.location.host.startsWith(DEMO_HOST_CN);
 
   const config = useAppConfig();
   const access = useAccessStore();

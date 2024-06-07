@@ -12,7 +12,15 @@ import { getCSSVar, isEmptyObject, useMobileScreen } from "../utils";
 
 import dynamic from "next/dynamic";
 
-import { DEMO_HOST, ModelProvider, Path, Region, SlotID } from "../constant";
+import {
+  CN_HOST,
+  DEMO_HOST,
+  DEMO_HOST_CN,
+  ModelProvider,
+  Path,
+  Region,
+  SlotID,
+} from "../constant";
 import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
@@ -146,7 +154,9 @@ const loadAsyncGoogleFont = () => {
 
 function ChatWindow() {
   // demo.xx.com
-  const isDemo = window.location.host.startsWith(DEMO_HOST);
+  const isDemo =
+    window.location.host.startsWith(DEMO_HOST) ||
+    window.location.host.startsWith(DEMO_HOST_CN);
 
   const location = useLocation();
   const accessStore = useAccessStore();
@@ -195,6 +205,13 @@ function ChatWindow() {
   const [promptStarters, setPromptStarters] = useState<string[]>([]);
 
   if (loading) return <Loading />;
+
+  if (isDemo) {
+    const isCn = window.location.hostname.includes(CN_HOST);
+    config.update((conf) => {
+      conf.region = isCn ? 0 : 1;
+    });
+  }
 
   if (!isDemo && validPwdVisible)
     return (
