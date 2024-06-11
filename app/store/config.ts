@@ -133,7 +133,9 @@ export const CHATBOT_CONFIG = {
     returnIntermediateSteps: true, // 是否返回插件调用的中间步骤
   },
 
-  region: Region.Overseas,
+  region: Region.Overseas, // 用户地区
+
+  hideSettingButton: false, // 隐藏侧边栏的设置按钮
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG &

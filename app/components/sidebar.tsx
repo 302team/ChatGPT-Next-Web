@@ -704,15 +704,17 @@ export function SideBar(props: { className?: string }) {
 
       <div className={styles["sidebar-tail"]}>
         <div className={styles["sidebar-actions"]}>
-          <div className={styles["sidebar-action"]}>
-            <IconButton
-              className={styles["sidebar-tail-button"]}
-              icon={<SettingsIcon />}
-              onClick={() => setShowSettingsModal(true)}
-              shadow
-            />
-            <Link to={Path.Settings + location.search}></Link>
-          </div>
+          {!config.hideSettingButton && (
+            <div className={styles["sidebar-action"]}>
+              <IconButton
+                className={styles["sidebar-tail-button"]}
+                icon={<SettingsIcon />}
+                onClick={() => setShowSettingsModal(true)}
+                shadow
+              />
+              <Link to={Path.Settings + location.search}></Link>
+            </div>
+          )}
           <div className={styles["sidebar-action"]}>
             <IconButton
               className={styles["sidebar-tail-button"]}
