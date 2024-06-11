@@ -6,7 +6,7 @@ const config = useAppConfig.getState();
 
 const homeLink =
   config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
-const homeText = config.region === Region.China ? "302AI.CN" : "302.AI";
+const homeText = config.region === Region.China ? "302.AI" : "302.AI";
 
 const id: PartialLocaleType = {
   WIP: "Coming Soon...",

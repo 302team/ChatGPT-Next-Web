@@ -616,7 +616,7 @@ export function ImagePreviewer(props: {
             <div className={styles["main-title"]}>
               {!config.chatbotName || config.chatbotName === "GPT302"
                 ? config.region === Region.China
-                  ? "302AI.CN"
+                  ? "302.AI"
                   : "302.AI"
                 : config.chatbotName}
             </div>
@@ -635,7 +635,7 @@ export function ImagePreviewer(props: {
           <div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Source}:{" "}
-              {config.region === Region.China ? "302AI.CN" : "302.AI"}
+              {config.region === Region.China ? "302.AI" : "302.AI"}
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Model}: {modelName}
