@@ -348,9 +348,13 @@ export function GptsConfigModal(props: {
   const windowSize = useWindowSize();
   const [spinning, setSpinning] = useState(true);
   const [error, setError] = useState(false);
-  const [iframeSrc, setIframeSrc] = useState(
-    props.isChina === 0 ? GPTS302_WEBSITE_CN_URL : GPTS302_WEBSITE_URL,
-  );
+  const [iframeSrc, setIframeSrc] = useState("");
+
+  useEffect(() => {
+    setIframeSrc(
+      props.isChina === 0 ? GPTS302_WEBSITE_CN_URL : GPTS302_WEBSITE_URL,
+    );
+  }, [props.isChina]);
 
   return (
     <div className="modal-mask" style={props.style}>

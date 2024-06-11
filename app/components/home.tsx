@@ -155,8 +155,8 @@ const loadAsyncGoogleFont = () => {
 function ChatWindow() {
   // demo.xx.com
   const isDemo =
-    window.location.host.startsWith(DEMO_HOST) ||
-    window.location.host.startsWith(DEMO_HOST_CN);
+    window.location.hostname.startsWith(DEMO_HOST) ||
+    window.location.hostname.startsWith(DEMO_HOST_CN);
 
   const location = useLocation();
   const accessStore = useAccessStore();
@@ -204,14 +204,16 @@ function ChatWindow() {
 
   const [promptStarters, setPromptStarters] = useState<string[]>([]);
 
-  if (loading) return <Loading />;
+  useEffect(() => {
+    if (isDemo) {
+      const isCn = window.location.hostname.startsWith(DEMO_HOST_CN);
+      config.update((conf) => {
+        conf.region = isCn ? 0 : 1;
+      });
+    }
+  }, []);
 
-  if (isDemo) {
-    const isCn = window.location.hostname.includes(CN_HOST);
-    config.update((conf) => {
-      conf.region = isCn ? 0 : 1;
-    });
-  }
+  if (loading) return <Loading />;
 
   if (!isDemo && validPwdVisible)
     return (
