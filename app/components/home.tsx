@@ -52,6 +52,7 @@ import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
 import { Plugin, usePluginStore } from "../store/plugin";
 import { useSyncStore } from "../store/sync";
+import { Salesmartly } from "./script";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -452,12 +453,16 @@ export function Home() {
   const lang = getLang();
 
   return (
-    <ErrorBoundary>
-      <ConfigProvider locale={lang === "cn" ? zhCN : enUS}>
-        <Router>
-          <Screen />
-        </Router>
-      </ConfigProvider>
-    </ErrorBoundary>
+    <>
+      <ErrorBoundary>
+        <ConfigProvider locale={lang === "cn" ? zhCN : enUS}>
+          <Router>
+            <Screen />
+          </Router>
+        </ConfigProvider>
+      </ErrorBoundary>
+
+      <Salesmartly />
+    </>
   );
 }
