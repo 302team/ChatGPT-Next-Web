@@ -406,3 +406,13 @@ pre {
     transform: translate(0, -50%);
   }
 }
+
+@media screen and (max-width: 600px) {
+  #ss-chat-p {
+    iframe#s-chat-plugin {
+      top: 50% !important;
+      left: 0 !important;
+      transform: translate(0, -50%) !important;
+    }
+  }
+}
