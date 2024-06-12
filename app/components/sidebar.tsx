@@ -652,33 +652,6 @@ export function SideBar(props: { className?: string }) {
         </div>
       </div>
 
-      {!config.isGpts && (
-        <div className={styles["sidebar-header-bar"]}>
-          {/* 非GPTs模型的GPTs机器人，也不要出现助手按钮 */}
-          {!config.hideBuiltinMasks && (
-            <IconButton
-              icon={<MaskIcon />}
-              text={shouldNarrow ? undefined : Locale.Mask.Name}
-              className={styles["sidebar-bar-button"]}
-              onClick={() => {
-                setShowMaskModal(true);
-              }}
-              shadow
-            />
-          )}
-
-          {config.useGpts && (
-            <IconButton
-              icon={<PluginIcon />}
-              text={shouldNarrow ? undefined : Locale.GPTs.Modal.Title}
-              className={styles["sidebar-bar-button"]}
-              onClick={() => setShowGptsConfigModal(true)}
-              shadow
-            />
-          )}
-        </div>
-      )}
-
       <div
         ref={searchBarWrapRef}
         className={`${styles["sidebar-search-bar"]} ${isSearching ? styles["sidebar-search-bar-isSearching"] : ""}`}

@@ -2160,7 +2160,7 @@ function _Chat(props: { promptStarters: string[] }) {
         {...getRootProps}
         className={styles["chat-input-panel"]}
       >
-        <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
+        {/* <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} /> */}
 
         {uploadFiles.length != 0 && (
           <div className={styles["attach-images"]}>
