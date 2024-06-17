@@ -39,7 +39,7 @@ export const CN_MASKS: BuiltinMask[] = [
       sendMemory: true,
     },
     lang: "cn",
-    builtin: false,
+    builtin: true,
     createdAt: 1718395224150,
     botHelloContent: "有什么可以帮你的吗",
     isStoreModel: false,
