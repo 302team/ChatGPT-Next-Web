@@ -148,6 +148,7 @@ export const useSyncStore = createPersistStore(
         const state = {
           [StoreKey.Chat]: appState[StoreKey.Chat],
           [StoreKey.SysPrompt]: appState[StoreKey.SysPrompt],
+          [StoreKey.Mask]: appState[StoreKey.Mask],
         };
 
         const datePart = localStorage.getItem(LAST_INPUT_TIME) ?? Date.now();

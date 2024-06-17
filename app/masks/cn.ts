@@ -2,37 +2,48 @@ import { BuiltinMask } from "./typing";
 
 export const CN_MASKS: BuiltinMask[] = [
   {
-    avatar: "1f5bc-fe0f",
-    name: "prompt生成器",
+    avatar: "1f680",
+    name: "提示词生成器",
     context: [
       {
-        id: "prompt-generator-0",
-        role: "user",
-        content: `帮助我创建一个优化的Prompt，并通过以下步骤引导我完善它：
-
-  1.询问与了解: 请问你希望这个Prompt的主题或目的是什么？
-  2.根据你提供的资讯，我将分成三个部分回覆：
-  a.修订的Prompt: 我会根据你的需求修订一个清晰且易于理解的Prompt。
-  b.建议: 我会分享一些建议，让你考虑是否将这些建议融入Prompt中。
-  c.询问细节: 我可能会问你一些关于Prompt的详细资讯，以协助我进一步优化。
-  3.接着，请按照修订的Prompt进行操作。
-  4.如果你觉得需要进一步修正，请提供更多细节或需求，我将再次为你修订Prompt。`,
+        id: "pCt-j0TPMuyZ68AHU40h-",
         date: "",
+        toolMessages: [],
+        role: "user",
+        content:
+          "##上下文##\n您的任务是深入分析并拆解我交给您的任务，具体地将其分解为多个子任务。这些子任务将按照以下六个部分总结并形成一段结构化的提示词。整个提示词使用代码块包覆，提示词以“请逐步思考，最后完成任务。”结尾。\n这六个部分详述如下：\n==上下文==\n详细描述任务，并拆分为多个具体的子任务。每个子任务具体说明其独特的内容和目标。\n==目标==\n明确任务的最终目的。若未明确指定，根据任务内容推断其目的，例如：写一篇商品的宣传稿，目的就是为了增加商品销量\n==身份==\n根据任务需求确定最适合的身份。如果任务是解决学术问题，那么最合适的身份是资深学术教授。\n==语气==\n确定与任务最匹配的语气。例如，如果是为小红书编写内容，最适合采用活泼并能打动人心的语气。\n==受众==\n思考并确定任务最适合的目标受众。例如，如果是宣传潮流服装，最佳受众应是对潮流感兴趣的年轻男性。\n==结果==\n确定最适合的结果形式。例如，如果是在网络上进行宣传，最佳结果形式是一篇社交媒体文章。\n\n##目标##\n使任务描述更加具体和详细，确保 AI 能够完全理解并准确执行\nm\n##身份##\n作为一位资深的提示词工程师，你需要基于你对 AI 如何处理和回应任务的深入了解，制定有效的任务指导。\n\n##语气##\n保持专业、全面思考的风格，确保提示词容易被 AI 理解并执行，显示出你的经验丰富。\n\n##受众##\n针对所有使用AI的用户。\n\n##结果##\n最终生成的是一段结构清晰、格式规范（使用 markdown 格式）的提示词，易于 AI 解读和执行。\n\n##\n如果你了解了，请说好。然后我会说出我的任务，请逐步思考，最后生成对应的提示词。\n\n##\n生成提示词后，请询问我的满意程度，如果我回答满意，请根据生成的提示词，完成我提出的任务",
+      },
+      {
+        id: "87_J9eVSp3FUTFTufvcYv",
+        date: "2024/6/15 04:00:39",
+        toolMessages: [],
+        role: "assistant",
+        content:
+          "好的，我已经完全理解了您的要求。现在请告诉我您的任务，让我们一起逐步思考并生成对应的提示词。",
       },
     ],
+    syncGlobalConfig: true,
     modelConfig: {
-      model: "gpt-3.5-turbo",
-      temperature: 1,
-      max_tokens: 2000,
+      model: "gpt-4-all",
+      temperature: 0.5,
+      top_p: 1,
+      max_tokens: 32000,
       presence_penalty: 0,
       frequency_penalty: 0,
-      sendMemory: true,
-      historyMessageCount: 32,
+      enableInjectSystemPrompts: true,
+      enableInjectCustomSystemPrompts: false,
+      injectCustomSystemPrompts: "",
+      template: "{{input}}",
+      historyMessageCount: 4,
       compressMessageLengthThreshold: 1000,
+      sendMemory: true,
     },
     lang: "cn",
-    builtin: true,
-    createdAt: 1688899480510,
+    builtin: false,
+    createdAt: 1718395224150,
+    botHelloContent: "有什么可以帮你的吗",
+    isStoreModel: false,
+    hideContext: true,
   },
   {
     avatar: "1f638",
