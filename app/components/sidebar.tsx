@@ -631,11 +631,9 @@ export function SideBar(props: { className?: string }) {
             />
           )}
           {!config.chatbotLogo && (
-            <NextImage
+            <img
               src={ChatGptIcon.src}
               alt="logo"
-              height={50}
-              width={50}
               onClick={() =>
                 openWindow(
                   config.chatbotLink ||
