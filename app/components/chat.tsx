@@ -1366,7 +1366,7 @@ function _Chat() {
     let modelStr = modelInfo.show_name;
 
     if (remark) {
-      modelStr += `(${modelInfo.remark})`;
+      modelStr += `(${remark})`;
     }
 
     return modelStr;

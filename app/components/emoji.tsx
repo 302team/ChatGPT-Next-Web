@@ -8,7 +8,7 @@ import { ModelType } from "../store";
 
 import BotIcon from "../icons/bot.svg";
 import BlackBotIcon from "../icons/black-bot.svg";
-import Logo from "../icons/logo.png";
+import Logo from "../icons/logo-s.png";
 import Image from "next/image";
 import { regexUrl } from "../utils";
 
@@ -39,7 +39,7 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
   if (props.model) {
     return (
       <div className="no-dark mask-avatar">
-        <Image src={Logo.src} alt="" width={30} height={30} />
+        <img src={Logo.src} alt="" width={30} height={30} />
         {/* {props.model?.startsWith("gpt-4") ? (
           <BlackBotIcon className="user-avatar" />
         ) : (

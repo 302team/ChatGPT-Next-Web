@@ -305,7 +305,7 @@ export function SideBar(props: { className?: string }) {
             />
           )}
           {!config.chatbotLogo && (
-            <NextImage
+            <img
               src={ChatGptIcon.src}
               alt="logo"
               height={50}
