@@ -238,7 +238,9 @@ export class ClaudeApi implements LLMApi {
               } catch {}
 
               if (res.status === 401) {
-                responseTexts.push(Locale.Error.Unauthorized);
+                responseTexts.push(
+                  Locale.Error.Unauthorized(useAppConfig.getState().region),
+                );
               }
 
               if (extraInfo) {

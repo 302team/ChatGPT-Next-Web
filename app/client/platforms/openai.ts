@@ -123,6 +123,8 @@ export class ChatGPTApi implements LLMApi {
       },
     };
 
+    const config = useAppConfig.getState();
+
     const sendMessages = buildMessages(messages, modelConfig.model);
     const requestPayload = {
       messages: sendMessages,
@@ -276,8 +278,14 @@ export class ChatGPTApi implements LLMApi {
                   if (resJson.error?.type === "api_error") {
                     const CODE =
                       ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
+
+                    const _err = Locale.Auth[CODE as AuthType];
                     errorMsg =
-                      Locale.Auth[CODE as AuthType] || resJson.error.message;
+                      typeof _err === "function"
+                        ? _err(config.region)
+                        : _err || resJson.error.message;
+
+                    //
                   } else if (resJson.error?.param.startsWith("5")) {
                     errorMsg = Locale.Auth.SERVER_ERROR;
                   } else if (
@@ -304,7 +312,9 @@ export class ChatGPTApi implements LLMApi {
               if (errorMsg) {
                 responseTexts.push(errorMsg);
               } else if (res.status === 401) {
-                responseTexts.push(Locale.Error.Unauthorized);
+                responseTexts.push(
+                  Locale.Error.Unauthorized(useAppConfig.getState().region),
+                );
               }
 
               // if (extraInfo) {
@@ -538,8 +548,14 @@ export class ChatGPTApi implements LLMApi {
                   if (resJson.error?.type === "api_error") {
                     const CODE =
                       ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
+
+                    const _err = Locale.Auth[CODE as AuthType];
                     errorMsg =
-                      Locale.Auth[CODE as AuthType] || resJson.error.message;
+                      typeof _err === "function"
+                        ? _err
+                        : _err || resJson.error.message;
+
+                    //
                   } else if (resJson.error?.param.startsWith("5")) {
                     errorMsg = Locale.Auth.SERVER_ERROR;
                   } else if (
@@ -564,7 +580,9 @@ export class ChatGPTApi implements LLMApi {
               if (errorMsg) {
                 responseTexts.push(errorMsg);
               } else if (res.status === 401) {
-                responseTexts.push(Locale.Error.Unauthorized);
+                responseTexts.push(
+                  Locale.Error.Unauthorized(useAppConfig.getState().region),
+                );
               }
 
               responseText = responseTexts.join("\n\n");
@@ -596,7 +614,13 @@ export class ChatGPTApi implements LLMApi {
                   const err = resJson.error.error;
 
                   const CODE = ERROR_CODE[err.err_code as ERROR_CODE_TYPE];
-                  responseText = Locale.Auth[CODE as AuthType] || err.message;
+
+                  const _err = Locale.Auth[CODE as AuthType];
+                  responseText =
+                    typeof _err === "function"
+                      ? _err
+                      : _err || resJson.error.message;
+
                   hasUncatchError = false;
                 } else {
                   // 除了自定义的错误信息, 其他错误都显示 Network error, please retry.
@@ -704,7 +728,9 @@ export class ChatGPTApi implements LLMApi {
     ]);
 
     if (used.status === 401) {
-      throw new Error(Locale.Error.Unauthorized);
+      throw new Error(
+        Locale.Error.Unauthorized(useAppConfig.getState().region),
+      );
     }
 
     if (!used.ok || !subs.ok) {
@@ -784,7 +810,10 @@ export class ChatGPTApi implements LLMApi {
           const resJson = await res.clone().json();
           if (resJson.error && resJson.error?.type === "api_error") {
             const CODE = ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
-            errorMsg = Locale.Auth[CODE as AuthType] || resJson.error.message;
+
+            const _err = Locale.Auth[CODE as AuthType];
+            errorMsg =
+              typeof _err === "function" ? _err : _err || resJson.error.message;
           } else if (resJson.error && resJson.error?.param.startsWith("5")) {
             errorMsg = Locale.Auth.SERVER_ERROR;
           }

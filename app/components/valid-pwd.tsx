@@ -36,6 +36,7 @@ export function ValidPwd(props: ValidPwdProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const pwd = searchParams.get("pwd") || "";
   const autoConfirm = searchParams.get("confirm");
+  const region = searchParams.get("region");
 
   const [loading, setLoading] = useState(true);
   const [submiting, setSubmiting] = useState(false);
@@ -56,7 +57,13 @@ export function ValidPwd(props: ValidPwdProps) {
       return res;
     } else {
       const CODE = ERROR_CODE[res.code as ERROR_CODE_TYPE] as AuthType;
-      const errMsg = Locale.Auth[CODE];
+
+      const err = Locale.Auth[CODE];
+
+      const errMsg =
+        typeof err === "function"
+          ? err(region ? Number(region) : config.region)
+          : err;
 
       setErrorMsg(errMsg || res.msg);
       // 访问码已经失效了, 修改校验状态为 false
@@ -71,6 +78,15 @@ export function ValidPwd(props: ValidPwdProps) {
 
   useEffect(() => {
     accessStore.update((access) => (access.userCode = userCode));
+
+    if (region) {
+      config.update((conf) => {
+        conf.region = Number(region);
+        return conf;
+      });
+      searchParams.delete("region");
+      setSearchParams(searchParams, { replace: true });
+    }
 
     (async () => {
       try {
