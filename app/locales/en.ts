@@ -6,17 +6,24 @@ import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
 
 const config = useAppConfig.getState();
 
-const homeLink =
-  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
-const homeText = config.region === Region.China ? "302.AI" : "302.AI";
+function getLink(region = config.region) {
+  const homeLink =
+    region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+  const homeText = config.region === Region.China ? "302.AI" : "302.AI";
 
+  return {
+    homeLink,
+    homeText,
+  };
+}
 // if you are adding a new translation, please use PartialLocaleType instead of LocaleType
 
 const isApp = !!getClientConfig()?.isApp;
 const en: LocaleType = {
   WIP: "Coming Soon...",
   Error: {
-    Unauthorized: `Please visit [${homeText}](${homeLink}) to create your own robot`,
+    Unauthorized: (region = 0) =>
+      `Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
     ApiTimeout: "Request failed, please try again",
     NetworkError: "Network Error",
     PageOpenError: "Page Open Error",
@@ -28,7 +35,8 @@ const en: LocaleType = {
     Warn: "Tips",
     Login: "Login",
     Register: "Sign up",
-    Unauthorized: `This robot is for demonstration purposes. Please visit <a href="${homeLink}">${homeText}</a> to create your own robot`,
+    Unauthorized: (region = 0) =>
+      `This robot is for demonstration purposes. Please visit <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> to create your own robot`,
     Title: "Please enter the share code",
     Tips: "The creator has enabled verification, please enter the share code below",
     SubTips: "Or enter your OpenAI or Google API Key",
@@ -38,14 +46,19 @@ const en: LocaleType = {
     Confirm: "Confirm",
     Later: "Later",
     CAPTCHA_ERROR: "Share code incorrect",
-    CHATBOT_DISABLED_ERROR: `Robot is disabled, Please refer to <a href="${homeLink}">${homeText}</a> for details`,
-    CHATBOT_DELETE_ERROR: `Robot is deleted, Please refer to  <a href="${homeLink}">${homeText}</a> for details`,
+    CHATBOT_DISABLED_ERROR: (region = 0) =>
+      `Robot is disabled, Please refer to <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
+    CHATBOT_DELETE_ERROR: (region = 0) =>
+      `Robot is deleted, Please refer to  <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
     SERVER_ERROR: "Internal error, please contact customer service",
     BALANCE_LIMIT_ERROR: "The account balance is insufficient, please top up",
     TOKEN_EXPIRED_ERROR: "Token expired, please log in again",
-    CHATBOT_DISABLED_ERROR2: `Robot is disabled, Please refer to [${homeText}](${homeLink}) for details`,
-    TOTAL_QUOTA_ERROR: `Robot's total quota reached maximum limit. Please visit [${homeText}](${homeLink}) to create your own robot`,
-    DAILY_QUOTA_ERROR: `Robot's daily quota reached maximum limit. Please visit [${homeText}](${homeLink}) to create your own robot`,
+    CHATBOT_DISABLED_ERROR2: (region = 0) =>
+      `Robot is disabled, Please refer to [${getLink(region).homeText}](${getLink(region).homeLink}) for details`,
+    TOTAL_QUOTA_ERROR: (region = 0) =>
+      `Robot's total quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
+    DAILY_QUOTA_ERROR: (region = 0) =>
+      `Robot's daily quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,
@@ -180,7 +193,7 @@ const en: LocaleType = {
       if (isGpts && modelName) {
         msg += `\nApp: ${modelName}`;
       }
-      msg += `\n---Shared by ${homeText} user`;
+      msg += `\n---Shared by 302.AI user`;
 
       return msg;
     },

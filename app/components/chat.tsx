@@ -127,7 +127,7 @@ import {
 import { Avatar } from "./emoji";
 import { ContextPrompts, MaskAvatar, MaskConfig } from "./mask";
 import { useMaskStore } from "../store/mask";
-import { ChatCommandPrefix, useChatCommand, useCommand } from "../command";
+import { ChatCommandPrefix, useChatCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
@@ -1157,13 +1157,18 @@ function _Chat(props: { promptStarters: string[] }) {
   const isDemo =
     window.location.host.startsWith(DEMO_HOST) ||
     window.location.host.startsWith(DEMO_HOST_CN);
+
+  const isCnDemo = window.location.host.startsWith(DEMO_HOST_CN);
+
   const showDemoModal = () => {
     showModal({
       title: Locale.Auth.Warn,
       className: "demo-page-modal",
       children: (
         <div
-          dangerouslySetInnerHTML={{ __html: Locale.Auth.Unauthorized }}
+          dangerouslySetInnerHTML={{
+            __html: Locale.Auth.Unauthorized(isCnDemo ? 0 : 1),
+          }}
         ></div>
       ),
       footer: (
@@ -1559,7 +1564,7 @@ function _Chat(props: { promptStarters: string[] }) {
 
     /* fix: 第一次打开聊天机器人提示要填key */
     // if (!accessStore.isAuthorized()) {
-    //   copiedHello.content = Locale.Error.Unauthorized;
+    //   copiedHello.content = Locale.Error.Unauthorized(config.region);
     // }
     context.push(copiedHello);
   }
@@ -1686,62 +1691,6 @@ function _Chat(props: { promptStarters: string[] }) {
     doSubmit: doSubmit,
     setUserInput: setUserInput,
   });
-
-  // useCommand({
-  //   fill: setUserInput,
-  //   submit: (text) => {
-  //     doSubmit(text);
-  //   },
-  //   code: (text) => {
-  //     if (accessStore.disableFastLink) return;
-  //     console.log("[Command] got code from url: ", text);
-  //     showConfirm(Locale.URLCommand.Code + `code = ${text}`).then((res) => {
-  //       if (res) {
-  //         accessStore.update((access) => (access.accessCode = text));
-  //       }
-  //     });
-  //   },
-  //   settings: (text) => {
-  //     if (accessStore.disableFastLink) return;
-
-  //     try {
-  //       const payload = JSON.parse(text) as {
-  //         key?: string;
-  //         url?: string;
-  //       };
-
-  //       console.log("[Command] got settings from url: ", payload);
-
-  //       if (payload.key || payload.url) {
-  //         if (payload.key) {
-  //           accessStore.update(
-  //             (access) => (access.openaiApiKey = payload.key!),
-  //           );
-  //         }
-  //         if (payload.url) {
-  //           accessStore.update((access) => (access.openaiUrl = payload.url!));
-  //         }
-
-  //         // showConfirm(
-  //         //   Locale.URLCommand.Settings +
-  //         //     `\n${JSON.stringify(payload, null, 4)}`,
-  //         // ).then((res) => {
-  //         //   if (!res) return;
-  //         //   if (payload.key) {
-  //         //     accessStore.update(
-  //         //       (access) => (access.openaiApiKey = payload.key!),
-  //         //     );
-  //         //   }
-  //         //   if (payload.url) {
-  //         //     accessStore.update((access) => (access.openaiUrl = payload.url!));
-  //         //   }
-  //         // });
-  //       }
-  //     } catch {
-  //       console.error("[Command] failed to get settings from url: ", text);
-  //     }
-  //   },
-  // });
 
   // edit / insert message modal
   const [isEditingMessage, setIsEditingMessage] = useState(false);

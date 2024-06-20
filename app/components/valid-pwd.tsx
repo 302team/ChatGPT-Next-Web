@@ -55,6 +55,7 @@ export function ValidPwd(props: ValidPwdProps) {
   let pwd = searchParams.get("pwd") || "";
   let autoConfirm = searchParams.get("confirm") || "";
   const shareid = searchParams.get("shareid") || "";
+  const region = searchParams.get("region");
 
   const userCode = window.location.hostname.split(".")[0];
 
@@ -83,7 +84,13 @@ export function ValidPwd(props: ValidPwdProps) {
       return res;
     } else {
       const CODE = ERROR_CODE[res.code as ERROR_CODE_TYPE] as AuthType;
-      const errMsg = Locale.Auth[CODE];
+
+      const err = Locale.Auth[CODE];
+
+      const errMsg =
+        typeof err === "function"
+          ? err(region ? Number(region) : config.region)
+          : err;
 
       setErrorMsg(errMsg || res.msg);
       // 访问码已经失效了, 修改校验状态为 false
@@ -142,6 +149,16 @@ export function ValidPwd(props: ValidPwdProps) {
       } catch (error) {
         console.log(error);
       }
+    }
+
+    if (region) {
+      console.log("🚀 ~ useEffect ~ region:", region);
+      config.update((conf) => {
+        conf.region = Number(region);
+        return conf;
+      });
+      searchParams.delete("region");
+      setSearchParams(searchParams, { replace: true });
     }
 
     (async () => {

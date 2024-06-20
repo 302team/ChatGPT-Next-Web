@@ -84,7 +84,7 @@ function useHotKey() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  });
+  }, []);
 }
 
 function useDragSideBar() {
@@ -169,6 +169,7 @@ function AppDescription(props: {
   const isDemo =
     window.location.host.startsWith(DEMO_HOST) ||
     window.location.host.startsWith(DEMO_HOST_CN);
+  const isCnDemo = window.location.host.startsWith(DEMO_HOST_CN);
 
   const config = useAppConfig();
   const access = useAccessStore();
@@ -238,7 +239,9 @@ function AppDescription(props: {
       >
         <div
           dangerouslySetInnerHTML={{
-            __html: isDemo ? Locale.Auth.Unauthorized : config.chatbotInfo,
+            __html: isDemo
+              ? Locale.Auth.Unauthorized(isCnDemo ? 0 : 1)
+              : config.chatbotInfo,
           }}
         ></div>
       </Modal>
