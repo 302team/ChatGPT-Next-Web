@@ -87,8 +87,8 @@ export function MessageSelector(props: {
       allMessages.filter(
         (m, i) =>
           m.id && // message must have id
-          isValid(m) &&
-          (i >= allMessages.length - 1 || isValid(allMessages[i + 1])),
+          isValid(m) /* &&
+          (i >= allMessages.length - 1 || isValid(allMessages[i + 1])), */,
       ),
     [allMessages],
   );
