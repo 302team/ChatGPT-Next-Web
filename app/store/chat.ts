@@ -7,11 +7,20 @@ import {
   uploadRemoteFile,
   isSupportFunctionCall,
   sleep,
+  getBase64FromUrl,
+  compressBase64Image,
+  getFileBase64,
 } from "../utils";
 
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
-import { Model, ModelConfig, ModelType, useAppConfig } from "./config";
+import {
+  Model,
+  ModelConfig,
+  ModelFileSupportType,
+  ModelType,
+  useAppConfig,
+} from "./config";
 import { createEmptyMask, Mask } from "./mask";
 import {
   DEFAULT_INPUT_TEMPLATE,
@@ -22,6 +31,7 @@ import {
   StoreKey,
   SUMMARIZE_MODEL,
   GEMINI_SUMMARIZE_MODEL,
+  FILE_SUPPORT_TYPE,
 } from "../constant";
 import {
   ClientApi,
@@ -186,7 +196,7 @@ function fillTemplateWith(input: string, modelConfig: ModelConfig) {
     ServiceProvider: serviceProvider,
     cutoff,
     model: modelConfig.model,
-    time: new Date().toLocaleString(),
+    time: new Date().toString(),
     lang: getLang(),
     input: input,
     language: window.navigator.language,
@@ -229,7 +239,7 @@ async function getFileArr(uploadFiles: UploadFile[]): Promise<FileRes[]> {
     if (file.type?.includes("image")) {
       imgBase64 =
         file.response.base64 ??
-        ((await getBase64(file.originFileObj)) as string);
+        ((await getFileBase64(file.originFileObj)) as string);
     }
     const fileParam = {
       name: file.name,
@@ -244,170 +254,134 @@ async function getFileArr(uploadFiles: UploadFile[]): Promise<FileRes[]> {
 }
 
 async function getUserContent(
-  content: string | MultimodalContent[],
-  modelConfig: ModelConfig,
+  userInput: string,
   fileArr: FileRes[],
-  usePlugins: boolean | undefined,
-  type: "send" | "save",
-): Promise<string | MultimodalContent[]> {
-  const currentModel = modelConfig.model.toLocaleLowerCase();
-  // 特殊的能支持图片的模型,
-  // 这些模型支持识别图片, 格式与 gpt-4-vision 一样, 唯一区别就是它们用的是 url 而不是 base64
+  modelConfig: ModelConfig & { fileSupportType?: ModelFileSupportType },
+) {
+  const content = fillTemplateWith(userInput, modelConfig);
+  const model = modelConfig.model;
 
-  // 如果是gpt4-vision，
-  if (isVisionModel(currentModel) && typeof content == "string") {
-    console.log("1");
-    const imgContent: MultimodalContent[] = [];
-    imgContent.push({
+  if (fileArr.length > 0) {
+    const sendUserContent = []; // 发送出去的用户内容
+    const saveUserContent = []; // 保存的用户内容
+    let msg: MultimodalContent = {
       type: "text",
       text: content,
-    });
-    if (fileArr.length > 0) {
-      for (const file of fileArr) {
-        // 如果类型为send，或内容不是base64
-        if (type == "send") {
-          imgContent.push({
-            type: "image_url",
-            image_url: {
-              url: isSpecImageModal(currentModel) ? file.url : file.base64,
-            },
-          });
-        } else if (file.url && file.url.startsWith("http")) {
-          imgContent.push({
+    };
+    sendUserContent.push(msg);
+    saveUserContent.push(msg);
+    for (const file of fileArr) {
+      // 如果是gpt4-vision，或者claude模型，claude模型目前是根据中转接口来定的报文格式，以后要改成官方报文格式
+      if (
+        file.type.includes("image") &&
+        modelConfig.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE
+      ) {
+        if (file.url && file.url.startsWith("http")) {
+          msg = {
             type: "image_url",
             image_url: {
               url: file.url,
             },
-          });
-        } else {
-          imgContent[0].text += "\n" + file.name;
-        }
-      }
-    }
-    return imgContent;
-  } else if (isSupportMultimodal(currentModel) || usePlugins) {
-    console.log("2");
-    let sendContent = content;
-    if (type == "send") {
-      let fileUrls = "";
-      if (fileArr.length > 0) {
-        fileArr.forEach((file) => {
-          fileUrls += file.url + "\n";
-        });
-      } else if (content instanceof Array) {
-        sendContent = "";
-        content.forEach((msg) => {
-          if (msg.type == "text") {
-            sendContent += msg.text!;
-          } else {
-            fileUrls += msg.file?.url + "\n";
-          }
-        });
-      }
-      sendContent = fileUrls + sendContent;
-    } else {
-      if (typeof content == "string") {
-        sendContent = [];
-        sendContent.push({
-          type: "text",
-          text: content,
-        });
-        if (fileArr.length > 0) {
-          fileArr.forEach((file) => {
-            (sendContent as Array<any>).push({
-              type: "file",
-              file: {
-                name: file.name,
-                type: file.type,
-                url: file.url,
+          };
+          // 保存的消息是保存文件链接
+          saveUserContent.push(msg);
+          // 发送则需要判断是否发送链接
+          if (isVisionModel(model)) {
+            // gpt-4-vision 需要传递 base64 数据
+            sendUserContent.push({
+              type: "image_url",
+              image_url: {
+                url: file.base64,
               },
             });
+          } else {
+            sendUserContent.push(msg);
+          }
+        } else if (file.base64) {
+          // 发送出去是原图，提高识别率。
+          sendUserContent.push({
+            type: "image_url",
+            image_url: {
+              url: file.base64,
+            },
+          });
+          // 如果是base64，则需要压缩到100k以内保存。
+          saveUserContent.push({
+            type: "image_url",
+            image_url: {
+              url: await compressBase64Image(file.base64),
+            },
           });
         }
-      }
-    }
-    return sendContent;
-  } else if (currentModel.includes("whisper")) {
-    console.log("3");
-    let userContent = content;
-    if (typeof content == "string" && fileArr.length > 0) {
-      userContent = [];
-      userContent.push({
-        type: "text",
-        text: content,
-      });
-      fileArr.forEach((file) => {
-        (userContent as Array<any>).push({
+      } else {
+        msg = {
           type: "file",
           file: {
             name: file.name,
             type: file.type,
             url: file.url,
           },
-        });
-      });
-    }
-    return userContent;
-  } else if (type == "send" && content instanceof Array) {
-    console.log("4");
-    let imgContent: MultimodalContent[] = [];
-    for (const msg of content) {
-      if (msg.type === "text") {
-        imgContent.push({
-          type: "text",
-          text: msg.text,
-        });
-      } else if (msg.type == "image_url") {
-        let url = msg.image_url!.url;
-        imgContent.push({
-          type: "image_url",
-          image_url: {
-            url: isSpecImageModal(currentModel)
-              ? url
-              : await getBase64FromUrl(url),
-          },
-        });
+        };
+        sendUserContent.push(msg);
+        saveUserContent.push(msg);
       }
     }
-    return imgContent;
-  } else if (type == "save" || !(typeof content == "string")) {
-    console.log("5");
-    return content;
+    return {
+      sendUserContent,
+      saveUserContent,
+    };
   }
-  console.log("6");
-  // 模板替换
-  const userContent = fillTemplateWith(content as string, modelConfig);
-  return userContent;
+  return {
+    sendUserContent: content,
+    saveUserContent: content,
+  };
 }
 
-async function getBase64FromUrl(url: string) {
-  let base64 = "";
-  await fetch(url, {
-    method: "get",
-    headers: {
-      "Access-Control-Allow-Credentials": "true",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "*",
-      "Access-Control-Allow-Headers": "*",
-    },
-  })
-    .then((response) => response.blob())
-    .then((blob) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onload = () => (base64 = reader.result as string);
-    });
-  return base64;
+async function getResendUserContent(
+  content: string | MultimodalContent[],
+  modelConfig: ModelConfig,
+) {
+  const model = modelConfig.model;
+  if (
+    (isVisionModel(model) || isSpecImageModal(model)) &&
+    content instanceof Array
+  ) {
+    const sendUserContent = []; // 发送出去的用户内容
+    const saveUserContent = []; // 保存的用户内容
+    for (const msg of content) {
+      if (msg.type == "text") {
+        sendUserContent.push(msg);
+        saveUserContent.push(msg);
+      } else if (msg.type == "image_url") {
+        // 保存不变
+        saveUserContent.push(msg);
+        // sendUserContent.push(msg);
+
+        // 发出去的要判断是否url, 如果是url，但是需要base64数据，则需要获取base64
+        if (msg.image_url?.url.startsWith("http") && !isSpecImageModal(model)) {
+          const imageData = await getBase64FromUrl(msg.image_url.url);
+          sendUserContent.push({
+            type: "image_url",
+            image_url: {
+              url: imageData.base64,
+            },
+          });
+        } else {
+          sendUserContent.push(msg);
+        }
+      }
+    }
+    return {
+      sendUserContent,
+      saveUserContent,
+    };
+  }
+  return {
+    sendUserContent: content,
+    saveUserContent: content,
+  };
 }
 
-function getBase64(file: File) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-}
 async function getFileFromUrl(fileUrl: string, fileName: string) {
   let fileObj = undefined;
   await fetch(fileUrl, {
@@ -601,30 +575,16 @@ export const useChatStore = createPersistStore(
 
         const fileArr = await getFileArr(extAttr.uploadFiles);
         extAttr?.setUploadFiles([]); // 删除文件
-        // 获取需要发送出去的用户内容
-        const userContent = await getUserContent(
-          content,
-          modelConfig,
-          fileArr,
-          useAppConfig.getState().pluginConfig.enable,
-          "send",
-        );
-        console.log("[User Input] after pretreatment: ", userContent);
-        // 获取需要保存的用户内容，没有url的文件则只保存文件名
-        const saveUserContent = await getUserContent(
-          content,
-          modelConfig,
-          fileArr,
-          useAppConfig.getState().pluginConfig.enable,
-          "save",
-        );
 
-        // const userContent = fillTemplateWith(content, modelConfig);
-        console.log("[User Input] after template: ", userContent);
+        const { sendUserContent, saveUserContent } = extAttr?.isResend
+          ? await getResendUserContent(content, modelConfig)
+          : await getUserContent(content as string, fileArr, modelConfig);
+        console.log("[User Input] after pretreatment: ", sendUserContent);
+        console.log("[User Input] after pretreatment: ", saveUserContent);
 
         const userMessage = createMessage({
           role: "user",
-          content: userContent as string | MultimodalContent[],
+          content: sendUserContent as string | MultimodalContent[],
           model: modelConfig.model as ModelType,
         });
         const botMessage = createMessage({
@@ -643,7 +603,24 @@ export const useChatStore = createPersistStore(
         const config = useAppConfig.getState();
         const pluginConfig = useAppConfig.getState().pluginConfig;
         const pluginStore = usePluginStore.getState();
-        const allPlugins = pluginStore.getUserPlugins().filter((i) => i.enable);
+
+        const currentLang = getLang();
+        // 应用商店的模型, 使用内置插件
+        const allPlugins = session.mask.isStoreModel
+          ? pluginStore
+              .getBuildinPlugins()
+              .filter(
+                (m) =>
+                  (["cn"].includes(currentLang)
+                    ? m.lang === currentLang
+                    : m.lang === "en") && m.enable,
+              )
+          : pluginStore.getUserPlugins().filter((i) => i.enable);
+
+        // 最新回复的顶到最前面
+        if (get().currentSessionIndex !== 0) {
+          get().moveSession(get().currentSessionIndex, 0);
+        }
 
         // save user's and bot's message
         get().updateCurrentSession((session) => {
@@ -659,10 +636,12 @@ export const useChatStore = createPersistStore(
 
         var api: ClientApi = new ClientApi(ModelProvider.GPT);
         if (
-          config.pluginConfig.enable &&
-          // session.mask.usePlugins && // 所有聊天窗口都可以使用插件
-          allPlugins.length > 0 &&
-          isSupportFunctionCall(modelConfig.model)
+          // 应用商店创建的模型, 需要根据后端控制是否支持插件调用
+          (session.mask.isStoreModel && session.mask.usePlugins) ||
+          // 或者
+          (!session.mask.isStoreModel &&
+            config.pluginConfig.enable &&
+            allPlugins.length > 0)
         ) {
           console.log(
             "[ToolAgent] start; plugins:",
@@ -677,7 +656,6 @@ export const useChatStore = createPersistStore(
               ? webSearchPlugin.engine
               : "searchapi";
 
-          // TODO: Plugin chat
           api.llm.toolAgentChat({
             messages: sendMessages,
             config: { ...modelConfig, stream: true },
@@ -701,7 +679,12 @@ export const useChatStore = createPersistStore(
                 userMessage.retryCount = 0;
               }
               ++userMessage.retryCount;
-              extAttr.onResend?.(userMessage);
+
+              const savedUserMessage = {
+                ...userMessage,
+                content: saveUserContent,
+              } as ChatMessage;
+              extAttr.onResend?.(savedUserMessage);
             },
             onUpdate(message) {
               botMessage.streaming = true;
@@ -770,6 +753,10 @@ export const useChatStore = createPersistStore(
               botMessage.streaming = false;
               botMessage.content = content ?? "";
               botMessage.isError = (hasError || _hasError) as boolean;
+              // 如果没有不包含中文,就弹翻译的提示
+              if (!hasError) {
+                // messageTranslate(message, botMessage);
+              }
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
             },
@@ -849,7 +836,12 @@ export const useChatStore = createPersistStore(
                 userMessage.retryCount = 0;
               }
               ++userMessage.retryCount;
-              extAttr.onResend?.(userMessage);
+
+              const savedUserMessage = {
+                ...userMessage,
+                content: saveUserContent,
+              } as ChatMessage;
+              extAttr.onResend?.(savedUserMessage);
             },
             onUpdate(message) {
               botMessage.streaming = true;
@@ -870,8 +862,25 @@ export const useChatStore = createPersistStore(
               botMessage.streaming = false;
               botMessage.content = message ?? "";
               botMessage.isError = hasError as boolean;
+              // 如果没有不包含中文,就弹翻译的提示
+              if (!hasError) {
+                // messageTranslate(message, botMessage);
+              }
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
+              // if (!hasError) {
+              //   console.log(
+              //     "[OpenAi] chat finished, save media file to remote",
+              //   );
+              //   get()
+              //     .saveMediaToRemote(message, botMessage)
+              //     .then((newMessage) => {
+              //       console.log(
+              //         "[OpenAi] chat finished, save media file to remote end:",
+              //         newMessage,
+              //       );
+              //     });
+              // }
             },
             onError(error) {
               const isAborted = error.message.includes("aborted");
@@ -921,6 +930,7 @@ export const useChatStore = createPersistStore(
           return {
             ...modelConfig,
             model: model.model,
+            fileSupportType: model.file_support_type,
           };
         });
 
@@ -930,42 +940,29 @@ export const useChatStore = createPersistStore(
         // 获取需要发送出去的用户内容
         // 如果模型中有支持多模态的话
         const createAllUserContents = modelConfigs.map(async (modelConfig) => {
-          const userContent = await getUserContent(
-            content,
-            modelConfig,
-            fileArr,
-            false,
-            "send",
-          );
+          const { sendUserContent, saveUserContent } = extAttr.isResend
+            ? await getResendUserContent(content, modelConfig)
+            : await getUserContent(content as string, fileArr, modelConfig);
 
-          return userContent;
+          return { sendUserContent, saveUserContent };
         });
 
-        const allUserContents = await Promise.all(createAllUserContents);
-        console.log("[User Input] after pretreatment: ", allUserContents);
-
-        // 取多模态content 或者 取第一个content
-        const userContent =
-          allUserContents.find((item) => {
-            return item instanceof Array;
-          }) ?? allUserContents[0];
-        const userMessage = createMessage({
-          role: "user",
-          content: userContent as string | MultimodalContent[],
-          model: modelConfig.model as ModelType,
-        });
+        const allContents = await Promise.all(createAllUserContents);
 
         // 首次发消息, 保存记录
         if (!extAttr.isResend) {
           // 获取需要保存的用户内容，没有url的文件则只保存文件名
-          const saveUserContent = await getUserContent(
-            content,
-            // 需要保存的用户内容，就按照gpt-4-all模型来生成了
-            { ...(modelConfigs[0] as ModelConfig), model: "gpt-4-all" },
+          const { saveUserContent } = await getUserContent(
+            content as string,
             fileArr,
-            useAppConfig.getState().pluginConfig.enable,
-            "save",
+            modelConfig,
           );
+          const userMessage = createMessage({
+            role: "user",
+            content: saveUserContent as string | MultimodalContent[],
+            model: modelConfig.model as ModelType,
+          });
+
           get().updateCurrentSession((session) => {
             const savedUserMessage = {
               ...userMessage,
@@ -976,21 +973,21 @@ export const useChatStore = createPersistStore(
         }
 
         // return;
-        for (let i = 0; i < allUserContents.length; i++) {
+        for (let i = 0; i < allContents.length; i++) {
           if (i > 0 && i % 3 === 0) {
             await sleep(3000);
           } else {
             await sleep(300);
           }
 
-          const userContent = allUserContents[i];
-          const modelConfig = modelConfigs[i];
-
           const task = () => {
+            const { sendUserContent, saveUserContent } = allContents[i];
+            const modelConfig = modelConfigs[i];
+
             return new Promise((resolve, reject) => {
               const userMessage = createMessage({
                 role: "user",
-                content: userContent as string | MultimodalContent[],
+                content: sendUserContent as string | MultimodalContent[],
                 model: modelConfig.model as ModelType,
               });
 
@@ -1023,6 +1020,7 @@ export const useChatStore = createPersistStore(
                 messages: sendMessages,
                 config: { ...modelConfig, stream: true },
                 retryCount: extAttr.retryCount ?? 0,
+                fileSupportType: modelConfig.fileSupportType,
                 onAborted(message) {
                   botMessage.isTimeoutAborted = true;
                   if (message) {
@@ -1086,7 +1084,6 @@ export const useChatStore = createPersistStore(
                     botMessage.id ?? messageIndex,
                     controller,
                   );
-                  reject("abort");
                 },
               });
             });

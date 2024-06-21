@@ -2,10 +2,17 @@ import { getClientConfig } from "../config/client";
 import {
   ACCESS_CODE_PREFIX,
   Azure,
+  FILE_SUPPORT_TYPE,
   ModelProvider,
   ServiceProvider,
 } from "../constant";
-import { ChatMessage, ModelType, useAccessStore, useChatStore } from "../store";
+import {
+  ChatMessage,
+  ModelFileSupportType,
+  ModelType,
+  useAccessStore,
+  useChatStore,
+} from "../store";
 import { ChatGPTApi } from "./platforms/openai";
 import { GeminiProApi } from "./platforms/google";
 import { ClaudeApi } from "./platforms/anthropic";
@@ -56,6 +63,7 @@ export interface ChatOptions {
   messages: RequestMessage[];
   config: LLMConfig;
   retryCount?: number;
+  fileSupportType?: ModelFileSupportType;
 
   onAborted?: (message?: string) => void;
   onRetry?: () => void;
@@ -260,30 +268,53 @@ export function getHeadersNoCT() {
 }
 
 // 当模型不是vision, 或者特殊的那几个处理图像的模型时，content只能是文本
-export function buildMessages(messages: RequestMessage[], model: string) {
-  if (!model.includes("vision") && !isSpecImageModal(model)) {
-    const sendMessages = JSON.parse(
-      JSON.stringify(messages),
-    ) as RequestMessage[];
-    sendMessages.forEach((msg) => {
-      if (msg.content instanceof Array) {
+export function buildMessages(
+  messages: RequestMessage[],
+  model: string,
+  fileSupportType?: ModelFileSupportType,
+) {
+  const sendMessages: RequestMessage[] = [];
+  messages.forEach((msg) => {
+    if (msg.content instanceof Array) {
+      // 判断消息里是否有file
+      const hasFile = msg.content.some((m) => m.type == "file");
+      // 没有file，且模型是vision或claude，则直接传过去。
+      if (!hasFile && fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE) {
+        sendMessages.push(msg);
+      } else {
         let text = "";
         let fileUrls = "";
+        let base64 = "";
         msg.content.forEach((item) => {
           if (item.type == "text") {
             text += item.text;
-          } else if (item.type == "image_url") {
-            fileUrls += item.image_url?.url + "\n";
+          } else if (
+            item.type == "image_url" &&
+            item.image_url &&
+            item.image_url.url
+          ) {
+            if (item.image_url.url.startsWith("http")) {
+              fileUrls += item.image_url.url + "\n";
+            } else {
+              base64 += item.image_url.url + "\n";
+            }
           } else if (item.type == "file") {
-            fileUrls += item.file?.url + "\n";
+            fileUrls += item.file!.url + "\n";
           }
         });
-        msg.content = fileUrls + text;
-      } else if (typeof msg.content != "string") {
-        msg.content = JSON.stringify(msg.content);
+        sendMessages.push({
+          ...msg,
+          content: fileUrls + base64 + text,
+        });
       }
-    });
-    return sendMessages;
-  }
-  return messages;
+    } else if (typeof msg.content == "string") {
+      sendMessages.push(msg);
+    } else {
+      sendMessages.push({
+        ...msg,
+        content: JSON.stringify(msg.content),
+      });
+    }
+  });
+  return sendMessages;
 }

@@ -22,6 +22,7 @@ function ModelItem(props: {
       <Col flex="none">
         <Switch
           checked={props.model.enable}
+          disabled={props.model.disabled}
           onChange={(checked: boolean) => props.onChange?.(checked)}
         />
       </Col>

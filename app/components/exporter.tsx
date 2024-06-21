@@ -295,7 +295,7 @@ export function RenderExport(props: {
           id={`${m.role}:${i}`}
           className={EXPORT_MESSAGE_CLASS_NAME}
         >
-          <Markdown content={getMessageTextContent(m)} defaultShow />
+          <Markdown content={m.content} defaultShow />
         </div>
       ))}
     </div>

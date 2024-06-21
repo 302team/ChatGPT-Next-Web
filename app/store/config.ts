@@ -27,6 +27,8 @@ export enum Theme {
   Light = "light",
 }
 
+export type ModelFileSupportType = 0 | 1 | 2;
+
 export interface Model {
   id: number;
   remark: string;
@@ -37,6 +39,8 @@ export interface Model {
   show_name: string;
   en_model_type: string;
   model_type: string;
+  file_support_type: ModelFileSupportType;
+  disabled: boolean;
   model_logo?: string;
 }
 

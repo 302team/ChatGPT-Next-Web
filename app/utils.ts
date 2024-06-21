@@ -125,6 +125,45 @@ export function compressImage(file: File, maxSize: number): Promise<string> {
   });
 }
 
+export async function compressBase64Image(imgBase64: string) {
+  let result = "";
+  const MAX_SIZE = 100 * 1024; // 100kb
+  const promise = new Promise<string>((resolve, reject) => {
+    const image = new Image();
+    image.src = imgBase64;
+    image.onload = () => {
+      let canvas = document.createElement("canvas");
+      let ctx = canvas.getContext("2d");
+      let width = image.width;
+      let height = image.height;
+      let quality = 0.9;
+      let dataUrl;
+      do {
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        ctx?.drawImage(image, 0, 0, width, height);
+        dataUrl = canvas.toDataURL("image/jpeg", quality);
+        if (dataUrl.length < MAX_SIZE) break;
+        if (quality > 0.5) {
+          // Prioritize quality reduction
+          quality -= 0.1;
+        } else {
+          // Then reduce the size
+          width *= 0.9;
+          height *= 0.9;
+        }
+      } while (dataUrl.length > MAX_SIZE);
+      resolve(dataUrl);
+    };
+    image.onerror = () => reject("");
+  });
+  await promise.then((res) => {
+    result = res;
+  });
+  return result;
+}
+
 export function dataURLtoFile(dataurl: string, filename: string) {
   var arr = dataurl.split(","),
     mime = arr[0].match(/:(.*?);/)![1],
@@ -655,4 +694,63 @@ export async function uploadRemoteFile(
 
   const url = await uploadFileWithRetry(uploadUrl, formData);
   return url;
+}
+
+export async function getBase64FromUrl(url: string) {
+  let type = "";
+  let base64 = "";
+  await fetch(url, {
+    method: "get",
+    headers: {
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "*",
+      "Access-Control-Allow-Headers": "*",
+    },
+  })
+    .then((response) => response.blob())
+    .then((blob) => {
+      type = blob.type;
+      return blobToBase64(blob);
+    })
+    .then((res) => (base64 = res));
+  return {
+    type,
+    base64,
+  };
+}
+
+export function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = () => {
+      resolve("");
+    };
+  });
+}
+
+export async function getFileFromUrl(fileUrl: string, fileName: string) {
+  let fileObj = undefined;
+  await fetch(fileUrl, {
+    method: "get",
+    body: null,
+  })
+    .then((response) => response.blob())
+    .then((blob) => {
+      fileObj = new File([blob], fileName);
+    });
+  return fileObj;
+}
+
+export function getFileBase64(file: File) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 }

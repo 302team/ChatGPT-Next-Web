@@ -125,7 +125,11 @@ export class ChatGPTApi implements LLMApi {
 
     const config = useAppConfig.getState();
 
-    const sendMessages = buildMessages(messages, modelConfig.model);
+    const sendMessages = buildMessages(
+      messages,
+      modelConfig.model,
+      options.fileSupportType,
+    );
     const requestPayload = {
       messages: sendMessages,
       stream: options.config.stream,

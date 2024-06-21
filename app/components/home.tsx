@@ -186,6 +186,11 @@ function ChatWindow() {
             appConfig.update((config) => {
               config.modelList = models.map((m) => {
                 m.enable = false;
+                m.disabled = false;
+                if (!m.model_type && !m.en_model_type) {
+                  m.model_type = "其他";
+                  m.en_model_type = "Other";
+                }
                 return m;
               });
             });

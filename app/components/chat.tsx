@@ -629,13 +629,6 @@ function useUploadFile(extra: {
   const accessStore = useAccessStore();
   const uploadUrl = accessStore.fileUploadUrl;
   const config = useAppConfig();
-  const allPlugins = usePluginStore()
-    .getAll()
-    .filter(
-      (m) =>
-        (!getLang() || m.lang === (getLang() == "cn" ? getLang() : "en")) &&
-        m.enable,
-    );
 
   const [uploading, setUploading] = useState(false);
 
@@ -650,15 +643,52 @@ function useUploadFile(extra: {
   // const [uploadImages, setUploadImages] = useState<UploadFile[]>([]);
   // const [uploadMaskImages, setUploadMaskImages] = useState([]);
   const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
-  const exAttr = {
-    setAutoScroll: extra.setAutoScroll,
-    uploadFiles,
-    setUploadFiles,
-    // uploadImages,
-    // setUploadImages,
-    // uploadMaskImages,
-    // setUploadMaskImages,
-  };
+
+  const onSelectFile = useCallback(
+    (files: UploadFile[]) => {
+      // 1. 只要上传了文件, 关掉所有不支持多模态(file_support_type = 0)的模型
+      // 2. 用户已经开启了的模型，如果不支持多模态的话，是不是自动关掉，然后自动置灰不给用
+      // 3. 以用户上传的文件来决定可以使用哪种模型
+      // file_support_type = 0：什么都不支持
+      // file_support_type = 1：支持所有文件类型
+      // file_support_type = 2：仅支持图片类型
+
+      const models = config.modelList.map((m) => {
+        m.disabled = false;
+        return m;
+      });
+
+      if (files.length) {
+        // 文件类型
+        const types = files.map((f) => f.type);
+
+        // 判断文件有哪些类型.
+        // 如果有非图片类型的, 需要关闭所有多模态只支持图片(file_support_type = 2)的模型
+        const hasNotImage = types.some((t) => !isImage(t));
+
+        models.forEach((m) => {
+          m.disabled = false;
+
+          /* 不支持多模态的 */
+          if (m.file_support_type === 0) {
+            m.enable = false;
+            m.disabled = true;
+          } /* 多模态只支持图片的, 并且所选择的文件里面有非图片类型的 */ else if (
+            m.file_support_type === 2 &&
+            hasNotImage
+          ) {
+            m.enable = false;
+            m.disabled = true;
+          }
+        });
+      }
+
+      config.update((config) => {
+        config.modelList = models;
+      });
+    },
+    [config.modelList],
+  );
 
   const getAcceptFileType = (model: ModelType | string) => {
     if (model.includes("vision")) {
@@ -671,29 +701,6 @@ function useUploadFile(extra: {
     return "";
   };
   // ========================================
-
-  // useEffect(() => {
-  //   const supportMultimodal = isSupportMultimodal(currentModel);
-  //   const show =
-  //     // Vision 模型
-  //     isVisionModel(currentModel) ||
-  //     // 多模态模型
-  //     supportMultimodal ||
-  //     // 类似 vision 的模型
-  //     isSpecImageModal(currentModel) ||
-  //     // 开启了使用插件的功能
-  //     (config.pluginConfig.enable &&
-  //       allPlugins.length > 0 &&
-  //       // 模型支持 function call
-  //       isSupportFunctionCall(currentModel));
-
-  //   setShowUploadAction(show);
-
-  //   if (!show) {
-  //     setUploadFiles([]);
-  //     setUploading(false);
-  //   }
-  // }, [currentModel, config.pluginConfig.enable, allPlugins.length]);
 
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
@@ -757,7 +764,7 @@ function useUploadFile(extra: {
         const fileInput = document.createElement("input");
         fileInput.id = "upload_file_input";
         fileInput.type = "file";
-        fileInput.accept = getAcceptFileType(currentModel);
+        fileInput.accept = "*"; //
         fileInput.multiple = true;
         fileInput.addEventListener("change", (event: any) => {
           setUploading(true);
@@ -777,11 +784,9 @@ function useUploadFile(extra: {
           Promise.all(tasks)
             .then(() => {
               setUploading(false);
-              console.log(
-                "🚀 ~ Promise.all ~ uploadImage all tasks end:",
-                imagesData,
-              );
               resolve(imagesData);
+              console.log("🚀 [upload] upload mage all tasks end:", imagesData);
+              onSelectFile(imagesData);
             })
             .catch(() => {
               setUploading(false);
@@ -834,7 +839,9 @@ function useUploadFile(extra: {
         setTimeout(() => {
           setUploading(false);
         }, 300);
-        console.log("🚀 ~ Promise.all ~ dropUpload all tasks end:", images);
+        console.log("🚀 [upload] drop upload all tasks end:", images);
+
+        onSelectFile(images);
       })
       .catch(() => {
         setUploading(false);
@@ -845,13 +852,18 @@ function useUploadFile(extra: {
     dropUpload([file]);
   }
 
+  const exAttr = {
+    setAutoScroll: extra.setAutoScroll,
+    uploadFiles,
+    setUploadFiles,
+  };
+
   return {
     uploadFiles,
     setUploadFiles,
+    onSelectFile,
     uploading,
     setUploading,
-    showUploadAction,
-    setShowUploadAction,
     supportMultimodal,
     handleUpload,
     dropUpload,
@@ -1052,12 +1064,11 @@ function _Chat() {
   const {
     uploadFiles,
     uploading,
-    showUploadAction,
     setUploadFiles,
+    onSelectFile,
     dropUpload,
     pasteUpload,
     uploadImage,
-
     exAttr,
   } = useUploadFile({
     setAutoScroll,
@@ -1168,6 +1179,9 @@ function _Chat() {
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
     setPromptHints([]);
+
+    // 重置
+    onSelectFile([]);
   };
 
   // stop response
@@ -1313,7 +1327,8 @@ function _Chat() {
     // delete the original messages
     if (message.role === "user") {
       deleteMessage(userMessage.id);
-      resendModels = config.modelList.filter((m) => m.enable);
+      // resendModels = config.modelList.filter((m) => m.enable);
+      resendModels = [getModel(message.model!)];
     } else {
       resendModels = [getModel(message.model!)];
     }
@@ -1678,6 +1693,16 @@ function _Chat() {
         <div
           className={`window-actions ${styles["chat-window-actions"]}  ${styles["chat-window-actions-right"]}`}
         >
+          <div className="window-action-button">
+            <IconButton
+              icon={<ExportIcon />}
+              bordered
+              title={Locale.Chat.Actions.Export}
+              onClick={() => {
+                setShowExport(true);
+              }}
+            />
+          </div>
           {showMaxIcon && (
             <div className="window-action-button">
               <IconButton
@@ -2010,9 +2035,12 @@ function _Chat() {
                     <div className={styles["attach-image-mask"]}>
                       <DeleteImageButton
                         deleteImage={() => {
-                          setUploadFiles(
-                            uploadFiles.filter((_, i) => i !== index),
+                          const list = uploadFiles.filter(
+                            (_, i) => i !== index,
                           );
+                          console.log(list);
+                          setUploadFiles(list);
+                          onSelectFile(list);
                         }}
                       />
                     </div>
@@ -2029,20 +2057,18 @@ function _Chat() {
               : ""
           }`}
         >
-          {showUploadAction && (
-            <ChatAction
-              onClick={() => {
-                if (uploading || isRecording) {
-                  return;
-                }
-                uploadImage();
-              }}
-              text=""
-              disabled={uploading || isRecording}
-              className={styles["chat-input-attach"]}
-              icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
-            />
-          )}
+          <ChatAction
+            onClick={() => {
+              if (uploading || isRecording) {
+                return;
+              }
+              uploadImage();
+            }}
+            text=""
+            disabled={uploading || isRecording}
+            className={styles["chat-input-attach"]}
+            icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
+          />
           {showRecording ? (
             <div
               className={`${styles["chat-input"]} ${styles["chat-input-recording"]}`}
