@@ -178,9 +178,19 @@
     .message {
       margin-bottom: 20px;
       display: flex;
+      flex-direction: column;
 
       .avatar {
+        display: flex;
         margin-right: 10px;
+        margin-bottom: 10px;
+        align-items: center;
+      }
+
+      .model-name {
+        margin-left: 6px;
+        font-size: 14px;
+        color: var(--deep-gray);
       }
 
       .body {

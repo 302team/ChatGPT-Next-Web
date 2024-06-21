@@ -578,6 +578,7 @@ const cn = {
       Title: "只有清除上下文之后的消息会被展示",
     },
     Model: "模型",
+    Tool: "工具",
     Messages: "消息",
     Source: "来源",
     Topic: "主题",

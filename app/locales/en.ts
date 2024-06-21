@@ -583,6 +583,7 @@ const en: LocaleType = {
     Source: "Source",
     Topic: "Topic",
     Time: "Time",
+    Tool: "Tool",
   },
   GPTs: {
     PrefixName: "[App]",

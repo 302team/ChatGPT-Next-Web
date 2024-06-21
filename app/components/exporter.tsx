@@ -1,6 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import { ChatMessage, ModelType, useAppConfig, useChatStore } from "../store";
-import Locale from "../locales";
+import {
+  ChatMessage,
+  Model,
+  ModelType,
+  useAppConfig,
+  useChatStore,
+} from "../store";
+import Locale, { getLang } from "../locales";
 import styles from "./exporter.module.scss";
 import {
   List,
@@ -26,7 +32,7 @@ import ShareIcon from "../icons/share.svg";
 import BotIcon from "../icons/logo.png";
 
 import DownloadIcon from "../icons/download.svg";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MessageSelector, useMessageSelector } from "./message-selector";
 import { Avatar } from "./emoji";
 import dynamic from "next/dynamic";
@@ -544,6 +550,27 @@ export function ImagePreviewer(props: {
     }
   };
 
+  const getModel = useCallback(
+    (model: string): Model => {
+      return config.modelList.find((m) => m.model === model) as Model;
+    },
+    [config.modelList],
+  );
+
+  const getModelNameWithRemark = useCallback((model: string) => {
+    const modelInfo = getModel(model);
+    if (!modelInfo) return model;
+
+    const remark = getLang() === "cn" ? modelInfo.remark : modelInfo.en_remark;
+    let modelStr = modelInfo.show_name;
+
+    if (remark) {
+      modelStr += `(${remark})`;
+    }
+
+    return modelStr;
+  }, []);
+
   return (
     <div className={styles["image-previewer"]}>
       <PreviewActions
@@ -568,14 +595,9 @@ export function ImagePreviewer(props: {
           </div> */}
 
           <div>
-            <div className={styles["main-title"]}>
-              {!config.chatbotName || config.chatbotName === "GPT302"
-                ? "302.AI"
-                : config.chatbotName}
-            </div>
+            <div className={styles["main-title"]}>{Locale.Sidebar.Title}</div>
             <div className={styles["sub-title"]}>
-              {config.chatbotDesc ||
-                Locale.Config.description(config.isGpts ? "GPTs" : "AI")}
+              {Locale.Sidebar.Description}
             </div>
             <div className={styles["icons"]}>
               <ExportAvatar avatar={config.avatar} />
@@ -588,7 +610,7 @@ export function ImagePreviewer(props: {
               {Locale.Exporter.Source}: 302.AI
             </div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Model}: {modelName}
+              {Locale.Exporter.Tool}: {Locale.Sidebar.Title}
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Topic}: {session.topic}
@@ -611,6 +633,12 @@ export function ImagePreviewer(props: {
                 <ExportAvatar
                   avatar={m.role === "user" ? config.avatar : mask.avatar}
                 />
+
+                {m.role !== "user" && (
+                  <div className={styles["model-name"]}>
+                    {getModelNameWithRemark(m.model!)}
+                  </div>
+                )}
               </div>
 
               <div className={styles["body"]}>
