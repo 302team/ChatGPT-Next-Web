@@ -101,7 +101,7 @@ export function compressImage(file: File, maxSize: number): Promise<string> {
           canvas.height = height;
           ctx?.clearRect(0, 0, canvas.width, canvas.height);
           ctx?.drawImage(image, 0, 0, width, height);
-          dataUrl = canvas.toDataURL("image/jpeg", quality);
+          dataUrl = canvas.toDataURL(file.type, quality);
 
           if (dataUrl.length < maxSize) break;
 

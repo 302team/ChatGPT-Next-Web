@@ -61,6 +61,19 @@
         flex: 1;
         max-width: calc(100% - 80px);
 
+        .header {
+          text-overflow: ellipsis;
+          text-wrap: nowrap;
+          overflow: hidden;
+        }
+
+        .name {
+          opacity: 1;
+          font-size: 12px;
+          line-height: 1.2;
+          margin-right: 5px;
+        }
+
         .date {
           font-size: 12px;
           line-height: 1.2;

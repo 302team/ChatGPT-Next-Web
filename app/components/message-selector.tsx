@@ -1,10 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { ChatMessage, ModelType, useAppConfig, useChatStore } from "../store";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ChatMessage,
+  Model,
+  ModelType,
+  useAppConfig,
+  useChatStore,
+} from "../store";
 import { Updater } from "../typing";
 import { IconButton } from "./button";
 import { Avatar } from "./emoji";
 import { MaskAvatar } from "./mask";
-import Locale from "../locales";
+import Locale, { getLang } from "../locales";
 
 import styles from "./message-selector.module.scss";
 import { getMessageTextContent } from "../utils";
@@ -121,6 +127,27 @@ export function MessageSelector(props: {
     );
   };
 
+  const getModel = useCallback(
+    (model: string): Model => {
+      return config.modelList.find((m) => m.model === model) as Model;
+    },
+    [config.modelList],
+  );
+
+  const getModelNameWithRemark = useCallback((model: string) => {
+    const modelInfo = getModel(model);
+    if (!modelInfo) return model;
+
+    const remark = getLang() === "cn" ? modelInfo.remark : modelInfo.en_remark;
+    let modelStr = modelInfo.show_name;
+
+    if (remark) {
+      modelStr += `(${remark})`;
+    }
+
+    return modelStr;
+  }, []);
+
   useEffect(() => {
     if (props.defaultSelectAll) {
       selectAll();
@@ -210,18 +237,20 @@ export function MessageSelector(props: {
               <div className={styles["avatar"]}>
                 {m.role === "user" ? (
                   <Avatar avatar={config.avatar}></Avatar>
+                ) : getModel(m.model!) && getModel(m.model!).model_logo ? (
+                  <Avatar avatar={getModel(m.model!).model_logo} />
                 ) : (
-                  <MaskAvatar
-                    avatar={session.mask.avatar}
-                    model={
-                      m.model || (session.mask.modelConfig.model as ModelType)
-                    }
-                  />
+                  <Avatar model={m.model} />
                 )}
               </div>
               <div className={styles["body"]}>
-                <div className={styles["date"]}>
-                  {new Date(m.date).toLocaleString()}
+                <div className={styles["header"]}>
+                  <span className={styles["name"]}>
+                    {getModelNameWithRemark(m.model!)}
+                  </span>
+                  <span className={styles["date"]}>
+                    {new Date(m.date).toLocaleString()}
+                  </span>
                 </div>
                 <div className={`${styles["content"]} one-line`}>
                   {getMessageTextContent(m)}

@@ -27,9 +27,7 @@ import {
 
 import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import ChatGptIcon from "../icons/logo.png";
-import ShareIcon from "../icons/share.svg";
-import BotIcon from "../icons/logo.png";
+import BotIcon from "../icons/logo-avatar.png";
 
 import DownloadIcon from "../icons/download.svg";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -631,7 +629,11 @@ export function ImagePreviewer(props: {
             >
               <div className={styles["avatar"]}>
                 <ExportAvatar
-                  avatar={m.role === "user" ? config.avatar : mask.avatar}
+                  avatar={
+                    m.role === "user"
+                      ? config.avatar
+                      : getModel(m.model!)?.model_logo || mask.avatar
+                  }
                 />
 
                 {m.role !== "user" && (

@@ -416,3 +416,7 @@ pre {
     }
   }
 }
+
+.ant-switch.ant-switch-disabled {
+  opacity: 0.25 !important;
+}
