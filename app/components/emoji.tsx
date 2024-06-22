@@ -8,7 +8,7 @@ import { ModelType } from "../store";
 
 import BotIcon from "../icons/bot.svg";
 import BlackBotIcon from "../icons/black-bot.svg";
-import Logo from "../icons/logo-s.png";
+import Logo from "../icons/logo-avatar.png";
 import Image from "next/image";
 import { regexUrl } from "../utils";
 
