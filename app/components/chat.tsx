@@ -819,7 +819,7 @@ function useUploadFile(extra: {
         if (!/gif/.test(file.type)) {
           f = dataURLtoFile(dataUrl, file.name);
         }
-        console.warn("🚀 ~ after compressed ~ size:", f.size);
+        console.warn("🚀 ~ after compressed ~ size:", f.size, f.type);
       } else {
         dataUrl = FILE_BASE64_ICON;
       }
