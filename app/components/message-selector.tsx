@@ -246,7 +246,7 @@ export function MessageSelector(props: {
               <div className={styles["body"]}>
                 <div className={styles["header"]}>
                   <span className={styles["name"]}>
-                    {getModelNameWithRemark(m.model!)}
+                    {m.role !== "user" && getModelNameWithRemark(m.model!)}
                   </span>
                   <span className={styles["date"]}>
                     {new Date(m.date).toLocaleString()}
