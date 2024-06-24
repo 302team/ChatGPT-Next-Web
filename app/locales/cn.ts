@@ -56,6 +56,13 @@ const cn = {
     DAILY_QUOTA_ERROR: (region = 0) =>
       `机器人的单日额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
   },
+  Preview: {
+    Title: "实时预览",
+    Actions: {
+      Preview: "预览",
+      Code: "代码",
+    },
+  },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
   },

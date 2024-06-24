@@ -16,6 +16,79 @@ import { showImageModal } from "./ui-lib";
 import { MultimodalContent } from "../client/api";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import rehypeRaw from "rehype-raw";
+import Locale from "../locales";
+import { Modal, Segmented } from "antd";
+
+import CodeMirror from "@uiw/react-codemirror";
+import { html } from "@codemirror/lang-html";
+
+const htmlReg = /<html[^>]*?>/gim;
+const svgReg = /<svg[^>]+>/gim;
+
+export function CodePreviewModal(props: {
+  content?: string;
+  open: boolean;
+  onOk?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onCancel?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}) {
+  const [tab, setTab] = useState("preview");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [content, setContent] = useState("");
+
+  useEffect(() => {
+    setContent(props.content ?? "");
+  }, [props.content]);
+
+  useEffect(() => {
+    const blob = new Blob([content], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    setPreviewUrl(url);
+  }, [content]);
+
+  const onChange = useDebouncedCallback((val: string) => {
+    setContent(val);
+  }, 600);
+
+  return (
+    <Modal
+      title={Locale.Preview.Title}
+      className="code-preview-modal"
+      open={props.open}
+      onOk={props.onOk}
+      onCancel={props.onCancel}
+    >
+      <div className="code-preview-modal-actions">
+        <Segmented
+          value={tab}
+          style={{ marginBottom: 8 }}
+          onChange={(value) => setTab(value)}
+          options={[
+            {
+              label: Locale.Preview.Actions.Preview,
+              value: "preview",
+            },
+            {
+              label: Locale.Preview.Actions.Code,
+              value: "code",
+            },
+          ]}
+        />
+      </div>
+
+      {tab === "preview" ? (
+        <iframe src={previewUrl} />
+      ) : (
+        <CodeMirror
+          value={content}
+          height="60vh"
+          theme="dark"
+          extensions={[html()]}
+          onChange={onChange}
+        />
+      )}
+    </Modal>
+  );
+}
 
 export function Mermaid(props: { code: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,6 +140,9 @@ export function PreCode(props: { children: any }) {
   const ref = useRef<HTMLPreElement>(null);
   const refText = ref.current?.innerText;
   const [mermaidCode, setMermaidCode] = useState("");
+  const [shouldPreview, setShouldPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [codeText, setCodeText] = useState("");
 
   const renderMermaid = useDebouncedCallback(() => {
     if (!ref.current) return;
@@ -81,23 +157,56 @@ export function PreCode(props: { children: any }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refText]);
 
+  useEffect(() => {
+    const _refText = ref.current?.innerText;
+    if (_refText && (htmlReg.exec(_refText) || svgReg.exec(_refText))) {
+      setShouldPreview(true);
+    }
+  }, [ref]);
+
   return (
     <>
       {mermaidCode.length > 0 && (
         <Mermaid code={mermaidCode} key={mermaidCode} />
       )}
-      <pre ref={ref}>
-        <span
-          className="copy-code-button"
-          onClick={() => {
-            if (ref.current) {
-              const code = ref.current.innerText;
-              copyToClipboard(code);
-            }
-          }}
-        ></span>
-        {props.children}
-      </pre>
+      <div className="pre-wrap">
+        <pre ref={ref}>
+          <span
+            className="copy-code-button"
+            onClick={() => {
+              if (ref.current) {
+                const code = ref.current.innerText;
+                copyToClipboard(code);
+              }
+            }}
+          ></span>
+          {props.children}
+        </pre>
+        {shouldPreview && (
+          <span
+            className="preview-code-button"
+            onClick={() => {
+              if (ref.current) {
+                const code = ref.current.innerText;
+                const codeStr = code;
+                setCodeText(codeStr);
+                setShowPreview(true);
+              }
+            }}
+          >
+            {Locale.Preview.Actions.Preview}
+          </span>
+        )}
+      </div>
+
+      {shouldPreview && (
+        <CodePreviewModal
+          content={codeText}
+          open={showPreview}
+          onOk={() => setShowPreview(false)}
+          onCancel={() => setShowPreview(false)}
+        />
+      )}
     </>
   );
 }
