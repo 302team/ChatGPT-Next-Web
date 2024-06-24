@@ -323,7 +323,6 @@ div.math {
   &:hover .preview-code-button {
     pointer-events: all;
     transform: translateX(0px);
-    opacity: 0.5;
   }
   .preview-code-button {
     position: absolute;
@@ -331,13 +330,13 @@ div.math {
     bottom: 1em;
     cursor: pointer;
     padding: 0px 5px;
-    background-color: var(--black);
+    background-color: #009cf7;
     color: var(--white);
-    border: var(--border-in-light);
+    border: 1px solid #009cf7f2;
     border-radius: 10px;
     transform: translateX(0px);
     pointer-events: none;
-    opacity: 0.5;
+    opacity: 0.8;
     transition: all ease 0.3s;
     font-size: 12px;
 

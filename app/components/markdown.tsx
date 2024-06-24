@@ -56,6 +56,7 @@ export function CodePreviewModal(props: {
       open={props.open}
       onOk={props.onOk}
       onCancel={props.onCancel}
+      footer={[]}
     >
       <div className="code-preview-modal-actions">
         <Segmented
@@ -162,7 +163,7 @@ export function PreCode(props: { children: any }) {
     if (_refText && (htmlReg.exec(_refText) || svgReg.exec(_refText))) {
       setShouldPreview(true);
     }
-  }, [ref]);
+  }, [ref, props.children]);
 
   return (
     <>
