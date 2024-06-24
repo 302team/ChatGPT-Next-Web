@@ -59,6 +59,13 @@ const en: LocaleType = {
     DAILY_QUOTA_ERROR: (region = 0) =>
       `Robot's daily quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
   },
+  Preview: {
+    Title: "Preview",
+    Actions: {
+      Preview: "preview",
+      Code: "code",
+    },
+  },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,
   },

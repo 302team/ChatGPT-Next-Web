@@ -275,33 +275,60 @@ div.math {
   }
 }
 
-pre {
+.pre-wrap {
   position: relative;
 
-  &:hover .copy-code-button {
-    pointer-events: all;
-    transform: translateX(0px);
-    opacity: 0.5;
+  pre {
+    &:hover .copy-code-button {
+      pointer-events: all;
+      transform: translateX(0px);
+      opacity: 0.5;
+    }
+
+    .copy-code-button {
+      position: absolute;
+      right: 10px;
+      top: 1em;
+      cursor: pointer;
+      padding: 0px 5px;
+      background-color: var(--black);
+      color: var(--white);
+      border: var(--border-in-light);
+      border-radius: 10px;
+      transform: translateX(10px);
+      pointer-events: none;
+      opacity: 0;
+      transition: all ease 0.3s;
+
+      &:after {
+        content: "copy";
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
 
-  .copy-code-button {
+  &:hover .preview-code-button {
+    pointer-events: all;
+    transform: translateX(0px);
+  }
+  .preview-code-button {
     position: absolute;
     right: 10px;
-    top: 1em;
+    bottom: 1em;
     cursor: pointer;
     padding: 0px 5px;
-    background-color: var(--black);
+    background-color: #009cf7;
     color: var(--white);
-    border: var(--border-in-light);
+    border: 1px solid #009cf7f2;
     border-radius: 10px;
-    transform: translateX(10px);
+    transform: translateX(0px);
     pointer-events: none;
-    opacity: 0;
+    opacity: 0.8;
     transition: all ease 0.3s;
-
-    &:after {
-      content: "copy";
-    }
+    font-size: 12px;
 
     &:hover {
       opacity: 1;
@@ -419,4 +446,25 @@ pre {
 
 .ant-switch.ant-switch-disabled {
   opacity: 0.25 !important;
+}
+
+.code-preview-modal {
+  width: 98% !important;
+  max-width: 1200px !important;
+
+  .ant-modal-title {
+    text-align: center;
+  }
+
+  &-actions {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+  }
+
+  iframe {
+    width: 100%;
+    min-height: 60vh;
+    border: 0;
+  }
 }
