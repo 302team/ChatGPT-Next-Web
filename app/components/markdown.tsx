@@ -23,7 +23,7 @@ import { Modal, Segmented } from "antd";
 import CodeMirror from "@uiw/react-codemirror";
 import { html } from "@codemirror/lang-html";
 
-const htmlReg = /<html[^>]*?>/gim;
+const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
 
 export function CodePreviewModal(props: {
