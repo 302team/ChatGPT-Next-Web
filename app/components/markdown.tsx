@@ -56,6 +56,7 @@ export function CodePreviewModal(props: {
       open={props.open}
       onOk={props.onOk}
       onCancel={props.onCancel}
+      destroyOnClose
       footer={[]}
     >
       <div className="code-preview-modal-actions">
