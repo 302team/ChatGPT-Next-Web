@@ -56,6 +56,7 @@ export function CodePreviewModal(props: {
       className="code-preview-modal"
       open={props.open}
       footer={[]}
+      destroyOnClose
       onOk={props.onOk}
       onCancel={props.onCancel}
     >
