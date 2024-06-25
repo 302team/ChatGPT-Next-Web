@@ -13,6 +13,7 @@ import { ClaudeApi } from "./platforms/anthropic";
 
 import { getLang } from "../locales";
 import { isSpecImageModal, isVisionModel } from "../utils";
+import { Mask } from "../store/mask";
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
 
@@ -262,20 +263,18 @@ export function getHeadersNoCT() {
 
 export function buildMessages(
   messages: RequestMessage[],
-  model: string,
-  fileSupportType: number,
+  condition: boolean,
+  // fileSupportType: number,
+  // mask: Mask,
 ) {
   const sendMessages: RequestMessage[] = [];
   messages.forEach((msg) => {
+    console.warn("🚀 ~ messages.forEach ~ msg:", msg);
     if (msg.content instanceof Array) {
       // 判断消息里是否有file
       const hasFile = msg.content.some((m) => m.type == "file");
-      // 没有file，且模型是vision或claude，则直接传过去。
-      if (
-        !hasFile &&
-        fileSupportType ===
-          FILE_SUPPORT_TYPE.ONLY_IMAGE /* (isVisionModel(model) || isSpecImageModal(model)) */
-      ) {
+      // 没有file
+      if (!hasFile && condition) {
         sendMessages.push(msg);
       } else {
         let text = "";

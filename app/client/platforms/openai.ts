@@ -8,6 +8,7 @@ import {
   ServiceProvider,
   ERROR_CODE,
   ERROR_CODE_TYPE,
+  FILE_SUPPORT_TYPE,
 } from "@/app/constant";
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 
@@ -114,21 +115,25 @@ export class ChatGPTApi implements LLMApi {
       content: v.content,
     }));
 
+    const session = useChatStore.getState().currentSession();
+
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
-      ...useChatStore.getState().currentSession().mask.modelConfig,
+      ...session.mask.modelConfig,
       ...{
         model: options.config.model,
       },
     };
 
     const config = useAppConfig.getState();
+    const condition = session.mask.isStoreModel
+      ? /* 商店模型 */ session.mask.isGptsModel
+        ? false
+        : config.multimodalType4Models[modelConfig.model] ===
+          FILE_SUPPORT_TYPE.ONLY_IMAGE
+      : config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE;
 
-    const sendMessages = buildMessages(
-      messages,
-      modelConfig.model,
-      config.fileSupportType,
-    );
+    const sendMessages = buildMessages(messages, condition);
     const requestPayload = {
       messages: sendMessages,
       stream: options.config.stream,
@@ -403,20 +408,26 @@ export class ChatGPTApi implements LLMApi {
       content: v.content,
     }));
 
+    const session = useChatStore.getState().currentSession();
+
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
-      ...useChatStore.getState().currentSession().mask.modelConfig,
+      ...session.mask.modelConfig,
       ...{
         model: options.config.model,
       },
     };
     const config = useAppConfig.getState();
     const accessStore = useAccessStore.getState();
-    const sendMessages = buildMessages(
-      messages,
-      modelConfig.model,
-      config.fileSupportType,
-    );
+
+    const condition = session.mask.isStoreModel
+      ? /* 商店模型 */ session.mask.isGptsModel
+        ? false
+        : config.multimodalType4Models[modelConfig.model] ===
+          FILE_SUPPORT_TYPE.ONLY_IMAGE
+      : config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE;
+
+    const sendMessages = buildMessages(messages, condition);
     const isAzure = accessStore.provider === ServiceProvider.Azure;
     let baseUrl = isAzure ? accessStore.azureUrl : accessStore.openaiUrl;
     const requestPayload = {
