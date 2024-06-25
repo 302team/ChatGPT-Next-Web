@@ -252,6 +252,7 @@ async function getUserContent(
   userInput: string,
   fileArr: FileRes[],
   modelConfig: ModelConfig,
+  mask: Mask,
 ) {
   const content = fillTemplateWith(userInput, modelConfig);
   const model = modelConfig.model;
@@ -266,13 +267,18 @@ async function getUserContent(
     };
     sendUserContent.push(msg);
     saveUserContent.push(msg);
+
+    // 如果是应用商店的模型, 非 gpts 模型, 需要根据后端返回的type判断
+    const condition = mask.isStoreModel
+      ? /* 如果是 gpts 模型, 直接走 type: image */
+        mask.isGptsModel
+        ? false
+        : config.multimodalType4Models[model] === FILE_SUPPORT_TYPE.ONLY_IMAGE
+      : config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE;
+
     for (const file of fileArr) {
       // 如果是gpt4-vision，或者claude模型，claude模型目前是根据中转接口来定的报文格式，以后要改成官方报文格式
-      if (
-        file.type.includes("image") &&
-        // (isVisionModel(model) || isSpecImageModal(model))
-        config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE
-      ) {
+      if (file.type.includes("image") && condition) {
         if (file.url && file.url.startsWith("http")) {
           msg = {
             type: "image_url",
@@ -337,6 +343,7 @@ async function getUserContent(
 async function getResendUserContent(
   content: string | MultimodalContent[],
   modelConfig: ModelConfig,
+  mask: Mask,
 ) {
   const model = modelConfig.model;
   if (
@@ -602,8 +609,13 @@ export const useChatStore = createPersistStore(
         extAttr?.setUploadFiles([]); // 删除文件
 
         const { sendUserContent, saveUserContent } = extAttr?.resend
-          ? await getResendUserContent(content, modelConfig)
-          : await getUserContent(content as string, fileArr, modelConfig);
+          ? await getResendUserContent(content, modelConfig, session.mask)
+          : await getUserContent(
+              content as string,
+              fileArr,
+              modelConfig,
+              session.mask,
+            );
         console.log("[User Input] after pretreatment: ", sendUserContent);
         console.log("[User Input] after pretreatment: ", saveUserContent);
 
