@@ -816,7 +816,7 @@ function useUploadFile(extra: {
       let f = file;
       if (isImage(file.type)) {
         dataUrl = await compressImage(file, 1 * 1024 * 1024);
-        if (!/gif/.test(file.type)) {
+        if (!/gif/.test(file.type) && file.size > 1 * 1024 * 1024) {
           f = dataURLtoFile(dataUrl, file.name);
         }
         console.warn("🚀 ~ after compressed ~ size:", f.size, f.type);
