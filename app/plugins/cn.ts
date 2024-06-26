@@ -3,9 +3,9 @@ import { BuiltinPlugin } from "./typing";
 export const CN_PLUGINS: BuiltinPlugin[] = [
   {
     name: "图片识别",
-    toolName: "gpt-4v",
+    toolName: "image-recognition",
     lang: "cn",
-    description: "使用gpt-4-vision模型分析图片",
+    description: "使用claude3.5-sonnet模型分析图片",
     builtin: true,
     createdAt: 1693744292000,
     enable: true,

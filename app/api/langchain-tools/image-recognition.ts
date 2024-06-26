@@ -4,7 +4,7 @@ import { getBase64FromUrl } from "./utils";
 
 export class GPT4vWrapper extends StructuredTool {
   static lc_name() {
-    return "GPT_4V";
+    return "Image_Recognition";
   }
 
   apiKey: string;
@@ -16,7 +16,7 @@ export class GPT4vWrapper extends StructuredTool {
 
     if (!apiKey) {
       throw new Error(
-        "GPT-4-vision requires an API key. Please set it as OPENAI_API_KEY in your .env file.",
+        "Image-vision requires an API key. Please set it as OPENAI_API_KEY in your .env file.",
       );
     }
 
@@ -24,15 +24,15 @@ export class GPT4vWrapper extends StructuredTool {
     this.baseURL = baseURL;
     this.apiKey = apiKey;
 
-    this.model = "gpt-4-vision-preview";
+    this.model = "claude-3-5-sonnet-20240620";
   }
 
-  name = "gpt-4v";
+  name = "image-recognition";
 
   schema = z.object({
     content: z.array(
       z.object({
-        type: z.enum(["text", "image_url", "file"]),
+        type: z.enum(["text", "image_url", "file"]).optional(),
         text: z.string().optional().describe("text content"),
         image_url: z
           .object({
@@ -45,6 +45,14 @@ export class GPT4vWrapper extends StructuredTool {
 
   /** @ignore */
   async _call(input: z.infer<typeof this.schema>) {
+    for (const item of input.content) {
+      if (item.image_url) {
+        if (item.type === undefined) {
+          item.type = "image_url";
+        }
+      }
+    }
+
     input.content.unshift({
       type: "text",
       text: "Please analyze the information in the picture in as much detail as possible",
@@ -54,7 +62,7 @@ export class GPT4vWrapper extends StructuredTool {
       role: "user",
       content: input.content,
     };
-    console.log("🚀 ~ GPT-4V ~ _call ~ input:", JSON.stringify(message));
+    console.log("🚀 ~ [image-recognition] ~ message:", JSON.stringify(message));
     const apiUrl = `${this.baseURL}/chat/completions`;
 
     let requestOptions = {
@@ -72,7 +80,7 @@ export class GPT4vWrapper extends StructuredTool {
     const resp = await fetch(apiUrl, requestOptions);
 
     const json = await resp.json();
-    console.log("🚀 ~ GPT4vWrapper ~ _call ~ json:", json);
+    console.log("🚀 ~ [image-recognition] ~ output:", json);
 
     if (json.error) {
       throw new Error(
@@ -83,6 +91,5 @@ export class GPT4vWrapper extends StructuredTool {
     return JSON.stringify(json);
   }
 
-  description =
-    "GPT-4 model with the ability to understand images, in addition to all other GPT-4 Turbo capabilities.";
+  description = "Image-vision has the ability to understand images";
 }

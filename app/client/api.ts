@@ -269,7 +269,6 @@ export function buildMessages(
 ) {
   const sendMessages: RequestMessage[] = [];
   messages.forEach((msg) => {
-    console.warn("🚀 ~ messages.forEach ~ msg:", msg);
     if (msg.content instanceof Array) {
       // 判断消息里是否有file
       const hasFile = msg.content.some((m) => m.type == "file");

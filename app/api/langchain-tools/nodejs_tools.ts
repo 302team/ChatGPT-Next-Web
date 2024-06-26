@@ -8,7 +8,7 @@ import { Calculator } from "langchain/tools/calculator";
 import { WebBrowser } from "langchain/tools/webbrowser";
 import { WolframAlphaTool } from "@/app/api/langchain-tools/wolframalpha";
 // import { Glm4vWrapper } from "@/app/api/langchain-tools/glm_4v";
-import { GPT4vWrapper } from "./gpt_4_vision";
+import { GPT4vWrapper } from "./image-recognition";
 
 export class NodeJSTool {
   private apiKey: string | undefined;

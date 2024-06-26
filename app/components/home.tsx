@@ -318,6 +318,9 @@ function ChatWindow() {
           // 清掉
           pluginStore.clearAll();
           allPlugins.forEach((item) => {
+            if (item.toolName === "gpt-4v") {
+              item.toolName = "image-recognition";
+            }
             // 重新添加
             pluginStore.create(item);
           });

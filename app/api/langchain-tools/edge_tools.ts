@@ -7,7 +7,7 @@ import { WebBrowser } from "langchain/tools/webbrowser";
 import { Embeddings } from "langchain/dist/embeddings/base.js";
 import { WolframAlphaTool } from "@/app/api/langchain-tools/wolframalpha";
 // import { Glm4vWrapper } from "@/app/api/langchain-tools/glm_4v";
-import { GPT4vWrapper } from "./gpt_4_vision";
+import { GPT4vWrapper } from "./image-recognition";
 
 export class EdgeTool {
   private apiKey: string | undefined;

@@ -2,10 +2,10 @@ import { BuiltinPlugin } from "./typing";
 
 export const EN_PLUGINS: BuiltinPlugin[] = [
   {
-    name: "GPT-4V",
-    toolName: "gpt-4v",
+    name: "Image-vision",
+    toolName: "image-recognition",
     lang: "en",
-    description: "Analyzing images using the GPT-4 Vision Preview model",
+    description: "Analyzing images using the claude3.5-sonnet model",
     builtin: true,
     createdAt: 1693744292000,
     enable: true,

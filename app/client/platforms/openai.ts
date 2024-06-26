@@ -714,7 +714,8 @@ export class ChatGPTApi implements LLMApi {
                 if (toolName === "wikipedia-api") {
                   toolName = "Wikipedia";
                 }
-                if (toolName === "gpt-4v") {
+                if (toolName === "image-recognition") {
+                  toolName = "claude-3.5";
                   inputMessage = "Image recognition";
                 }
                 options.onToolUpdate?.(toolName, inputMessage);
