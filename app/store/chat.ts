@@ -1125,12 +1125,12 @@ export const useChatStore = createPersistStore(
 
         // system prompts, to get close to OpenAI Web ChatGPT
         const shouldInjectSystemPrompts =
-          modelConfig.enableInjectSystemPrompts; /* &&
-          session.mask.modelConfig.model.startsWith("gpt-"); */
+          modelConfig.enableInjectSystemPrompts &&
+          !modelConfig.model.includes("yi-vision");
 
         const shouldInjectCustomSystemPrompts =
-          modelConfig.enableInjectCustomSystemPrompts; /* &&
-          session.mask.modelConfig.model.startsWith("gpt-"); */
+          modelConfig.enableInjectCustomSystemPrompts &&
+          !modelConfig.model.includes("yi-vision");
 
         var systemPrompts: ChatMessage[] = [];
         systemPrompts = shouldInjectSystemPrompts
