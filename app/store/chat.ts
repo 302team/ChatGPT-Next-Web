@@ -59,6 +59,7 @@ export type ChatMessage = RequestMessage & {
   retryCount?: number;
   isTimeoutAborted?: boolean;
   needTranslate?: boolean;
+  isIgnore4History?: boolean; // 发送消息时, 是否可以作为历史数据
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -976,6 +977,7 @@ export const useChatStore = createPersistStore(
           role: "assistant",
           streaming: true,
           model: "gpt-3.5-turbo-0125",
+          isIgnore4History: true,
           toolMessages: [],
         });
 
@@ -1115,7 +1117,9 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
         const clearContextIndex = session.clearContextIndex ?? 0;
-        const messages = session.messages.slice();
+        const messages = session.messages
+          .slice()
+          .filter((m) => !m.isIgnore4History);
         const totalMessageCount = session.messages.length;
 
         const sysPromptStore = useSysPromptStore.getState();
