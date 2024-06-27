@@ -134,13 +134,22 @@ export class ChatGPTApi implements LLMApi {
       messages: sendMessages,
       stream: options.config.stream,
       model: modelConfig.model,
-      temperature: modelConfig.temperature,
       presence_penalty: modelConfig.presence_penalty,
       frequency_penalty: modelConfig.frequency_penalty,
       top_p: modelConfig.top_p,
       // max_tokens: Math.max(modelConfig.max_tokens, 1024),
       // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
     };
+
+    // qwen-vl 模型不支持带 temperature
+    if (!modelConfig.model.includes("qwen-vl")) {
+      Object.defineProperty(requestPayload, "temperature", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: modelConfig.temperature,
+      });
+    }
 
     // add max_tokens to vision model
     if (
@@ -351,13 +360,18 @@ export class ChatGPTApi implements LLMApi {
             try {
               const json = JSON.parse(text);
               const choices = json.choices as Array<{
-                delta: { content: string };
+                delta: { content: string | Array<{ text: string }> };
               }>;
               const delta = choices[0]?.delta?.content;
               const textmoderation = json?.prompt_filter_results;
 
               if (delta) {
-                remainText += delta;
+                if (typeof delta === "string") {
+                  remainText += delta;
+                } else {
+                  const msgs = delta.map((m) => m.text).join("\n");
+                  remainText += msgs;
+                }
               }
 
               if (

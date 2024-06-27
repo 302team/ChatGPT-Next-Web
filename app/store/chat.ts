@@ -261,6 +261,7 @@ async function getUserContent(
   const content = fillTemplateWith(userInput, modelConfig);
   const model = modelConfig.model;
 
+  let sendContent: string | MultimodalContent = content;
   if (fileArr.length > 0) {
     const sendUserContent = []; // 发送出去的用户内容
     const saveUserContent = []; // 保存的用户内容
@@ -330,9 +331,18 @@ async function getUserContent(
       sendUserContent,
       saveUserContent,
     };
+  } else {
+    // 千问的格式不能是 content: ""
+    // 它需要 { type: "text", text: "" }
+    if (modelConfig.model.includes("qwen-vl")) {
+      sendContent = {
+        type: "text",
+        text: content,
+      };
+    }
   }
   return {
-    sendUserContent: content,
+    sendUserContent: sendContent,
     saveUserContent: content,
   };
 }
