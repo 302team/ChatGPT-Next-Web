@@ -35,7 +35,7 @@ const en: LocaleType = {
     Login: "Login",
     Register: "Sign up",
     Unauthorized: (region = 0) =>
-      `This robot is for demonstration purposes. Please visit <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> to create your own robot`,
+      `This tool is for demonstration purposes. Please visit <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> to create your own tool`,
     Title: "Please enter the share code",
     Tips: "The creator has enabled verification, please enter the share code below",
     SubTips: "Or enter your OpenAI or Google API Key",
@@ -46,18 +46,20 @@ const en: LocaleType = {
     Later: "Later",
     CAPTCHA_ERROR: "Share code incorrect",
     CHATBOT_DISABLED_ERROR: (region = 0) =>
-      `Robot is disabled, Please refer to <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
+      `This tool is disabled, Please refer to <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
     CHATBOT_DELETE_ERROR: (region = 0) =>
-      `Robot is deleted, Please refer to  <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
+      `This tool is deleted, Please refer to  <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
     SERVER_ERROR: "Internal error, please contact customer service",
     BALANCE_LIMIT_ERROR: "The account balance is insufficient, please top up",
     TOKEN_EXPIRED_ERROR: "Token expired, please log in again",
     CHATBOT_DISABLED_ERROR2: (region = 0) =>
-      `Robot is disabled, Please refer to [${getLink(region).homeText}](${getLink(region).homeLink}) for details`,
+      `This tool is disabled, Please refer to [${getLink(region).homeText}](${getLink(region).homeLink}) for details`,
     TOTAL_QUOTA_ERROR: (region = 0) =>
-      `Robot's total quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
+      `This tool's total quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own tool`,
     DAILY_QUOTA_ERROR: (region = 0) =>
-      `Robot's daily quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
+      `This tool's daily quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own tool`,
+    HOUR_QUOTA_ERROR: (region = 0) =>
+      `This tool's hour quota reached maximum limit. For more information, please view[${getLink(region).homeText}](${getLink(region).homeLink})`,
   },
   Preview: {
     Title: "Preview",

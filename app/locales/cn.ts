@@ -24,7 +24,7 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized: (region = 0) =>
-      `请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
+      `请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的工具`,
     ApiTimeout: "请求失败，请重试",
     NetworkError: "网络错误",
     PageOpenError: "页面加载失败",
@@ -37,7 +37,7 @@ const cn = {
     Login: "登录",
     Register: "注册",
     Unauthorized: (region = 0) =>
-      `此机器人为Demo展示。请访问<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>创建属于你自己的机器人`,
+      `此工具为Demo展示。请访问<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>创建属于你自己的工具`,
     Title: "需要分享码",
     Tips: "创建者开启了验证, 请在下方填入分享码",
     SubTips: "或者输入你的 OpenAI 或 Google API 密钥",
@@ -48,18 +48,20 @@ const cn = {
     Later: "稍后再说",
     CAPTCHA_ERROR: "分享码错误",
     CHATBOT_DISABLED_ERROR: (region = 0) =>
-      `机器人已禁用，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
+      `工具已禁用，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
     CHATBOT_DELETE_ERROR: (region = 0) =>
-      `机器人已删除，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
+      `工具已删除，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
     SERVER_ERROR: "内部错误, 请联系客服",
     BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
     CHATBOT_DISABLED_ERROR2: (region = 0) =>
-      `机器人已禁用，更多信息请访问[${getLink(region).homeText}](${getLink(region).homeLink})`,
+      `该工具已禁用，更多信息请访问[${getLink(region).homeText}](${getLink(region).homeLink})`,
     TOTAL_QUOTA_ERROR: (region = 0) =>
-      `机器人的总额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
+      `该工具的总额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的工具`,
     DAILY_QUOTA_ERROR: (region = 0) =>
-      `机器人的单日额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
+      `该工具的单日额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的工具`,
+    HOUR_QUOTA_ERROR: (region = 0) =>
+      `该工具在本小时的额度已达上限，更多请访问[${getLink(region).homeText}](${getLink(region).homeLink})`,
   },
   Preview: {
     Title: "实时预览",
