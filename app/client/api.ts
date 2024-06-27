@@ -263,6 +263,7 @@ export function getHeadersNoCT() {
 
 export function buildMessages(
   messages: RequestMessage[],
+  model: string,
   condition: boolean,
   // fileSupportType: number,
   // mask: Mask,
@@ -302,12 +303,31 @@ export function buildMessages(
         });
       }
     } else if (typeof msg.content == "string") {
-      sendMessages.push(msg);
+      if (model.includes("qwen-vl")) {
+        sendMessages.push({
+          ...msg,
+          content: [
+            {
+              type: "text",
+              text: msg.content,
+            },
+          ],
+        });
+      } else {
+        sendMessages.push(msg);
+      }
     } else {
-      sendMessages.push({
-        ...msg,
-        content: JSON.stringify(msg.content),
-      });
+      if (model.includes("qwen-vl")) {
+        sendMessages.push({
+          ...msg,
+          content: [msg.content],
+        });
+      } else {
+        sendMessages.push({
+          ...msg,
+          content: JSON.stringify(msg.content),
+        });
+      }
     }
   });
   return sendMessages;
