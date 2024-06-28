@@ -1150,12 +1150,14 @@ export const useChatStore = createPersistStore(
         const shouldInjectSystemPrompts =
           modelConfig.enableInjectSystemPrompts &&
           !modelConfig.model.includes("yi-vision") &&
-          !modelConfig.model.includes("qwen-vl");
+          !modelConfig.model.includes("qwen-vl") &&
+          !modelConfig.model.includes("ERNIE");
 
         const shouldInjectCustomSystemPrompts =
           modelConfig.enableInjectCustomSystemPrompts &&
           !modelConfig.model.includes("yi-vision") &&
-          !modelConfig.model.includes("qwen-vl");
+          !modelConfig.model.includes("qwen-vl") &&
+          !modelConfig.model.includes("ERNIE");
 
         var systemPrompts: ChatMessage[] = [];
         systemPrompts = shouldInjectSystemPrompts
