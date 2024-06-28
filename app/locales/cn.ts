@@ -161,6 +161,7 @@ const cn = {
       },
     },
     EnableModel: "请开启想要竞技的模型",
+    MultiChats: "多轮对话",
   },
   Export: {
     Title: "分享聊天记录",

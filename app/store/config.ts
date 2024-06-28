@@ -76,6 +76,8 @@ export const DEFAULT_CONFIG = {
   supportPluginModelList: [] as Array<string>, // 支持插件的模型列表
 
   region: Region.Overseas,
+
+  enableMultiChat: false, // 开启多轮对话
 };
 
 export const DEFAULT_SETTING = {

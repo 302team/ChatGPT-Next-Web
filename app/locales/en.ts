@@ -159,6 +159,7 @@ const en: LocaleType = {
       },
     },
     EnableModel: "Please activate the desired competitive model.",
+    MultiChats: "Multi-round Chat",
   },
   Export: {
     Title: "Export Messages",

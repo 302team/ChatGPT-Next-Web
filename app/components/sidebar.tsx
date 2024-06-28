@@ -37,6 +37,7 @@ import { Modal } from "./ui-lib";
 import { Loading } from "./home";
 import { SidebarModelList } from "./sidebar-model-list";
 import { IconButton } from "./button";
+import { Switch, Typography } from "antd";
 
 const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
   loading: () => <Loading noLogo />,
@@ -264,6 +265,7 @@ export function SideBar(props: { className?: string }) {
   const { onDragStart, shouldNarrow } = useDragSideBar();
   const [showAppDescModal, setShowAppDescModal] = useState(false);
   const config = useAppConfig();
+  const chatStore = useChatStore();
   const navigate = useNavigate();
   const isMobileScreen = useMobileScreen();
   const isIOSMobile = useMemo(
@@ -339,6 +341,7 @@ export function SideBar(props: { className?: string }) {
                     enable: false,
                   }));
                 });
+                chatStore.resetSession();
               }}
               shadow
             />
@@ -351,6 +354,18 @@ export function SideBar(props: { className?: string }) {
               shadow
             />
           </div>
+        </div>
+        <div className={styles["sidebar-tail-button"]}>
+          <Typography.Text type="secondary">
+            {Locale.Chat.MultiChats}
+          </Typography.Text>
+          <Switch
+            value={config.enableMultiChat}
+            style={{ marginLeft: "3px" }}
+            onChange={(v) => {
+              config.update((config) => (config.enableMultiChat = v));
+            }}
+          />
         </div>
         {isMobileScreen && (
           <div>

@@ -301,7 +301,14 @@ export function Home() {
   return (
     <>
       <ErrorBoundary>
-        <ConfigProvider locale={lang === "cn" ? zhCN : enUS}>
+        <ConfigProvider
+          locale={lang === "cn" ? zhCN : enUS}
+          theme={{
+            token: {
+              colorPrimary: "#8e47f0",
+            },
+          }}
+        >
           <Router>
             <Screen />
           </Router>

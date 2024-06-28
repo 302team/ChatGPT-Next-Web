@@ -308,7 +308,19 @@ export function buildMessages(
         });
       }
     } else if (typeof msg.content == "string") {
-      sendMessages.push(msg);
+      if (model.includes("qwen-vl")) {
+        sendMessages.push({
+          ...msg,
+          content: [
+            {
+              type: "text",
+              text: msg.content,
+            },
+          ],
+        });
+      } else {
+        sendMessages.push(msg);
+      }
     } else {
       if (model.includes("qwen-vl")) {
         sendMessages.push({
