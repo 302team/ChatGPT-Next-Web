@@ -319,14 +319,23 @@ async function getUserContent(
           });
         }
       } else {
-        msg = {
-          type: "file",
-          file: {
-            name: file.name,
-            type: file.type,
-            url: file.url,
-          },
-        };
+        if (modelConfig.model.includes("qwen-vl")) {
+          msg = {
+            type: "image_url",
+            image_url: {
+              url: file.url,
+            },
+          };
+        } else {
+          msg = {
+            type: "file",
+            file: {
+              name: file.name,
+              type: file.type,
+              url: file.url,
+            },
+          };
+        }
         sendUserContent.push(msg);
         saveUserContent.push(msg);
       }
