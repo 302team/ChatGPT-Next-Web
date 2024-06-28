@@ -60,6 +60,7 @@ export type ChatMessage = RequestMessage & {
   id: string;
   model?: ModelType;
   retryCount?: number;
+  isIgnore4History?: boolean;
   isTimeoutAborted?: boolean;
 };
 
@@ -315,14 +316,23 @@ async function getUserContent(
           });
         }
       } else {
-        msg = {
-          type: "file",
-          file: {
-            name: file.name,
-            type: file.type,
-            url: file.url,
-          },
-        };
+        if (modelConfig.model.includes("qwen-vl")) {
+          msg = {
+            type: "image_url",
+            image_url: {
+              url: file.url,
+            },
+          };
+        } else {
+          msg = {
+            type: "file",
+            file: {
+              name: file.name,
+              type: file.type,
+              url: file.url,
+            },
+          };
+        }
         sendUserContent.push(msg);
         saveUserContent.push(msg);
       }
@@ -933,6 +943,7 @@ export const useChatStore = createPersistStore(
         extAttr: ExtAttr,
       ) {
         const session = get().currentSession();
+        const appConfig = useAppConfig.getState();
         const modelConfig = session.mask.modelConfig;
 
         // 所有的模型配置
@@ -959,20 +970,19 @@ export const useChatStore = createPersistStore(
 
         const allContents = await Promise.all(createAllUserContents);
 
+        // 获取需要保存的用户内容，没有url的文件则只保存文件名
+        let userMessage = createMessage({
+          role: "user",
+          content: "",
+          model: "" as ModelType,
+        });
         // 首次发消息, 保存记录
         if (!extAttr.isResend) {
-          // 获取需要保存的用户内容，没有url的文件则只保存文件名
           const { saveUserContent } = await getUserContent(
             content as string,
             fileArr,
             modelConfig,
           );
-          const userMessage = createMessage({
-            role: "user",
-            content: saveUserContent as string | MultimodalContent[],
-            model: modelConfig.model as ModelType,
-          });
-
           get().updateCurrentSession((session) => {
             const savedUserMessage = {
               ...userMessage,
@@ -995,11 +1005,11 @@ export const useChatStore = createPersistStore(
             const modelConfig = modelConfigs[i];
 
             return new Promise((resolve, reject) => {
-              const userMessage = createMessage({
-                role: "user",
-                content: sendUserContent as string | MultimodalContent[],
-                model: modelConfig.model as ModelType,
-              });
+              // const userMessage = createMessage({
+              //   role: "user",
+              //   content: sendUserContent as string | MultimodalContent[],
+              //   model: modelConfig.model as ModelType,
+              // });
 
               const botMessage = createMessage({
                 role: "assistant",
@@ -1008,8 +1018,24 @@ export const useChatStore = createPersistStore(
                 toolMessages: [],
               });
 
-              const sendMessages = [userMessage];
-              console.log("🚀 ~ sendMessages:", sendMessages);
+              userMessage = {
+                ...userMessage,
+                content: sendUserContent as string | MultimodalContent[],
+                model: modelConfig.model as ModelType,
+              };
+
+              let sendMessages = [];
+              if (appConfig.enableMultiChat) {
+                // get recent messages
+                // 根据模型, 获取其对应的聊天记录.
+                // 过滤掉相同id的message
+                const recentMessages = get().getMessagesWithMemory(modelConfig);
+                sendMessages = recentMessages
+                  .filter((m) => m.id !== userMessage.id)
+                  .concat(userMessage);
+              } else {
+                sendMessages = [userMessage];
+              }
               const messageIndex = get().currentSession().messages.length + 1;
 
               // save user's and bot's message
@@ -1194,12 +1220,28 @@ export const useChatStore = createPersistStore(
         } as ChatMessage;
       },
 
-      getMessagesWithMemory() {
+      getMessagesWithMemory(_modelConfig?: ModelConfig) {
         const session = get().currentSession();
-        const modelConfig = session.mask.modelConfig;
+        const modelConfig = _modelConfig || session.mask.modelConfig;
         const clearContextIndex = session.clearContextIndex ?? 0;
-        const messages = session.messages.slice();
-        const totalMessageCount = session.messages.length;
+
+        const messages = session.messages
+          .slice()
+          .map((_m) => {
+            const m = { ..._m };
+            // 将用户的model 修改为当前model
+            if (m.role === "user") {
+              m.model = modelConfig.model as ModelType;
+            }
+            return m;
+          })
+          .filter((m) => {
+            return modelConfig.model ? m.model === modelConfig.model : true;
+          });
+        const totalMessageCount = messages.length;
+
+        console.log("session.messages", session.messages);
+        console.log("messages", messages);
 
         // in-context prompts
         const contextPrompts = session.mask.context.slice();

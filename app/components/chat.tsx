@@ -1164,7 +1164,9 @@ function _Chat() {
     const resend = onResend as (messages: ChatMessage | ChatMessage[]) => void;
 
     // 每次发送之前都清除所有聊天记录
-    chatStore.resetSession();
+    if (!config.enableMultiChat) {
+      chatStore.resetSession();
+    }
 
     chatStore
       .onCompetition(userInput, {
