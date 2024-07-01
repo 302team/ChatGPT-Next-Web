@@ -33,6 +33,7 @@ import {
   GEMINI_SUMMARIZE_MODEL,
   FILE_SUPPORT_TYPE,
   DEFAULT_SYSTEM_TEMPLATE,
+  LAST_INPUT_ID_KEY,
 } from "../constant";
 import {
   ClientApi,
@@ -979,6 +980,7 @@ export const useChatStore = createPersistStore(
         });
         // 首次发消息, 保存记录
         if (!extAttr.isResend) {
+          localStorage.setItem(LAST_INPUT_ID_KEY, userMessage.id);
           const { saveUserContent } = await getUserContent(
             content as string,
             fileArr,
@@ -1004,6 +1006,7 @@ export const useChatStore = createPersistStore(
           const task = () => {
             const { sendUserContent, saveUserContent } = allContents[i];
             const modelConfig = modelConfigs[i];
+            const model = modelConfig.model;
 
             return new Promise((resolve, reject) => {
               // const userMessage = createMessage({
@@ -1031,11 +1034,24 @@ export const useChatStore = createPersistStore(
                 // 根据模型, 获取其对应的聊天记录.
                 // 过滤掉相同id的message
                 const recentMessages = get().getMessagesWithMemory(modelConfig);
-                let filteredMessage = recentMessages
-                  .filter((m) => m.id !== userMessage.id)
-                  .concat(userMessage);
+                let filteredMessage = recentMessages.filter(
+                  (m) => m.id !== userMessage.id,
+                );
 
-                if (modelConfig.model.includes("claude-3-5-sonnet")) {
+                console.log("-----isResend-----", extAttr.isResend);
+
+                // 如果是重试的, 需要过滤掉上
+                if (extAttr.isResend) {
+                  const lastid = localStorage.getItem(LAST_INPUT_ID_KEY);
+                  const idx = filteredMessage.findIndex((m) => m.id === lastid);
+                  if (idx > -1) {
+                    filteredMessage.splice(idx, 1);
+                  }
+                }
+
+                filteredMessage = filteredMessage.concat(userMessage);
+
+                if (model.includes("claude-3-5-sonnet")) {
                   // claude-3-5-sonnet-20240620 模型首个message, 排除system 之后只能是user,
                   const isSystemMsg = filteredMessage[0].role === "system";
                   if (isSystemMsg) {
@@ -1049,12 +1065,18 @@ export const useChatStore = createPersistStore(
                       filteredMessage.splice(0, 1);
                     }
                   }
+                } else if (model.toLocaleUpperCase().includes("ERNIE")) {
+                  // ERNIE 不能有 system, 而且messages数组的长度只能是奇数
+                  if (filteredMessage[0].role === "assistant") {
+                    filteredMessage.splice(0, 1);
+                  }
                 }
                 sendMessages = filteredMessage;
               } else {
                 sendMessages = [userMessage];
               }
               const messageIndex = get().currentSession().messages.length + 1;
+              console.log("🚀 ~ sendMessages:", sendMessages);
 
               // save user's and bot's message
               get().updateCurrentSession((session) => {
@@ -1063,9 +1085,9 @@ export const useChatStore = createPersistStore(
 
               var api: ClientApi = new ClientApi(ModelProvider.GPT);
 
-              if (modelConfig.model.startsWith("gemini")) {
+              if (model.startsWith("gemini")) {
                 // api = new ClientApi(ModelProvider.GeminiPro);
-              } else if (modelConfig.model.startsWith("claude")) {
+              } else if (model.startsWith("claude")) {
                 // api = new ClientApi(ModelProvider.Claude);
               }
 
