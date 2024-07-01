@@ -120,7 +120,7 @@ export const Google = {
 };
 
 export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lang
-export const DEFAULT_SYSTEM_TEMPLATE =
+export const DEFAULT_GPT_SYSTEM_TEMPLATE =
   "You are ChatGPT, a large language model trained by {{ServiceProvider}}. " +
   "If the intention is not to translate, please reply in {{language}}. " +
   "Knowledge cutoff: {{cutoff}}. " +
@@ -128,6 +128,8 @@ export const DEFAULT_SYSTEM_TEMPLATE =
   "Current time: {{time}}. " +
   "Latex inline: (\\x^2\\) " +
   "Latex block: $$e=mc^2$$";
+export const DEFAULT_SYSTEM_TEMPLATE =
+  "Current model: {{model}}. Current time: (time). Latex inline: (\\x^2\\) Latex block: $$e=mc^2$$";
 
 export const SUMMARIZE_MODEL = "gpt-3.5-turbo-0125";
 export const GEMINI_SUMMARIZE_MODEL = "gemini-pro";

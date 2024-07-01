@@ -25,13 +25,14 @@ import { createEmptyMask, Mask } from "./mask";
 import {
   DEFAULT_INPUT_TEMPLATE,
   DEFAULT_MODELS,
-  DEFAULT_SYSTEM_TEMPLATE,
+  DEFAULT_GPT_SYSTEM_TEMPLATE,
   KnowledgeCutOffDate,
   ModelProvider,
   StoreKey,
   SUMMARIZE_MODEL,
   GEMINI_SUMMARIZE_MODEL,
   FILE_SUPPORT_TYPE,
+  DEFAULT_SYSTEM_TEMPLATE,
 } from "../constant";
 import {
   ClientApi,
@@ -1030,9 +1031,26 @@ export const useChatStore = createPersistStore(
                 // 根据模型, 获取其对应的聊天记录.
                 // 过滤掉相同id的message
                 const recentMessages = get().getMessagesWithMemory(modelConfig);
-                sendMessages = recentMessages
+                let filteredMessage = recentMessages
                   .filter((m) => m.id !== userMessage.id)
                   .concat(userMessage);
+
+                if (modelConfig.model.includes("claude-3-5-sonnet")) {
+                  // claude-3-5-sonnet-20240620 模型首个message, 排除system 之后只能是user,
+                  const isSystemMsg = filteredMessage[0].role === "system";
+                  if (isSystemMsg) {
+                    const isUserMsg = filteredMessage[1].role === "user";
+                    if (!isUserMsg) {
+                      filteredMessage.splice(1, 1);
+                    }
+                  } else {
+                    const isUserMsg = filteredMessage[0].role === "user";
+                    if (!isUserMsg) {
+                      filteredMessage.splice(0, 1);
+                    }
+                  }
+                }
+                sendMessages = filteredMessage;
               } else {
                 sendMessages = [userMessage];
               }
@@ -1224,6 +1242,7 @@ export const useChatStore = createPersistStore(
         const session = get().currentSession();
         const modelConfig = _modelConfig || session.mask.modelConfig;
         const clearContextIndex = session.clearContextIndex ?? 0;
+        const model = modelConfig?.model;
 
         const messages = session.messages
           .slice()
@@ -1240,20 +1259,22 @@ export const useChatStore = createPersistStore(
           });
         const totalMessageCount = messages.length;
 
-        console.log("session.messages", session.messages);
-        console.log("messages", messages);
-
         // in-context prompts
         const contextPrompts = session.mask.context.slice();
 
         // system prompts, to get close to OpenAI Web ChatGPT
         const shouldInjectSystemPrompts =
           modelConfig.enableInjectSystemPrompts &&
-          session.mask.modelConfig.model.startsWith("gpt-");
+          (model.startsWith("gpt-") || model.includes("claude"));
 
         const shouldInjectCustomSystemPrompts =
           modelConfig.enableInjectCustomSystemPrompts &&
-          session.mask.modelConfig.model.startsWith("gpt-");
+          (model.startsWith("gpt-") || model.includes("claude"));
+
+        let template = DEFAULT_GPT_SYSTEM_TEMPLATE;
+        if (model.includes("claude")) {
+          template = DEFAULT_SYSTEM_TEMPLATE;
+        }
 
         var systemPrompts: ChatMessage[] = [];
         systemPrompts = shouldInjectSystemPrompts
@@ -1262,7 +1283,7 @@ export const useChatStore = createPersistStore(
                 role: "system",
                 content: fillTemplateWith("", {
                   ...modelConfig,
-                  template: DEFAULT_SYSTEM_TEMPLATE,
+                  template: template,
                 }),
               }),
             ]
