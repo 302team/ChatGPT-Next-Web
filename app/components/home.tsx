@@ -263,6 +263,11 @@ function ChatWindow() {
               if (settings.chatbotName && settings.chatbotName !== "GPT302") {
                 document.title = settings.chatbotName;
               }
+            } else {
+              // Baichuan开头的模型 frequency_penalty自动改为1
+              if (opt.model.toLocaleLowerCase().includes("baichuan")) {
+                config.update((c) => (c.modelConfig.frequency_penalty = 1));
+              }
             }
           });
 
