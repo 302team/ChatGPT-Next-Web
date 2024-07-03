@@ -8,6 +8,7 @@ import {
   ServiceProvider,
   ERROR_CODE,
   ERROR_CODE_TYPE,
+  DISABLED_SYSTEM_PROMPT_MODELS,
 } from "@/app/constant";
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 
@@ -124,6 +125,7 @@ export class ChatGPTApi implements LLMApi {
     };
 
     const config = useAppConfig.getState();
+    const localeLowerCaseModel = modelConfig.model.toLocaleLowerCase();
 
     const sendMessages = buildMessages(
       messages,
@@ -343,7 +345,9 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onmessage(msg) {
-            isStreamDone = msg.data === "[DONE]";
+            isStreamDone = localeLowerCaseModel.includes("xuanyuan")
+              ? true
+              : msg.data === "[DONE]";
 
             if (msg.data === "[DONE]" || finished) {
               console.warn(

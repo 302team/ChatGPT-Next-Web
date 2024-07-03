@@ -1974,6 +1974,7 @@ function _Chat() {
                     </div>
 
                     {!isUser &&
+                      !message.model?.includes("XuanYuan") &&
                       (message.isError || message.isTimeoutAborted) && (
                         <div className={styles["chat-message-retry"]}>
                           <div className={styles["chat-input-actions"]}>

@@ -34,6 +34,7 @@ import {
   FILE_SUPPORT_TYPE,
   DEFAULT_SYSTEM_TEMPLATE,
   LAST_INPUT_ID_KEY,
+  DISABLED_SYSTEM_PROMPT_MODELS,
 } from "../constant";
 import {
   ClientApi,
@@ -421,13 +422,6 @@ const DEFAULT_CHAT_STATE = {
   sessions: [createEmptySession()],
   currentSessionIndex: 0,
 };
-
-const DISABLED_SYSTEM_PROMPT_MODELS = [
-  "ernie",
-  "yi-vision",
-  "baichuan",
-  "chatlaw",
-];
 
 export const useChatStore = createPersistStore(
   DEFAULT_CHAT_STATE,
@@ -1347,9 +1341,12 @@ export const useChatStore = createPersistStore(
           session.memoryPrompt &&
           session.memoryPrompt.length > 0 &&
           session.lastSummarizeIndex > clearContextIndex;
-        const longTermMemoryPrompts = shouldSendLongTermMemory
-          ? [get().getMemoryPrompt()]
-          : [];
+        const longTermMemoryPrompts =
+          shouldSendLongTermMemory &&
+          DISABLED_SYSTEM_PROMPT_MODELS.findIndex((i) => model.includes(i)) ===
+            -1
+            ? [get().getMemoryPrompt()]
+            : [];
         const longTermMemoryStartIndex = session.lastSummarizeIndex;
 
         // short term memory

@@ -492,3 +492,10 @@ export const DASH_URL = {
   LOGIN_CN: "https://dash.302ai.cn/login",
   REGISTER_CN: "https://dash.302ai.cn/register",
 };
+
+export const DISABLED_SYSTEM_PROMPT_MODELS = [
+  "ernie",
+  "yi-vision",
+  "baichuan",
+  "chatlaw",
+];
