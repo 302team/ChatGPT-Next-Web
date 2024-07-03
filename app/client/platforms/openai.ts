@@ -126,6 +126,7 @@ export class ChatGPTApi implements LLMApi {
     };
 
     const config = useAppConfig.getState();
+    const localeLowerCaseModel = modelConfig.model.toLocaleLowerCase();
     const condition = session.mask.isStoreModel
       ? /* 商店模型 */ session.mask.isGptsModel
         ? false
@@ -242,10 +243,6 @@ export class ChatGPTApi implements LLMApi {
         const finish = () => {
           if (!finished) {
             finished = true;
-            // console.log(
-            //   "🚀 ~ [OpenAI chat] ~ finish ~ !isStreamDone || hasUncatchError || isAborted:",
-            //   !isStreamDone || hasUncatchError || isAborted,
-            // );
             options.onFinish(
               responseText + remainText,
               !isStreamDone || hasUncatchError || isAborted,
@@ -348,17 +345,11 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onmessage(msg) {
-            isStreamDone = msg.data === "[DONE]";
+            isStreamDone = localeLowerCaseModel.includes("xuanyuan")
+              ? true
+              : msg.data === "[DONE]";
 
-            if (msg.data === "[DONE]" || finished) {
-              // console.warn(
-              //   "🚀🚀 ~ ChatGPTApi ~ onmessage ~ finished:",
-              //   finished,
-              // );
-              // console.warn(
-              //   "🚀🚀 ~ ChatGPTApi ~ onmessage ~ isStreamDone:",
-              //   isStreamDone,
-              // );
+            if (msg.data === "[DONE]") {
               return finish();
             }
             const text = msg.data;
