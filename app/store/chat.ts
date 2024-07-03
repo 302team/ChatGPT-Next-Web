@@ -422,6 +422,13 @@ const DEFAULT_CHAT_STATE = {
   currentSessionIndex: 0,
 };
 
+const DISABLED_SYSTEM_PROMPT_MODELS = [
+  "ernie",
+  "yi-vision",
+  "baichuan",
+  "chatlaw",
+];
+
 export const useChatStore = createPersistStore(
   DEFAULT_CHAT_STATE,
   (set, _get) => {
@@ -1030,6 +1037,8 @@ export const useChatStore = createPersistStore(
 
               let sendMessages = [];
               if (appConfig.enableMultiChat) {
+                const lowerCaseModel = model.toLocaleLowerCase();
+
                 // get recent messages
                 // 根据模型, 获取其对应的聊天记录.
                 // 过滤掉相同id的message
@@ -1051,7 +1060,7 @@ export const useChatStore = createPersistStore(
 
                 filteredMessage = filteredMessage.concat(userMessage);
 
-                if (model.includes("claude-3-5-sonnet")) {
+                if (lowerCaseModel.includes("claude-3-5-sonnet")) {
                   // claude-3-5-sonnet-20240620 模型首个message, 排除system 之后只能是user,
                   const isSystemMsg = filteredMessage[0].role === "system";
                   if (isSystemMsg) {
@@ -1065,8 +1074,12 @@ export const useChatStore = createPersistStore(
                       filteredMessage.splice(0, 1);
                     }
                   }
-                } else if (model.toLocaleUpperCase().includes("ERNIE")) {
-                  // ERNIE 不能有 system, 而且messages数组的长度只能是奇数
+                } else if (
+                  DISABLED_SYSTEM_PROMPT_MODELS.findIndex((i) =>
+                    lowerCaseModel.includes(i),
+                  ) > -1
+                ) {
+                  // 不能有 system, 而且messages数组的长度只能是奇数
                   if (filteredMessage[0].role === "assistant") {
                     filteredMessage.splice(0, 1);
                   }
