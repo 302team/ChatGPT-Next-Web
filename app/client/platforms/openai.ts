@@ -157,6 +157,15 @@ export class ChatGPTApi implements LLMApi {
       });
     }
 
+    if (modelConfig.model.toLocaleLowerCase().includes("baichuan")) {
+      Object.defineProperty(requestPayload, "frequency_penalty", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: 1,
+      });
+    }
+
     // add max_tokens to vision model
     if (
       options.config.model.includes("vision") &&
@@ -481,6 +490,15 @@ export class ChatGPTApi implements LLMApi {
       useTools: options.agentConfig.useTools,
       searchEngine: options.agentConfig.searchEngine,
     };
+
+    if (modelConfig.model.toLocaleLowerCase().includes("baichuan")) {
+      Object.defineProperty(requestPayload, "frequency_penalty", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: 1,
+      });
+    }
 
     console.log("[Request] openai payload: ", requestPayload);
 
