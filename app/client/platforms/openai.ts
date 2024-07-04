@@ -153,6 +153,16 @@ export class ChatGPTApi implements LLMApi {
       });
     }
 
+    // 百川模型frequency_penalty 最小值为1, 最大值为2
+    if (modelConfig.model.toLocaleLowerCase().includes("baichuan")) {
+      Object.defineProperty(requestPayload, "frequency_penalty", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: 1,
+      });
+    }
+
     // add max_tokens to vision model
     if (
       options.config.model.includes("vision") &&
