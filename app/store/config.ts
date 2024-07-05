@@ -106,13 +106,13 @@ export const CHATBOT_CONFIG = {
     max_tokens: 32000, // 单次回复限制 (max_tokens): 单次交互所用的最大 Token 数
     presence_penalty: 0, // 话题新鲜度 (presence_penalty): 值越大，越有可能扩展到新话题
     frequency_penalty: 0, // 频率惩罚度 (frequency_penalty): 值越大，越有可能降低重复字词
-    enableInjectSystemPrompts: true, // 注入系统级提示信息【注入默认系统提示信息】: 强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示
+    enableInjectSystemPrompts: false, // 注入系统级提示信息【注入默认系统提示信息】: 强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示
     enableInjectCustomSystemPrompts: false, // 注入自定义系统提示信息: 强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示
     injectCustomSystemPrompts: "", // 注入自定义系统提示信息: 强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示
     template: DEFAULT_INPUT_TEMPLATE, // 用户输入预处理: 用户最新的一条消息会填充到此模板
     historyMessageCount: 4, // 附带历史消息数: 每次请求携带的历史消息数
     compressMessageLengthThreshold: 1000, // 历史消息长度压缩阈值: 当未压缩的历史消息超过该值时，将进行压缩
-    sendMemory: true, // 历史摘要: 自动压缩聊天记录并作为上下文发送
+    sendMemory: false, // 历史摘要: 自动压缩聊天记录并作为上下文发送
   },
 
   showShareEntry: true,

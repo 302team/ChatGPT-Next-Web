@@ -317,6 +317,8 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
               modelConfig: {
                 ...config.modelConfig,
                 model: model,
+                enableInjectSystemPrompts:
+                  model.startsWith("gpt") || model.startsWith("claude"),
               },
               modelName: data.display_name,
               promptStarters,
