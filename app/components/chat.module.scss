@@ -546,11 +546,23 @@
   flex-direction: column;
   align-items: flex-start;
   max-width: 100%;
+  width: 100%;
 }
 
 .chat-message-user {
   .chat-message-item {
     align-self: flex-end;
+  }
+}
+
+.chat-message-kb {
+  .chat-message-container {
+    width: 100%;
+  }
+  .chat-message-item {
+    width: 100%;
+    padding: 0;
+    border: 0;
   }
 }
 

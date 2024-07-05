@@ -373,7 +373,7 @@ export function Markdown(
       {props.loading ? (
         <LoadingIcon />
       ) : (
-        <MarkdownContent content={msgContent} isHtml={isHtml} />
+        <MarkdownContent content={msgContent} isHtml={true} />
       )}
     </div>
   );

@@ -252,6 +252,15 @@ function ChatWindow() {
                 }
               }
 
+              if (settings.kbConfig && !isEmptyObject(settings.kbConfig)) {
+                for (let key in conf.kbConfig) {
+                  if (key in settings.kbConfig) {
+                    // @ts-ignore
+                    conf.kbConfig[key] = settings.kbConfig[key];
+                  }
+                }
+              }
+
               if (settings.prompts) {
                 setPromptConfig(settings.prompts);
                 // delete settings.prompts;
@@ -405,26 +414,6 @@ function Screen() {
     </>
   );
 }
-
-// export function useLoadData() {
-//   const config = useAppConfig();
-
-//   var api: ClientApi;
-//   if (config.modelConfig.model.startsWith("gemini")) {
-//     api = new ClientApi(ModelProvider.GeminiPro);
-//   } else if (config.modelConfig.model.startsWith("claude")) {
-//     api = new ClientApi(ModelProvider.Claude);
-//   } else {
-//     api = new ClientApi(ModelProvider.GPT);
-//   }
-//   useEffect(() => {
-//     (async () => {
-//       const models = await api.llm.models();
-//       config.mergeModels(models);
-//     })();
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, []);
-// }
 
 export function Home() {
   const [langLoading, setLangLoading] = useState(false);

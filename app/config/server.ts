@@ -37,6 +37,9 @@ declare global {
 
       API_DOMAIN?: string;
       NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN?: string;
+
+      // 知识库
+      KNOWLEDGE_BASE_URL?: string;
     }
   }
 }
@@ -151,5 +154,8 @@ export const getServerSideConfig = () => {
     //   !!process.env.NEXT_PUBLIC_ENABLE_NODEJS_PLUGIN &&
     //   !process.env.R2_ACCOUNT_ID &&
     //   !process.env.S3_ENDPOINT,
+
+    // 知识库
+    knowledgeBaseUrl: process.env.KNOWLEDGE_BASE_URL,
   };
 };

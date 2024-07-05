@@ -140,7 +140,7 @@ import {
   CloseOutlined,
   TranslationOutlined,
 } from "@ant-design/icons";
-import { Typography, Image, Space } from "antd";
+import { Typography, Image, Space, Collapse } from "antd";
 import { usePluginStore } from "../store/plugin";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
@@ -1873,7 +1873,9 @@ function _Chat(props: { promptStarters: string[] }) {
                   isUser ? styles["chat-message-user"] : styles["chat-message"]
                 } ${message.isError ? `${styles["chat-message-error"]}` : ""} ${
                   message.needTranslate ? styles["chat-translate-message"] : ""
-                } ${isMobileScreen ? styles["chat-message-mobile"] : ""}`}
+                } ${isMobileScreen ? styles["chat-message-mobile"] : ""} ${
+                  message.kbMessage ? styles["chat-message-kb"] : ""
+                }`}
               >
                 <div className={styles["chat-message-container"]}>
                   <div className={styles["chat-message-header"]}>
@@ -1970,22 +1972,55 @@ function _Chat(props: { promptStarters: string[] }) {
                   )}
                   <div className={styles["chat-message-item-container"]}>
                     <div className={styles["chat-message-item"]}>
-                      <Markdown
-                        content={message.content}
-                        loading={
-                          (message.preview || message.streaming) &&
-                          message.content.length === 0 &&
-                          !isUser
-                        }
-                        onContextMenu={(e) => onRightClick(e, message)}
-                        onDoubleClickCapture={() => {
-                          if (!isMobileScreen) return;
-                          // setUserInput(getMessageTextContent(message));
-                        }}
-                        fontSize={fontSize}
-                        parentRef={scrollRef}
-                        defaultShow={i >= messages.length - 6}
-                      />
+                      {message.kbMessage ? (
+                        <Collapse
+                          expandIconPosition="end"
+                          items={[
+                            {
+                              key: message.id,
+                              label: getMessageTextContent(message),
+                              children: (
+                                <Markdown
+                                  content={message.kbMessage}
+                                  loading={
+                                    (message.preview || message.streaming) &&
+                                    message.content.length === 0 &&
+                                    !isUser
+                                  }
+                                  onContextMenu={(e) =>
+                                    onRightClick(e, message)
+                                  }
+                                  onDoubleClickCapture={() => {
+                                    if (!isMobileScreen) return;
+                                    // setUserInput(getMessageTextContent(message));
+                                  }}
+                                  fontSize={fontSize}
+                                  parentRef={scrollRef}
+                                  defaultShow={i >= messages.length - 6}
+                                />
+                              ),
+                            },
+                          ]}
+                        />
+                      ) : (
+                        <Markdown
+                          content={message.content}
+                          loading={
+                            (message.preview || message.streaming) &&
+                            message.content.length === 0 &&
+                            !isUser
+                          }
+                          onContextMenu={(e) => onRightClick(e, message)}
+                          onDoubleClickCapture={() => {
+                            if (!isMobileScreen) return;
+                            // setUserInput(getMessageTextContent(message));
+                          }}
+                          fontSize={fontSize}
+                          parentRef={scrollRef}
+                          defaultShow={i >= messages.length - 6}
+                        />
+                      )}
+
                       {getMessageImages(message).length > 0 && (
                         <div
                           className={`${styles["chat-message-item-images"]} ${isUser && styles["chat-message-item-images-user"]}`}

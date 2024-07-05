@@ -78,6 +78,12 @@ export const DEFAULT_CONFIG = {
   fileSupportType: 0,
   multimodalType4Models: {} as Record<string, number>, // 多模态模型类型
   supportPluginModelList: [] as Array<string>, // 支持插件的模型列表
+
+  kbConfig: {
+    mode: "knowledge_base_chat",
+    top_k: 5,
+    score_threshold: 1,
+  },
 };
 
 export const DEFAULT_SETTING = {
