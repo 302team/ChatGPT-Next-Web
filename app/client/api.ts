@@ -14,6 +14,7 @@ import { ClaudeApi } from "./platforms/anthropic";
 import { getLang } from "../locales";
 import { isSpecImageModal, isVisionModel } from "../utils";
 import { Mask } from "../store/mask";
+import { KnowledgeBaseApi } from "./platforms/knowledge-base";
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
 
@@ -62,7 +63,7 @@ export interface ChatOptions {
   onAborted?: (message?: string) => void;
   onRetry?: () => void;
   onUpdate?: (message: string, chunk: string) => void;
-  onFinish: (message: string, hasError?: boolean) => void;
+  onFinish: (message: string, docsText?: string, hasError?: boolean) => void;
   onError?: (err: Error) => void;
   onController?: (controller: AbortController) => void;
 }
@@ -159,6 +160,9 @@ export class ClientApi {
         break;
       case ModelProvider.Claude:
         this.llm = new ClaudeApi();
+        break;
+      case ModelProvider.KnowledgeBase:
+        this.llm = new KnowledgeBaseApi();
         break;
       default:
         this.llm = new ChatGPTApi();

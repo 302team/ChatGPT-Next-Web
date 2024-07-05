@@ -60,6 +60,7 @@ export type ChatMessage = RequestMessage & {
   isTimeoutAborted?: boolean;
   needTranslate?: boolean;
   isIgnore4History?: boolean; // 发送消息时, 是否可以作为历史数据
+  kbMessage?: string | MultimodalContent[];
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -620,7 +621,7 @@ export const useChatStore = createPersistStore(
         get().summarizeSession();
       },
 
-      async onUserInput(
+      async _onUserInput(
         content: string | MultimodalContent[],
         extAttr: ExtAttr,
       ) {
@@ -911,7 +912,7 @@ export const useChatStore = createPersistStore(
                 session.messages = session.messages.concat();
               });
             },
-            onFinish(message, hasError) {
+            onFinish(message, text, hasError) {
               console.warn(
                 "🚀 ~ onFinish ~ message:",
                 message,
@@ -976,6 +977,149 @@ export const useChatStore = createPersistStore(
         }
       },
 
+      async onUserInput(
+        content: string | MultimodalContent[],
+        extAttr: ExtAttr,
+      ) {
+        const session = get().currentSession();
+        const modelConfig = session.mask.modelConfig;
+
+        const fileArr = await getFileArr(extAttr.uploadFiles);
+        extAttr?.setUploadFiles([]); // 删除文件
+
+        const { sendUserContent, saveUserContent } = extAttr?.resend
+          ? await getResendUserContent(content, modelConfig, session.mask)
+          : await getUserContent(
+              content as string,
+              fileArr,
+              modelConfig,
+              session.mask,
+            );
+        console.log("[User Input] after pretreatment: ", sendUserContent);
+        console.log("[User Input] after pretreatment: ", saveUserContent);
+
+        const userMessage = createMessage({
+          role: "user",
+          content: sendUserContent as string | MultimodalContent[],
+          model: modelConfig.model as ModelType,
+        });
+        const botMessage = createMessage({
+          role: "assistant",
+          streaming: true,
+          model: modelConfig.model as ModelType,
+          toolMessages: [],
+        });
+        // get recent messages
+        const recentMessages = get().getMessagesWithMemory();
+        const sendMessages = recentMessages.concat(userMessage);
+        console.log("🚀 ~ sendMessages:", sendMessages);
+        const messageIndex = get().currentSession().messages.length + 1;
+
+        // 最新回复的顶到最前面
+        if (get().currentSessionIndex !== 0) {
+          get().moveSession(get().currentSessionIndex, 0);
+        }
+
+        // save user's and bot's message
+        get().updateCurrentSession((session) => {
+          const savedUserMessage = {
+            ...userMessage,
+            content: saveUserContent,
+          } as ChatMessage;
+          session.messages = session.messages.concat([
+            savedUserMessage,
+            botMessage,
+          ]);
+        });
+
+        var api: ClientApi = new ClientApi(ModelProvider.KnowledgeBase);
+
+        // make request
+        api.llm.chat({
+          messages: sendMessages,
+          config: { ...modelConfig, stream: true },
+          retryCount: extAttr.retryCount ?? 0,
+          onAborted: (message) => {
+            botMessage.isTimeoutAborted = true;
+            if (message) {
+              botMessage.content = message;
+            }
+            get().updateCurrentSession((session) => {
+              session.messages = session.messages.concat();
+            });
+          },
+          onRetry: () => {
+            if (userMessage.retryCount == undefined) {
+              userMessage.retryCount = 0;
+            }
+            ++userMessage.retryCount;
+
+            const savedUserMessage = {
+              ...userMessage,
+              content: saveUserContent,
+            } as ChatMessage;
+            extAttr.onResend?.(savedUserMessage);
+          },
+          onUpdate(message) {
+            botMessage.streaming = true;
+            if (message) {
+              botMessage.content = message;
+            }
+            get().updateCurrentSession((session) => {
+              session.messages = session.messages.concat();
+            });
+          },
+          onFinish(message, docsText, hasError) {
+            console.warn("🚀 ~ onFinish ~ message:", {
+              message,
+              docsText,
+              hasError,
+            });
+            botMessage.streaming = false;
+            botMessage.content = message ?? "";
+            botMessage.kbMessage = docsText ?? "";
+            botMessage.isError = hasError as boolean;
+            // 如果没有不包含中文,就弹翻译的提示
+            // if (!hasError) {
+            //   messageTranslate(message, botMessage);
+            // }
+            get().onNewMessage(botMessage);
+            ChatControllerPool.remove(session.id, botMessage.id);
+          },
+          onError(error) {
+            const isAborted = error.message.includes("aborted");
+            botMessage.content += "Network error, please retry.";
+            // botMessage.content +=
+            // Locale.Error.ApiTimeout +
+            // "\n\n" +
+            // prettyObject({
+            //   error: true,
+            //   message: error.message,
+            // });
+            botMessage.streaming = false;
+            // userMessage.isError = !isAborted;
+            botMessage.isError = !isAborted;
+            get().updateCurrentSession((session) => {
+              session.messages = session.messages.concat();
+            });
+            ChatControllerPool.remove(
+              session.id,
+              botMessage.id ?? messageIndex,
+            );
+
+            console.error("[Chat] failed ", error);
+          },
+          onController(controller) {
+            // collect controller for stop/retry
+            ChatControllerPool.addController(
+              session.id,
+              botMessage.id ?? messageIndex,
+              controller,
+            );
+          },
+        });
+      },
+
       translate(userInput: string) {
         if (!userInput || userInput.trim() == "") {
           showToast(Locale.Chat.InputActions.InputTips);
@@ -1021,7 +1165,7 @@ export const useChatStore = createPersistStore(
               session.messages = session.messages.concat();
             });
           },
-          onFinish(message, hasError) {
+          onFinish(message, text, hasError) {
             if (message.length > 0) {
               message = message
                 .replace("Translate the user input to English:", "")
@@ -1142,6 +1286,10 @@ export const useChatStore = createPersistStore(
           .slice()
           .filter((m) => !m.isIgnore4History);
         const totalMessageCount = session.messages.length;
+        console.log("🚀 ~ getMessagesWithMemory ~ totalMessageCount:", {
+          messages,
+          totalMessageCount,
+        });
 
         const sysPromptStore = useSysPromptStore.getState();
 
@@ -1237,6 +1385,14 @@ export const useChatStore = createPersistStore(
         const contextStartIndex = Math.max(clearContextIndex, memoryStartIndex);
         const maxTokenThreshold = modelConfig.max_tokens;
 
+        console.log("🚀 ~ getMessagesWithMemory ~:", {
+          totalMessageCount,
+          shortTermMemoryStartIndex,
+          longTermMemoryStartIndex,
+          memoryStartIndex,
+          contextStartIndex,
+          maxTokenThreshold,
+        });
         // get recent messages as much as possible
         const reversedRecentMessages = [];
         for (

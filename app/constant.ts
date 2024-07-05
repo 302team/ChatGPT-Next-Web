@@ -14,6 +14,8 @@ export const ANTHROPIC_BASE_URL = "https://api.anthropic.com";
 
 export const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
+export const KNOWLEDGEBASE_BASE_URL = "";
+
 export const GPT302_WEBSITE_URL = "https://www.302.ai";
 export const GPT302_WEBSITE_CN_URL = "https://302ai.cn";
 
@@ -39,6 +41,7 @@ export enum ApiPath {
   Cors = "",
   OpenAI = "/api/openai",
   Anthropic = "/api/anthropic",
+  KnowledgeBase = "/api/knowledge-base",
 }
 
 export enum SlotID {
@@ -91,6 +94,7 @@ export enum ModelProvider {
   GPT = "GPT",
   GeminiPro = "GeminiPro",
   Claude = "Claude",
+  KnowledgeBase = "KnowledgeBase",
 }
 
 export const FontSize = {
@@ -113,6 +117,11 @@ export const OpenaiPath = {
   ListModelPath: "v1/models",
   AudioTranscriptionsPath: "v1/audio/transcriptions",
   AudioSpeechPath: "v1/audio/speech",
+};
+
+export const KnowledgeBasePath = {
+  KbChatPath: "kb/chat/knowledge_base_chat",
+  AgentChatPath: "kb/chat/agent",
 };
 
 export const Azure = {
