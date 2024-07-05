@@ -186,22 +186,6 @@ function ChatWindow() {
       promptStore.add(prompt);
     });
   }
-  function setModelConfig(modelConfig: any) {
-    // console.log("🚀 ~ setModelConfig ~ modelConfig:", modelConfig);
-    // 空对象
-    if (isEmptyObject(modelConfig)) return;
-    let modelConf: any = {};
-    for (let key in modelConfig) {
-      modelConf[key] = modelConfig[key];
-    }
-    config.update((config) => (config.modelConfig = modelConf));
-    chatStore.updateCurrentSession((session) => {
-      if (!session.mask.isStoreModel) {
-        session.mask.modelConfig = modelConf;
-        session.mask.syncGlobalConfig = true;
-      }
-    });
-  }
 
   const [promptStarters, setPromptStarters] = useState<string[]>([]);
 
@@ -247,8 +231,25 @@ function ChatWindow() {
             if (settings && !isEmptyObject(settings)) {
               if (settings.modelConfig) {
                 settings.modelConfig.model = opt.model;
-                setModelConfig(settings.modelConfig);
-                // delete settings.modelConfig;
+                const _modelConfig = JSON.parse(
+                  JSON.stringify(settings.modelConfig),
+                );
+
+                if (!isEmptyObject(_modelConfig)) {
+                  for (let key in conf.modelConfig) {
+                    if (key in _modelConfig) {
+                      // @ts-ignore
+                      conf.modelConfig[key] = _modelConfig[key];
+                    }
+                  }
+
+                  chatStore.updateCurrentSession((session) => {
+                    if (!session.mask.isStoreModel) {
+                      session.mask.modelConfig = conf.modelConfig;
+                      session.mask.syncGlobalConfig = true;
+                    }
+                  }); // delete settings.modelConfig;
+                }
               }
 
               if (settings.prompts) {
@@ -257,6 +258,7 @@ function ChatWindow() {
               }
 
               for (let key in settings) {
+                if (key === "modelConfig") continue;
                 // @ts-ignore
                 conf[key] = settings[key];
               }
