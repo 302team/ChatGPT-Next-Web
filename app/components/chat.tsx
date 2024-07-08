@@ -1941,74 +1941,6 @@ function _Chat(props: { promptStarters: string[] }) {
                         </>
                       )}
                     </div>
-
-                    {showActions && (
-                      <div className={styles["chat-message-actions"]}>
-                        <div className={styles["chat-input-actions"]}>
-                          {message.streaming ? (
-                            <ChatAction
-                              text={Locale.Chat.Actions.Stop}
-                              icon={<PauseIcon />}
-                              onClick={() => onUserStop(message.id ?? i)}
-                            />
-                          ) : (
-                            <>
-                              <ChatAction
-                                text={Locale.Chat.Actions.Retry}
-                                icon={<ResetIcon />}
-                                onClick={() => onResend(message)}
-                              />
-
-                              <ChatAction
-                                text={Locale.Chat.Actions.Delete}
-                                icon={<DeleteIcon />}
-                                onClick={() => onDelete(message.id ?? i)}
-                              />
-
-                              <ChatAction
-                                text={Locale.Chat.Actions.Pin}
-                                icon={<PinIcon />}
-                                onClick={() => onPinMessage(message)}
-                              />
-                              <ChatAction
-                                text={Locale.Chat.Actions.Copy}
-                                icon={<CopyIcon />}
-                                onClick={() =>
-                                  copyToClipboard(
-                                    getMessageTextContent(message),
-                                  )
-                                }
-                              />
-                              {config.openTTS && (
-                                <ChatAction
-                                  text={
-                                    fetchSpeechLoading
-                                      ? "Load"
-                                      : speaking
-                                        ? Locale.Chat.Actions.Stop
-                                        : Locale.Chat.Actions.Speek
-                                  }
-                                  icon={
-                                    fetchSpeechLoading ? (
-                                      <LoadingOutlined />
-                                    ) : speaking ? (
-                                      <PauseIcon />
-                                    ) : (
-                                      <SpeakIcon />
-                                    )
-                                  }
-                                  onClick={() => {
-                                    speaking
-                                      ? cancelSpeak()
-                                      : speakContent(message.content);
-                                  }}
-                                />
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
                   {!isUser &&
                     message.toolMessages &&
@@ -2127,6 +2059,75 @@ function _Chat(props: { promptStarters: string[] }) {
                           </div>
                         </div>
                       )}
+                  </div>
+                  <div className={styles["chat-message-footer"]}>
+                    {showActions && (
+                      <div className={styles["chat-message-actions"]}>
+                        <div className={styles["chat-input-actions"]}>
+                          {message.streaming ? (
+                            <ChatAction
+                              text={Locale.Chat.Actions.Stop}
+                              icon={<PauseIcon />}
+                              onClick={() => onUserStop(message.id ?? i)}
+                            />
+                          ) : (
+                            <>
+                              <ChatAction
+                                text={Locale.Chat.Actions.Retry}
+                                icon={<ResetIcon />}
+                                onClick={() => onResend(message)}
+                              />
+
+                              <ChatAction
+                                text={Locale.Chat.Actions.Delete}
+                                icon={<DeleteIcon />}
+                                onClick={() => onDelete(message.id ?? i)}
+                              />
+
+                              <ChatAction
+                                text={Locale.Chat.Actions.Pin}
+                                icon={<PinIcon />}
+                                onClick={() => onPinMessage(message)}
+                              />
+                              <ChatAction
+                                text={Locale.Chat.Actions.Copy}
+                                icon={<CopyIcon />}
+                                onClick={() =>
+                                  copyToClipboard(
+                                    getMessageTextContent(message),
+                                  )
+                                }
+                              />
+                              {config.openTTS && (
+                                <ChatAction
+                                  text={
+                                    fetchSpeechLoading
+                                      ? "Load"
+                                      : speaking
+                                        ? Locale.Chat.Actions.Stop
+                                        : Locale.Chat.Actions.Speek
+                                  }
+                                  icon={
+                                    fetchSpeechLoading ? (
+                                      <LoadingOutlined />
+                                    ) : speaking ? (
+                                      <PauseIcon />
+                                    ) : (
+                                      <SpeakIcon />
+                                    )
+                                  }
+                                  onClick={() => {
+                                    speaking
+                                      ? cancelSpeak()
+                                      : speakContent(message.content);
+                                  }}
+                                />
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

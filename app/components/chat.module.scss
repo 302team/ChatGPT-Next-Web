@@ -419,6 +419,30 @@
   }
 }
 
+.chat-message-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+
+  .chat-message-actions {
+    display: flex;
+    box-sizing: border-box;
+    font-size: 12px;
+    align-items: flex-end;
+    justify-content: space-between;
+    transition: all ease 0.3s;
+    transform: scale(0.9) translateY(5px);
+    margin: 0 10px;
+    opacity: 0;
+    pointer-events: none;
+
+    .chat-input-actions {
+      display: flex;
+      flex-wrap: nowrap;
+    }
+  }
+}
+
 .chat-message-container {
   max-width: var(--message-max-width);
   display: flex;
