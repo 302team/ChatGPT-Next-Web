@@ -1756,7 +1756,9 @@ function _Chat() {
               <div
                 className={`${
                   isUser ? styles["chat-message-user"] : styles["chat-message"]
-                } ${message.isError ? `${styles["chat-message-error"]}` : ""}`}
+                } ${message.isError ? `${styles["chat-message-error"]}` : ""} ${
+                  isMobileScreen ? styles["chat-message-mobile"] : ""
+                }`}
               >
                 <div className={styles["chat-message-container"]}>
                   <div className={styles["chat-message-header"]}>
@@ -1827,74 +1829,6 @@ function _Chat() {
                     {!isUser && (
                       <div className={styles["chat-message-model"]}>
                         {getModelNameWithRemark(message.model!)}
-                      </div>
-                    )}
-
-                    {showActions && (
-                      <div className={styles["chat-message-actions"]}>
-                        <div className={styles["chat-input-actions"]}>
-                          {message.streaming ? (
-                            <ChatAction
-                              text={Locale.Chat.Actions.Stop}
-                              icon={<PauseIcon />}
-                              onClick={() => onUserStop(message.id ?? i)}
-                            />
-                          ) : (
-                            <>
-                              <ChatAction
-                                text={Locale.Chat.Actions.Retry}
-                                icon={<ResetIcon />}
-                                onClick={() => onResend(message)}
-                              />
-
-                              <ChatAction
-                                text={Locale.Chat.Actions.Delete}
-                                icon={<DeleteIcon />}
-                                onClick={() => onDelete(message.id ?? i)}
-                              />
-
-                              <ChatAction
-                                text={Locale.Chat.Actions.Pin}
-                                icon={<PinIcon />}
-                                onClick={() => onPinMessage(message)}
-                              />
-                              <ChatAction
-                                text={Locale.Chat.Actions.Copy}
-                                icon={<CopyIcon />}
-                                onClick={() =>
-                                  copyToClipboard(
-                                    getMessageTextContent(message),
-                                  )
-                                }
-                              />
-                              {config.openTTS && (
-                                <ChatAction
-                                  text={
-                                    fetchSpeechLoading
-                                      ? "Load"
-                                      : speaking
-                                        ? Locale.Chat.Actions.Stop
-                                        : Locale.Chat.Actions.Speek
-                                  }
-                                  icon={
-                                    fetchSpeechLoading ? (
-                                      <LoadingOutlined />
-                                    ) : speaking ? (
-                                      <PauseIcon />
-                                    ) : (
-                                      <SpeakIcon />
-                                    )
-                                  }
-                                  onClick={() => {
-                                    speaking
-                                      ? cancelSpeak()
-                                      : speakContent(message.content);
-                                  }}
-                                />
-                              )}
-                            </>
-                          )}
-                        </div>
                       </div>
                     )}
                   </div>
@@ -1973,7 +1907,8 @@ function _Chat() {
                         : message.date.toLocaleString()}
                     </div>
 
-                    {!isUser &&
+                    {!isMobileScreen &&
+                      !isUser &&
                       !message.model?.includes("XuanYuan") &&
                       (message.isError || message.isTimeoutAborted) && (
                         <div className={styles["chat-message-retry"]}>
@@ -1989,6 +1924,120 @@ function _Chat() {
                           </div>
                         </div>
                       )}
+                  </div>
+                  <div className={styles["chat-message-footer"]}>
+                    {/* {isMobileScreen &&
+                        !isUser &&
+                        !isContext &&
+                        message.needTranslate &&
+                        !message.isError &&
+                        !message.isTimeoutAborted &&
+                        !currentModel.includes("gemini-1.5") &&
+                        !currentModel.includes("ERNIE-4.0-8K") && (
+                          <div className={styles["chat-message-translate"]}>
+                            <div className={styles["chat-input-actions"]}>
+                              <ChatAction
+                                text={Locale.Chat.InputActions.Translate}
+                                icon={
+                                  <TranslationOutlined
+                                    style={{ color: "#333333" }}
+                                  />
+                                }
+                                onClick={() => {
+                                  chatStore.translate(
+                                    getMessageTextContent(message),
+                                  );
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )} */}
+
+                    {isMobileScreen &&
+                      !isUser &&
+                      !message.model?.includes("XuanYuan") &&
+                      (message.isError || message.isTimeoutAborted) && (
+                        <div className={styles["chat-message-retry"]}>
+                          <div className={styles["chat-input-actions"]}>
+                            <ChatAction
+                              text=""
+                              icon={<ResetIcon2 />}
+                              onClick={() => {
+                                message.retryCount = 0;
+                                onResend(message);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                    {showActions && (
+                      <div className={styles["chat-message-actions"]}>
+                        <div className={styles["chat-input-actions"]}>
+                          {message.streaming ? (
+                            <ChatAction
+                              text={Locale.Chat.Actions.Stop}
+                              icon={<PauseIcon />}
+                              onClick={() => onUserStop(message.id ?? i)}
+                            />
+                          ) : (
+                            <>
+                              <ChatAction
+                                text={Locale.Chat.Actions.Retry}
+                                icon={<ResetIcon />}
+                                onClick={() => onResend(message)}
+                              />
+
+                              <ChatAction
+                                text={Locale.Chat.Actions.Delete}
+                                icon={<DeleteIcon />}
+                                onClick={() => onDelete(message.id ?? i)}
+                              />
+
+                              <ChatAction
+                                text={Locale.Chat.Actions.Pin}
+                                icon={<PinIcon />}
+                                onClick={() => onPinMessage(message)}
+                              />
+                              <ChatAction
+                                text={Locale.Chat.Actions.Copy}
+                                icon={<CopyIcon />}
+                                onClick={() =>
+                                  copyToClipboard(
+                                    getMessageTextContent(message),
+                                  )
+                                }
+                              />
+                              {config.openTTS && (
+                                <ChatAction
+                                  text={
+                                    fetchSpeechLoading
+                                      ? "Load"
+                                      : speaking
+                                        ? Locale.Chat.Actions.Stop
+                                        : Locale.Chat.Actions.Speek
+                                  }
+                                  icon={
+                                    fetchSpeechLoading ? (
+                                      <LoadingOutlined />
+                                    ) : speaking ? (
+                                      <PauseIcon />
+                                    ) : (
+                                      <SpeakIcon />
+                                    )
+                                  }
+                                  onClick={() => {
+                                    speaking
+                                      ? cancelSpeak()
+                                      : speakContent(message.content);
+                                  }}
+                                />
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
