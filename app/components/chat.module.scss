@@ -964,20 +964,28 @@
 }
 
 .chat-message-mobile {
+  .chat-message-footer {
+    width: 100%;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+
   .chat-message-container {
     .chat-message-translate {
-      bottom: 0;
-      left: 0;
+      position: unset;
+      bottom: unset;
+      left: unset;
       right: unset;
-      transform: translate(0%, 50%);
+      transform: none;
     }
 
     .chat-message-retry {
-      bottom: 0;
-      left: 0;
-      right: unset;
-      transform: translate(0%, 50%);
       margin-bottom: 0;
+      position: unset;
+      bottom: unset;
+      left: unset;
+      right: unset;
+      transform: none;
     }
   }
 }

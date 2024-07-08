@@ -2017,7 +2017,8 @@ function _Chat(props: { promptStarters: string[] }) {
                         : message.date.toLocaleString()}
                     </div>
 
-                    {!isUser &&
+                    {!isMobileScreen &&
+                      !isUser &&
                       !isContext &&
                       message.needTranslate &&
                       !message.isError &&
@@ -2043,7 +2044,8 @@ function _Chat(props: { promptStarters: string[] }) {
                         </div>
                       )}
 
-                    {!isUser &&
+                    {!isMobileScreen &&
+                      !isUser &&
                       !message.model?.includes("XuanYuan") &&
                       (message.isError || message.isTimeoutAborted) && (
                         <div className={styles["chat-message-retry"]}>
@@ -2061,6 +2063,51 @@ function _Chat(props: { promptStarters: string[] }) {
                       )}
                   </div>
                   <div className={styles["chat-message-footer"]}>
+                    {isMobileScreen &&
+                      !isUser &&
+                      !isContext &&
+                      message.needTranslate &&
+                      !message.isError &&
+                      !message.isTimeoutAborted &&
+                      !currentModel.includes("gemini-1.5") &&
+                      !currentModel.includes("ERNIE-4.0-8K") && (
+                        <div className={styles["chat-message-translate"]}>
+                          <div className={styles["chat-input-actions"]}>
+                            <ChatAction
+                              text={Locale.Chat.InputActions.Translate}
+                              icon={
+                                <TranslationOutlined
+                                  style={{ color: "#333333" }}
+                                />
+                              }
+                              onClick={() => {
+                                chatStore.translate(
+                                  getMessageTextContent(message),
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                    {isMobileScreen &&
+                      !isUser &&
+                      !message.model?.includes("XuanYuan") &&
+                      (message.isError || message.isTimeoutAborted) && (
+                        <div className={styles["chat-message-retry"]}>
+                          <div className={styles["chat-input-actions"]}>
+                            <ChatAction
+                              text=""
+                              icon={<ResetIcon2 />}
+                              onClick={() => {
+                                message.retryCount = 0;
+                                onResend(message);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
                     {showActions && (
                       <div className={styles["chat-message-actions"]}>
                         <div className={styles["chat-input-actions"]}>
