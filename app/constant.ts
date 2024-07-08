@@ -475,7 +475,7 @@ export const ERROR_CODE = {
   "-10005": "TOKEN_EXPIRED_ERROR", // token过期
   "-10006": "TOTAL_QUOTA_ERROR", // 聊天机器人总额度不足
   "-10007": "DAILY_QUOTA_ERROR", // 聊天机器人当天额度不足
-  "-5": "HOUR_QUOTA_ERROR", // 聊天机器人小时额度不足
+  "-10012": "HOUR_QUOTA_ERROR", // 聊天机器人小时额度不足
 };
 export type ERROR_CODE_TYPE = keyof typeof ERROR_CODE;
 

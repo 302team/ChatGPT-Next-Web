@@ -61,7 +61,7 @@ const cn = {
     DAILY_QUOTA_ERROR: (region = 0) =>
       `该工具的单日额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的工具`,
     HOUR_QUOTA_ERROR: (region = 0) =>
-      `该工具在本小时的额度已达上限，更多请访问[${getLink(region).homeText}](${getLink(region).homeLink})`,
+      `该工具在本小时的额度已达上限，请注册[${getLink(region).homeText}](${getLink(region).homeLink})创建属于自己的工具`,
   },
   Preview: {
     Title: "实时预览",

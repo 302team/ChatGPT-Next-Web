@@ -59,7 +59,7 @@ const en: LocaleType = {
     DAILY_QUOTA_ERROR: (region = 0) =>
       `This tool's daily quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own tool`,
     HOUR_QUOTA_ERROR: (region = 0) =>
-      `This tool's hour quota reached maximum limit. For more information, please view[${getLink(region).homeText}](${getLink(region).homeLink})`,
+      `This tool's hour quota reached maximum limit. Please sign up [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own tool`,
   },
   Preview: {
     Title: "Preview",
