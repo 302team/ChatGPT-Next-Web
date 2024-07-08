@@ -59,6 +59,8 @@ const en: LocaleType = {
       `Robot's total quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
     DAILY_QUOTA_ERROR: (region = 0) =>
       `Robot's daily quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
+    HOUR_QUOTA_ERROR: (region = 0) =>
+      `This robot's hour quota reached maximum limit. Please sign up  [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
   },
   Preview: {
     Title: "Preview",

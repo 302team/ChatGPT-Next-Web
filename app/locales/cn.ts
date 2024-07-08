@@ -55,6 +55,8 @@ const cn = {
       `机器人的总额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
     DAILY_QUOTA_ERROR: (region = 0) =>
       `机器人的单日额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
+    HOUR_QUOTA_ERROR: (region = 0) =>
+      `改机器人在本小时的额度已达上限，请注册[${getLink(region).homeText}](${getLink(region).homeLink})创建属于自己的机器人`,
   },
   Preview: {
     Title: "实时预览",
