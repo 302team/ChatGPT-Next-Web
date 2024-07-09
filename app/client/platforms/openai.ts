@@ -254,6 +254,7 @@ export class ChatGPTApi implements LLMApi {
             finished = true;
             options.onFinish(
               responseText + remainText,
+              "",
               !isStreamDone || hasUncatchError || isAborted,
             );
           }
@@ -412,7 +413,7 @@ export class ChatGPTApi implements LLMApi {
 
         const resJson = await res.json();
         const message = this.extractMessage(resJson);
-        options.onFinish(message, false);
+        options.onFinish(message, "", false);
       }
     } catch (e) {
       console.log("[Request] failed to make a chat request", e);
