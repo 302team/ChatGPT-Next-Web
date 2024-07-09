@@ -2,9 +2,9 @@ name: Publish Docker image
 
 on:
   push:
-    branches: ["main-proxy302", "dev", "feat-zero-shot"]
+    branches: ["main-proxy302", "dev", "feat-zero-shot", "feat-knowledge_base"]
   pull_request:
-    branches: ["main-proxy302", "dev", "feat-zero-shot"]
+    branches: ["main-proxy302", "dev", "feat-zero-shot", "feat-knowledge_base"]
 
 jobs:
   push_to_registry:
