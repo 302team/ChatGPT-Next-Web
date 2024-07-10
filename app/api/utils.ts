@@ -52,14 +52,19 @@ const Link_Exp = /^https:\/\/.+\..+$/;
 // https://file.302.ai/gpt/imgs/20240710/2b58bb42373a4c449c7d03d679c8c38a.html
 // https://file.302.ai/gpt/imgs/20240710/b9f97ab0f60d4a469529ac5862317e71.pdf
 async function parseText(url: string) {
+  console.log("[textract] url:", url);
   const res = await fetch(`${serverConfig.apiDomain}/gpt/api/textract`, {
     method: "POST",
     headers: {
       "Content-type": "application/json",
     },
     body: JSON.stringify({ url }),
-  }).then((res) => res.json());
-  console.log("--------- parse text -----", res);
+  })
+    .then((res) => res.json())
+    .catch((err) => {
+      console.log("[textract] err:", err);
+    });
+  console.log("[textract] res:", JSON.stringify(res));
 
   if (res.code === 0) {
     return res.data.msg;
@@ -69,10 +74,18 @@ async function parseText(url: string) {
 
 export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
   // 将file 转为 prompt
+  console.log("\n\n[parsePrompt] start =============");
+
   if (req.body) {
     try {
+      console.log("[parsePrompt] get body");
       const clonedBody = await req.text();
+      fetchOptions.body = clonedBody;
+      console.log("[parsePrompt] get body end");
+
+      console.log("[parsePrompt] parse body");
       const jsonBody = JSON.parse(clonedBody) as RequestPayload;
+      console.log("[parsePrompt] parse body end");
 
       for (let i = jsonBody.messages.length - 1; i >= 0; i--) {
         const m = jsonBody.messages[i];
@@ -88,9 +101,22 @@ export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
               for (let idx = 0; idx < files.length; idx++) {
                 const url = files[idx];
                 const ext = url.substring(url.lastIndexOf(".") + 1);
+                console.log(
+                  "[parsePrompt] get url",
+                  JSON.stringify({ url, ext }),
+                );
 
                 if (File_Extension.includes(ext.toLocaleLowerCase())) {
+                  console.log("[parsePrompt] get text", url);
                   const fileContent = await parseText(url);
+                  console.log(
+                    "[parsePrompt] get text end",
+                    JSON.stringify({
+                      url,
+                      fileContent,
+                    }),
+                  );
+
                   m.content =
                     m.content.replaceAll(url, "") +
                     "\n" +
@@ -119,6 +145,8 @@ export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
       //
     }
   }
+
+  console.log("[parsePrompt] end =============\n\n");
 
   return fetchOptions;
 }
