@@ -577,7 +577,7 @@ export function MaskPage(props: {
                     icon={<AddIcon />}
                     text={Locale.Mask.Item.Chat}
                     onClick={() => {
-                      chatStore.newSession(m);
+                      chatStore.newSession(m, true);
                       navigate(Path.Chat + location.search);
                       props.onClose?.();
                     }}
