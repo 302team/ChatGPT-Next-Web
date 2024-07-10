@@ -2,43 +2,6 @@ import { BuiltinMask } from "./typing";
 
 export const CN_MASKS: BuiltinMask[] = [
   {
-    id: "tLTLQLnRFvMOGQ9jpNzvZ",
-    avatar: "1f4bb",
-    name: "Google apps scripter",
-    context: [
-      {
-        id: "XF9dcuMKE2ST1DS3RYLNb",
-        date: "",
-        toolMessages: [],
-        role: "user",
-        content:
-          "请为我编写一个 Google Apps 脚本，将 Google Slides 演示文稿中的所有文本翻译成韩语。",
-      },
-    ],
-    syncGlobalConfig: true,
-    modelConfig: {
-      model: "gpt-4-all",
-      temperature: 0.5,
-      top_p: 1,
-      max_tokens: 32000,
-      presence_penalty: 0,
-      frequency_penalty: 0,
-      enableInjectSystemPrompts: true,
-      enableInjectCustomSystemPrompts: false,
-      injectCustomSystemPrompts: "",
-      template: "{{input}}",
-      historyMessageCount: 4,
-      compressMessageLengthThreshold: 1000,
-      sendMemory: true,
-    },
-    lang: "cn",
-    builtin: true,
-    createdAt: 1720516873976,
-    botHelloContent: "有什么可以帮你的吗",
-    isStoreModel: false,
-  },
-  {
-    id: "_HjBnn-ABfQMnEeOer_kR",
     avatar: "1f4fb",
     name: "Babel 的广播",
     context: [
@@ -81,7 +44,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "nmWzvF4V4h_ouwktXQzBu",
     avatar: "1f4ab",
     name: "CSV 转换器",
     context: [
@@ -125,7 +87,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "MAd_J3CdWT2K62tZXldSr",
     avatar: "1f5c2-fe0f",
     name: "Excel 公式专家",
     context: [
@@ -169,7 +130,41 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "YqYnsqLcxcpEff7fFLsMD",
+    avatar: "1f4bb",
+    name: "Google apps scripter",
+    context: [
+      {
+        id: "XF9dcuMKE2ST1DS3RYLNb",
+        date: "",
+        toolMessages: [],
+        role: "user",
+        content:
+          "请为我编写一个 Google Apps 脚本，将 Google Slides 演示文稿中的所有文本翻译成韩语。",
+      },
+    ],
+    syncGlobalConfig: true,
+    modelConfig: {
+      model: "gpt-4-all",
+      temperature: 0.5,
+      top_p: 1,
+      max_tokens: 32000,
+      presence_penalty: 0,
+      frequency_penalty: 0,
+      enableInjectSystemPrompts: true,
+      enableInjectCustomSystemPrompts: false,
+      injectCustomSystemPrompts: "",
+      template: "{{input}}",
+      historyMessageCount: 4,
+      compressMessageLengthThreshold: 1000,
+      sendMemory: true,
+    },
+    lang: "cn",
+    builtin: true,
+    createdAt: 1720516873976,
+    botHelloContent: "有什么可以帮你的吗",
+    isStoreModel: false,
+  },
+  {
     avatar: "1f601",
     name: "Hal 幽默的助手",
     context: [
@@ -227,7 +222,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "XW1gmPsVERnNBtnB7jWKK",
     avatar: "1f58a-fe0f",
     name: "LaTeX 图例",
     context: [
@@ -271,7 +265,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "kx7t36XOtE2LHny7Ts5E2",
     avatar: "1f46e-200d-2640-fe0f",
     name: "PII 净化器",
     context: [
@@ -315,7 +308,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "m_KhGyLn9qOh9yR4TfZB4",
     avatar: "1f527",
     name: "Python 错误修复",
     context: [
@@ -359,7 +351,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "p2yz-NG3F0I4uSPjSXQA4",
     avatar: "1fa84",
     name: "SQL 魔法师",
     context: [
@@ -403,7 +394,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "1p_Uj0w_qb1isf-CZ33ok",
     avatar: "1f4aa",
     name: "VR健身创新者",
     context: [
@@ -439,7 +429,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "RkfPwvgzixd3CDh8pW2BJ",
     avatar: "1f464",
     name: "主要审核员",
     context: [
@@ -475,7 +464,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "c36F8EzgEHSKjx6gkdYm8",
     avatar: "1f468-200d-1f52c",
     name: "二年级简化器",
     context: [
@@ -519,7 +507,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "16H3fLcNFFiSzu4b_Dvzx",
     avatar: "2763-fe0f",
     name: "产品命名专家",
     context: [
@@ -563,7 +550,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "hzUcnH6n-ay-JVkaf9aVq",
     avatar: "1f5a8-fe0f",
     name: "代码解释器",
     context: [
@@ -607,7 +593,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "NFUBkoSwgNQ9lZZ7I77c-",
     avatar: "1f520",
     name: "代码顾问",
     context: [
@@ -651,7 +636,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "otfmwcifgQWbs_T9v4yNG",
     avatar: "1f9d1-200d-1f4bc",
     name: "企业预言家",
     context: [
@@ -687,7 +671,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "mfbrbiIOgi96FRjDYtpcS",
     avatar: "1f4dd",
     name: "会议记录员",
     context: [
@@ -731,7 +714,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "MLV01W0rithHfFGzgPpg1",
     avatar: "1f635-200d-1f4ab",
     name: "伦理困境导航",
     context: [
@@ -775,7 +757,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "agocPg-zlYJT8gRbRpgtX",
     avatar: "2139-fe0f",
     name: "函数生成器",
     context: [
@@ -819,7 +800,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "pYlU7ib0kWOVj8Z-J00Uo",
     avatar: "1f90f",
     name: "双关大师",
     context: [
@@ -862,7 +842,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "c7jEL7kbimWfoEFI6Xd2O",
     avatar: "2795",
     name: "合成词诗人",
     context: [
@@ -906,7 +885,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "ZE65QLTfAtgG4OgV0QeoS",
     avatar: "1f3e2",
     name: "品牌建设者",
     context: [
@@ -950,7 +928,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "ANmdkUmEgCMilaO_dISBk",
     avatar: "1f914",
     name: "哲学思考",
     context: [
@@ -993,7 +970,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "bb8tUozYOw88A5hrECwpy",
     avatar: "1f47d",
     name: "外星人类学家",
     context: [
@@ -1036,7 +1012,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "st18EhYP8TAJks8Cv84Vl",
     avatar: "1f469-200d-1f393",
     name: "多语言超能力",
     context: [
@@ -1080,7 +1055,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "tX-2kESwX0mmnCI8c4qYx",
     avatar: "2328-fe0f",
     name: "宇宙键盘",
     context: [
@@ -1116,7 +1090,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "tburFjSu0OTKhA-Gv9kkK",
     avatar: "1f50d",
     name: "引用你的来源",
     context: [
@@ -1159,7 +1132,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "QulHhR0kSvhVbyUv8tRDR",
     avatar: "1f920",
     name: "情绪色彩生成器",
     context: [
@@ -1202,7 +1174,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "GKBMaJabRhl0mPKaNAJJ2",
     avatar: "1f521",
     name: "成语释义",
     context: [
@@ -1245,7 +1216,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "LSMvJdyZjHmfJhnwmFuYP",
     avatar: "1f516",
     name: "押韵的语言魔术师",
     context: [
@@ -1288,7 +1258,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "-8JhvePmfGVZgumbduUch",
     avatar: "1f9f3",
     name: "指令解码器",
     context: [
@@ -1332,7 +1301,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "1GzKZZxbt9Wbz4v0G4KF8",
     avatar: "1f4d6",
     name: "推文语气检测器",
     context: [
@@ -1376,7 +1344,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "wimGOH-8XCSO4X4xNodGJ",
     avatar: "1f522",
     name: "效率估算器",
     context: [
@@ -1420,7 +1387,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "c2ktohdRoTLtQPscmprS9",
     avatar: "0031-fe0f-20e3",
     name: "数据组织器",
     context: [
@@ -1464,7 +1430,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "LFngPKkz6CMBy2SYN_syw",
     avatar: "1f5de-fe0f",
     name: "文章润色",
     context: [
@@ -1508,7 +1473,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "N61LP84rlDJbFmu2rq9_4",
     avatar: "1f4f0",
     name: "新词创造者",
     context: [
@@ -1544,7 +1508,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "MZC9smtMPMpkkb4i8QBaq",
     avatar: "1f570-fe0f",
     name: "时间旅行顾问",
     context: [
@@ -1588,7 +1551,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "lQIQr-MEleqlQm9nJhm0N",
     avatar: "1f464",
     name: "明喻大师",
     context: [
@@ -1623,7 +1585,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "LH6yn587XZTKlHh5zlqSJ",
     avatar: "1f469-200d-1f9b3",
     name: "未来主义时尚顾问",
     context: [
@@ -1667,7 +1628,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "1mcDCTy3DwfHkZSf8pyiH",
     avatar: "2708-fe0f",
     name: "机场代码分析器",
     context: [
@@ -1711,7 +1671,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "H_QDfBlyFwwX78Y2GxYds",
     avatar: "1f924",
     name: "梦境解析",
     context: [
@@ -1755,7 +1714,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "fshJOe_137BGiDHmctNs7",
     avatar: "263a-fe0f",
     name: "正念导师",
     context: [
@@ -1799,7 +1757,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "SFsEbio6wbLr8yNOakOUv",
     avatar: "1f4a1",
     name: "激励灵感",
     context: [
@@ -1843,7 +1800,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "eyyXWYVSaS1J9x21l8LTi",
     avatar: "1f35a",
     name: "烹饪创作者",
     context: [
@@ -1887,7 +1843,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "GM_4XipulV-B8wNqcIiDF",
     avatar: "1f3b2",
     name: "猜谜游戏",
     context: [
@@ -1923,7 +1878,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "bkRPhncBD6TmN4e97__fC",
     avatar: "1f631",
     name: "琐事生成器",
     context: [
@@ -1959,7 +1913,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "IVN3HCeIBDlf4qxewwpI7",
     avatar: "1f468-200d-1f4bc",
     name: "电子表格魔法师",
     context: [
@@ -2003,7 +1956,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "cMK0M9xT4Xq2Vhcc2h8rW",
     avatar: "2709-fe0f",
     name: "电子邮件提取器",
     context: [
@@ -2047,7 +1999,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "9HOUbQPvgTYTJmdrViKzR",
     avatar: "1f468-200d-1f52c",
     name: "科幻场景模拟器",
     context: [
@@ -2090,7 +2041,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "4SB11jF5ZBWUIvAlUArOD",
     avatar: "1f524",
     name: "精通 Git",
     context: [
@@ -2126,7 +2076,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "wMXkyUDpT6L9HFE-0PP-k",
     avatar: "1f3ae",
     name: "绕口令",
     context: [
@@ -2162,7 +2111,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "U3yDAtVw08ADZ0yPVOgwm",
     avatar: "1f9ed",
     name: "网站向导",
     context: [
@@ -2206,7 +2154,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "t6r_zT9HEzap4BNkJDVC9",
     avatar: "1f93e-200d-2642-fe0f",
     name: "职业教练",
     context: [
@@ -2250,7 +2197,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "q7yuAowp0aQLBZKTQw0D7",
     avatar: "1f310",
     name: "自适应编辑器",
     context: [
@@ -2286,7 +2232,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "k2PJVpyE2YevSTT2Coh1j",
     avatar: "1f468-200d-1f9b3",
     name: "苏格拉底式智者",
     context: [
@@ -2329,7 +2274,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "hiuNGBT4r3cuJBHL8mCe8",
     avatar: "1f642",
     name: "表情符号编码器",
     context: [
@@ -2373,7 +2317,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "BI_8IzW7fsERNa0ljCNLm",
     avatar: "1f5e3-fe0f",
     name: "观点权衡",
     context: [
@@ -2408,7 +2351,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "KaKdNAgUbsm3dzvZHMstA",
     avatar: "1f4da",
     name: "讲故事的好帮手",
     context: [
@@ -2452,7 +2394,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "OCM13Qoqz7crWQiF6MVhS",
     avatar: "1f575-fe0f-200d-2642-fe0f",
     name: "评分大师",
     context: [
@@ -2488,7 +2429,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "dgR60tHKZDIrMxhazd5Jl",
     avatar: "270d-fe0f",
     name: "评论分类器",
     context: [
@@ -2532,7 +2472,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "BDIZem0CbotP7_4WCzzQq",
     avatar: "2611-fe0f",
     name: "语法精灵",
     context: [
@@ -2575,7 +2514,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "h3DJcqBjcV1pKqNyoxY-D",
     avatar: "1f4da",
     name: "课程计划",
     context: [
@@ -2618,7 +2556,6 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    id: "cR5eBBUnofNm0o25NdYie",
     avatar: "2049-fe0f",
     name: "面试问题设计",
     context: [
