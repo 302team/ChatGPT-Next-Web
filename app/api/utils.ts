@@ -115,6 +115,7 @@ export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
 
       fetchOptions.body = JSON.stringify(jsonBody);
     } catch (error) {
+      console.log("🚀 ~ parsePrompt ~ error:", error);
       //
     }
   }
