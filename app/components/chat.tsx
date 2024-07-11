@@ -1978,7 +1978,16 @@ function _Chat(props: { promptStarters: string[] }) {
                           items={[
                             {
                               key: message.id,
-                              label: getMessageTextContent(message),
+                              label: (
+                                <Markdown
+                                  content={message.content}
+                                  loading={
+                                    (message.preview || message.streaming) &&
+                                    message.content.length === 0 &&
+                                    !isUser
+                                  }
+                                />
+                              ), // getMessageTextContent(message),
                               children: (
                                 <Markdown
                                   content={message.kbMessage}
