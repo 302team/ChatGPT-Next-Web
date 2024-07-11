@@ -67,6 +67,22 @@ interface RequestPayload {
 
 const ERROR_MESSAGE = "Network error, please retry.";
 
+function extractMessageBody(text: string, model: string) {
+  const _model = model.toLocaleLowerCase();
+  const res = JSON.parse(text);
+  if (_model.includes("sensechat")) {
+    res.data.choices.forEach((item: any) => {
+      item.delta = {
+        content: item.delta,
+      };
+    });
+
+    return res.data;
+  }
+
+  return res;
+}
+
 export class ChatGPTApi implements LLMApi {
   private disableListModels = true;
 
@@ -372,7 +388,7 @@ export class ChatGPTApi implements LLMApi {
             }
             const text = msg.data;
             try {
-              const json = JSON.parse(text);
+              const json = extractMessageBody(text, modelConfig.model);
               const choices = json.choices as Array<{
                 delta: { content: string | Array<{ text: string }> };
               }>;
