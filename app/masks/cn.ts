@@ -2,23 +2,24 @@ import { BuiltinMask } from "./typing";
 
 export const CN_MASKS: BuiltinMask[] = [
   {
-    avatar: "1f4fb",
-    name: "Babel 的广播",
+    avatar: "1f4cb",
+    name: "备忘录大师",
     context: [
       {
-        id: "u-Zx0UxYEsNWZQ60qSmF1",
+        id: "C088OnjGufXND2ehnbrgA",
         date: "",
+        toolMessages: [],
+        role: "system",
+        content:
+          "你的任务是根据提供的关键点撰写一份全面的公司备忘录。备忘录应以专业的语气写成，以清晰简洁的方式阐述所有相关信息。使用适当的格式，如标题、副标题和要点，有效地组织内容。确保备忘录结构合理、连贯、易于目标受众理解。",
+      },
+      {
+        id: "RoqwTiAnXWhQyLm-P2Xnq",
+        date: "2024/7/11 11:34:39",
         toolMessages: [],
         role: "user",
         content:
-          "用世界十大最常用语言为我写一系列产品发布推文。这款产品是一款最先进的双筒望远镜,内置人工智能系统,可以识别通过望远镜看到的动物。这些推文应该令人兴奋、尖端,并能推动消费者的兴趣。",
-      },
-      {
-        id: "gTgM7IbGhtHj10Lv0Uajx",
-        date: "2024/7/9 17:59:09",
-        toolMessages: [],
-        role: "user",
-        content: "一个人类可以将意识上传到数字领域的未来。",
+          "- 宣布新的员工健康计划：“Fit4Success”\n- 计划目标：促进身心健康，减轻压力，提高生产力\n- 组成部分：现场健身课程、健康餐饮选择、心理健康资源和健康研讨会\n- 与当地健身房和健康中心合作，提供会员折扣\n- 参与激励措施：健身追踪器、健康积分和奖品抽奖\n- 计划启动日期：2023年6月1日\n- 报名流程：通过公司内网在线注册\n- 计划协调员：人力资源部和员工敬业度团队",
       },
     ],
     syncGlobalConfig: true,
@@ -39,7 +40,42 @@ export const CN_MASKS: BuiltinMask[] = [
     },
     lang: "cn",
     builtin: true,
-    createdAt: 1720519124158,
+    createdAt: 1720668864341,
+    botHelloContent: "有什么可以帮你的吗",
+    isStoreModel: false,
+  },
+  {
+    avatar: "1f4fb",
+    name: "Babel 的广播",
+    context: [
+      {
+        id: "pxxwre6-kJ9J1-TuMP8_F",
+        date: "",
+        toolMessages: [],
+        role: "user",
+        content:
+          "用世界十大最常用语言为我写一系列产品发布推文。这款产品是一款最先进的双筒望远镜,内置人工智能系统,可以识别通过望远镜看到的动物。这些推文应该令人兴奋、尖端,并能推动消费者的兴趣。",
+      },
+    ],
+    syncGlobalConfig: true,
+    modelConfig: {
+      model: "gpt-4-all",
+      temperature: 0.5,
+      top_p: 1,
+      max_tokens: 32000,
+      presence_penalty: 0,
+      frequency_penalty: 0,
+      enableInjectSystemPrompts: true,
+      enableInjectCustomSystemPrompts: false,
+      injectCustomSystemPrompts: "",
+      template: "{{input}}",
+      historyMessageCount: 4,
+      compressMessageLengthThreshold: 1000,
+      sendMemory: true,
+    },
+    lang: "cn",
+    builtin: true,
+    createdAt: 1720607436161,
     botHelloContent: "有什么可以帮你的吗",
     isStoreModel: false,
   },
@@ -640,12 +676,12 @@ export const CN_MASKS: BuiltinMask[] = [
     name: "企业预言家",
     context: [
       {
-        id: "mLo1JBI3IMAA6JXqruAZG",
+        id: "-2vvbXfgfS_U0AGH7ca-k",
         date: "",
         toolMessages: [],
         role: "user",
         content:
-          "你的任务是分析以下报告：\n\n以简洁明了的方式总结这份年度报告，并识别关键的市场趋势和要点。将你的发现以一份简短的备忘录形式输出，我可以将其发送给我的团队。备忘录的目的是确保我的团队及时了解金融机构的运营情况，并定性预测和识别下一季度可能出现的任何运营和收入风险。确保在你的总结和分析中包括所有相关细节。",
+          "你的任务是分析以下报告：\n\nhttps://investors.matterport.com/node/9501/html\n\n以简洁明了的方式总结这份年度报告，并识别关键的市场趋势和要点。将你的发现以一份简短的备忘录形式输出，我可以将其发送给我的团队。备忘录的目的是确保我的团队及时了解金融机构的运营情况，并定性预测和识别下一季度可能出现的任何运营和收入风险。确保在你的总结和分析中包括所有相关细节。",
       },
     ],
     syncGlobalConfig: true,
@@ -666,7 +702,7 @@ export const CN_MASKS: BuiltinMask[] = [
     },
     lang: "cn",
     builtin: true,
-    createdAt: 1720516298005,
+    createdAt: 1720668510185,
     botHelloContent: "有什么可以帮你的吗",
     isStoreModel: false,
   },
@@ -714,11 +750,11 @@ export const CN_MASKS: BuiltinMask[] = [
     isStoreModel: false,
   },
   {
-    avatar: "1f635-200d-1f4ab",
+    avatar: "1f469-200d-1f469-200d-1f467-200d-1f466",
     name: "伦理困境导航",
     context: [
       {
-        id: "3FFCkINYWoN5rVSFKxMqr",
+        id: "RQSBEc-QDbiD6kqTj47ZK",
         date: "",
         toolMessages: [],
         role: "system",
@@ -726,12 +762,12 @@ export const CN_MASKS: BuiltinMask[] = [
           "通过识别核心伦理原则、探索不同的伦理框架、考虑潜在后果、承认复杂性、鼓励个人反思和提供额外资源,帮助用户应对复杂的伦理困境。保持客观、非判断性的语气,强调批判性思维、同理心和负责任的决策。",
       },
       {
-        id: "a2D0PFD4gR_7__NP5Pw-J",
-        date: "2024/7/9 18:38:43",
+        id: "qAhVxKNbJQQ4J-XycvZ4A",
+        date: "2024/7/11 11:31:43",
         toolMessages: [],
         role: "user",
         content:
-          "\t我是一名记者,发现了一位高级政府官员腐败的证据。公布这个故事可能会引起公众的愤怒,要求该官员辞职,但也可能破坏政府的稳定,造成经济不确定性。该官员向我提供了一大笔贿赂,要我保持沉默。我应该接受贿赂、公布这个故事,还是找到另一个解决方案?",
+          "我是一名记者,发现了一位高级政府官员腐败的证据。公布这个故事可能会引起公众的愤怒,要求该官员辞职,但也可能破坏政府的稳定,造成经济不确定性。该官员向我提供了一大笔贿赂,要我保持沉默。我应该接受贿赂、公布这个故事,还是找到另一个解决方案?",
       },
     ],
     syncGlobalConfig: true,
@@ -752,7 +788,7 @@ export const CN_MASKS: BuiltinMask[] = [
     },
     lang: "cn",
     builtin: true,
-    createdAt: 1720521517905,
+    createdAt: 1720668663886,
     botHelloContent: "有什么可以帮你的吗",
     isStoreModel: false,
   },
@@ -1275,7 +1311,7 @@ export const CN_MASKS: BuiltinMask[] = [
         toolMessages: [],
         role: "user",
         content:
-          "\t要泡一杯茶，首先用水壶烧一些水。在水加热的同时，拿一个杯子，把一个茶包放进去。一旦水烧开了，小心地把它倒入杯子，浸泡茶包。根据你喜欢的浓度，让茶叶浸泡几分钟。浸泡后，取出茶包，根据口味加入牛奶和糖。搅拌均匀，享用你的热茶。",
+          "要泡一杯茶，首先用水壶烧一些水。在水加热的同时，拿一个杯子，把一个茶包放进去。一旦水烧开了，小心地把它倒入杯子，浸泡茶包。根据你喜欢的浓度，让茶叶浸泡几分钟。浸泡后，取出茶包，根据口味加入牛奶和糖。搅拌均匀，享用你的热茶。",
       },
     ],
     syncGlobalConfig: true,
@@ -2530,7 +2566,7 @@ export const CN_MASKS: BuiltinMask[] = [
         date: "2024/7/9 18:10:07",
         toolMessages: [],
         role: "user",
-        content: "题：光合作用简介 年级：7年级（12-13岁）",
+        content: "主题：光合作用简介 年级：7年级（12-13岁）",
       },
     ],
     syncGlobalConfig: true,
