@@ -111,7 +111,7 @@ export async function requestOpenai(req: NextRequest) {
   }
 
   await parsePrompt(req, fetchOptions);
-  console.log("🚀 ~ requestOpenai ~ fetchOptions:", fetchOptions);
+  // console.log("🚀 ~ requestOpenai ~ fetchOptions:", fetchOptions);
 
   try {
     const res = await fetch(fetchUrl, fetchOptions);

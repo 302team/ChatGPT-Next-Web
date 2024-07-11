@@ -27,6 +27,7 @@ export interface RequestPayload {
   frequency_penalty: number;
   top_p: number;
   max_tokens?: number;
+  textract?: boolean;
 }
 
 const serverConfig = getServerSideConfig();
@@ -59,12 +60,8 @@ async function parseText(url: string) {
       "Content-type": "application/json",
     },
     body: JSON.stringify({ url }),
-  })
-    .then((res) => res.json())
-    .catch((err) => {
-      console.log("[textract] err:", err);
-    });
-  console.log("[textract] res:", JSON.stringify(res));
+  }).then((res) => res.json());
+  console.log("[textract] res:", !!res.data.msg, res.data.msg.length);
 
   if (res.code === 0) {
     return res.data.msg;
@@ -87,66 +84,71 @@ export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
       const jsonBody = JSON.parse(clonedBody) as RequestPayload;
       console.log("[parsePrompt] parse body end");
 
-      for (let i = jsonBody.messages.length - 1; i >= 0; i--) {
-        const m = jsonBody.messages[i];
-        if (m.role === "user") {
-          if (typeof m.content === "string") {
-            // https://file.302.ai/gpt/imgs/20240710/611984ac482b4a3f9212b3da7a473e89.txt\nhi
-            const strArr = m.content.split("\n");
-            // 找到所有文件链接
-            const files = strArr.filter((s) => Link_Exp.test(s));
-            // const contexts = strArr.filter((s) => !Link_Exp.test(s));
-            // 提取文件内容
-            if (files.length) {
-              for (let idx = 0; idx < files.length; idx++) {
-                const url = files[idx];
-                const ext = url.substring(url.lastIndexOf(".") + 1);
-                console.log(
-                  "[parsePrompt] get url",
-                  JSON.stringify({ url, ext }),
-                );
-
-                if (File_Extension.includes(ext.toLocaleLowerCase())) {
-                  console.log("[parsePrompt] get text", url);
-                  const fileContent = await parseText(url);
+      console.log("[parsePrompt] 是否应该提取文件内容", jsonBody.textract);
+      // 是否应该提取文件内容
+      if (jsonBody.textract) {
+        for (let i = jsonBody.messages.length - 1; i >= 0; i--) {
+          const m = jsonBody.messages[i];
+          if (m.role === "user") {
+            if (typeof m.content === "string") {
+              // https://file.302.ai/gpt/imgs/20240710/611984ac482b4a3f9212b3da7a473e89.txt\nhi
+              const strArr = m.content.split("\n");
+              // 找到所有文件链接
+              const files = strArr.filter((s) => Link_Exp.test(s));
+              // const contexts = strArr.filter((s) => !Link_Exp.test(s));
+              // 提取文件内容
+              if (files.length) {
+                for (let idx = 0; idx < files.length; idx++) {
+                  const url = files[idx];
+                  const ext = url.substring(url.lastIndexOf(".") + 1);
                   console.log(
-                    "[parsePrompt] get text end",
-                    JSON.stringify({
-                      url,
-                      fileContent,
-                    }),
+                    "[parsePrompt] get url",
+                    JSON.stringify({ url, ext }),
                   );
 
-                  m.content =
-                    m.content.replaceAll(url, "") +
-                    "\n" +
-                    `file-content: ${fileContent}`;
+                  if (File_Extension.includes(ext.toLocaleLowerCase())) {
+                    console.log("[parsePrompt] get text", url);
+                    const fileContent = await parseText(url);
+                    console.log(
+                      "[parsePrompt] get text end",
+                      JSON.stringify({
+                        url,
+                        fileContent,
+                      }),
+                    );
+
+                    m.content =
+                      m.content.replaceAll(url, "") +
+                      "\n" +
+                      `file-content: ${fileContent}`;
+                  }
                 }
               }
+            } else {
+              // const filesContent = m.content.filter(i => i.type === "file");
+              // if (filesContent.length) {
+              //   for (let idx = 0;  idx < filesContent.length;idx++) {
+              //     const file = filesContent[idx].file;
+              //     if (file && File_Extension.includes(file.type.toLocaleLowerCase())) {
+              //     }
+              //   }
+              // }
             }
-          } else {
-            // const filesContent = m.content.filter(i => i.type === "file");
-            // if (filesContent.length) {
-            //   for (let idx = 0;  idx < filesContent.length;idx++) {
-            //     const file = filesContent[idx].file;
-            //     if (file && File_Extension.includes(file.type.toLocaleLowerCase())) {
-            //     }
-            //   }
-            // }
-          }
 
-          break;
+            break;
+          }
         }
       }
 
       fetchOptions.body = JSON.stringify(jsonBody);
+
+      console.log("[parsePrompt] end =============\n\n");
+      return clonedBody;
     } catch (error) {
       console.log("🚀 ~ parsePrompt ~ error:", error);
       //
     }
   }
-
-  console.log("[parsePrompt] end =============\n\n");
 
   return fetchOptions;
 }

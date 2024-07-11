@@ -161,6 +161,9 @@ export class ChatGPTApi implements LLMApi {
       top_p: modelConfig.top_p,
       // max_tokens: Math.max(modelConfig.max_tokens, 1024),
       // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
+      textract:
+        config.multimodalType4Models[modelConfig.model] !==
+        FILE_SUPPORT_TYPE.ALL,
     };
 
     // qwen-vl 模型不支持带 temperature

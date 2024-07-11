@@ -718,28 +718,23 @@ function useUploadFile(extra: {
     new RegExp(m).test(currentModel),
   );
 
-  const supportMultimodal = useMemo(() => {
-    // 如果是从应用商店创建的
-    if (isStoreModel) {
-      // 所有 gpts 模型 || 部分国产模型 支持多模态
-      return (
-        isGptsModel ||
-        isStoreModelSupportPlugin ||
-        currentModel in config.multimodalType4Models
-      );
-    } else {
-      return (
-        config.fileSupportType === FILE_SUPPORT_TYPE.ALL ||
-        config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE
-      );
+  const supportMultimodal = true;
+
+  useEffect(() => {
+    const show = supportMultimodal;
+
+    setShowUploadAction(show);
+
+    if (!show) {
+      setUploadFiles([]);
+      setUploading(false);
     }
   }, [
-    config.fileSupportType,
-    config.multimodalType4Models,
-    isStoreModelSupportPlugin,
     currentModel,
     isStoreModel,
-    isGptsModel,
+    config.pluginConfig.enable,
+    allPlugins.length,
+    supportMultimodal,
   ]);
 
   // ========================================
@@ -757,52 +752,28 @@ function useUploadFile(extra: {
   };
 
   const getAcceptFileType = (model: ModelType | string) => {
-    if (isStoreModel) {
-      if (
-        isStoreModelSupportPlugin ||
-        config.multimodalType4Models[currentModel] === FILE_SUPPORT_TYPE.ALL
-      ) {
-        return "*";
-      } else if (
-        config.multimodalType4Models[currentModel] ===
-        FILE_SUPPORT_TYPE.ONLY_IMAGE
-      ) {
-        return ".png, .jpg, .jpeg, .webp, .gif";
-      }
-    } else {
-      if (config.pluginConfig.enable) {
-        return "*";
-      } else if (config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE) {
-        return ".png, .jpg, .jpeg, .webp, .gif";
-      } else if (config.fileSupportType === FILE_SUPPORT_TYPE.ALL) {
-        return "*";
-      } else if (model.includes("whisper")) {
-        return ".flac, .mp3, .mp4, .mpeg, .mpga, .m4a, .ogg, .wav, .webm";
-      }
+    if (config.pluginConfig.enable || isStoreModelSupportPlugin) {
+      // 开启了插件的
+      return "*";
+    } else if (
+      config.multimodalType4Models[currentModel] === FILE_SUPPORT_TYPE.NOTHING
+    ) {
+      // 20240711：所有模型都默认支持多模态上传
+      // 如果是以前不支持多模态的模型，现在上传的文件，提取出文件内容。
+      // return ".pdf, .docx, .csv, .txt, .html, .odt, .rtf, .epub, .md, .xml, .xsl, .pptx, .potx";
+      return "*";
+    } else if (
+      config.multimodalType4Models[currentModel] ===
+        FILE_SUPPORT_TYPE.ONLY_IMAGE ||
+      config.multimodalType4Models[currentModel] === FILE_SUPPORT_TYPE.ALL
+    ) {
+      return "*";
+    } else if (model.includes("whisper")) {
+      return ".flac, .mp3, .mp4, .mpeg, .mpga, .m4a, .ogg, .wav, .webm";
     }
     return "";
   };
   // ========================================
-
-  useEffect(() => {
-    const show =
-      supportMultimodal ||
-      // 非应用商店的模型, 开启了使用插件的功能
-      (!isStoreModel && config.pluginConfig.enable && allPlugins.length > 0);
-
-    setShowUploadAction(show);
-
-    if (!show) {
-      setUploadFiles([]);
-      setUploading(false);
-    }
-  }, [
-    currentModel,
-    isStoreModel,
-    config.pluginConfig.enable,
-    allPlugins.length,
-    supportMultimodal,
-  ]);
 
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
@@ -915,45 +886,12 @@ function useUploadFile(extra: {
       return false;
     }
 
-    const filterdFiles = Array.from(files).filter((f) => {
-      if (isStoreModel) {
-        // app store 的模型, 只有部分才支持
-        // gpts 模型支持所有文件类型,
-        // 视觉模型 仅支持图片类型
-        return (
-          /* gpts模型 */
-          isGptsModel ||
-          /* 非gpts模型，该模型支持所有类型 */
-          config.multimodalType4Models[currentModel] ===
-            FILE_SUPPORT_TYPE.ALL ||
-          /* 非gpts模型，并且该模型支持图片上传 */
-          (config.multimodalType4Models[currentModel] ===
-            FILE_SUPPORT_TYPE.ONLY_IMAGE &&
-            isImage((f as File).type))
-        );
-      } else {
-        if (config.pluginConfig.enable) {
-          return true;
-        }
-
-        if (config.fileSupportType === FILE_SUPPORT_TYPE.ALL) {
-          return true;
-        }
-
-        if (config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE) {
-          return isImage((f as File).type);
-        }
-      }
-
-      return false;
-    });
-
     const images: UploadFile[] = [];
 
     if (uploading) return;
     setUploading(true);
 
-    const tasks = Array.from(filterdFiles).map(async (file) => {
+    const tasks = Array.from(files).map(async (file) => {
       return await handleUpload(file).then((result) => {
         images.push(result);
       });
@@ -965,7 +903,6 @@ function useUploadFile(extra: {
         setTimeout(() => {
           setUploading(false);
         }, 300);
-        console.log("🚀 ~ Promise.all ~ dropUpload all tasks end:", images);
       })
       .catch(() => {
         setUploading(false);

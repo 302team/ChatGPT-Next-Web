@@ -274,11 +274,10 @@ async function getUserContent(
 
     // 如果是应用商店的模型, 非 gpts 模型, 需要根据后端返回的type判断
     const condition = mask.isStoreModel
-      ? /* 如果是 gpts 模型, 直接走 type: image */
-        mask.isGptsModel
+      ? mask.isGptsModel /* 如果是 gpts 模型, 直接走 type: file */
         ? false
         : config.multimodalType4Models[model] === FILE_SUPPORT_TYPE.ONLY_IMAGE
-      : config.fileSupportType === FILE_SUPPORT_TYPE.ONLY_IMAGE;
+      : config.multimodalType4Models[model] === FILE_SUPPORT_TYPE.ONLY_IMAGE;
 
     for (const file of fileArr) {
       // 如果是gpt4-vision，或者claude模型，claude模型目前是根据中转接口来定的报文格式，以后要改成官方报文格式
