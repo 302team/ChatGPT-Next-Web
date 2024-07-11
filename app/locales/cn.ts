@@ -43,20 +43,20 @@ const cn = {
     Later: "稍后再说",
     CAPTCHA_ERROR: "分享码错误",
     CHATBOT_DISABLED_ERROR: (region = 0) =>
-      `机器人已禁用，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
+      `该机器人已禁用，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
     CHATBOT_DELETE_ERROR: (region = 0) =>
-      `机器人已删除，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
+      `该机器人已删除，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
     SERVER_ERROR: "内部错误, 请联系客服",
     BALANCE_LIMIT_ERROR: "账户余额不足, 请充值",
     TOKEN_EXPIRED_ERROR: "Token过期, 请重新登录",
     CHATBOT_DISABLED_ERROR2: (region = 0) =>
-      `机器人已禁用，更多信息请访问[${getLink(region).homeText}](${getLink(region).homeLink})`,
+      `该机器人已禁用，更多信息请访问[${getLink(region).homeText}](${getLink(region).homeLink})`,
     TOTAL_QUOTA_ERROR: (region = 0) =>
-      `机器人的总额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
+      `该机器人的总额度已达上限，更多信息请访问[${getLink(region).homeText}](${getLink(region).homeLink})`,
     DAILY_QUOTA_ERROR: (region = 0) =>
-      `机器人的单日额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
+      `该机器人的单日额度已达上限，更多信息请访问[${getLink(region).homeText}](${getLink(region).homeLink})`,
     HOUR_QUOTA_ERROR: (region = 0) =>
-      `改机器人在本小时的额度已达上限，请注册[${getLink(region).homeText}](${getLink(region).homeLink})创建属于自己的机器人`,
+      `该机器人在本小时的额度已达上限，请注册[${getLink(region).homeText}](${getLink(region).homeLink})创建属于自己的机器人`,
   },
   Preview: {
     Title: "实时预览",

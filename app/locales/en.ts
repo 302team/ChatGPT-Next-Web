@@ -47,20 +47,20 @@ const en: LocaleType = {
     Later: "Later",
     CAPTCHA_ERROR: "Share code incorrect",
     CHATBOT_DISABLED_ERROR: (region = 0) =>
-      `Robot is disabled, Please refer to <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
+      `This robot is disabled, Please refer to <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
     CHATBOT_DELETE_ERROR: (region = 0) =>
-      `Robot is deleted, Please refer to  <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
+      `This robot is deleted, Please refer to  <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
     SERVER_ERROR: "Internal error, please contact customer service",
     BALANCE_LIMIT_ERROR: "The account balance is insufficient, please top up",
     TOKEN_EXPIRED_ERROR: "Token expired, please log in again",
     CHATBOT_DISABLED_ERROR2: (region = 0) =>
-      `Robot is disabled, Please refer to [${getLink(region).homeText}](${getLink(region).homeLink}) for details`,
+      `This robot is disabled, Please refer to [${getLink(region).homeText}](${getLink(region).homeLink}) for details`,
     TOTAL_QUOTA_ERROR: (region = 0) =>
-      `Robot's total quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
+      `This robot's total quota reached maximum limit. Please refer to [${getLink(region).homeText}](${getLink(region).homeLink}) for details`,
     DAILY_QUOTA_ERROR: (region = 0) =>
-      `Robot's daily quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
+      `This robot's daily quota reached maximum limit. Please refer to [${getLink(region).homeText}](${getLink(region).homeLink}) for details`,
     HOUR_QUOTA_ERROR: (region = 0) =>
-      `This robot's hour quota reached maximum limit. Please sign up  [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
+      `This robot's hour quota reached maximum limit. Please sign up [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
   },
   Preview: {
     Title: "Preview",
