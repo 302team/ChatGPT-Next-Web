@@ -43,11 +43,12 @@ import {
   useChatStore,
   ModelType,
   BOT_HELLO,
+  Theme,
 } from "../store";
 import { identifyDefaultClaudeModel } from "../utils/checkers";
 import Image from "next/image";
 import { Prompt, usePromptStore } from "../store/prompt";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, theme } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
 import { Plugin, usePluginStore } from "../store/plugin";
@@ -431,28 +432,24 @@ function Screen() {
 
 export function Home() {
   const [langLoading, setLangLoading] = useState(false);
-  // useSwitchTheme();
+  const config = useAppConfig();
+
+  useSwitchTheme();
   // useLoadData();
   useHtmlLang();
 
   useEffect(() => {
     document.body.classList.add("light");
-    // try {
-    //   let hash = window.location.hash;
-    //   if (hash.includes("lang=")) {
-    //     const query = hash.split("?").pop();
-    //     const langRecord = query?.split("&").find((q) => q.includes("lang"));
-    //     if (langRecord) {
-    //       const lang = langRecord.split("=")[1];
-    //       localStorage.setItem("lang", lang === "zh-CN" ? "cn" : "en");
-    //     }
-    //   }
-    // } catch (error) {
-    // } finally {
-    //   setLangLoading(false);
-    // }
     console.log("[Config] got config from build time", getClientConfig());
     useAccessStore.getState().fetch();
+  }, []);
+
+  const [defaultTheme, setDefaultTheme] = useState("");
+  useEffect(() => {
+    const themeMedia = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    setDefaultTheme(themeMedia ? Theme.Dark : Theme.Light);
   }, []);
 
   if (!useHasHydrated()) {
@@ -468,7 +465,19 @@ export function Home() {
   return (
     <>
       <ErrorBoundary>
-        <ConfigProvider locale={lang === "cn" ? zhCN : enUS}>
+        <ConfigProvider
+          locale={lang === "cn" ? zhCN : enUS}
+          theme={{
+            algorithm:
+              config.theme === Theme.Auto
+                ? defaultTheme === Theme.Dark
+                  ? theme.darkAlgorithm
+                  : theme.defaultAlgorithm
+                : config.theme === Theme.Dark
+                  ? theme.darkAlgorithm
+                  : theme.defaultAlgorithm,
+          }}
+        >
           <Router>
             <Screen />
           </Router>

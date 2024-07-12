@@ -327,7 +327,7 @@ function LogsModal(props: {
           size="large"
           dataSource={props.logs}
           itemLayout="horizontal"
-          renderItem={(item, index) => (
+          renderItem={(item: SyncRecordItem, index: number) => (
             <AList.Item>
               <AList.Item.Meta
                 title={formatDate(
@@ -456,7 +456,7 @@ function SyncItems() {
               className={styles["input"]}
               style={{ width: "100px" }}
               readOnly={readonlySyncFromCloudPwd}
-              onInput={(e) => {
+              onInput={(e: any) => {
                 setSyncFromCloudPwd(e.currentTarget.value);
               }}
             />
@@ -510,7 +510,7 @@ function SystemPromptsModal(props: {
           bordered
           dataSource={props.list}
           itemLayout="horizontal"
-          renderItem={(item, index) => (
+          renderItem={(item: SystemPrompt, index: number) => (
             <AList.Item>
               <AList.Item.Meta
                 title={formatDate(

@@ -851,10 +851,10 @@ function useUploadFile(extra: {
         fileInput.accept = getAcceptFileType(currentModel);
         fileInput.multiple = true;
         fileInput.addEventListener("change", (event: any) => {
-          setUploading(true);
           const files = filterFiles(event.target.files);
           if (!files.length) return;
 
+          setUploading(true);
           const imagesData: UploadFile[] = [];
 
           const tasks = Array.from(files).map(async (file) => {
