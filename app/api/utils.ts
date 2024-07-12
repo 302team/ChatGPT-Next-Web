@@ -146,6 +146,7 @@ export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
       return clonedBody;
     } catch (error) {
       console.log("🚀 ~ parsePrompt ~ error:", error);
+      throw error;
       //
     }
   }

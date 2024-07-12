@@ -306,7 +306,12 @@ export class ChatGPTApi implements LLMApi {
               return finish();
             }
 
-            if (
+            if (res.status === 200 && contentType === "application/json") {
+              const json = await res.clone().json();
+              responseText = json.message;
+              isStreamDone = true;
+              return finish();
+            } else if (
               !res.ok ||
               !res.headers
                 .get("content-type")

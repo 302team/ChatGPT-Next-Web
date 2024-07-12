@@ -110,8 +110,20 @@ export async function requestOpenai(req: NextRequest) {
     }
   }
 
-  await parsePrompt(req, fetchOptions);
-  // console.log("🚀 ~ requestOpenai ~ fetchOptions:", fetchOptions);
+  try {
+    await parsePrompt(req, fetchOptions);
+    // console.log("🚀 ~ requestOpenai ~ fetchOptions:", fetchOptions);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: error,
+        message: `对不起，我无法打开这个文件`,
+      },
+      {
+        status: 200,
+      },
+    );
+  }
 
   try {
     const res = await fetch(fetchUrl, fetchOptions);

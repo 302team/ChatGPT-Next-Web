@@ -156,8 +156,8 @@ const cn = {
     },
     Tips: "AI可能会犯错误。请考虑核实重要信息。",
     Upload: {
-      Limit: (size: number | string) => {
-        return `文件不能超过${size}M`;
+      Limit: (size: string) => {
+        return `文件不能超过${size}`;
       },
     },
   },

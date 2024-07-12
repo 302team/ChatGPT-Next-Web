@@ -262,7 +262,10 @@ function ChatWindow() {
                 // @ts-ignore
                 conf[key] = settings[key];
               }
-              if (settings.chatbotName && settings.chatbotName !== "GPT302") {
+              if (
+                settings.chatbotName &&
+                !["GPT302", "302.AI"].includes(settings.chatbotName)
+              ) {
                 document.title = settings.chatbotName;
               }
             } else {
@@ -316,7 +319,7 @@ function ChatWindow() {
               .filter(
                 (m) =>
                   (supportedLangs.includes(currentLang)
-                    ? m.lang === currentLang
+                    ? m.lang === currentLang && m.enable
                     : m.lang === "en") && m.enable,
               );
           }

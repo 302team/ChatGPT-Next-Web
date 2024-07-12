@@ -773,14 +773,25 @@ function useUploadFile(extra: {
     }
     return "";
   };
+  const filterFiles = (files: File[]) => {
+    let filteredFiles = Array.from(files).filter((f) => {
+      return f.size <= 10 * 1024 * 1024;
+    });
+
+    if (filteredFiles.length < files.length) {
+      showToast(Locale.Chat.Upload.Limit("10M"));
+    }
+
+    return filteredFiles;
+  };
   // ========================================
 
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
       console.warn("🚀 ~ before compress ~ size:", file.size, file.type);
-      if (file.size >= 20 * 1024 * 1024) {
-        showToast(Locale.Chat.Upload.Limit(20));
-        return reject(Locale.Chat.Upload.Limit(20));
+      if (file.size >= 10 * 1024 * 1024) {
+        showToast(Locale.Chat.Upload.Limit("10M"));
+        return reject(Locale.Chat.Upload.Limit("10M"));
       }
 
       let dataUrl = "";
@@ -841,7 +852,9 @@ function useUploadFile(extra: {
         fileInput.multiple = true;
         fileInput.addEventListener("change", (event: any) => {
           setUploading(true);
-          const files = event.target.files;
+          const files = filterFiles(event.target.files);
+          if (!files.length) return;
+
           const imagesData: UploadFile[] = [];
 
           const tasks = Array.from(files).map(async (file) => {
@@ -881,11 +894,13 @@ function useUploadFile(extra: {
     setUploadFiles((prev) => [...prev, ...files]);
   }
 
-  async function dropUpload(files: File[]) {
+  async function dropUpload(fileList: File[]) {
     if (!config.pluginConfig.enable && !supportMultimodal) {
       return false;
     }
 
+    const files = filterFiles(fileList);
+    if (!files.length) return;
     const images: UploadFile[] = [];
 
     if (uploading) return;
