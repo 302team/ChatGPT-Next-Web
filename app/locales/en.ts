@@ -659,12 +659,12 @@ const en: LocaleType = {
     FetchImageError: "Can not fetch image or no OSS setting",
   },
   Config: {
-    title: "Chatbot - 302.AI",
+    title: "Knowledge Base - 302.AI",
     GPTs: "App",
     description: (type: string = "AI") =>
-      `Create your own ${type} Robot with just one click`,
+      `Create your own knowledge base robot with just one click`,
     AppDescTitle: "Description",
-    AppDescSubTitle: "AI Chat Robot detailed preview",
+    AppDescSubTitle: "Knowledge base robot detailed preview",
     AppDescContent: "",
   },
 };

@@ -649,11 +649,11 @@ const cn = {
     FetchImageError: "无法获取图片或未配置OSS",
   },
   Config: {
-    title: "聊天机器人 - 302.AI",
+    title: "知识库机器人 - 302.AI",
     GPTs: "应用",
-    description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
+    description: (type: string = "AI") => `一键生成属于自己的知识库机器人`,
     AppDescTitle: "说明",
-    AppDescSubTitle: "AI机器人详情预览",
+    AppDescSubTitle: "知识库机器人详情预览",
     AppDescContent: "",
   },
 };
