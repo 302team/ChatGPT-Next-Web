@@ -513,6 +513,7 @@ export class ChatGPTApi implements LLMApi {
       returnIntermediateSteps: options.agentConfig.returnIntermediateSteps,
       useTools: options.agentConfig.useTools,
       searchEngine: options.agentConfig.searchEngine,
+      textract: true,
     };
 
     if (modelConfig.model.toLocaleLowerCase().includes("baichuan")) {
@@ -623,7 +624,12 @@ export class ChatGPTApi implements LLMApi {
               return finish();
             }
 
-            if (
+            if (res.status === 200 && contentType === "application/json") {
+              const json = await res.clone().json();
+              responseText = json.message;
+              // isStreamDone = true;
+              return finish();
+            } else if (
               !res.ok ||
               !res.headers
                 .get("content-type")

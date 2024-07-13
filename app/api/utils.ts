@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSideConfig } from "../config/server";
+import { RequestBody } from "./langchain/tool/agent/agentapi";
 // import { fromBufferWithMime } from "textract";
 
 export interface MultimodalContent {
@@ -69,6 +70,32 @@ async function parseText(url: string) {
   return "";
 }
 
+async function handleContentUrl(content: string) {
+  // https://file.302.ai/gpt/imgs/20240710/611984ac482b4a3f9212b3da7a473e89.txt\nhi
+  const strArr = content.split("\n");
+  // 找到所有文件链接
+  const files = strArr.filter((s) => Link_Exp.test(s));
+  // const contexts = strArr.filter((s) => !Link_Exp.test(s));
+  // 提取文件内容
+  if (files.length) {
+    for (let idx = 0; idx < files.length; idx++) {
+      const url = files[idx];
+      const ext = url.substring(url.lastIndexOf(".") + 1);
+      console.log("[parsePrompt] get url", JSON.stringify({ url, ext }));
+
+      if (File_Extension.includes(ext.toLocaleLowerCase())) {
+        console.log("[parsePrompt] get text", url);
+        const fileContent = await parseText(url);
+
+        content =
+          content.replaceAll(url, "") + "\n" + `file-content: ${fileContent}`;
+      }
+    }
+  }
+
+  return content;
+}
+
 export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
   // 将file 转为 prompt
   console.log("\n\n[parsePrompt] start =============");
@@ -91,39 +118,7 @@ export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
           const m = jsonBody.messages[i];
           if (m.role === "user") {
             if (typeof m.content === "string") {
-              // https://file.302.ai/gpt/imgs/20240710/611984ac482b4a3f9212b3da7a473e89.txt\nhi
-              const strArr = m.content.split("\n");
-              // 找到所有文件链接
-              const files = strArr.filter((s) => Link_Exp.test(s));
-              // const contexts = strArr.filter((s) => !Link_Exp.test(s));
-              // 提取文件内容
-              if (files.length) {
-                for (let idx = 0; idx < files.length; idx++) {
-                  const url = files[idx];
-                  const ext = url.substring(url.lastIndexOf(".") + 1);
-                  console.log(
-                    "[parsePrompt] get url",
-                    JSON.stringify({ url, ext }),
-                  );
-
-                  if (File_Extension.includes(ext.toLocaleLowerCase())) {
-                    console.log("[parsePrompt] get text", url);
-                    const fileContent = await parseText(url);
-                    console.log(
-                      "[parsePrompt] get text end",
-                      JSON.stringify({
-                        url,
-                        fileContent,
-                      }),
-                    );
-
-                    m.content =
-                      m.content.replaceAll(url, "") +
-                      "\n" +
-                      `file-content: ${fileContent}`;
-                  }
-                }
-              }
+              m.content = await handleContentUrl(m.content);
             } else {
               // const filesContent = m.content.filter(i => i.type === "file");
               // if (filesContent.length) {
@@ -145,11 +140,40 @@ export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
       console.log("[parsePrompt] end =============\n\n");
       return clonedBody;
     } catch (error) {
-      console.log("🚀 ~ parsePrompt ~ error:", error);
+      console.log("[parsePrompt] error:", error);
       throw error;
       //
     }
   }
 
   return fetchOptions;
+}
+
+export async function parsePrompt4Tools(jsonBody: RequestBody) {
+  // 将file 转为 prompt
+  console.log("\n\n[parsePrompt4Tools] start =============");
+
+  try {
+    console.log("[parsePrompt4Tools] 是否应该提取文件内容", jsonBody.textract);
+    // 是否应该提取文件内容
+    if (jsonBody.textract) {
+      for (let i = jsonBody.messages.length - 1; i >= 0; i--) {
+        const m = jsonBody.messages[i];
+        if (m.role === "user") {
+          if (typeof m.content === "string") {
+            m.content = await handleContentUrl(m.content);
+          }
+
+          break;
+        }
+      }
+    }
+
+    console.log("[parsePrompt4Tools] end =============\n\n");
+    return jsonBody;
+  } catch (error) {
+    console.log("[parsePrompt4Tools] error:", error);
+    throw error;
+    //
+  }
 }
