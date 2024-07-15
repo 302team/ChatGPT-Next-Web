@@ -49,7 +49,11 @@ const File_Extension = [
   "potx",
 ];
 
-const Link_Exp = /^https:\/\/.+\..+$/;
+export function isImage(type: string) {
+  return /(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif)/gi.test(type);
+}
+
+const File_Link_Exp = /^https:\/\/.+\..+$/;
 
 // https://file.302.ai/gpt/imgs/20240710/2b58bb42373a4c449c7d03d679c8c38a.html
 // https://file.302.ai/gpt/imgs/20240710/b9f97ab0f60d4a469529ac5862317e71.pdf
@@ -74,8 +78,8 @@ async function handleContentUrl(content: string) {
   // https://file.302.ai/gpt/imgs/20240710/611984ac482b4a3f9212b3da7a473e89.txt\nhi
   const strArr = content.split("\n");
   // 找到所有文件链接
-  const files = strArr.filter((s) => Link_Exp.test(s));
-  // const contexts = strArr.filter((s) => !Link_Exp.test(s));
+  const files = strArr.filter((s) => File_Link_Exp.test(s));
+  // const contexts = strArr.filter((s) => !File_Link_Exp.test(s));
   // 提取文件内容
   if (files.length) {
     for (let idx = 0; idx < files.length; idx++) {
@@ -83,7 +87,8 @@ async function handleContentUrl(content: string) {
       const ext = url.substring(url.lastIndexOf(".") + 1);
       console.log("[parsePrompt] get url", JSON.stringify({ url, ext }));
 
-      if (File_Extension.includes(ext.toLocaleLowerCase())) {
+      // if (File_Extension.includes(ext.toLocaleLowerCase())) {
+      if (!isImage(ext)) {
         console.log("[parsePrompt] get text", url);
         const fileContent = await parseText(url);
 
@@ -119,15 +124,6 @@ export async function parsePrompt(req: NextRequest, fetchOptions: RequestInit) {
           if (m.role === "user") {
             if (typeof m.content === "string") {
               m.content = await handleContentUrl(m.content);
-            } else {
-              // const filesContent = m.content.filter(i => i.type === "file");
-              // if (filesContent.length) {
-              //   for (let idx = 0;  idx < filesContent.length;idx++) {
-              //     const file = filesContent[idx].file;
-              //     if (file && File_Extension.includes(file.type.toLocaleLowerCase())) {
-              //     }
-              //   }
-              // }
             }
 
             break;
