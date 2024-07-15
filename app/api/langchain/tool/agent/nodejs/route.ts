@@ -4,6 +4,7 @@ import { auth } from "@/app/api/auth";
 import { NodeJSTool } from "@/app/api/langchain-tools/nodejs_tools";
 import { ModelProvider } from "@/app/constant";
 import { OpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { parsePrompt4Tools } from "@/app/api/utils";
 
 async function handle(req: NextRequest) {
   if (req.method === "OPTIONS") {
@@ -23,7 +24,22 @@ async function handle(req: NextRequest) {
     const controller = new AbortController();
     const agentApi = new AgentApi(encoder, transformStream, writer, controller);
 
-    const reqBody: RequestBody = await req.json();
+    let reqBody: RequestBody;
+
+    try {
+      reqBody = await parsePrompt4Tools(await req.json());
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error: error,
+          message: `对不起，我无法打开这个文件`,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
+
     const authToken = req.headers.get("Authorization") ?? "";
     const token = authToken.trim().replaceAll("Bearer ", "").trim();
 

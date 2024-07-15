@@ -632,12 +632,8 @@ function useUploadFile(extra: {
 
   const [uploading, setUploading] = useState(false);
 
-  const [showUploadAction, setShowUploadAction] = useState(false);
   const currentModel = session.mask.modelConfig.model;
-  const supportMultimodal = useMemo(
-    () => isSupportMultimodal(currentModel),
-    [currentModel],
-  );
+  const supportMultimodal = true;
 
   // ========================================
   // const [uploadImages, setUploadImages] = useState<UploadFile[]>([]);
@@ -652,40 +648,34 @@ function useUploadFile(extra: {
       // file_support_type = 0：什么都不支持
       // file_support_type = 1：支持所有文件类型
       // file_support_type = 2：仅支持图片类型
-
-      const models = config.modelList.map((m) => {
-        m.disabled = false;
-        return m;
-      });
-
-      if (files.length) {
-        // 文件类型
-        const types = files.map((f) => f.type);
-
-        // 判断文件有哪些类型.
-        // 如果有非图片类型的, 需要关闭所有多模态只支持图片(file_support_type = 2)的模型
-        const hasNotImage = types.some((t) => !isImage(t));
-
-        models.forEach((m) => {
-          m.disabled = false;
-
-          /* 不支持多模态的 */
-          if (m.file_support_type === 0) {
-            m.enable = false;
-            m.disabled = true;
-          } /* 多模态只支持图片的, 并且所选择的文件里面有非图片类型的 */ else if (
-            m.file_support_type === 2 &&
-            hasNotImage
-          ) {
-            m.enable = false;
-            m.disabled = true;
-          }
-        });
-      }
-
-      config.update((config) => {
-        config.modelList = models;
-      });
+      // const models = config.modelList.map((m) => {
+      //   m.disabled = false;
+      //   return m;
+      // });
+      // if (files.length) {
+      //   // 文件类型
+      //   const types = files.map((f) => f.type);
+      //   // 判断文件有哪些类型.
+      //   // 如果有非图片类型的, 需要关闭所有多模态只支持图片(file_support_type = 2)的模型
+      //   const hasNotImage = types.some((t) => !isImage(t));
+      //   models.forEach((m) => {
+      //     m.disabled = false;
+      //     /* 不支持多模态的 */
+      //     if (m.file_support_type === 0) {
+      //       m.enable = false;
+      //       m.disabled = true;
+      //     } /* 多模态只支持图片的, 并且所选择的文件里面有非图片类型的 */ else if (
+      //       m.file_support_type === 2 &&
+      //       hasNotImage
+      //     ) {
+      //       m.enable = false;
+      //       m.disabled = true;
+      //     }
+      //   });
+      // }
+      // config.update((config) => {
+      //   config.modelList = models;
+      // });
     },
     [config.modelList],
   );
@@ -700,14 +690,25 @@ function useUploadFile(extra: {
     }
     return "";
   };
+  const filterFiles = (files: File[]) => {
+    let filteredFiles = Array.from(files).filter((f) => {
+      return f.size <= 10 * 1024 * 1024;
+    });
+
+    if (filteredFiles.length < files.length) {
+      showToast(Locale.Chat.Upload.Limit("10M"));
+    }
+
+    return filteredFiles;
+  };
   // ========================================
 
   async function handleUpload(file: File): Promise<UploadFile> {
     return new Promise(async (resolve, reject) => {
       console.warn("🚀 ~ before compress ~ size:", file.size, file.type);
-      if (file.size >= 20 * 1024 * 1024) {
-        showToast(Locale.Chat.Upload.Limit(20));
-        return reject(Locale.Chat.Upload.Limit(20));
+      if (file.size >= 10 * 1024 * 1024) {
+        showToast(Locale.Chat.Upload.Limit("10M"));
+        return reject(Locale.Chat.Upload.Limit("10M"));
       }
 
       let dataUrl = "";
@@ -767,8 +768,10 @@ function useUploadFile(extra: {
         fileInput.accept = "*"; //
         fileInput.multiple = true;
         fileInput.addEventListener("change", (event: any) => {
+          const files = filterFiles(event.target.files);
+          if (!files.length) return;
+
           setUploading(true);
-          const files = event.target.files;
           const imagesData: UploadFile[] = [];
 
           const tasks = Array.from(files).map(async (file) => {
@@ -806,28 +809,16 @@ function useUploadFile(extra: {
     setUploadFiles((prev) => [...prev, ...files]);
   }
 
-  async function dropUpload(files: File[]) {
-    if (
-      !config.pluginConfig.enable &&
-      !isSupportMultimodal(currentModel) &&
-      !isVisionModel(currentModel) &&
-      !isSpecImageModal(currentModel)
-    ) {
-      return false;
-    }
-
-    const filterdFiles = Array.from(files).filter((f) => {
-      return config.pluginConfig.enable || supportMultimodal
-        ? true
-        : isImage((f as File).type);
-    });
+  async function dropUpload(fileList: File[]) {
+    const files = filterFiles(fileList);
+    if (!files.length) return;
 
     const images: UploadFile[] = [];
 
     if (uploading) return;
     setUploading(true);
 
-    const tasks = Array.from(filterdFiles).map(async (file) => {
+    const tasks = Array.from(files).map(async (file) => {
       return await handleUpload(file).then((result) => {
         images.push(result);
       });
@@ -2090,9 +2081,7 @@ function _Chat() {
                           const list = uploadFiles.filter(
                             (_, i) => i !== index,
                           );
-                          console.log(list);
                           setUploadFiles(list);
-                          onSelectFile(list);
                         }}
                       />
                     </div>

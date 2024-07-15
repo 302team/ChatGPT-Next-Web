@@ -9,6 +9,7 @@ import {
   ERROR_CODE,
   ERROR_CODE_TYPE,
   DISABLED_SYSTEM_PROMPT_MODELS,
+  FILE_SUPPORT_TYPE,
 } from "@/app/constant";
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 
@@ -157,6 +158,9 @@ export class ChatGPTApi implements LLMApi {
       top_p: modelConfig.top_p,
       // max_tokens: Math.max(modelConfig.max_tokens, 1024),
       // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
+      textract:
+        config.multimodalType4Models[modelConfig.model] !==
+        FILE_SUPPORT_TYPE.ALL,
     };
 
     // qwen-vl 模型不支持带 temperature
@@ -476,6 +480,7 @@ export class ChatGPTApi implements LLMApi {
       returnIntermediateSteps: options.agentConfig.returnIntermediateSteps,
       useTools: options.agentConfig.useTools,
       searchEngine: options.agentConfig.searchEngine,
+      textract: true,
     };
 
     console.log("[Request] openai payload: ", requestPayload);

@@ -155,7 +155,7 @@ const en: LocaleType = {
     Tips: "AI can make mistakes. Consider checking important information.",
     Upload: {
       Limit: (size: number | string) => {
-        return `File size cannot exceed ${size}M`;
+        return `File size cannot exceed ${size}`;
       },
     },
     EnableModel: "Please activate the desired competitive model.",

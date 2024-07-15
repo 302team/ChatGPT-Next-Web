@@ -60,6 +60,7 @@ export interface RequestBody {
   returnIntermediateSteps: boolean;
   useTools: (undefined | string)[];
   searchEngine?: string;
+  textract?: boolean;
 }
 
 export class ResponseBody {
