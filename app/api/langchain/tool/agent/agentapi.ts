@@ -61,6 +61,7 @@ export interface RequestBody {
   useTools: (undefined | string)[];
   searchEngine?: string;
   textract?: boolean;
+  multimodalType4Models?: Record<string, number>;
 }
 
 export class ResponseBody {

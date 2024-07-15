@@ -2,16 +2,24 @@ import { StructuredTool } from "@langchain/core/tools";
 import { z } from "zod";
 import { getBase64FromUrl } from "./utils";
 
+const defaultModel = "claude-3-5-sonnet-20240620";
+
 export class GPT4vWrapper extends StructuredTool {
   static lc_name() {
     return "Image_Recognition";
   }
 
   apiKey: string;
-  baseURL?: string;
-  model: string;
+  baseURL: string;
+  model?: string;
+  multimodalType4Models?: Record<string, number>;
 
-  constructor(apiKey: string, baseURL: string) {
+  constructor(
+    apiKey: string,
+    baseURL: string,
+    model?: string,
+    multimodalType4Models?: Record<string, number>,
+  ) {
     super(...arguments);
 
     if (!apiKey) {
@@ -24,7 +32,12 @@ export class GPT4vWrapper extends StructuredTool {
     this.baseURL = baseURL;
     this.apiKey = apiKey;
 
-    this.model = "claude-3-5-sonnet-20240620";
+    this.model = defaultModel;
+    this.multimodalType4Models = multimodalType4Models;
+
+    if (model && multimodalType4Models && multimodalType4Models[model] === 2) {
+      this.model = model;
+    }
   }
 
   name = "image-recognition";

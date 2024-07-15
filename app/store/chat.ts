@@ -668,24 +668,16 @@ export const useChatStore = createPersistStore(
           config.multimodalType4Models[modelConfig.model] ===
           FILE_SUPPORT_TYPE.ONLY_IMAGE;
         // 应用商店的模型, 使用内置插件
-        const allPlugins = (
-          session.mask.isStoreModel
-            ? pluginStore
-                .getBuildinPlugins()
-                .filter(
-                  (m) =>
-                    (["cn"].includes(currentLang)
-                      ? m.lang === currentLang
-                      : m.lang === "en") && m.enable,
-                )
-            : pluginStore.getUserPlugins().filter((i) => i.enable)
-        ).filter((p) => {
-          // 对于具备视觉能力的模型，自动禁用图像识别插件
-          if (p.toolName === "image-recognition" && isVisionModel) {
-            return false;
-          }
-          return true;
-        });
+        const allPlugins = session.mask.isStoreModel
+          ? pluginStore
+              .getBuildinPlugins()
+              .filter(
+                (m) =>
+                  (["cn"].includes(currentLang)
+                    ? m.lang === currentLang
+                    : m.lang === "en") && m.enable,
+              )
+          : pluginStore.getUserPlugins().filter((i) => i.enable);
 
         // 最新回复的顶到最前面
         if (get().currentSessionIndex !== 0) {

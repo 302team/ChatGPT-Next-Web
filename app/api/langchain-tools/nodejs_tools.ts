@@ -21,18 +21,27 @@ export class NodeJSTool {
 
   private callback?: (data: string) => Promise<void>;
 
+  private modelName?: string;
+
+  private multimodalType4Models?: Record<string, number>;
+
   constructor(
     apiKey: string | undefined,
     baseUrl: string,
     model: BaseLanguageModel,
     embeddings: Embeddings,
     callback?: (data: string) => Promise<void>,
+    modelName?: string,
+    multimodalType4Models?: Record<string, number>,
   ) {
     this.apiKey = apiKey;
     this.baseUrl = baseUrl;
     this.model = model;
     this.embeddings = embeddings;
     this.callback = callback;
+
+    this.modelName = modelName;
+    this.multimodalType4Models = multimodalType4Models;
   }
 
   async getCustomTools(): Promise<any[]> {
@@ -52,7 +61,12 @@ export class NodeJSTool {
     const pdfBrowserTool = new PDFBrowser(this.model, this.embeddings);
 
     // const glm4vTool = new Glm4vWrapper(this.apiKey!, this.baseUrl);
-    const gpt4vTool = new GPT4vWrapper(this.apiKey!, this.baseUrl);
+    const gpt4vTool = new GPT4vWrapper(
+      this.apiKey!,
+      this.baseUrl,
+      this.modelName,
+      this.multimodalType4Models,
+    );
 
     let tools = [
       calculatorTool,

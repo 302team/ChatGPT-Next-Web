@@ -514,6 +514,7 @@ export class ChatGPTApi implements LLMApi {
       useTools: options.agentConfig.useTools,
       searchEngine: options.agentConfig.searchEngine,
       textract: true,
+      multimodalType4Models: config.multimodalType4Models,
     };
 
     if (modelConfig.model.toLocaleLowerCase().includes("baichuan")) {
@@ -772,7 +773,11 @@ export class ChatGPTApi implements LLMApi {
                   toolName = "Wikipedia";
                 }
                 if (toolName === "image-recognition") {
-                  toolName = "claude-3.5";
+                  toolName =
+                    config.multimodalType4Models[modelConfig.model] ===
+                    FILE_SUPPORT_TYPE.ONLY_IMAGE
+                      ? modelConfig.model
+                      : "claude-3.5";
                   inputMessage = "Image recognition";
                 }
                 options.onToolUpdate?.(toolName, inputMessage);

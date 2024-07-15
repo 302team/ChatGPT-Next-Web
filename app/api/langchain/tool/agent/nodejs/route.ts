@@ -60,7 +60,6 @@ async function handle(req: NextRequest) {
       },
       { basePath: baseUrl },
     );
-
     var dalleCallback = async (data: string) => {
       console.log("🚀 ~ dalleCallback ~ data:", data);
       var response = new ResponseBody();
@@ -80,6 +79,8 @@ async function handle(req: NextRequest) {
       model,
       embeddings,
       dalleCallback,
+      model.modelName,
+      reqBody.multimodalType4Models,
     );
     var nodejsTools = await nodejsTool.getCustomTools();
     var tools = [...nodejsTools];
