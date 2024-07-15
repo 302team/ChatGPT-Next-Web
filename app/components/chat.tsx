@@ -1971,8 +1971,14 @@ function _Chat(props: { promptStarters: string[] }) {
                     </div>
                   )}
                   <div className={styles["chat-message-item-container"]}>
-                    <div className={styles["chat-message-item"]}>
-                      {message.kbMessage ? (
+                    <div
+                      className={`${styles["chat-message-item"]} ${
+                        config.kbConfig.show_source
+                          ? styles["chat-message-item-source"]
+                          : ""
+                      }`}
+                    >
+                      {config.kbConfig.show_source && message.kbMessage ? (
                         <Collapse
                           expandIconPosition="end"
                           items={[

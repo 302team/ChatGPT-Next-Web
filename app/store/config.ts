@@ -83,6 +83,7 @@ export const DEFAULT_CONFIG = {
     mode: "knowledge_base_chat",
     top_k: 5,
     score_threshold: 1,
+    show_source: true,
   },
 };
 
