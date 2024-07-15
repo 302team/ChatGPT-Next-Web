@@ -53,7 +53,9 @@ export function isImage(type: string) {
   return /(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif)/gi.test(type);
 }
 
-const File_Link_Exp = /^https:\/\/.+\..+$/;
+// const File_Link_Exp = /^https:\/\/.+\..+$/;
+const File_Link_Exp =
+  /https?:\/\/[^\s/$.?#].[^\s]*\/[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?/g;
 
 // https://file.302.ai/gpt/imgs/20240710/2b58bb42373a4c449c7d03d679c8c38a.html
 // https://file.302.ai/gpt/imgs/20240710/b9f97ab0f60d4a469529ac5862317e71.pdf
@@ -76,12 +78,21 @@ async function parseText(url: string) {
 
 async function handleContentUrl(content: string) {
   // https://file.302.ai/gpt/imgs/20240710/611984ac482b4a3f9212b3da7a473e89.txt\nhi
-  const strArr = content.split("\n");
+  const strArr = content.match(File_Link_Exp);
+  console.log("[parsePrompt] matched:", JSON.stringify({ strArr }));
+  if (!strArr) return content;
+
   // 找到所有文件链接
-  const files = strArr.filter((s) => File_Link_Exp.test(s));
+  const files = strArr
+    .map((s) => {
+      const urls = s.match(File_Link_Exp);
+      return urls ? urls : [];
+    })
+    .flat();
   // const contexts = strArr.filter((s) => !File_Link_Exp.test(s));
   // 提取文件内容
   if (files.length) {
+    let fileContent = "";
     for (let idx = 0; idx < files.length; idx++) {
       const url = files[idx];
       const ext = url.substring(url.lastIndexOf(".") + 1);
@@ -90,12 +101,15 @@ async function handleContentUrl(content: string) {
       // if (File_Extension.includes(ext.toLocaleLowerCase())) {
       if (!isImage(ext)) {
         console.log("[parsePrompt] get text", url);
-        const fileContent = await parseText(url);
+        const result = await parseText(url);
 
-        content =
-          content.replaceAll(url, "") + "\n" + `file-content: ${fileContent}`;
+        fileContent = (!!fileContent ? "\n" : "") + result;
+
+        content = content.replaceAll(url, "");
       }
     }
+
+    content += "\n" + `file-content: ${fileContent}`;
   }
 
   return content;
