@@ -145,7 +145,10 @@ export class Textract {
       }
 
       console.log("[parsePrompt] end =============\n\n");
-      return JSON.stringify(jsonBody);
+      return JSON.stringify({
+        ...jsonBody,
+        textract: undefined, // fix: "property 'textract' is unsupported
+      });
     } catch (error) {
       console.log("[parsePrompt] error:", error);
       throw error;
@@ -184,7 +187,10 @@ export class Textract {
       }
 
       console.log("[parsePrompt4Tools] end =============\n\n");
-      return jsonBody;
+      return {
+        ...jsonBody,
+        textract: undefined, // fix: "property 'textract' is unsupported
+      };
     } catch (error) {
       console.log("[parsePrompt4Tools] error:", error);
       throw error;
