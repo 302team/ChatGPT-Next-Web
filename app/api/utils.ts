@@ -40,8 +40,10 @@ export function isImage(type: string) {
 }
 
 // const File_Link_Exp = /^https:\/\/.+\..+$/;
-const File_Link_Exp =
+export const File_Link_Exp =
   /https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?/g;
+
+export const Upload_File_Link = "https://file.302.ai/gpt/imgs";
 
 // https://file.302.ai/gpt/imgs/20240710/2b58bb42373a4c449c7d03d679c8c38a.html
 // https://file.302.ai/gpt/imgs/20240710/b9f97ab0f60d4a469529ac5862317e71.pdf
@@ -77,7 +79,7 @@ export class Textract {
       },
       body: JSON.stringify({ url }),
     }).then((res) => res.json());
-    console.log("[textract] res:", !!res.data.msg, res.data.msg.length);
+    console.log("[textract] res:", res.data.msg, res.data.msg.length);
 
     if (res.code === 0) {
       return res.data.msg;
@@ -158,11 +160,11 @@ export class Textract {
 
   async parsePrompt4Tools(jsonBody: RequestBody) {
     // 有插件走插件，没插件走服务端
-    if (jsonBody.useTools && jsonBody.useTools.length) {
-      const hasWebBrowser =
-        jsonBody.useTools.findIndex((i) => i === "web-browser") > -1;
-      if (hasWebBrowser) return jsonBody;
-    }
+    // if (jsonBody.useTools && jsonBody.useTools.length) {
+    //   const hasWebBrowser =
+    //     jsonBody.useTools.findIndex((i) => i === "web-browser") > -1;
+    //   if (hasWebBrowser) return jsonBody;
+    // }
 
     // 将file 转为 prompt
     console.log("\n\n[parsePrompt4Tools] start =============");
@@ -178,6 +180,19 @@ export class Textract {
           const m = jsonBody.messages[i];
           if (m.role === "user") {
             if (typeof m.content === "string") {
+              const urlArr = m.content.match(File_Link_Exp);
+              // 如果是网页链接，优先走插件
+              // https://file.302.ai/gpt/xxx
+              if (urlArr && urlArr.length) {
+                const isUploadFile = urlArr.some((u) =>
+                  u.includes(Upload_File_Link),
+                );
+                if (!isUploadFile) {
+                  console.log("[parsePrompt4Tools] 网页链接，优先走插件");
+                  break;
+                }
+              }
+
               m.content = await this.handleContentUrl(m.content);
             }
 
