@@ -58,6 +58,7 @@ export interface ChatOptions {
   messages: RequestMessage[];
   config: LLMConfig;
   retryCount?: number;
+  textract?: boolean;
 
   onAborted?: (message?: string) => void;
   onRetry?: () => void;
@@ -72,6 +73,7 @@ export interface AgentChatOptions {
   config: LLMConfig;
   agentConfig: LLMAgentConfig;
   retryCount?: number;
+  textract?: boolean;
 
   onAborted?: (message?: string) => void;
   onRetry?: () => void;

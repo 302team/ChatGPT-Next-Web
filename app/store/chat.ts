@@ -1012,6 +1012,7 @@ export const useChatStore = createPersistStore(
         var api = new ClientApi(ModelProvider.GPT);
         api.llm.chat({
           messages: topicMessages,
+          textract: false,
           config: {
             model: "gpt-3.5-turbo-0125",
           },
