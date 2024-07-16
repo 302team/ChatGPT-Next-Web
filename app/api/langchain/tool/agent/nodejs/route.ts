@@ -4,7 +4,7 @@ import { auth } from "@/app/api/auth";
 import { NodeJSTool } from "@/app/api/langchain-tools/nodejs_tools";
 import { ModelProvider } from "@/app/constant";
 import { OpenAI, OpenAIEmbeddings } from "@langchain/openai";
-import { parsePrompt4Tools } from "@/app/api/utils";
+import { Textract } from "@/app/api/utils";
 
 async function handle(req: NextRequest) {
   if (req.method === "OPTIONS") {
@@ -24,10 +24,15 @@ async function handle(req: NextRequest) {
     const controller = new AbortController();
     const agentApi = new AgentApi(encoder, transformStream, writer, controller);
 
+    const authToken = req.headers.get("Authorization") ?? "";
+    const token = authToken.trim().replaceAll("Bearer ", "").trim();
+
     let reqBody: RequestBody;
 
     try {
-      reqBody = await parsePrompt4Tools(await req.json());
+      reqBody = await Textract.create(token).parsePrompt4Tools(
+        await req.json(),
+      );
     } catch (error) {
       return NextResponse.json(
         {
@@ -39,9 +44,6 @@ async function handle(req: NextRequest) {
         },
       );
     }
-
-    const authToken = req.headers.get("Authorization") ?? "";
-    const token = authToken.trim().replaceAll("Bearer ", "").trim();
 
     const apiKey = await agentApi.getOpenAIApiKey(token);
     const baseUrl = await agentApi.getOpenAIBaseUrl(reqBody.baseUrl);

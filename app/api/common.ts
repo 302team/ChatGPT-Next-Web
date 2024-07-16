@@ -3,7 +3,7 @@ import { getServerSideConfig } from "../config/server";
 import { DEFAULT_MODELS, OPENAI_BASE_URL, GEMINI_BASE_URL } from "../constant";
 import { collectModelTable } from "../utils/model";
 import { makeAzurePath } from "../azure";
-import { parsePrompt } from "./utils";
+import { Textract } from "./utils";
 
 const serverConfig = getServerSideConfig();
 
@@ -111,8 +111,10 @@ export async function requestOpenai(req: NextRequest) {
   }
 
   try {
-    await parsePrompt(req, fetchOptions);
-    // console.log("🚀 ~ requestOpenai ~ fetchOptions:", fetchOptions);
+    const clonedBody = await Textract.create(authValue).parsePrompt(
+      await req.json(),
+    );
+    fetchOptions.body = clonedBody;
   } catch (error) {
     return NextResponse.json(
       {
