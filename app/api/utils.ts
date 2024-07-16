@@ -41,7 +41,7 @@ export function isImage(type: string) {
 
 // const File_Link_Exp = /^https:\/\/.+\..+$/;
 const File_Link_Exp =
-  /https?:\/\/[^\s/$.?#].[^\s]*\/[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?/g;
+  /https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?/g;
 
 // https://file.302.ai/gpt/imgs/20240710/2b58bb42373a4c449c7d03d679c8c38a.html
 // https://file.302.ai/gpt/imgs/20240710/b9f97ab0f60d4a469529ac5862317e71.pdf
