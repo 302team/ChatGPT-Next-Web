@@ -651,7 +651,7 @@ const cn = {
   Config: {
     title: "知识库机器人 - 302.AI",
     GPTs: "应用",
-    description: (type: string = "AI") => `一键生成属于自己的知识库机器人`,
+    description: `一键生成属于自己的知识库机器人`,
     AppDescTitle: "说明",
     AppDescSubTitle: "知识库机器人详情预览",
     AppDescContent: "",

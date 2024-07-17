@@ -169,8 +169,6 @@ function ChatWindow() {
   const [loading, setLoading] = useState(true);
   const [validPwdVisible, setValidPwdVisible] = useState(true);
   const promptStore = usePromptStore();
-  const pluginStore = usePluginStore();
-  const currentLang = getLang();
 
   useEffect(() => {
     if (accessStore.apiDomain) {
@@ -223,12 +221,6 @@ function ChatWindow() {
             conf.region =
               opt.region == undefined ? Region.Overseas : opt.region;
 
-            // console.warn(
-            //   "🚀 ~ config.update ~ isEmptyObject(settings):",
-            //   isEmptyObject(settings),
-            //   settings,
-            // );
-
             if (settings && !isEmptyObject(settings)) {
               if (settings.modelConfig) {
                 settings.modelConfig.model = opt.model;
@@ -272,7 +264,7 @@ function ChatWindow() {
                 // @ts-ignore
                 conf[key] = settings[key];
               }
-              if (settings.chatbotName && settings.chatbotName !== "GPT302") {
+              if (settings.chatbotName) {
                 document.title = settings.chatbotName;
               }
             } else {
@@ -288,59 +280,6 @@ function ChatWindow() {
               state.enable = settings.showSync;
             });
           }
-
-          // 设置模型的 promptStarters
-          if (opt.is_gpts || (opt.gpts_msg && opt.gpts_msg.name)) {
-            if (opt.gpts_msg.prompt_starters) {
-              setPromptStarters(opt.gpts_msg.prompt_starters);
-            }
-            if (opt.gpts_msg.description) {
-              // setBotHelloContent(opt.gpts_msg.description);
-            }
-            if (opt.gpts_msg.logo_url) {
-              chatStore.updateCurrentSession((session) => {
-                session.mask.avatar = opt.gpts_msg.logo_url;
-              });
-            }
-            if (opt.gpts_msg.description) {
-              chatStore.updateCurrentSession((session) => {
-                session.mask.botHelloContent = opt.gpts_msg.description;
-              });
-            }
-            config.update((config) => {
-              config.disablePromptHint = true;
-              config.gptsConfig = {
-                ...(opt.gpts_msg as typeof config.gptsConfig),
-              };
-            });
-          }
-
-          let allPlugins: Plugin[] = [];
-          const supportedLangs = ["cn"];
-          if (opt.settings.plugins && opt.settings.plugins.length) {
-            allPlugins = opt.settings.plugins;
-          } else {
-            // 使用内置插件
-            allPlugins = pluginStore
-              .getBuildinPlugins()
-              .filter(
-                (m) =>
-                  (supportedLangs.includes(currentLang)
-                    ? m.lang === currentLang
-                    : m.lang === "en") && m.enable,
-              );
-          }
-          console.log("🚀 ~ ChatWindow ~ allPlugins:", allPlugins);
-
-          // 清掉
-          pluginStore.clearAll();
-          allPlugins.forEach((item) => {
-            if (item.toolName === "gpt-4v") {
-              item.toolName = "image-recognition";
-            }
-            // 重新添加
-            pluginStore.create(item);
-          });
 
           setValidPwdVisible(false);
         }}

@@ -12,7 +12,7 @@ import Locale from "./locales";
 
 export const metadata: Metadata = {
   title: Locale.Config.title,
-  description: Locale.Config.description("AI"),
+  description: Locale.Config.description,
   viewport: {
     width: "device-width",
     initialScale: 1,

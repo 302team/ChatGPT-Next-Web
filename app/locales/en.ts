@@ -661,8 +661,7 @@ const en: LocaleType = {
   Config: {
     title: "Knowledge Base - 302.AI",
     GPTs: "App",
-    description: (type: string = "AI") =>
-      `Create your own knowledge base robot with just one click`,
+    description: `Create your own knowledge base robot with just one click`,
     AppDescTitle: "Description",
     AppDescSubTitle: "Knowledge base robot detailed preview",
     AppDescContent: "",
