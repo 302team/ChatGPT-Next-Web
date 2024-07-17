@@ -30,7 +30,7 @@ async function handle(req: NextRequest) {
     let reqBody: RequestBody;
 
     try {
-      reqBody = await Textract.create(token).parsePrompt4Tools(
+      reqBody = await Textract.create(authToken).parsePrompt4Tools(
         await req.json(),
       );
     } catch (error) {

@@ -74,7 +74,7 @@ export class Textract {
     const res = await fetch(`${serverConfig.apiDomain}/gpt/api/textract`, {
       method: "POST",
       headers: {
-        Token: `Bearer ${this.apiKey}`,
+        Token: `${this.apiKey}`,
         "Content-type": "application/json",
       },
       body: JSON.stringify({ url }),
