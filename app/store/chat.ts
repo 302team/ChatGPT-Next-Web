@@ -949,6 +949,8 @@ export const useChatStore = createPersistStore(
         const appConfig = useAppConfig.getState();
         const modelConfig = session.mask.modelConfig;
 
+        console.log(extAttr.models);
+
         // 所有的模型配置
         let modelConfigs = extAttr.models!.map((model) => {
           return {
@@ -979,18 +981,30 @@ export const useChatStore = createPersistStore(
           content: "",
           model: "" as ModelType,
         });
+
+        const { saveUserContent } = await getUserContent(
+          content as string,
+          fileArr,
+          modelConfig,
+        );
         // 首次发消息, 保存记录
         if (!extAttr.isResend) {
           localStorage.setItem(LAST_INPUT_ID_KEY, userMessage.id);
-          const { saveUserContent } = await getUserContent(
-            content as string,
-            fileArr,
-            modelConfig,
-          );
           get().updateCurrentSession((session) => {
             const savedUserMessage = {
               ...userMessage,
               content: saveUserContent,
+              model: modelConfigs.map((m) => m.model).join(";"),
+            } as ChatMessage;
+            session.messages = session.messages.concat([savedUserMessage]);
+          });
+        } else {
+          get().updateCurrentSession((session) => {
+            const savedUserMessage = {
+              ...userMessage,
+              content: saveUserContent,
+              model: modelConfigs.map((m) => m.model).join(";"),
+              isIgnore4History: true,
             } as ChatMessage;
             session.messages = session.messages.concat([savedUserMessage]);
           });
@@ -1041,9 +1055,9 @@ export const useChatStore = createPersistStore(
                   (m) => m.id !== userMessage.id,
                 );
 
-                console.log("-----isResend-----", extAttr.isResend);
+                console.warn("-----filteredMessage-----", filteredMessage);
 
-                // 如果是重试的, 需要过滤掉上
+                // 如果是重试的, 需要过滤掉上一次发送的
                 if (extAttr.isResend) {
                   const lastid = localStorage.getItem(LAST_INPUT_ID_KEY);
                   const idx = filteredMessage.findIndex((m) => m.id === lastid);
@@ -1054,7 +1068,10 @@ export const useChatStore = createPersistStore(
 
                 filteredMessage = filteredMessage.concat(userMessage);
 
-                if (lowerCaseModel.includes("claude-3-5-sonnet")) {
+                if (
+                  lowerCaseModel.includes("claude-3-5-sonnet") ||
+                  lowerCaseModel.includes("gemma-2-27b-it")
+                ) {
                   // claude-3-5-sonnet-20240620 模型首个message, 排除system 之后只能是user,
                   const isSystemMsg = filteredMessage[0].role === "system";
                   if (isSystemMsg) {
@@ -1273,18 +1290,24 @@ export const useChatStore = createPersistStore(
         const clearContextIndex = session.clearContextIndex ?? 0;
         const model = modelConfig?.model;
 
+        // 单轮对话: 除去system user -> assistant -> user -> assistant
         const messages = session.messages
           .slice()
-          .map((_m) => {
-            const m = { ..._m };
-            // 将用户的model 修改为当前model
-            if (m.role === "user") {
-              m.model = modelConfig.model as ModelType;
-            }
-            return m;
-          })
+          // .map((_m) => {
+          //   const m = { ..._m };
+          //   // 将用户的model 修改为当前model
+          //   if (m.role === "user") {
+          //     console.log("user model:", m.model);
+          //     m.model = modelConfig.model as ModelType;
+          //   }
+          //   return m;
+          // })
           .filter((m) => {
-            return modelConfig.model ? m.model === modelConfig.model : true;
+            return (
+              !m.isIgnore4History &&
+              modelConfig.model &&
+              m.model?.includes(modelConfig.model)
+            );
           });
         const totalMessageCount = messages.length;
 
@@ -1294,10 +1317,6 @@ export const useChatStore = createPersistStore(
         // system prompts, to get close to OpenAI Web ChatGPT
         const shouldInjectSystemPrompts =
           modelConfig.enableInjectSystemPrompts &&
-          (model.startsWith("gpt-") || model.includes("claude"));
-
-        const shouldInjectCustomSystemPrompts =
-          modelConfig.enableInjectCustomSystemPrompts &&
           (model.startsWith("gpt-") || model.includes("claude"));
 
         let template = DEFAULT_GPT_SYSTEM_TEMPLATE;
@@ -1316,17 +1335,7 @@ export const useChatStore = createPersistStore(
                 }),
               }),
             ]
-          : shouldInjectCustomSystemPrompts
-            ? [
-                createMessage({
-                  role: "system",
-                  content: fillTemplateWith("", {
-                    ...modelConfig,
-                    template: modelConfig.injectCustomSystemPrompts,
-                  }),
-                }),
-              ]
-            : [];
+          : [];
 
         if (shouldInjectSystemPrompts) {
           console.log(
@@ -1336,11 +1345,12 @@ export const useChatStore = createPersistStore(
         }
 
         // long term memory
-        const shouldSendLongTermMemory =
-          modelConfig.sendMemory &&
-          session.memoryPrompt &&
-          session.memoryPrompt.length > 0 &&
-          session.lastSummarizeIndex > clearContextIndex;
+        const shouldSendLongTermMemory = false;
+        // modelConfig.sendMemory &&
+        // session.memoryPrompt &&
+        // session.memoryPrompt.length > 0 &&
+        // session.lastSummarizeIndex > clearContextIndex;
+
         const longTermMemoryPrompts =
           shouldSendLongTermMemory &&
           DISABLED_SYSTEM_PROMPT_MODELS.findIndex((i) => model.includes(i)) ===
@@ -1382,8 +1392,8 @@ export const useChatStore = createPersistStore(
         }
         // concat all messages
         const recentMessages = [
-          ...systemPrompts,
-          ...longTermMemoryPrompts,
+          // ...systemPrompts,
+          // ...longTermMemoryPrompts,
           ...contextPrompts,
           ...reversedRecentMessages.reverse(),
         ];

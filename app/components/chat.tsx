@@ -1317,13 +1317,15 @@ function _Chat() {
     // 需要重发的模型列表
     let resendModels: Model[] = [];
 
+    if (message.role === "user") {
+      resendModels = message.model ? [getModel(message.model)] : [];
+    } else {
+      resendModels = message.model ? [getModel(message.model)] : [];
+    }
+
     // delete the original messages
     if (message.role === "user") {
       deleteMessage(userMessage.id);
-      // resendModels = config.modelList.filter((m) => m.enable);
-      resendModels = [getModel(message.model!)];
-    } else {
-      resendModels = [getModel(message.model!)];
     }
     deleteMessage(botMessage?.id);
 
@@ -1363,7 +1365,7 @@ function _Chat() {
   };
 
   const getModel = (model: string): Model => {
-    return config.modelList.find((m) => m.model === model) as Model;
+    return config.modelList.find((m) => model.includes(m.model)) as Model;
   };
 
   const getModelNameWithRemark = (model: string) => {
@@ -1805,10 +1807,10 @@ function _Chat() {
                         <>
                           {["system"].includes(message.role) ? (
                             <Avatar avatar="2699-fe0f" />
-                          ) : getModel(message.model!) &&
-                            getModel(message.model!).model_logo ? (
+                          ) : message.model &&
+                            getModel(message.model).model_logo ? (
                             <Avatar
-                              avatar={getModel(message.model!).model_logo}
+                              avatar={getModel(message.model).model_logo}
                             />
                           ) : (
                             <Avatar model={message.model} />
@@ -1819,7 +1821,9 @@ function _Chat() {
 
                     {!isUser && (
                       <div className={styles["chat-message-model"]}>
-                        {getModelNameWithRemark(message.model!)}
+                        {message.model
+                          ? getModelNameWithRemark(message.model)
+                          : ""}
                       </div>
                     )}
                   </div>

@@ -498,4 +498,6 @@ export const DISABLED_SYSTEM_PROMPT_MODELS = [
   "yi-vision",
   "baichuan",
   "chatlaw",
+  "xuanyuan",
+  "gemma-2-27b",
 ];
