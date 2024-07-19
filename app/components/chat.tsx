@@ -1365,7 +1365,11 @@ function _Chat() {
   };
 
   const getModel = (model: string): Model => {
-    return config.modelList.find((m) => model.includes(m.model)) as Model;
+    const models = model.split(";");
+
+    return config.modelList.find((m) =>
+      models.find((i) => i === m.model),
+    ) as Model;
   };
 
   const getModelNameWithRemark = (model: string) => {
