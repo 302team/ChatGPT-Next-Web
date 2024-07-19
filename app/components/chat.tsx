@@ -1694,6 +1694,16 @@ function _Chat() {
         >
           <div className="window-action-button">
             <IconButton
+              icon={<DeleteIcon />}
+              bordered
+              title={Locale.Chat.InputActions.Clear}
+              onClick={() => {
+                chatStore.resetSession();
+              }}
+            />
+          </div>
+          <div className="window-action-button">
+            <IconButton
               icon={<ExportIcon />}
               bordered
               title={Locale.Chat.Actions.Export}

@@ -178,7 +178,7 @@ function ChatWindow() {
               opt.region == undefined ? Region.Overseas : opt.region;
           });
 
-          chatStore.resetSession();
+          // chatStore.resetSession();
 
           // 模型竞技场的模型
           if (opt.zero_shot) {
