@@ -308,12 +308,12 @@ export class ChatGPTApi implements LLMApi {
               return finish();
             }
 
-            if (res.status === 200 && contentType === "application/json") {
+            /* if (res.status === 200 && contentType === "application/json") {
               const json = await res.clone().json();
               responseText = json.message;
               isStreamDone = true;
               return finish();
-            } else if (
+            } else  */ if (
               !res.ok ||
               !res.headers
                 .get("content-type")
@@ -327,7 +327,15 @@ export class ChatGPTApi implements LLMApi {
 
               try {
                 const resJson = await res.clone().json();
-                if (resJson.error) {
+
+                // 无法打开文件
+                if (resJson.code === -100404) {
+                  const CODE = ERROR_CODE[resJson.code as ERROR_CODE_TYPE];
+                  // @ts-ignore
+                  responseText = Locale.Error[CODE] || resJson.message;
+                  isStreamDone = true;
+                  return finish();
+                } else if (resJson.error) {
                   if (resJson.error?.type === "api_error") {
                     const CODE =
                       ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
@@ -631,12 +639,12 @@ export class ChatGPTApi implements LLMApi {
               return finish();
             }
 
-            if (res.status === 200 && contentType === "application/json") {
+            /* if (res.status === 200 && contentType === "application/json") {
               const json = await res.clone().json();
               responseText = json.message;
               // isStreamDone = true;
               return finish();
-            } else if (
+            } else  */ if (
               !res.ok ||
               !res.headers
                 .get("content-type")
@@ -664,7 +672,13 @@ export class ChatGPTApi implements LLMApi {
 
               try {
                 const resJson = await res.clone().json();
-                if (resJson.error) {
+
+                if (resJson.code === -100404) {
+                  const CODE = ERROR_CODE[resJson.code as ERROR_CODE_TYPE];
+                  // @ts-ignore
+                  responseText = Locale.Error[CODE] || resJson.message;
+                  return finish();
+                } else if (resJson.error) {
                   if (resJson.error?.type === "api_error") {
                     const CODE =
                       ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];

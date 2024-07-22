@@ -88,7 +88,7 @@ export async function requestOpenai(req: NextRequest) {
         DEFAULT_MODELS,
         serverConfig.customModels,
       );
-      const clonedBody = await req.text();
+      const clonedBody = await req.clone().text();
       fetchOptions.body = clonedBody;
 
       const jsonBody = JSON.parse(clonedBody) as { model?: string };
@@ -112,12 +112,13 @@ export async function requestOpenai(req: NextRequest) {
 
   try {
     const clonedBody = await Textract.create(authValue).parsePrompt(
-      await req.json(),
+      await req.clone().json(),
     );
     fetchOptions.body = clonedBody;
   } catch (error) {
     return NextResponse.json(
       {
+        code: -100404,
         error: error,
         message: `对不起，我无法打开这个文件`,
       },

@@ -26,6 +26,7 @@ const cn = {
     Action: {
       Retry: "重试",
     },
+    CAN_NOT_OPEN_FILE_ERROR: "对不起，我无法打开这个文件",
   },
   Auth: {
     Warn: "提示",

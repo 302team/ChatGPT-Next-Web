@@ -243,6 +243,8 @@ export const ERROR_CODE = {
   "-10006": "TOTAL_QUOTA_ERROR", // 聊天机器人总额度不足
   "-10007": "DAILY_QUOTA_ERROR", // 聊天机器人当天额度不足
   "-10012": "HOUR_QUOTA_ERROR", // 聊天机器人当天额度不足
+
+  "-100404": "CAN_NOT_OPEN_FILE_ERROR", // 无法打开文件
 };
 
 export type ERROR_CODE_TYPE = keyof typeof ERROR_CODE;

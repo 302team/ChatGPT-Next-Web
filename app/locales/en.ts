@@ -30,6 +30,7 @@ const en: LocaleType = {
     Action: {
       Retry: "Retry",
     },
+    CAN_NOT_OPEN_FILE_ERROR: "Sorry, I can't open this file",
   },
   Auth: {
     Warn: "Tips",

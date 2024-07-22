@@ -31,11 +31,12 @@ async function handle(req: NextRequest) {
 
     try {
       reqBody = await Textract.create(authToken).parsePrompt4Tools(
-        await req.json(),
+        await req.clone().json(),
       );
     } catch (error) {
       return NextResponse.json(
         {
+          code: -100404,
           error: error,
           message: `对不起，我无法打开这个文件`,
         },
