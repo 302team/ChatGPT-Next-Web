@@ -322,7 +322,14 @@ export class ChatGPTApi implements LLMApi {
 
               try {
                 const resJson = await res.clone().json();
-                if (resJson.error) {
+
+                if (resJson.code === -100404) {
+                  const CODE = ERROR_CODE[resJson.code as ERROR_CODE_TYPE];
+                  // @ts-ignore
+                  responseText = Locale.Error[CODE] || resJson.message;
+                  isStreamDone = true;
+                  return finish();
+                } else if (resJson.error) {
                   if (resJson.error?.type === "api_error") {
                     const CODE =
                       ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
@@ -600,7 +607,17 @@ export class ChatGPTApi implements LLMApi {
 
               try {
                 const resJson = await res.clone().json();
-                if (resJson.error) {
+                if (resJson.code === -100404) {
+                  const CODE = ERROR_CODE[resJson.code as ERROR_CODE_TYPE];
+                  // @ts-ignore
+                  responseText = Locale.Error[CODE] || resJson.message;
+                  console.log(
+                    "🚀 ~ ChatGPTApi ~ onopen ~ CODE:",
+                    CODE,
+                    responseText,
+                  );
+                  return finish();
+                } else if (resJson.error) {
                   if (resJson.error?.type === "api_error") {
                     const CODE =
                       ERROR_CODE[resJson.error.err_code as ERROR_CODE_TYPE];
