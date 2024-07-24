@@ -38,10 +38,11 @@ export class DallEAPIWrapper extends StructuredTool {
   }
 
   async saveImageFromUrl(url: string) {
-    const file = await getFileFromUrl(url, `${Date.now()}.png`);
+    // const file = await getFileFromUrl(url, `${Date.now()}.png`);
 
     const formData = new FormData();
-    formData.append("file", file);
+    // formData.append("file", file);
+    formData.append("url", url);
 
     let fileUrl = "";
     let n = 0;

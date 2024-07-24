@@ -552,7 +552,6 @@ export class ChatGPTApi implements LLMApi {
       options.onRetry &&
       options.retryCount !== undefined &&
       options.retryCount < 1;
-    console.log("🚀 ~ [Request] toolAgentChat ~ shouldRetry:", shouldRetry);
 
     try {
       let path = "/api/langchain/tool/agent/";
@@ -592,7 +591,7 @@ export class ChatGPTApi implements LLMApi {
             finished = true;
 
             if (responseText?.length === 0) {
-              if (shouldRetry) {
+              if (shouldRetry && !isAborted) {
                 controller.abort();
                 options.onRetry?.();
               } else {
@@ -686,7 +685,7 @@ export class ChatGPTApi implements LLMApi {
                     const _err = Locale.Auth[CODE as AuthType];
                     errorMsg =
                       typeof _err === "function"
-                        ? _err
+                        ? _err(config.region)
                         : _err || resJson.error.message;
 
                     //
@@ -752,7 +751,7 @@ export class ChatGPTApi implements LLMApi {
                   const _err = Locale.Auth[CODE as AuthType];
                   responseText =
                     typeof _err === "function"
-                      ? _err
+                      ? _err(config.region)
                       : _err || resJson.error.message;
 
                   hasUncatchError = false;
@@ -952,7 +951,9 @@ export class ChatGPTApi implements LLMApi {
 
             const _err = Locale.Auth[CODE as AuthType];
             errorMsg =
-              typeof _err === "function" ? _err : _err || resJson.error.message;
+              typeof _err === "function"
+                ? _err(useAppConfig.getState().region)
+                : _err || resJson.error.message;
 
             //
           } else if (resJson.error && resJson.error?.param.startsWith("5")) {
