@@ -403,7 +403,9 @@ export class AgentApi {
       const runnableAgent = RunnableSequence.from([
         {
           input: (i: { input: string; steps: ToolsAgentStep[] }) => {
-            return i.input;
+            return typeof i.input === "string"
+              ? i.input
+              : JSON.stringify(i.input);
           },
           agent_scratchpad: (i: { input: string; steps: ToolsAgentStep[] }) => {
             return formatToOpenAIToolMessages(i.steps);
