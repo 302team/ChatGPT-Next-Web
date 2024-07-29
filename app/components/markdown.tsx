@@ -20,13 +20,23 @@ import Locale from "../locales";
 import { Modal, Segmented } from "antd";
 
 import CodeMirror from "@uiw/react-codemirror";
+import { LanguageSupport } from "@codemirror/language";
 import { html } from "@codemirror/lang-html";
+// import { vue } from "@codemirror/lang-vue";
+import { javascript } from "@codemirror/lang-javascript";
 
 const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
 
+const langConfigMap: Record<string, LanguageSupport[]> = {
+  jsx: [javascript()],
+  // vue: [vue()],
+  html: [html()],
+};
+
 export function CodePreviewModal(props: {
   content?: string;
+  currentLang: string;
   open: boolean;
   onOk?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onCancel?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -84,7 +94,7 @@ export function CodePreviewModal(props: {
           value={content}
           height="60vh"
           theme="dark"
-          extensions={[html()]}
+          extensions={langConfigMap[props.currentLang]}
           onChange={onChange}
         />
       )}
@@ -145,12 +155,31 @@ export function PreCode(props: { children: any }) {
   const [shouldPreview, setShouldPreview] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [codeText, setCodeText] = useState("");
+  const [codeLanguage, setCodeLanguage] = useState("html");
 
   const renderMermaid = useDebouncedCallback(() => {
     if (!ref.current) return;
     const mermaidDom = ref.current.querySelector("code.language-mermaid");
     if (mermaidDom) {
       setMermaidCode((mermaidDom as HTMLElement).innerText);
+    }
+
+    const htmlDom = ref.current.querySelector("code.language-html");
+    const jsxDom = ref.current.querySelector("code.language-jsx");
+    const tsxDom = ref.current.querySelector("code.language-tsx");
+    const vueDom = ref.current.querySelector("code.language-vue");
+
+    // const _refText = ref.current?.innerText;
+    // const svgCode = svgReg.exec(_refText);
+
+    const showPreviewBtn = htmlDom; // || jsxDom || tsxDom || vueDom;
+
+    if (showPreviewBtn) {
+      // setHtmlCode((htmlDom as HTMLElement).innerText);
+      setShouldPreview(true);
+    } else if (refText?.startsWith("<!DOCTYPE")) {
+      // setHtmlCode(refText);
+      setShouldPreview(true);
     }
   }, 600);
 
@@ -159,12 +188,12 @@ export function PreCode(props: { children: any }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refText]);
 
-  useEffect(() => {
-    const _refText = ref.current?.innerText;
-    if (_refText && (htmlReg.exec(_refText) || svgReg.exec(_refText))) {
-      setShouldPreview(true);
-    }
-  }, [ref, props.children]);
+  // useEffect(() => {
+  //   const _refText = ref.current?.innerText;
+  //   if (_refText && (htmlReg.exec(_refText) || svgReg.exec(_refText))) {
+  //     setShouldPreview(true);
+  //   }
+  // }, [ref, props.children]);
 
   return (
     <>
@@ -190,8 +219,12 @@ export function PreCode(props: { children: any }) {
             onClick={() => {
               if (ref.current) {
                 const code = ref.current.innerText;
-                const codeStr = code;
-                setCodeText(codeStr);
+                const codeLang =
+                  ref.current
+                    .querySelector('code[class^="hljs language-"]')
+                    ?.className.split("language-")?.[1] ?? "html";
+                setCodeLanguage(codeLang);
+                setCodeText(code);
                 setShowPreview(true);
               }
             }}
@@ -205,6 +238,7 @@ export function PreCode(props: { children: any }) {
         <CodePreviewModal
           content={codeText}
           open={showPreview}
+          currentLang={codeLanguage}
           onOk={() => setShowPreview(false)}
           onCancel={() => setShowPreview(false)}
         />
