@@ -88,9 +88,9 @@
   --modal-padding: 20px;
 
   &-max {
-    width: 95vw;
-    max-width: unset;
-    height: 95vh;
+    width: 95vw !important;
+    max-width: unset !important;
+    height: 95vh !important;
     display: flex;
     flex-direction: column;
 

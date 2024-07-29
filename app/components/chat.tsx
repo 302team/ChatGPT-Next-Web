@@ -142,6 +142,7 @@ import {
 } from "@ant-design/icons";
 import { Typography, Image, Space } from "antd";
 import { usePluginStore } from "../store/plugin";
+import { CodePreviewModal } from "./markdown";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -1097,6 +1098,57 @@ function useSpeakAndVoice(prosp: {
     setCancelRecording,
   };
 }
+
+var code = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Spinner</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+        }
+
+        .spinner:after {
+            content: " ";
+            display: block;
+            width: 64px;
+            height: 64px;
+            margin: 8px;
+            border-radius: 50%;
+            border: 6px solid #5652BF;
+            border-color: #5652BF transparent #5652BF transparent;
+            animation: spinner 1.2s linear infinite;
+        }
+
+        @keyframes spinner {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="spinner"></div>
+</body>
+</html>
+`;
 
 function _Chat(props: { promptStarters: string[] }) {
   type RenderMessage = ChatMessage & { preview?: boolean };

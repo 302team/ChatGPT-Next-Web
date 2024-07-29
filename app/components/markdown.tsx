@@ -12,7 +12,7 @@ import mermaid from "mermaid";
 import LoadingIcon from "../icons/three-dots.svg";
 import React from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { showImageModal } from "./ui-lib";
+import { showImageModal, Modal as UiModal } from "./ui-lib";
 import { MultimodalContent } from "../client/api";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -40,6 +40,7 @@ export function CodePreviewModal(props: {
   open: boolean;
   onOk?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onCancel?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClose?: (e: any) => void;
 }) {
   const [tab, setTab] = useState("preview");
   const [previewUrl, setPreviewUrl] = useState("");
@@ -60,45 +61,84 @@ export function CodePreviewModal(props: {
   }, 600);
 
   return (
-    <Modal
-      title={Locale.Preview.Title}
-      className="code-preview-modal"
-      open={props.open}
-      onOk={props.onOk}
-      onCancel={props.onCancel}
-      destroyOnClose
-      footer={[]}
-    >
-      <div className="code-preview-modal-actions">
-        <Segmented
-          value={tab}
-          style={{ marginBottom: 8 }}
-          onChange={(value) => setTab(value)}
-          options={[
-            {
-              label: Locale.Preview.Actions.Preview,
-              value: "preview",
-            },
-            {
-              label: Locale.Preview.Actions.Code,
-              value: "code",
-            },
-          ]}
-        />
-      </div>
+    // <Modal
+    //   title={Locale.Preview.Title}
+    //   className={`code-preview-modal ${isMax ? "code-preview-modal-max" : ""}`}
+    //   open={props.open}
+    //   onOk={props.onOk}
+    //   onCancel={props.onCancel}
+    //   destroyOnClose
+    //   footer={[]}
+    // >
+    //   <div className="code-preview-modal-actions">
+    //     <Segmented
+    //       value={tab}
+    //       style={{ marginBottom: 8 }}
+    //       onChange={(value) => setTab(value)}
+    //       options={[
+    //         {
+    //           label: Locale.Preview.Actions.Preview,
+    //           value: "preview",
+    //         },
+    //         {
+    //           label: Locale.Preview.Actions.Code,
+    //           value: "code",
+    //         },
+    //       ]}
+    //     />
+    //   </div>
 
-      {tab === "preview" ? (
-        <iframe src={previewUrl} />
-      ) : (
-        <CodeMirror
-          value={content}
-          height="60vh"
-          theme="dark"
-          extensions={langConfigMap[props.currentLang]}
-          onChange={onChange}
-        />
-      )}
-    </Modal>
+    //   {tab === "preview" ? (
+    //     <iframe src={previewUrl} />
+    //   ) : (
+    //     <CodeMirror
+    //       value={content}
+    //       height="60vh"
+    //       theme="dark"
+    //       extensions={langConfigMap[props.currentLang]}
+    //       onChange={onChange}
+    //     />
+    //   )}
+    // </Modal>
+
+    <div className="modal-mask">
+      <UiModal
+        title={Locale.Preview.Title}
+        containerClass="code-preview-modal"
+        footer={[]}
+        showMaxButton={true}
+        onClose={() => props.onClose?.(false)}
+      >
+        <div className="code-preview-modal-actions">
+          <Segmented
+            value={tab}
+            style={{ marginBottom: 8 }}
+            onChange={(value) => setTab(value)}
+            options={[
+              {
+                label: Locale.Preview.Actions.Preview,
+                value: "preview",
+              },
+              {
+                label: Locale.Preview.Actions.Code,
+                value: "code",
+              },
+            ]}
+          />
+        </div>
+
+        {tab === "preview" ? (
+          <iframe src={previewUrl} />
+        ) : (
+          <CodeMirror
+            value={content}
+            theme="dark"
+            extensions={langConfigMap[props.currentLang]}
+            onChange={onChange}
+          />
+        )}
+      </UiModal>
+    </div>
   );
 }
 
@@ -234,13 +274,14 @@ export function PreCode(props: { children: any }) {
         )}
       </div>
 
-      {shouldPreview && (
+      {showPreview && (
         <CodePreviewModal
           content={codeText}
           open={showPreview}
           currentLang={codeLanguage}
           onOk={() => setShowPreview(false)}
           onCancel={() => setShowPreview(false)}
+          onClose={() => setShowPreview(false)}
         />
       )}
     </>
@@ -336,6 +377,9 @@ export function Markdown(
     fontSize?: number;
     parentRef?: RefObject<HTMLDivElement>;
     defaultShow?: boolean;
+    setShowPreview?: (arg: any) => {};
+    setCodeText?: (arg: any) => {};
+    setCodeLanguage?: (arg: any) => {};
   } & React.DOMAttributes<HTMLDivElement>,
 ) {
   const mdRef = useRef<HTMLDivElement>(null);
@@ -407,7 +451,13 @@ export function Markdown(
       {props.loading ? (
         <LoadingIcon />
       ) : (
-        <MarkdownContent content={msgContent} isHtml={isHtml} />
+        <MarkdownContent
+          content={msgContent}
+          isHtml={isHtml}
+          // setShowPreview={props.setShowPreview}
+          // setCodeText={props.setCodeText}
+          // setCodeLanguage={props.setCodeLanguage}
+        />
       )}
     </div>
   );

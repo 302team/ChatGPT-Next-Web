@@ -137,7 +137,7 @@ export function Modal(props: ModalProps) {
     <div
       className={
         styles["modal-container"] +
-        ` modal-container ${isMax && styles["modal-container-max"]} ${props.containerClass}`
+        ` modal-container ${isMax && styles["modal-container-max"]} ${isMax && `${props.containerClass}-max`} ${props.containerClass}`
       }
     >
       <div className={styles["modal-header"]}>
@@ -174,7 +174,9 @@ export function Modal(props: ModalProps) {
         </div>
       </div>
 
-      <div className={styles["modal-content"]}>{props.children}</div>
+      <div className={`${styles["modal-content"]} ui-lib-modal-body`}>
+        {props.children}
+      </div>
 
       <div className={styles["modal-footer"]}>
         {props.footer}
