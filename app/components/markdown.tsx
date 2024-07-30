@@ -6,13 +6,13 @@ import RehypeKatex from "rehype-katex";
 import RemarkGfm from "remark-gfm";
 import RehypeHighlight from "rehype-highlight";
 import { useRef, useState, RefObject, useEffect, useMemo } from "react";
-import { copyToClipboard, isImage } from "../utils";
+import { copyToClipboard, isImage, useWindowSize } from "../utils";
 import mermaid from "mermaid";
 
 import LoadingIcon from "../icons/three-dots.svg";
 import React from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { showImageModal, Modal as UiModal } from "./ui-lib";
+import { FullScreen, showImageModal, Modal as UiModal } from "./ui-lib";
 import { MultimodalContent } from "../client/api";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -24,6 +24,7 @@ import { LanguageSupport } from "@codemirror/language";
 import { html } from "@codemirror/lang-html";
 // import { vue } from "@codemirror/lang-vue";
 import { javascript } from "@codemirror/lang-javascript";
+import { ArtifactsShareButton, HTMLPreview } from "./artifacts";
 
 const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
@@ -43,21 +44,21 @@ export function CodePreviewModal(props: {
   onClose?: (e: any) => void;
 }) {
   const [tab, setTab] = useState("preview");
-  const [previewUrl, setPreviewUrl] = useState("");
-  const [content, setContent] = useState("");
+  // const [previewUrl, setPreviewUrl] = useState("");
+  const [htmlCode, setHtmlCode] = useState("");
 
   useEffect(() => {
-    setContent(props.content ?? "");
+    setHtmlCode(props.content ?? "");
   }, [props.content]);
 
-  useEffect(() => {
-    const blob = new Blob([content], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    setPreviewUrl(url);
-  }, [content]);
+  // useEffect(() => {
+  //   const blob = new Blob([htmlCode], { type: "text/html" });
+  //   const url = URL.createObjectURL(blob);
+  //   setPreviewUrl(url);
+  // }, [htmlCode]);
 
   const onChange = useDebouncedCallback((val: string) => {
-    setContent(val);
+    setHtmlCode(val);
   }, 600);
 
   return (
@@ -125,13 +126,20 @@ export function CodePreviewModal(props: {
               },
             ]}
           />
+          <ArtifactsShareButton
+            style={{ position: "relative", top: -5, right: 5 }}
+            getCode={() => htmlCode}
+          />
         </div>
 
         {tab === "preview" ? (
-          <iframe src={previewUrl} />
+          // <iframe src={previewUrl} />
+          htmlCode.length > 0 && (
+            <HTMLPreview code={htmlCode} autoHeight={true} height="100%" />
+          )
         ) : (
           <CodeMirror
-            value={content}
+            value={htmlCode}
             theme="dark"
             extensions={langConfigMap[props.currentLang]}
             onChange={onChange}

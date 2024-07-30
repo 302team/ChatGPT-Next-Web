@@ -1,6 +1,5 @@
 import { StructuredTool } from "@langchain/core/tools";
 import { z } from "zod";
-import { getBase64FromUrl } from "./utils";
 
 const defaultModel = "claude-3-5-sonnet-20240620";
 

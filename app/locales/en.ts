@@ -207,6 +207,10 @@ const en: LocaleType = {
 
       return msg;
     },
+    Artifacts: {
+      Title: "Share Artifacts",
+      Error: "Share Error",
+    },
   },
   Select: {
     Search: "Search",

@@ -2,7 +2,6 @@ import { StructuredTool } from "@langchain/core/tools";
 import { z } from "zod";
 import { getServerSideConfig } from "@/app/config/server";
 import { sleep } from "openai/core";
-import { getFileFromUrl } from "./utils";
 
 export class DallEAPIWrapper extends StructuredTool {
   name = "draw";

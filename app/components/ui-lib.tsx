@@ -13,7 +13,14 @@ import MinIcon from "../icons/min.svg";
 import Locale from "../locales";
 
 import { createRoot } from "react-dom/client";
-import React, { HTMLProps, useEffect, useMemo, useState } from "react";
+import React, {
+  HTMLProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { IconButton } from "./button";
 import { Spin } from "antd";
 
@@ -137,18 +144,24 @@ export function Modal(props: ModalProps) {
     <div
       className={
         styles["modal-container"] +
-        ` modal-container ${isMax && styles["modal-container-max"]} ${isMax && `${props.containerClass}-max`} ${props.containerClass}`
+        ` modal-container ${isMax && styles["modal-container-max"]} ${props.containerClass} ${isMax && `${props.containerClass}-max`}`
       }
     >
-      <div className={styles["modal-header"]}>
-        <div className={styles["modal-title-wrap"]}>
+      <div
+        className={`${styles["modal-header"]} ${props.containerClass}-header`}
+      >
+        <div
+          className={`${styles["modal-title-wrap"]} ${props.containerClass}-title-wrap`}
+        >
           <div className={styles["modal-title"]}>{props.title}</div>
           {props.subtitle && (
             <div className={styles["modal-subtitle"]}>{props.subtitle}</div>
           )}
         </div>
 
-        <div className={styles["modal-header-actions"]}>
+        <div
+          className={`${styles["modal-header-actions"]} ${props.containerClass}-header-actions`}
+        >
           {props.headerActions ? (
             <>
               {props.headerActions?.map((action, i) => (
@@ -174,11 +187,15 @@ export function Modal(props: ModalProps) {
         </div>
       </div>
 
-      <div className={`${styles["modal-content"]} ui-lib-modal-body`}>
+      <div
+        className={`${styles["modal-content"]} ${props.containerClass}-content`}
+      >
         {props.children}
       </div>
 
-      <div className={styles["modal-footer"]}>
+      <div
+        className={`${styles["modal-footer"]} ${props.containerClass}-footer`}
+      >
         {props.footer}
         <div className={styles["modal-actions"]}>
           {props.actions?.map((action, i) => (
@@ -523,6 +540,42 @@ export function ShowLoading(props: { tip: string }) {
       <Spin tip={props.tip} size="large" fullscreen={true}>
         <div style={{ width: 120 }}></div>
       </Spin>
+    </div>
+  );
+}
+
+export function FullScreen(props: any) {
+  const { children, right = 10, top = 10, ...rest } = props;
+  const ref = useRef<HTMLDivElement>();
+  const [fullScreen, setFullScreen] = useState(false);
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      ref.current?.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }, []);
+  useEffect(() => {
+    const handleScreenChange = (e: any) => {
+      if (e.target === ref.current) {
+        setFullScreen(!!document.fullscreenElement);
+      }
+    };
+    document.addEventListener("fullscreenchange", handleScreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleScreenChange);
+    };
+  }, []);
+  return (
+    <div ref={ref} style={{ position: "relative" }} {...rest}>
+      <div style={{ position: "absolute", right, top }}>
+        <IconButton
+          icon={fullScreen ? <MinIcon /> : <MaxIcon />}
+          onClick={toggleFullscreen}
+          bordered
+        />
+      </div>
+      {children}
     </div>
   );
 }

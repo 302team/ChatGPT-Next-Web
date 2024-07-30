@@ -1,6 +1,6 @@
 import { Tool } from "@langchain/core/tools";
 import { getServerSideConfig } from "@/app/config/server";
-import { dataURLtoFile } from "./utils";
+import { dataURLtoFile } from "../utils";
 
 export class StableDiffusionWrapper extends Tool {
   name = "stable_diffusion_image_generator";
