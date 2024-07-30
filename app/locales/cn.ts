@@ -205,6 +205,10 @@ const cn = {
 
       return msg;
     },
+    Artifacts: {
+      Title: "分享页面",
+      Error: "分享失败",
+    },
   },
   Select: {
     Search: "搜索消息",

@@ -12,84 +12,95 @@ import mermaid from "mermaid";
 import LoadingIcon from "../icons/three-dots.svg";
 import React from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { showImageModal } from "./ui-lib";
+import { showImageModal, Modal as UiModal } from "./ui-lib";
 import { MultimodalContent } from "../client/api";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import rehypeRaw from "rehype-raw";
 
 import Locale from "../locales";
-import { Modal, Segmented } from "antd";
+import { Segmented } from "antd";
 
 import CodeMirror from "@uiw/react-codemirror";
+import { LanguageSupport } from "@codemirror/language";
 import { html } from "@codemirror/lang-html";
+// import { vue } from "@codemirror/lang-vue";
+import { javascript } from "@codemirror/lang-javascript";
+import { ArtifactsShareButton, HTMLPreview } from "./artifacts";
 
 const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
 
+const langConfigMap: Record<string, LanguageSupport[]> = {
+  jsx: [javascript()],
+  // vue: [vue()],
+  html: [html()],
+};
+
 export function CodePreviewModal(props: {
   content?: string;
+  currentLang: string;
   open: boolean;
   onOk?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onCancel?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClose?: (e: any) => void;
 }) {
   const [tab, setTab] = useState("preview");
-  const [previewUrl, setPreviewUrl] = useState("");
-  const [content, setContent] = useState("");
+  const [htmlCode, setHtmlCode] = useState("");
 
   useEffect(() => {
-    setContent(props.content ?? "");
+    setHtmlCode(props.content ?? "");
   }, [props.content]);
 
-  useEffect(() => {
-    const blob = new Blob([content], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    setPreviewUrl(url);
-  }, [content]);
-
   const onChange = useDebouncedCallback((val: string) => {
-    setContent(val);
+    setHtmlCode(val);
   }, 600);
 
   return (
-    <Modal
-      title={Locale.Preview.Title}
-      className="code-preview-modal"
-      open={props.open}
-      footer={[]}
-      destroyOnClose
-      onOk={props.onOk}
-      onCancel={props.onCancel}
-    >
-      <div className="code-preview-modal-actions">
-        <Segmented
-          value={tab}
-          style={{ marginBottom: 8 }}
-          onChange={(value) => setTab(value)}
-          options={[
-            {
-              label: Locale.Preview.Actions.Preview,
-              value: "preview",
-            },
-            {
-              label: Locale.Preview.Actions.Code,
-              value: "code",
-            },
-          ]}
-        />
-      </div>
+    <div className="modal-mask">
+      <UiModal
+        title={Locale.Preview.Title}
+        containerClass="code-preview-modal"
+        footer={[]}
+        showMaxButton={true}
+        onClose={() => props.onClose?.(false)}
+      >
+        <div className="code-preview-modal-actions">
+          <Segmented
+            value={tab}
+            style={{ marginBottom: 8 }}
+            onChange={(value) => setTab(value)}
+            options={[
+              {
+                label: Locale.Preview.Actions.Preview,
+                value: "preview",
+              },
+              {
+                label: Locale.Preview.Actions.Code,
+                value: "code",
+              },
+            ]}
+          />
+          <ArtifactsShareButton
+            style={{ position: "relative", top: -5, right: 5 }}
+            getCode={() => htmlCode}
+          />
+        </div>
 
-      {tab === "preview" ? (
-        <iframe src={previewUrl} />
-      ) : (
-        <CodeMirror
-          value={content}
-          height="60vh"
-          theme="dark"
-          extensions={[html()]}
-          onChange={onChange}
-        />
-      )}
-    </Modal>
+        {tab === "preview" ? (
+          // <iframe src={previewUrl} />
+          htmlCode.length > 0 && (
+            <HTMLPreview code={htmlCode} autoHeight={true} height="100%" />
+          )
+        ) : (
+          <CodeMirror
+            value={htmlCode}
+            theme="dark"
+            extensions={langConfigMap[props.currentLang]}
+            onChange={onChange}
+          />
+        )}
+      </UiModal>
+    </div>
   );
 }
 
@@ -146,12 +157,31 @@ export function PreCode(props: { children: any }) {
   const [shouldPreview, setShouldPreview] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [codeText, setCodeText] = useState("");
+  const [codeLanguage, setCodeLanguage] = useState("html");
 
   const renderMermaid = useDebouncedCallback(() => {
     if (!ref.current) return;
     const mermaidDom = ref.current.querySelector("code.language-mermaid");
     if (mermaidDom) {
       setMermaidCode((mermaidDom as HTMLElement).innerText);
+    }
+
+    const htmlDom = ref.current.querySelector("code.language-html");
+    const jsxDom = ref.current.querySelector("code.language-jsx");
+    const tsxDom = ref.current.querySelector("code.language-tsx");
+    const vueDom = ref.current.querySelector("code.language-vue");
+
+    // const _refText = ref.current?.innerText;
+    // const svgCode = svgReg.exec(_refText);
+
+    const showPreviewBtn = htmlDom; // || jsxDom || tsxDom || vueDom;
+
+    if (showPreviewBtn) {
+      // setHtmlCode((htmlDom as HTMLElement).innerText);
+      setShouldPreview(true);
+    } else if (refText?.startsWith("<!DOCTYPE")) {
+      // setHtmlCode(refText);
+      setShouldPreview(true);
     }
   }, 600);
 
@@ -160,12 +190,12 @@ export function PreCode(props: { children: any }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refText]);
 
-  useEffect(() => {
-    const _refText = ref.current?.innerText;
-    if (_refText && (htmlReg.exec(_refText) || svgReg.exec(_refText))) {
-      setShouldPreview(true);
-    }
-  }, [ref, props.children]);
+  // useEffect(() => {
+  //   const _refText = ref.current?.innerText;
+  //   if (_refText && (htmlReg.exec(_refText) || svgReg.exec(_refText))) {
+  //     setShouldPreview(true);
+  //   }
+  // }, [ref, props.children]);
 
   return (
     <>
@@ -191,8 +221,12 @@ export function PreCode(props: { children: any }) {
             onClick={() => {
               if (ref.current) {
                 const code = ref.current.innerText;
-                const codeStr = code;
-                setCodeText(codeStr);
+                const codeLang =
+                  ref.current
+                    .querySelector('code[class^="hljs language-"]')
+                    ?.className.split("language-")?.[1] ?? "html";
+                setCodeLanguage(codeLang);
+                setCodeText(code);
                 setShowPreview(true);
               }
             }}
@@ -202,12 +236,14 @@ export function PreCode(props: { children: any }) {
         )}
       </div>
 
-      {shouldPreview && (
+      {showPreview && (
         <CodePreviewModal
           content={codeText}
           open={showPreview}
+          currentLang={codeLanguage}
           onOk={() => setShowPreview(false)}
           onCancel={() => setShowPreview(false)}
+          onClose={() => setShowPreview(false)}
         />
       )}
     </>

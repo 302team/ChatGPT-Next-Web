@@ -54,6 +54,10 @@ export function Loading(props: { noLogo?: boolean }) {
   );
 }
 
+const Artifacts = dynamic(async () => (await import("./artifacts")).Artifacts, {
+  loading: () => <Loading noLogo />,
+});
+
 // const Settings = dynamic(async () => (await import("./settings")).Settings, {
 //   loading: () => <Loading noLogo />,
 // });
@@ -219,7 +223,7 @@ function ChatWindow() {
 function Screen() {
   const config = useAppConfig();
   const location = useLocation();
-  // const isHome = location.pathname === Path.Home;
+  const isArtifact = location.pathname.includes(Path.Artifacts);
   const isAuth = location.pathname === Path.Auth;
   const isMobileScreen = useMobileScreen();
   const shouldTightBorder =
@@ -235,6 +239,14 @@ function Screen() {
     const h = document.body.clientHeight;
     setWindowHeight(h);
   }, []);
+
+  if (isArtifact) {
+    return (
+      <Routes>
+        <Route path="/artifacts/:id" element={<Artifacts />} />
+      </Routes>
+    );
+  }
 
   return (
     <>

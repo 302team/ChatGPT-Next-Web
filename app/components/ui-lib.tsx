@@ -107,6 +107,7 @@ interface ModalProps {
   containerClass?: string;
   onClose?: () => void;
 }
+
 export function Modal(props: ModalProps) {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -136,18 +137,24 @@ export function Modal(props: ModalProps) {
     <div
       className={
         styles["modal-container"] +
-        ` ${isMax && styles["modal-container-max"]} ${props.containerClass}`
+        ` modal-container ${isMax && styles["modal-container-max"]} ${props.containerClass} ${isMax && `${props.containerClass}-max`}`
       }
     >
-      <div className={styles["modal-header"]}>
-        <div className={styles["modal-title-wrap"]}>
+      <div
+        className={`${styles["modal-header"]} ${props.containerClass}-header`}
+      >
+        <div
+          className={`${styles["modal-title-wrap"]} ${props.containerClass}-title-wrap`}
+        >
           <div className={styles["modal-title"]}>{props.title}</div>
           {props.subtitle && (
             <div className={styles["modal-subtitle"]}>{props.subtitle}</div>
           )}
         </div>
 
-        <div className={styles["modal-header-actions"]}>
+        <div
+          className={`${styles["modal-header-actions"]} ${props.containerClass}-header-actions`}
+        >
           {props.headerActions ? (
             <>
               {props.headerActions?.map((action, i) => (
@@ -173,9 +180,15 @@ export function Modal(props: ModalProps) {
         </div>
       </div>
 
-      <div className={styles["modal-content"]}>{props.children}</div>
+      <div
+        className={`${styles["modal-content"]} ${props.containerClass}-content`}
+      >
+        {props.children}
+      </div>
 
-      <div className={styles["modal-footer"]}>
+      <div
+        className={`${styles["modal-footer"]} ${props.containerClass}-footer`}
+      >
         {props.footer}
         <div className={styles["modal-actions"]}>
           {props.actions?.map((action, i) => (
