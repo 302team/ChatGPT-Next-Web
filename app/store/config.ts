@@ -39,31 +39,8 @@ export const DEFAULT_CONFIG = {
   enableAutoGenerateTitle: true,
   sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
 
-  // disablePromptHint: false,
-
-  // dontShowMaskSplashScreen: true, // dont show splash screen when create chat
-  // hideBuiltinMasks: false, // dont add builtin masks
-
   customModels: "",
   models: DEFAULT_MODELS as any as LLMModel[],
-
-  // modelConfig: {
-  //   model: "gpt-3.5-turbo" as ModelType,
-  //   temperature: 0.5,
-  //   top_p: 1,
-  //   max_tokens: 32000,
-  //   presence_penalty: 0,
-  //   frequency_penalty: 0,
-  //   sendMemory: true,
-  //   historyMessageCount: 4,
-  //   compressMessageLengthThreshold: 1000,
-  //   enableInjectSystemPrompts: true,
-  //   template: DEFAULT_INPUT_TEMPLATE,
-
-  //   // 用户自定义的系统提示信息
-  //   enableInjectCustomSystemPrompts: false,
-  //   injectCustomSystemPrompts: "",
-  // },
 
   speech: {
     voice: "onyx",
@@ -103,7 +80,7 @@ export const CHATBOT_CONFIG = {
     model: "gpt-4-all", // 模型 (model):
     temperature: 0.5, // 随机性 (temperature): 值越大，回复越随机
     top_p: 1, // 核采样 (top_p): 与随机性类似，但不要和随机性一起更改
-    max_tokens: 32000, // 单次回复限制 (max_tokens): 单次交互所用的最大 Token 数
+    max_tokens: 0, // 单次回复限制 (max_tokens): 单次交互所用的最大 Token 数
     presence_penalty: 0, // 话题新鲜度 (presence_penalty): 值越大，越有可能扩展到新话题
     frequency_penalty: 0, // 频率惩罚度 (frequency_penalty): 值越大，越有可能降低重复字词
     enableInjectSystemPrompts: false, // 注入系统级提示信息【注入默认系统提示信息】: 强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示

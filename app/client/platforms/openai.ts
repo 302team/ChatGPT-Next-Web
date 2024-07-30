@@ -187,6 +187,15 @@ export class ChatGPTApi implements LLMApi {
       });
     }
 
+    if (`${modelConfig.max_tokens}` !== "" && modelConfig.max_tokens > 0) {
+      Object.defineProperty(requestPayload, "max_tokens", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: modelConfig.max_tokens,
+      });
+    }
+
     // add max_tokens to vision model
     if (
       options.config.model.includes("vision") &&
@@ -538,6 +547,15 @@ export class ChatGPTApi implements LLMApi {
         configurable: true,
         writable: true,
         value: 1,
+      });
+    }
+
+    if (`${modelConfig.max_tokens}` !== "" && modelConfig.max_tokens > 0) {
+      Object.defineProperty(requestPayload, "max_tokens", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: modelConfig.max_tokens,
       });
     }
 

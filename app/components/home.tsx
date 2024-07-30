@@ -241,6 +241,10 @@ function ChatWindow() {
                 );
 
                 if (!isEmptyObject(_modelConfig)) {
+                  if (typeof _modelConfig.max_tokens === "undefined") {
+                    _modelConfig.max_tokens = 0;
+                  }
+
                   for (let key in conf.modelConfig) {
                     if (key in _modelConfig) {
                       // @ts-ignore
