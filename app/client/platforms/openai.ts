@@ -483,7 +483,7 @@ export class ChatGPTApi implements LLMApi {
     const isAzure = accessStore.provider === ServiceProvider.Azure;
     let baseUrl = isAzure ? accessStore.azureUrl : accessStore.openaiUrl;
     const requestPayload = {
-      messages: sendMessages /* .map((message) => {
+      messages: sendMessages.map((message) => {
         let content = message.content;
         if (typeof content === "string") {
           return {
@@ -509,7 +509,7 @@ export class ChatGPTApi implements LLMApi {
           role: message.role,
           content: text,
         };
-      }) */,
+      }),
       isAzure,
       azureApiVersion: accessStore.azureApiVersion,
       stream: options.config.stream,
