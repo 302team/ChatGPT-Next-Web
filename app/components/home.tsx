@@ -255,7 +255,9 @@ function Screen() {
           styles.container +
           ` ${
             shouldTightBorder ? styles["tight-container"] : styles.container
-          } ${getLang() === "ar" ? styles["rtl-screen"] : ""}`
+          } ${getLang() === "ar" ? styles["rtl-screen"] : ""} ${
+            config.tightBorder && "maxed-container"
+          }`
         }
         style={{
           // @ts-ignore
