@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router";
-import { useWindowSize } from "@/app/utils";
+import { useMobileScreen, useWindowSize } from "@/app/utils";
 import { IconButton } from "./button";
 import { nanoid } from "nanoid";
 import ExportIcon from "../icons/share.svg";
 import CopyIcon from "../icons/copy.svg";
 import DownloadIcon from "../icons/download.svg";
-import GithubIcon from "../icons/github.svg";
+import Logo from "../icons/logo-horizontal-dark.png";
 import LoadingButtonIcon from "../icons/loading.svg";
 import Locale from "../locales";
 import { Modal, showToast } from "./ui-lib";
@@ -14,6 +14,7 @@ import { copyToClipboard, downloadAs } from "../utils";
 import { Path, ApiPath, REPO_URL } from "@/app/constant";
 import { Loading } from "./home";
 import styles from "./artifacts.module.scss";
+import NextImage from "next/image";
 
 export function HTMLPreview(props: {
   code: string;
@@ -184,6 +185,7 @@ export function Artifacts() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [fileName, setFileName] = useState("");
+  const isMobileScreen = useMobileScreen();
 
   useEffect(() => {
     if (id) {
@@ -205,7 +207,14 @@ export function Artifacts() {
   return (
     <div className={styles["artifacts"]}>
       <div className={styles["artifacts-header"]}>
-        <div className={styles["artifacts-title"]}>302AI Artifacts</div>
+        <div className={styles["artifacts-title"]}>
+          <NextImage
+            src={Logo.src}
+            width={isMobileScreen ? 156 : 184}
+            height={isMobileScreen ? 44 : 52}
+            alt="302AI"
+          />
+        </div>
         <ArtifactsShareButton
           id={id}
           getCode={() => code}
