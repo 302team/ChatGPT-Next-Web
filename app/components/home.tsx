@@ -23,7 +23,7 @@ import {
 } from "../constant";
 import { ErrorBoundary } from "./error";
 
-import { getISOLang, getLang } from "../locales";
+import Locale, { getISOLang, getLang } from "../locales";
 
 import {
   HashRouter as Router,
@@ -265,7 +265,11 @@ function ChatWindow() {
                 conf[key] = settings[key];
               }
               if (settings.chatbotName) {
-                document.title = settings.chatbotName;
+                let title = settings.chatbotName;
+                if (title === "302.AI") {
+                  title = Locale.Config.title;
+                }
+                document.title = title;
               }
             } else {
               // Baichuan开头的模型 frequency_penalty自动改为1
@@ -364,6 +368,7 @@ export function Home() {
   useHtmlLang();
 
   useEffect(() => {
+    document.title = Locale.Config.title;
     document.body.classList.add("light");
     console.log("[Config] got config from build time", getClientConfig());
     useAccessStore.getState().fetch();

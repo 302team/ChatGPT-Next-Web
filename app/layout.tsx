@@ -11,7 +11,7 @@ const serverConfig = getServerSideConfig();
 import Locale from "./locales";
 
 export const metadata: Metadata = {
-  title: Locale.Config.title,
+  title: "302.AI",
   description: Locale.Config.description,
   viewport: {
     width: "device-width",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     { media: "(prefers-color-scheme: dark)", color: "#151515" },
   ],
   appleWebApp: {
-    title: Locale.Config.title,
+    title: "302.AI",
     statusBarStyle: "default",
   },
 };
