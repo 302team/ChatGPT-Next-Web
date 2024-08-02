@@ -41,7 +41,9 @@ export function isImage(type: string) {
 
 // const File_Link_Exp = /^https:\/\/.+\..+$/;
 export const File_Link_Exp =
-  /https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?/g;
+  // /https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?/g;
+  // /(?<!['"“”‘’\s])https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?(?!['"“”‘’\s])/g;
+  /(?<!['"“”‘’])https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?(?!['"“”‘’])/g;
 
 export const Upload_File_Link = "https://file.302.ai/gpt/imgs";
 
