@@ -927,7 +927,7 @@ export function Settings(props: {
           </ListItem>
         </List>
 
-        {!hidenPrompt && <SystemPrompts />}
+        {/* {!hidenPrompt && <SystemPrompts />} */}
 
         {syncStore.enable && <SyncItems />}
 
