@@ -194,13 +194,13 @@ export class ChatGPTApi implements LLMApi {
         writable: true,
         value: modelConfig.max_tokens,
       });
-    }
-
-    // add max_tokens to vision model
-    if (
+    } else if (
+      // options.config.model.includes("abab6.5") ||
+      // options.config.model.includes("abab5.5") ||
       options.config.model.includes("vision") &&
       !options.config.model.includes("yi-vision")
     ) {
+      // add max_tokens to vision model
       Object.defineProperty(requestPayload, "max_tokens", {
         enumerable: true,
         configurable: true,
@@ -409,7 +409,9 @@ export class ChatGPTApi implements LLMApi {
               const json = extractMessageBody(text, modelConfig.model);
               const choices = json.choices as Array<{
                 delta: { content: string | Array<{ text: string }> };
+                finish_reason?: string;
               }>;
+
               const delta = choices[0]?.delta?.content;
               const textmoderation = json?.prompt_filter_results;
 
@@ -433,6 +435,18 @@ export class ChatGPTApi implements LLMApi {
                   `[${ServiceProvider.Azure}] [Text Moderation] flagged categories result:`,
                   contentFilterResults,
                 );
+              }
+
+              if (choices[0].finish_reason === "stop") {
+                isStreamDone = true;
+                return finish();
+              }
+
+              // tokens超限制
+              if (choices[0].finish_reason === "length") {
+                isStreamDone = true;
+                hasUncatchError = true;
+                return finish();
               }
             } catch (e) {
               console.error("[Request] parse error", text, msg);
