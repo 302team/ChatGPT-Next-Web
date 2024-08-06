@@ -106,7 +106,7 @@ async function handle(req: NextRequest, res: NextResponse) {
 
   if (req.method === "GET") {
     const id = req?.nextUrl?.searchParams?.get("id");
-    const result = await fetch(`https://file.302.ai/gpt/imgs/${id}`, {
+    const result = await fetch(`https://file.302ai.cn/gpt/imgs/${id}`, {
       method: "GET",
     });
     console.log("🚀 ~ handle ~ res:", id, res);
