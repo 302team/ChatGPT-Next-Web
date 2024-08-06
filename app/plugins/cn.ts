@@ -84,6 +84,17 @@ export const CN_PLUGINS: BuiltinPlugin[] = [
     onlyNodeRuntime: false,
   },
   {
+    name: "代码执行器",
+    toolName: "code-interpreter",
+    lang: "cn",
+    description:
+      "The Code Interpreter is a tool designed to execute code. Input is code snippets in python or nodeJS, output is the execution results or output. ",
+    builtin: true,
+    createdAt: 1693744292000,
+    enable: true,
+    onlyNodeRuntime: false,
+  },
+  {
     name: "Stable Diffusion",
     toolName: "stable_diffusion_image_generator",
     lang: "cn",

@@ -16,7 +16,7 @@ import { FullScreen, showImageModal, Modal as UiModal } from "./ui-lib";
 import { MultimodalContent } from "../client/api";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import rehypeRaw from "rehype-raw";
-import Locale from "../locales";
+import Locale, { getLang } from "../locales";
 import { Modal, Segmented } from "antd";
 
 import CodeMirror from "@uiw/react-codemirror";
@@ -24,19 +24,30 @@ import { LanguageSupport } from "@codemirror/language";
 import { html } from "@codemirror/lang-html";
 // import { vue } from "@codemirror/lang-vue";
 import { javascript } from "@codemirror/lang-javascript";
-import { ArtifactsShareButton, HTMLPreview } from "./artifacts";
+import { python } from "@codemirror/lang-python";
+import {
+  ArtifactsShareButton,
+  detectLanguage,
+  HTMLPreview,
+  Stdout,
+} from "./artifacts";
+import { usePluginStore } from "../store/plugin";
+import { useChatStore } from "../store";
 
 const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
 
 const langConfigMap: Record<string, LanguageSupport[]> = {
   jsx: [javascript()],
+  javascript: [javascript()],
+  python: [python()],
   // vue: [vue()],
   html: [html()],
 };
 
 export function CodePreviewModal(props: {
-  content?: string;
+  content: string;
+  isRunCode?: boolean;
   currentLang: string;
   open: boolean;
   onOk?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -44,64 +55,23 @@ export function CodePreviewModal(props: {
   onClose?: (e: any) => void;
 }) {
   const [tab, setTab] = useState("preview");
-  // const [previewUrl, setPreviewUrl] = useState("");
-  const [htmlCode, setHtmlCode] = useState("");
-
-  useEffect(() => {
-    setHtmlCode(props.content ?? "");
-  }, [props.content]);
+  const [code, setCode] = useState(props.content);
+  const [codeLang, setCodeLang] = useState(props.currentLang);
 
   // useEffect(() => {
-  //   const blob = new Blob([htmlCode], { type: "text/html" });
-  //   const url = URL.createObjectURL(blob);
-  //   setPreviewUrl(url);
-  // }, [htmlCode]);
+  //   setCode(props.content ?? "");
+  // }, [props.content]);
 
   const onChange = useDebouncedCallback((val: string) => {
-    setHtmlCode(val);
+    setCode(val);
+
+    if (props.isRunCode) {
+      const lang = detectLanguage(val);
+      setCodeLang(lang === "unknow" ? props.currentLang : lang);
+    }
   }, 600);
 
   return (
-    // <Modal
-    //   title={Locale.Preview.Title}
-    //   className={`code-preview-modal ${isMax ? "code-preview-modal-max" : ""}`}
-    //   open={props.open}
-    //   onOk={props.onOk}
-    //   onCancel={props.onCancel}
-    //   destroyOnClose
-    //   footer={[]}
-    // >
-    //   <div className="code-preview-modal-actions">
-    //     <Segmented
-    //       value={tab}
-    //       style={{ marginBottom: 8 }}
-    //       onChange={(value) => setTab(value)}
-    //       options={[
-    //         {
-    //           label: Locale.Preview.Actions.Preview,
-    //           value: "preview",
-    //         },
-    //         {
-    //           label: Locale.Preview.Actions.Code,
-    //           value: "code",
-    //         },
-    //       ]}
-    //     />
-    //   </div>
-
-    //   {tab === "preview" ? (
-    //     <iframe src={previewUrl} />
-    //   ) : (
-    //     <CodeMirror
-    //       value={content}
-    //       height="60vh"
-    //       theme="dark"
-    //       extensions={langConfigMap[props.currentLang]}
-    //       onChange={onChange}
-    //     />
-    //   )}
-    // </Modal>
-
     <div className="modal-mask">
       <UiModal
         title={Locale.Preview.Title}
@@ -117,7 +87,9 @@ export function CodePreviewModal(props: {
             onChange={(value) => setTab(value)}
             options={[
               {
-                label: Locale.Preview.Actions.Preview,
+                label: props.isRunCode
+                  ? Locale.Preview.Actions.Stdout
+                  : Locale.Preview.Actions.Preview,
                 value: "preview",
               },
               {
@@ -126,20 +98,25 @@ export function CodePreviewModal(props: {
               },
             ]}
           />
-          <ArtifactsShareButton
-            style={{ position: "relative", top: -5, right: 5 }}
-            getCode={() => htmlCode}
-          />
+          {!props.isRunCode && (
+            <ArtifactsShareButton
+              style={{ position: "relative", top: -5, right: 5 }}
+              getCode={() => code}
+            />
+          )}
         </div>
 
         {tab === "preview" ? (
-          // <iframe src={previewUrl} />
-          htmlCode.length > 0 && (
-            <HTMLPreview code={htmlCode} autoHeight={true} height="100%" />
+          props.isRunCode ? (
+            <Stdout codeString={code} codeLang={codeLang} />
+          ) : (
+            code.length > 0 && (
+              <HTMLPreview code={code} autoHeight={true} height="100%" />
+            )
           )
         ) : (
           <CodeMirror
-            value={htmlCode}
+            value={code}
             theme="dark"
             extensions={langConfigMap[props.currentLang]}
             onChange={onChange}
@@ -200,10 +177,37 @@ export function PreCode(props: { children: any }) {
   const ref = useRef<HTMLPreElement>(null);
   const refText = ref.current?.innerText;
   const [mermaidCode, setMermaidCode] = useState("");
-  const [shouldPreview, setShouldPreview] = useState(false);
+  const [showCodePreviewAction, setShowCodePreviewAction] = useState(false);
+  const [showCodeInterpreterAction, setShowCodeInterpreterAction] =
+    useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [isRunCode, setIsStdout] = useState(false);
   const [codeText, setCodeText] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("html");
+  const pluginStore = usePluginStore();
+  const chatStore = useChatStore();
+  const currentLang = getLang();
+
+  const isEnableCodeInterpreterPlugin = useMemo(() => {
+    const plugin = (
+      chatStore.currentSession().mask.isStoreModel
+        ? pluginStore
+            .getBuildinPlugins()
+            .filter(
+              (m) =>
+                (["cn"].includes(currentLang)
+                  ? m.lang === currentLang
+                  : m.lang === "en") && m.enable,
+            )
+        : pluginStore.getUserPlugins()
+    ).find((i) => i.toolName === "code-interpreter");
+
+    if (plugin?.enable) {
+      return true;
+    } else {
+      return false;
+    }
+  }, [pluginStore, chatStore]);
 
   const renderMermaid = useDebouncedCallback(() => {
     if (!ref.current) return;
@@ -217,17 +221,22 @@ export function PreCode(props: { children: any }) {
     const tsxDom = ref.current.querySelector("code.language-tsx");
     const vueDom = ref.current.querySelector("code.language-vue");
 
+    const javascriptDom = ref.current.querySelector("code.language-javascript");
+    const pythonDom = ref.current.querySelector("code.language-python");
+
     // const _refText = ref.current?.innerText;
     // const svgCode = svgReg.exec(_refText);
 
     const showPreviewBtn = htmlDom; // || jsxDom || tsxDom || vueDom;
 
     if (showPreviewBtn) {
-      // setHtmlCode((htmlDom as HTMLElement).innerText);
-      setShouldPreview(true);
+      setShowCodePreviewAction(true);
     } else if (refText?.startsWith("<!DOCTYPE")) {
-      // setHtmlCode(refText);
-      setShouldPreview(true);
+      setShowCodePreviewAction(true);
+    }
+
+    if ((javascriptDom || pythonDom) && isEnableCodeInterpreterPlugin) {
+      setShowCodeInterpreterAction(true);
     }
   }, 600);
 
@@ -235,13 +244,6 @@ export function PreCode(props: { children: any }) {
     setTimeout(renderMermaid, 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refText]);
-
-  // useEffect(() => {
-  //   const _refText = ref.current?.innerText;
-  //   if (_refText && (htmlReg.exec(_refText) || svgReg.exec(_refText))) {
-  //     setShouldPreview(true);
-  //   }
-  // }, [ref, props.children]);
 
   return (
     <>
@@ -261,25 +263,50 @@ export function PreCode(props: { children: any }) {
           ></span>
           {props.children}
         </pre>
-        {shouldPreview && (
-          <span
-            className="preview-code-button"
-            onClick={() => {
-              if (ref.current) {
-                const code = ref.current.innerText;
-                const codeLang =
-                  ref.current
-                    .querySelector('code[class^="hljs language-"]')
-                    ?.className.split("language-")?.[1] ?? "html";
-                setCodeLanguage(codeLang);
-                setCodeText(code);
-                setShowPreview(true);
-              }
-            }}
-          >
-            {Locale.Preview.Actions.Preview}
-          </span>
-        )}
+
+        <div className="code-actions">
+          {showCodePreviewAction && (
+            <span
+              className="code-actions-item code-preview"
+              onClick={() => {
+                if (ref.current) {
+                  const code = ref.current.innerText;
+                  const codeLang =
+                    ref.current
+                      .querySelector('code[class^="hljs language-"]')
+                      ?.className.split("language-")?.[1] ?? "html";
+                  setCodeLanguage(codeLang);
+                  setCodeText(code);
+                  setIsStdout(false);
+                  setShowPreview(true);
+                }
+              }}
+            >
+              {Locale.Preview.Actions.Preview}
+            </span>
+          )}
+
+          {showCodeInterpreterAction && (
+            <span
+              className="code-actions-item code-interpreter"
+              onClick={() => {
+                if (ref.current) {
+                  const code = ref.current.innerText;
+                  const codeLang =
+                    ref.current
+                      .querySelector('code[class^="hljs language-"]')
+                      ?.className.split("language-")?.[1] ?? "html";
+                  setCodeLanguage(codeLang);
+                  setCodeText(code);
+                  setIsStdout(true);
+                  setShowPreview(true);
+                }
+              }}
+            >
+              {Locale.Preview.Actions.Implement}
+            </span>
+          )}
+        </div>
       </div>
 
       {showPreview && (
@@ -287,6 +314,7 @@ export function PreCode(props: { children: any }) {
           content={codeText}
           open={showPreview}
           currentLang={codeLanguage}
+          isRunCode={isRunCode}
           onOk={() => setShowPreview(false)}
           onCancel={() => setShowPreview(false)}
           onClose={() => setShowPreview(false)}

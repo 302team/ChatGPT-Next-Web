@@ -18,6 +18,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.3.1",
     "@codemirror/lang-html": "^6.4.9",
+    "@codemirror/lang-python": "^6.1.6",
     "@fortaine/fetch-event-source": "^3.0.6",
     "@hello-pangea/dnd": "^16.5.0",
     "@langchain/community": "0.0.56",

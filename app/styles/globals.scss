@@ -324,24 +324,34 @@ div.math {
     pointer-events: all;
     transform: translateX(0px);
   }
-  .preview-code-button {
+
+  .code-actions {
     position: absolute;
     right: 10px;
     bottom: 1em;
-    cursor: pointer;
-    padding: 0px 5px;
-    background-color: #009cf7;
-    color: var(--white);
-    border: 1px solid #009cf7f2;
-    border-radius: 10px;
     transform: translateX(0px);
-    pointer-events: none;
-    opacity: 0.8;
-    transition: all ease 0.3s;
-    font-size: 12px;
+    z-index: 1;
 
-    &:hover {
-      opacity: 1;
+    .code-actions-item {
+      position: relative;
+      cursor: pointer;
+      padding: 0px 5px;
+      background-color: #009cf7;
+      color: var(--white);
+      border: 1px solid #009cf7f2;
+      border-radius: 10px;
+      // pointer-events: none;
+      opacity: 0.8;
+      transition: all ease 0.3s;
+      font-size: 12px;
+
+      & + .code-actions-item {
+        margin-left: 4px;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 }
@@ -494,14 +504,19 @@ input:disabled {
   }
 
   &-actions {
-    width: 100%;
+    position: sticky;
     display: flex;
+    width: 100%;
+    top: 0;
+    background-color: #fff;
     justify-content: space-between;
+    padding: 15px 0 5px;
   }
 
   &-content {
-    max-height: unset !important;
+    max-height: 75vh !important;
     min-height: calc(60vh + 45px) !important;
+    padding-top: 0 !important;
   }
 
   iframe {

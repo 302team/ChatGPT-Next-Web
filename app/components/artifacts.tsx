@@ -15,6 +15,8 @@ import { Path, ApiPath, REPO_URL } from "@/app/constant";
 import { Loading } from "./home";
 import styles from "./artifacts.module.scss";
 import NextImage from "next/image";
+import ReactMarkdown from "react-markdown";
+import { useAccessStore } from "../store";
 
 export function HTMLPreview(props: {
   code: string;
@@ -81,6 +83,92 @@ export function HTMLPreview(props: {
       srcDoc={srcDoc}
       onLoad={handleOnLoad}
     />
+  );
+}
+
+const CodeLang: Record<string, string> = {
+  javascript: "nodejs",
+  python: "python3",
+};
+
+const prettyResult = (msg: string, type = "shell") =>
+  ["```" + type, msg, "```"].join("\n");
+
+export function detectLanguage(code: string) {
+  if (/^\s*def\s+\w+\s*\(.*\):/.test(code)) {
+    return "python";
+  } else if (/^\s*function\s+\w+\s*\(.*\)\s*\{/.test(code)) {
+    return "javascript";
+  } else {
+    return "unknow";
+  }
+}
+
+export function Stdout(props: { codeString: string; codeLang?: string }) {
+  const [runing, setRuning] = useState(false);
+  const [result, setResult] = useState("");
+  const accessStore = useAccessStore();
+
+  let status = 0;
+
+  useEffect(() => {
+    const runCode = async () => {
+      try {
+        const response = await fetch(ApiPath.CodeInterpreter, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessStore.openaiApiKey}`,
+          },
+          body: JSON.stringify({
+            code: props.codeString,
+            language:
+              CodeLang[
+                props.codeLang
+                  ? props.codeLang
+                  : detectLanguage(props.codeString)
+              ],
+          }),
+        });
+
+        if (response.status === 200) {
+          const resJson = await response.json();
+          if (resJson.error) {
+            setResult(prettyResult(resJson.error));
+          } else {
+            setResult(prettyResult(resJson.stdout));
+          }
+        } else {
+          const resText = await response.text();
+          setResult(prettyResult(resText));
+        }
+      } catch (err: any) {
+        setResult(err.toString());
+      } finally {
+        setRuning(false);
+      }
+    };
+
+    if (status > 0 || runing) return;
+
+    setRuning(true);
+    runCode();
+    return () => {
+      status = 1;
+    };
+  }, []);
+
+  if (runing) {
+    return (
+      <div className={styles["artifacts-runing-code"]}>
+        <Loading />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <ReactMarkdown>{result}</ReactMarkdown>
+    </>
   );
 }
 
