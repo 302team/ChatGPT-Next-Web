@@ -9,6 +9,7 @@ import { WebBrowser } from "langchain/tools/webbrowser";
 import { WolframAlphaTool } from "@/app/api/langchain-tools/wolframalpha";
 // import { Glm4vWrapper } from "@/app/api/langchain-tools/glm_4v";
 import { GPT4vWrapper } from "./image-recognition";
+import { CodeInterpreterTool } from "./code_interpreter";
 
 export class NodeJSTool {
   private apiKey: string | undefined;
@@ -68,6 +69,8 @@ export class NodeJSTool {
       this.multimodalType4Models,
     );
 
+    const codeInterpreterTool = new CodeInterpreterTool(this.apiKey!);
+
     let tools = [
       calculatorTool,
       webBrowserTool,
@@ -78,6 +81,7 @@ export class NodeJSTool {
       pdfBrowserTool,
 
       gpt4vTool,
+      codeInterpreterTool,
     ];
     return tools;
   }

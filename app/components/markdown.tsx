@@ -16,7 +16,7 @@ import { FullScreen, showImageModal, Modal as UiModal } from "./ui-lib";
 import { MultimodalContent } from "../client/api";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import rehypeRaw from "rehype-raw";
-import Locale, { getLang } from "../locales";
+import Locale from "../locales";
 import { Modal, Segmented } from "antd";
 
 import CodeMirror from "@uiw/react-codemirror";
@@ -31,8 +31,6 @@ import {
   HTMLPreview,
   Stdout,
 } from "./artifacts";
-import { usePluginStore } from "../store/plugin";
-import { useChatStore } from "../store";
 
 const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
@@ -57,10 +55,6 @@ export function CodePreviewModal(props: {
   const [tab, setTab] = useState("preview");
   const [code, setCode] = useState(props.content);
   const [codeLang, setCodeLang] = useState(props.currentLang);
-
-  // useEffect(() => {
-  //   setCode(props.content ?? "");
-  // }, [props.content]);
 
   const onChange = useDebouncedCallback((val: string) => {
     setCode(val);
@@ -184,30 +178,6 @@ export function PreCode(props: { children: any }) {
   const [isRunCode, setIsStdout] = useState(false);
   const [codeText, setCodeText] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("html");
-  const pluginStore = usePluginStore();
-  const chatStore = useChatStore();
-  const currentLang = getLang();
-
-  const isEnableCodeInterpreterPlugin = useMemo(() => {
-    const plugin = (
-      chatStore.currentSession().mask.isStoreModel
-        ? pluginStore
-            .getBuildinPlugins()
-            .filter(
-              (m) =>
-                (["cn"].includes(currentLang)
-                  ? m.lang === currentLang
-                  : m.lang === "en") && m.enable,
-            )
-        : pluginStore.getUserPlugins()
-    ).find((i) => i.toolName === "code-interpreter");
-
-    if (plugin?.enable) {
-      return true;
-    } else {
-      return false;
-    }
-  }, [pluginStore, chatStore]);
 
   const renderMermaid = useDebouncedCallback(() => {
     if (!ref.current) return;
@@ -235,7 +205,7 @@ export function PreCode(props: { children: any }) {
       setShowCodePreviewAction(true);
     }
 
-    if ((javascriptDom || pythonDom) && isEnableCodeInterpreterPlugin) {
+    if (javascriptDom || pythonDom) {
       setShowCodeInterpreterAction(true);
     }
   }, 600);

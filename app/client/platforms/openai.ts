@@ -832,6 +832,9 @@ export class ChatGPTApi implements LLMApi {
                       : "claude-3.5";
                   inputMessage = "Image recognition";
                 }
+                if (toolName === "code-interpreter") {
+                  inputMessage = "Code Interpreter";
+                }
                 options.onToolUpdate?.(toolName, inputMessage);
               }
             } catch (e) {
