@@ -83,7 +83,7 @@ export class Textract {
       },
       body: JSON.stringify({ url }),
     }).then((res) => res.json());
-    console.log("[textract] res:", res.data.msg, res.data.msg.length);
+    console.log("[textract] res:", !!res.data.msg, res.data.msg.length);
 
     if (res.code === 0) {
       return res.data.msg;
