@@ -77,7 +77,7 @@ export const CHATBOT_CONFIG = {
   // prompts: [],
 
   modelConfig: {
-    model: "gpt-4-all", // 模型 (model):
+    model: "gpt-4o", // 模型 (model):
     temperature: 0.5, // 随机性 (temperature): 值越大，回复越随机
     top_p: 1, // 核采样 (top_p): 与随机性类似，但不要和随机性一起更改
     max_tokens: 0, // 单次回复限制 (max_tokens): 单次交互所用的最大 Token 数
@@ -90,6 +90,7 @@ export const CHATBOT_CONFIG = {
     historyMessageCount: 4, // 附带历史消息数: 每次请求携带的历史消息数
     compressMessageLengthThreshold: 1000, // 历史消息长度压缩阈值: 当未压缩的历史消息超过该值时，将进行压缩
     sendMemory: false, // 历史摘要: 自动压缩聊天记录并作为上下文发送
+    sendMemoryLength: "short", // 历史摘要长度: 简洁:200, 适中:800, 详细:2000
   },
 
   showShareEntry: true,

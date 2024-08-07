@@ -545,8 +545,15 @@ const en: LocaleType = {
         "This is a summary of the chat history as a recap: " + content,
       Topic:
         "Please generate a four to five word title summarizing our conversation without any lead-in, punctuation, quotation marks, periods, symbols, bold text, or additional text. Remove enclosing quotation marks.",
-      Summarize:
-        "Summarize the discussion briefly in 200 words or less to use as a prompt for future context.",
+      Summarize: (type: string) => {
+        if (type === "medium") {
+          return "Summarize the conversation in detail, and use it as a context prompt for the following. Keep it within 800 words.";
+        } else if (type === "long") {
+          return "Summarize the conversation in detail, and don't miss any details. Use it as a context prompt for the following. Keep it within 2000 words.";
+        } else {
+          return "Summarize the discussion briefly in 200 words or less to use as a prompt for future context.";
+        }
+      },
     },
   },
   Copy: {

@@ -1373,7 +1373,9 @@ export const useChatStore = createPersistStore(
             messages: toBeSummarizedMsgs.concat(
               createMessage({
                 role: "system",
-                content: Locale.Store.Prompt.Summarize,
+                content: Locale.Store.Prompt.Summarize(
+                  modelConfig.sendMemoryLength,
+                ),
                 date: "",
               }),
             ),

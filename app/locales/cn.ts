@@ -533,8 +533,15 @@ const cn = {
       History: (content: string) => "这是历史聊天总结作为前情提要：" + content,
       Topic:
         "使用四到五个字直接返回这句话的简要主题，不要解释、不要标点、不要语气词、不要多余文本，不要加粗，如果没有主题，请直接返回“闲聊”",
-      Summarize:
-        "简要总结一下对话内容，用作后续的上下文提示 prompt，控制在 200 字以内",
+      Summarize: (type: string): string => {
+        if (type === "medium") {
+          return "详细总结一下对话内容，用作后续的上下文提示 prompt，控制在 800 字以内";
+        } else if (type === "long") {
+          return "详细总结一下对话内容，不要遗漏任何细节，用作后续的上下文提示 prompt，控制在 2000字以内";
+        } else {
+          return "简要总结一下对话内容，用作后续的上下文提示 prompt，控制在 200 字以内";
+        }
+      },
     },
   },
   Copy: {
