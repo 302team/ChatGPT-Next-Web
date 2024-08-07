@@ -697,11 +697,6 @@ export const useChatStore = createPersistStore(
           ]);
         });
 
-        const isStream = !(
-          modelConfig.model.includes("abab6.5") ||
-          modelConfig.model.includes("abab5.5")
-        );
-
         var api: ClientApi = new ClientApi(ModelProvider.GPT);
         if (
           // 应用商店创建的模型, 需要根据后端控制是否支持插件调用
@@ -726,7 +721,7 @@ export const useChatStore = createPersistStore(
 
           api.llm.toolAgentChat({
             messages: sendMessages,
-            config: { ...modelConfig, stream: isStream },
+            config: { ...modelConfig, stream: true },
             agentConfig: {
               ...pluginConfig,
               useTools: pluginToolNames,
@@ -888,7 +883,7 @@ export const useChatStore = createPersistStore(
           // make request
           api.llm.chat({
             messages: sendMessages,
-            config: { ...modelConfig, stream: isStream },
+            config: { ...modelConfig, stream: true },
             retryCount: extAttr.retryCount ?? 0,
             onAborted: (message) => {
               botMessage.isTimeoutAborted = true;
