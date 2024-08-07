@@ -207,6 +207,16 @@ export class ChatGPTApi implements LLMApi {
         writable: true,
         value: 4000,
       });
+    } else if (
+      modelConfig.model.toLocaleLowerCase().includes("abab6.5") ||
+      modelConfig.model.toLocaleLowerCase().includes("abab5.5")
+    ) {
+      Object.defineProperty(requestPayload, "max_tokens", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: 8000,
+      });
     }
 
     console.log("[Request] openai payload: ", requestPayload);
@@ -570,6 +580,16 @@ export class ChatGPTApi implements LLMApi {
         configurable: true,
         writable: true,
         value: modelConfig.max_tokens,
+      });
+    } else if (
+      modelConfig.model.toLocaleLowerCase().includes("abab6.5") ||
+      modelConfig.model.toLocaleLowerCase().includes("abab5.5")
+    ) {
+      Object.defineProperty(requestPayload, "max_tokens", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: 8000,
       });
     }
 
