@@ -402,6 +402,7 @@ export class ChatGPTApi implements LLMApi {
               const json = extractMessageBody(text, modelConfig.model);
               const choices = json.choices as Array<{
                 delta: { content: string | Array<{ text: string }> };
+                finish_reason?: string;
               }>;
               const delta = choices[0]?.delta?.content;
               const textmoderation = json?.prompt_filter_results;
@@ -426,6 +427,18 @@ export class ChatGPTApi implements LLMApi {
                   `[${ServiceProvider.Azure}] [Text Moderation] flagged categories result:`,
                   contentFilterResults,
                 );
+              }
+
+              if (choices[0].finish_reason === "stop") {
+                isStreamDone = true;
+                return finish();
+              }
+
+              // tokens超限制
+              if (choices[0].finish_reason === "length") {
+                isStreamDone = true;
+                hasUncatchError = true;
+                return finish();
               }
             } catch (e) {
               console.error("[Request] parse error", text, msg);
