@@ -69,6 +69,8 @@ const cn = {
     Actions: {
       Preview: "预览",
       Code: "代码",
+      Implement: "执行",
+      Stdout: "执行结果",
     },
   },
   ChatItem: {

@@ -41,10 +41,14 @@ export function isImage(type: string) {
 
 // const File_Link_Exp = /^https:\/\/.+\..+$/;
 export const File_Link_Exp =
-  /https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?/g;
+  // /https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?/g;
+  // /(?<!['"“”‘’\s])https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?(?!['"“”‘’\s])/g;
+  /(?<!['"“”‘’])https?:\/\/[^\s/$.?#].[^\s]*\/?[^\s]*\.?[a-zA-Z0-9]+(\?[^\s]*)?(?!['"“”‘’])/g;
 
-export const Upload_File_Link = "https://file.302.ai/gpt/imgs";
-
+export const Upload_File_Link = [
+  "https://file.302.ai/gpt/imgs",
+  "https://file.302ai.cn/gpt/imgs",
+];
 // https://file.302.ai/gpt/imgs/20240710/2b58bb42373a4c449c7d03d679c8c38a.html
 // https://file.302.ai/gpt/imgs/20240710/b9f97ab0f60d4a469529ac5862317e71.pdf
 
@@ -184,8 +188,10 @@ export class Textract {
               // 如果是网页链接，优先走插件
               // https://file.302.ai/gpt/xxx
               if (urlArr && urlArr.length) {
-                const isUploadFile = urlArr.some((u) =>
-                  u.includes(Upload_File_Link),
+                const isUploadFile = urlArr.some(
+                  (u) =>
+                    u.includes(Upload_File_Link[0]) ||
+                    u.includes(Upload_File_Link[1]),
                 );
                 if (!isUploadFile) {
                   console.log("[parsePrompt4Tools] 网页链接，优先走插件");

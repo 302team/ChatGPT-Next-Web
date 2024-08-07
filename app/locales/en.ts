@@ -67,6 +67,8 @@ const en: LocaleType = {
     Actions: {
       Preview: "preview",
       Code: "code",
+      Implement: "Implement",
+      Stdout: "stdout",
     },
   },
   ChatItem: {
