@@ -193,7 +193,7 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 3.8,
+    version: 3.9,
     migrate(persistedState, version) {
       const state = persistedState as ChatConfig;
 
@@ -222,6 +222,10 @@ export const useAppConfig = createPersistStore(
 
       if (version < 3.8) {
         state.lastUpdate = Date.now();
+      }
+
+      if (version < 3.9) {
+        state.modelConfig.sendMemoryLength = "short";
       }
 
       return state as any;
