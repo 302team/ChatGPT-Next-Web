@@ -119,7 +119,7 @@ export async function requestOpenai(req: NextRequest) {
     return NextResponse.json(
       {
         code: -100404,
-        error: error,
+        error: error?.toString(),
         message: `对不起，我无法打开这个文件`,
       },
       {
