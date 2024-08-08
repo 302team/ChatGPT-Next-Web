@@ -76,19 +76,25 @@ export class Textract {
 
   async parseText(url: string) {
     console.log("[textract] url:", url);
-    const res = await fetch(`${serverConfig.apiDomain}/gpt/api/textract`, {
+    const response = await fetch(`${serverConfig.apiDomain}/gpt/api/textract`, {
       method: "POST",
       headers: {
         Token: `${this.apiKey}`,
         "Content-type": "application/json",
       },
       body: JSON.stringify({ url }),
-    }).then((res) => res.json());
-    console.log("[textract] res:", !!res.data.msg, res.data.msg.length);
+    });
+    if (response.status >= 200 && response.status < 300) {
+      const res = await response.json();
+      console.log("[textract] res:", !!res.data.msg, res.data.msg.length);
 
-    if (res.code === 0) {
-      return res.data.msg;
+      if (res.code === 0) {
+        return res.data.msg;
+      }
+    } else {
+      throw new Error(await response.text());
     }
+
     return "";
   }
 
