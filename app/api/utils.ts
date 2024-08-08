@@ -143,7 +143,9 @@ export class Textract {
     console.log("\n\n[parsePrompt] start =============");
 
     try {
-      console.log("[parsePrompt] 是否应该提取文件内容", jsonBody.textract);
+      console.log(
+        `[parsePrompt] 是否应该提取文件内容: ${jsonBody.textract}; 当前模型:${jsonBody.model}`,
+      );
       // 是否应该提取文件内容
       if (jsonBody.textract) {
         this.model = jsonBody.model;
@@ -153,6 +155,13 @@ export class Textract {
           if (m.role === "user") {
             if (typeof m.content === "string") {
               m.content = await this.handleContentUrl(m.content);
+            } else if (m.content instanceof Array) {
+              for (let item of m.content) {
+                if (item.type === "text" && item.text) {
+                  item.text = await this.handleContentUrl(item.text);
+                  break;
+                }
+              }
             }
 
             break;
@@ -185,8 +194,7 @@ export class Textract {
 
     try {
       console.log(
-        "[parsePrompt4Tools] 是否应该提取文件内容",
-        jsonBody.textract,
+        `[parsePrompt4Tools] 是否应该提取文件内容: ${jsonBody.textract}; 当前模型:${jsonBody.model}`,
       );
       // 是否应该提取文件内容
       if (jsonBody.textract) {
