@@ -303,7 +303,8 @@ function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
           const isGptsModel = data.uuid.startsWith("g-");
           const model = isGptsModel ? `gpt-4-gizmo-${data.uuid}` : data.uuid;
           const isStoreModelSupportPlugin = config.supportPluginModelList.some(
-            (m) => new RegExp(m).test(model),
+            // (m) => new RegExp(m).test(model),
+            (m) => m.toLocaleLowerCase() === model.toLocaleLowerCase(),
           );
 
           chatStore.newSession(
