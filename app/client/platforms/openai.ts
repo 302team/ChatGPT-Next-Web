@@ -196,6 +196,18 @@ export class ChatGPTApi implements LLMApi {
       });
     }
 
+    if (
+      modelConfig.model.toLocaleLowerCase().includes("abab6.5") ||
+      modelConfig.model.toLocaleLowerCase().includes("abab5.5")
+    ) {
+      Object.defineProperty(requestPayload, "max_tokens", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: 8000,
+      });
+    }
+
     console.log("[Request] openai payload: ", requestPayload);
 
     const shouldStream = !!options.config.stream;
@@ -502,6 +514,18 @@ export class ChatGPTApi implements LLMApi {
       searchEngine: options.agentConfig.searchEngine,
       textract: true,
     };
+
+    if (
+      modelConfig.model.toLocaleLowerCase().includes("abab6.5") ||
+      modelConfig.model.toLocaleLowerCase().includes("abab5.5")
+    ) {
+      Object.defineProperty(requestPayload, "max_tokens", {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value: 8000,
+      });
+    }
 
     console.log("[Request] openai payload: ", requestPayload);
 
