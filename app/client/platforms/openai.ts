@@ -458,6 +458,11 @@ export class ChatGPTApi implements LLMApi {
                 hasUncatchError = true;
                 return finish();
               }
+
+              if (json.is_end) {
+                isStreamDone = true;
+                return finish();
+              }
             } catch (e) {
               console.error("[Request] parse error", text, msg);
             }
