@@ -55,9 +55,11 @@ export const Upload_File_Link = [
 
 export class Textract {
   apiKey: string;
+  model: string;
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
+    this.model = "";
   }
 
   getUrlAndExt(url: string) {
@@ -82,7 +84,7 @@ export class Textract {
         Token: `${this.apiKey}`,
         "Content-type": "application/json",
       },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ url, model: this.model }),
     });
     if (response.status >= 200 && response.status < 300) {
       const res = await response.json();
@@ -145,6 +147,8 @@ export class Textract {
       console.log("[parsePrompt] 是否应该提取文件内容", jsonBody.textract);
       // 是否应该提取文件内容
       if (jsonBody.textract) {
+        this.model = jsonBody.model;
+
         for (let i = jsonBody.messages.length - 1; i >= 0; i--) {
           const m = jsonBody.messages[i];
           if (m.role === "user") {
@@ -187,6 +191,8 @@ export class Textract {
       );
       // 是否应该提取文件内容
       if (jsonBody.textract) {
+        this.model = jsonBody.model;
+
         for (let i = jsonBody.messages.length - 1; i >= 0; i--) {
           const m = jsonBody.messages[i];
           if (m.role === "user") {
