@@ -25,8 +25,12 @@ import { html } from "@codemirror/lang-html";
 // import { vue } from "@codemirror/lang-vue";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
+import { Sandpack, SandpackFiles } from "@codesandbox/sandpack-react";
+import { atomDark } from "@codesandbox/sandpack-themes";
+
 import {
   ArtifactsShareButton,
+  CodeSandpack,
   detectLanguage,
   HTMLPreview,
   Stdout,
@@ -34,6 +38,14 @@ import {
 
 const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
+const componentNameReg = /export\s+default\s+(\w+)/;
+const cssNameRegex = /'\.\/(.*\.css)'/g;
+
+function isJSXString(str: string) {
+  const jsxPattern =
+    /<([A-Z][A-Za-z0-9]*|[a-z]+)(\s+[a-zA-Z-]+(\s*=\s*("[^"]*"|'[^']*'|{[^}]*}))?)*\s*\/?>/;
+  return jsxPattern.test(str);
+}
 
 const langConfigMap: Record<string, LanguageSupport[]> = {
   jsx: [javascript()],
@@ -46,6 +58,8 @@ const langConfigMap: Record<string, LanguageSupport[]> = {
 export function CodePreviewModal(props: {
   content: string;
   isRunCode?: boolean;
+  isJSX?: boolean;
+  jsxFiles?: SandpackFiles;
   currentLang: string;
   open: boolean;
   onOk?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -74,47 +88,65 @@ export function CodePreviewModal(props: {
         showMaxButton={true}
         onClose={() => props.onClose?.(false)}
       >
-        <div className="code-preview-modal-actions">
-          <Segmented
-            value={tab}
-            style={{ marginBottom: 8 }}
-            onChange={(value) => setTab(value)}
-            options={[
-              {
-                label: props.isRunCode
-                  ? Locale.Preview.Actions.Stdout
-                  : Locale.Preview.Actions.Preview,
-                value: "preview",
-              },
-              {
-                label: Locale.Preview.Actions.Code,
-                value: "code",
-              },
-            ]}
-          />
-          {!props.isRunCode && (
-            <ArtifactsShareButton
-              style={{ position: "relative", top: -5, right: 5 }}
-              getCode={() => code}
+        {!props.isRunCode && props.isJSX ? (
+          props.jsxFiles && (
+            <Sandpack
+              files={props.jsxFiles}
+              template="react"
+              theme={atomDark}
+              options={{
+                externalResources: ["https://cdn.tailwindcss.com"],
+                showTabs: true,
+                closableTabs: false,
+                editorHeight: "60vh",
+              }}
             />
-          )}
-        </div>
-
-        {tab === "preview" ? (
-          props.isRunCode ? (
-            <Stdout codeString={code} codeLang={codeLang} />
-          ) : (
-            code.length > 0 && (
-              <HTMLPreview code={code} autoHeight={true} height="100%" />
-            )
           )
         ) : (
-          <CodeMirror
-            value={code}
-            theme="dark"
-            extensions={langConfigMap[props.currentLang]}
-            onChange={onChange}
-          />
+          <>
+            <div className="code-preview-modal-actions">
+              <Segmented
+                value={tab}
+                style={{ marginBottom: 8 }}
+                onChange={(value) => setTab(value)}
+                options={[
+                  {
+                    label: props.isRunCode
+                      ? Locale.Preview.Actions.Stdout
+                      : Locale.Preview.Actions.Preview,
+                    value: "preview",
+                  },
+                  {
+                    label: Locale.Preview.Actions.Code,
+                    value: "code",
+                  },
+                ]}
+              />
+              {!props.isRunCode && (
+                <ArtifactsShareButton
+                  style={{ position: "relative", top: -5, right: 5 }}
+                  getCode={() => code}
+                />
+              )}
+            </div>
+
+            {tab === "preview" ? (
+              props.isRunCode ? (
+                <Stdout codeString={code} codeLang={codeLang} />
+              ) : (
+                code.length > 0 && (
+                  <HTMLPreview code={code} autoHeight={true} height="100%" />
+                )
+              )
+            ) : (
+              <CodeMirror
+                value={code}
+                theme="dark"
+                extensions={langConfigMap[props.currentLang]}
+                onChange={onChange}
+              />
+            )}
+          </>
         )}
       </UiModal>
     </div>
@@ -177,7 +209,81 @@ export function PreCode(props: { children: any }) {
   const [showPreview, setShowPreview] = useState(false);
   const [isRunCode, setIsStdout] = useState(false);
   const [codeText, setCodeText] = useState("");
+  const [isJSXCode, setIsJSXCode] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState("html");
+
+  const [jsxFiles, setJsxFiles] = useState<SandpackFiles>();
+
+  const handleJSXCode = () => {
+    if (!ref.current) return;
+
+    let dom = ref.current.querySelector("code.language-jsx");
+    while (dom) {
+      if (dom === document.body) break;
+      if (dom?.className === "markdown-body") break;
+      dom = dom.parentElement;
+    }
+
+    // dom = div.markdown-body
+    if (dom && dom.className === "markdown-body") {
+      const jsxCodeDoms = dom.querySelectorAll("code.language-jsx");
+      const cssCodeDoms = dom.querySelectorAll("code.language-css");
+
+      const importedCss: Array<string> = [];
+
+      var files: Record<string, string> = {};
+      Array.from(jsxCodeDoms).forEach((codeDom) => {
+        let code = (codeDom as HTMLElement).innerText;
+        let filename = "/App.js";
+        const filenameMatches = code.match(componentNameReg);
+
+        if (filenameMatches) {
+          const componentName = filenameMatches[1]; // 捕获的组件名
+          console.log(`组件名是: ${componentName}`);
+          filename = `/${componentName}.js`;
+        } else {
+          console.log("没有找到组件名");
+          filename = "/App.js";
+        }
+
+        let match;
+        const cssNameMatches = [];
+        while ((match = cssNameRegex.exec(code)) !== null) {
+          cssNameMatches.push(match[1]);
+        }
+
+        if (cssNameMatches?.length) {
+          importedCss.push(...cssNameMatches);
+        }
+
+        files[`${filename}`] = code;
+      });
+
+      Array.from(cssCodeDoms).forEach((codeDom) => {
+        let dom = codeDom?.parentElement?.parentElement?.previousElementSibling;
+
+        while (dom) {
+          const textString = (dom as HTMLElement).innerText;
+          const record = importedCss.find((item) => textString.match(item));
+          if (record) {
+            let cssname = record;
+            if (cssname.startsWith("./")) {
+              cssname = record.substring(1);
+            } else if (!cssname.startsWith("/")) {
+              cssname = `/${cssname}`;
+            }
+            files[`${cssname}`] = (codeDom as HTMLElement).innerText;
+
+            break;
+          }
+          dom = dom.previousElementSibling;
+        }
+      });
+
+      console.log("[jsx files]", files);
+      setJsxFiles(files);
+    }
+  };
 
   const renderMermaid = useDebouncedCallback(() => {
     if (!ref.current) return;
@@ -203,6 +309,15 @@ export function PreCode(props: { children: any }) {
       setShowCodePreviewAction(true);
     } else if (refText?.startsWith("<!DOCTYPE")) {
       setShowCodePreviewAction(true);
+    }
+
+    if (javascriptDom || jsxDom || tsxDom) {
+      const _isJSXCode = isJSXString(ref.current.innerText);
+      console.log("🚀 ~ renderMermaid ~ _isJSXCode:", _isJSXCode);
+      setIsJSXCode(_isJSXCode);
+      if (_isJSXCode) {
+        setShowCodePreviewAction(true);
+      }
     }
 
     if (javascriptDom || pythonDom) {
@@ -247,6 +362,12 @@ export function PreCode(props: { children: any }) {
                       ?.className.split("language-")?.[1] ?? "html";
                   setCodeLanguage(codeLang);
                   setCodeText(code);
+
+                  const _isJSXCode = isJSXString(ref.current.innerText);
+                  if (_isJSXCode) {
+                    handleJSXCode();
+                  }
+
                   setIsStdout(false);
                   setShowPreview(true);
                 }
@@ -285,6 +406,8 @@ export function PreCode(props: { children: any }) {
           open={showPreview}
           currentLang={codeLanguage}
           isRunCode={isRunCode}
+          isJSX={isJSXCode}
+          jsxFiles={jsxFiles}
           onOk={() => setShowPreview(false)}
           onCancel={() => setShowPreview(false)}
           onClose={() => setShowPreview(false)}
@@ -362,7 +485,7 @@ function _MarkDownContent(props: { content: string; isHtml?: boolean }) {
         a: (aProps) => {
           const href = aProps.href || "";
           const isInternal = /^\/#/i.test(href);
-          const target = isInternal ? "_self" : aProps.target ?? "_blank";
+          const target = isInternal ? "_self" : (aProps.target ?? "_blank");
           return <a {...aProps} target={target} />;
         },
       }}

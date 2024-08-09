@@ -16,6 +16,15 @@ import { Loading } from "./home";
 import styles from "./artifacts.module.scss";
 import NextImage from "next/image";
 import ReactMarkdown from "react-markdown";
+import {
+  SandpackProvider,
+  SandpackLayout,
+  SandpackCodeEditor,
+  SandpackPreview,
+  SandpackFiles,
+  SandpackFileExplorer,
+} from "@codesandbox/sandpack-react";
+
 import { useAccessStore } from "../store";
 
 export function HTMLPreview(props: {
@@ -169,6 +178,18 @@ export function Stdout(props: { codeString: string; codeLang?: string }) {
     <>
       <ReactMarkdown>{result}</ReactMarkdown>
     </>
+  );
+}
+
+export function CodeSandpack(props: { files: SandpackFiles }) {
+  return (
+    <SandpackProvider files={props.files} theme="light" template="react">
+      <SandpackLayout>
+        <SandpackFileExplorer />
+        <SandpackCodeEditor closableTabs showTabs />
+        <SandpackPreview />
+      </SandpackLayout>
+    </SandpackProvider>
   );
 }
 
