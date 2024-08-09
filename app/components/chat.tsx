@@ -2313,7 +2313,7 @@ function _Chat(props: { promptStarters: string[] }) {
               : ""
           }`}
         >
-          {(isDemo || showUploadAction) && (
+          {/* {(isDemo || showUploadAction) && (
             <ChatAction
               onClick={() => {
                 if (isDemo) {
@@ -2330,7 +2330,7 @@ function _Chat(props: { promptStarters: string[] }) {
               className={styles["chat-input-attach"]}
               icon={uploading ? <LoadingButtonIcon /> : <AttachIcon />}
             />
-          )}
+          )} */}
           {showRecording ? (
             <div
               className={`${styles["chat-input"]} ${styles["chat-input-recording"]}`}
