@@ -121,7 +121,11 @@ export class ChatGPTApi implements LLMApi {
     return [baseUrl, path].join("/");
   }
 
-  extractMessage(res: any) {
+  extractMessage(res: any, model: string) {
+    if (["farui-plus"].includes(model)) {
+      // {"output":{"finish_reason":"stop","text":"Hello! How can I assist you today? If you have any questions about mathematics, physics, or anything related to LaTeX, feel free to ask."},"usage":{"total_tokens":96,"output_tokens":30,"input_tokens":66},"request_id":"3dda626b-c983-95f1-878a-8dab7ebfb3ae"}
+      return res?.output?.text ?? "";
+    }
     return res.choices?.at(0)?.message?.content ?? "";
   }
 
@@ -483,7 +487,7 @@ export class ChatGPTApi implements LLMApi {
         clearTimeout(requestTimeoutId);
 
         const resJson = await res.json();
-        const message = this.extractMessage(resJson);
+        const message = this.extractMessage(resJson, options.config.model);
         options.onFinish(message, false);
       }
     } catch (e) {
@@ -889,7 +893,7 @@ export class ChatGPTApi implements LLMApi {
         clearTimeout(requestTimeoutId);
 
         const resJson = await res.json();
-        const message = this.extractMessage(resJson);
+        const message = this.extractMessage(resJson, options.config.model);
         options.onFinish(message);
       }
     } catch (e) {

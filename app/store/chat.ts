@@ -453,6 +453,10 @@ const DEFAULT_CHAT_STATE = {
   currentSessionIndex: 0,
 };
 
+function getIsUseStreamFetch(model: string) {
+  return !["farui-plus"].includes(model);
+}
+
 export const useChatStore = createPersistStore(
   DEFAULT_CHAT_STATE,
   (set, _get) => {
@@ -721,7 +725,10 @@ export const useChatStore = createPersistStore(
 
           api.llm.toolAgentChat({
             messages: sendMessages,
-            config: { ...modelConfig, stream: true },
+            config: {
+              ...modelConfig,
+              stream: getIsUseStreamFetch(modelConfig.model),
+            },
             agentConfig: {
               ...pluginConfig,
               useTools: pluginToolNames,
@@ -883,7 +890,10 @@ export const useChatStore = createPersistStore(
           // make request
           api.llm.chat({
             messages: sendMessages,
-            config: { ...modelConfig, stream: true },
+            config: {
+              ...modelConfig,
+              stream: getIsUseStreamFetch(modelConfig.model),
+            },
             retryCount: extAttr.retryCount ?? 0,
             onAborted: (message) => {
               botMessage.isTimeoutAborted = true;
@@ -1376,7 +1386,7 @@ export const useChatStore = createPersistStore(
             ),
             config: {
               ...modelcfg,
-              stream: true,
+              stream: getIsUseStreamFetch(modelConfig.model),
               model: getSummarizeModel(session.mask.modelConfig.model),
             },
             onUpdate(message) {
