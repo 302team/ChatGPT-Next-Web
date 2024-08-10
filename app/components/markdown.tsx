@@ -134,7 +134,7 @@ export function CodePreviewModal(props: {
                 externalResources: ["https://cdn.tailwindcss.com"],
                 showTabs: true,
                 closableTabs: false,
-                editorHeight: "60vh",
+                editorHeight: "100%",
               }}
               customSetup={{
                 dependencies: props.dependencies
