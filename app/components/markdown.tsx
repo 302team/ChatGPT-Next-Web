@@ -6,7 +6,12 @@ import RehypeKatex from "rehype-katex";
 import RemarkGfm from "remark-gfm";
 import RehypeHighlight from "rehype-highlight";
 import { useRef, useState, RefObject, useEffect, useMemo } from "react";
-import { copyToClipboard, isImage, useWindowSize } from "../utils";
+import {
+  arrayToObject,
+  copyToClipboard,
+  isImage,
+  useWindowSize,
+} from "../utils";
 import mermaid from "mermaid";
 
 import LoadingIcon from "../icons/three-dots.svg";
@@ -41,6 +46,35 @@ const svgReg = /<svg[^>]+>/gim;
 const componentNameReg = /export\s+default\s+(\w+)/;
 const cssNameRegex = /'\.\/(.*\.css)'/g;
 
+const dependenciesRegex =
+  /(npm install|yarn add|pnpm add)(?:\s+(-D|--save-dev))?\s+([a-zA-Z0-9@/.-]+(?:\s+[a-zA-Z0-9@/.-]+)*)/;
+
+function extractDependencies(command: string) {
+  const match = dependenciesRegex.exec(command);
+  if (match) {
+    const dependencies = match[3].trim().split(/\s+/);
+    const isDevDependency = !!match[2]; // 如果 match[2] 存在，表示是开发依赖
+    return {
+      dependencies,
+      isDevDependency,
+    };
+  }
+  return { dependencies: [], isDevDependency: false };
+}
+
+// const command1 = "yarn add react react-dom react-transition-group";
+// const command2 = "pnpm add lodash axios -D";
+// const command3 = "npm install --save-dev jest babel-jest";
+
+// => console.log(extractDependencies(command1)); // 输出 { dependencies: ["react", "react-dom", "react-transition-group"], isDevDependency: false }
+// => console.log(extractDependencies(command2)); // 输出 { dependencies: ["lodash", "axios"], isDevDependency: true }
+// => console.log(extractDependencies(command3)); // 输出 { dependencies: ["jest", "babel-jest"], isDevDependency: true }
+
+// 示例使用
+// const array = ['a', 'b', 'c'];
+// const result = arrayToObject(array);
+// console.log(result); // 输出: { a: 'latest', b: 'latest', c: 'latest' }
+
 function isJSXString(str: string) {
   const jsxPattern =
     /<([A-Z][A-Za-z0-9]*|[a-z]+)(\s+[a-zA-Z-]+(\s*=\s*("[^"]*"|'[^']*'|{[^}]*}))?)*\s*\/?>/;
@@ -60,6 +94,8 @@ export function CodePreviewModal(props: {
   isRunCode?: boolean;
   isJSX?: boolean;
   jsxFiles?: SandpackFiles;
+  dependencies?: string[];
+  devDependencies?: string[];
   currentLang: string;
   open: boolean;
   onOk?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -99,6 +135,14 @@ export function CodePreviewModal(props: {
                 showTabs: true,
                 closableTabs: false,
                 editorHeight: "60vh",
+              }}
+              customSetup={{
+                dependencies: props.dependencies
+                  ? arrayToObject(props.dependencies, "latest")
+                  : {},
+                devDependencies: props.devDependencies
+                  ? arrayToObject(props.devDependencies, "latest")
+                  : {},
               }}
             />
           )
@@ -213,6 +257,8 @@ export function PreCode(props: { children: any }) {
   const [codeLanguage, setCodeLanguage] = useState("html");
 
   const [jsxFiles, setJsxFiles] = useState<SandpackFiles>();
+  const [dependencies, setDependencies] = useState<string[]>();
+  const [devDependencies, setDevDependencies] = useState<string[]>();
 
   const handleJSXCode = () => {
     if (!ref.current) return;
@@ -228,6 +274,11 @@ export function PreCode(props: { children: any }) {
     if (dom && dom.className === "markdown-body") {
       const jsxCodeDoms = dom.querySelectorAll("code.language-jsx");
       const cssCodeDoms = dom.querySelectorAll("code.language-css");
+      const bashCodeDoms = [
+        ...dom.querySelectorAll("code.language-bash"),
+        ...dom.querySelectorAll("code.language-shell"),
+        ...dom.querySelectorAll("code.language-powershell"),
+      ];
 
       const importedCss: Array<string> = [];
 
@@ -277,6 +328,29 @@ export function PreCode(props: { children: any }) {
             break;
           }
           dom = dom.previousElementSibling;
+        }
+      });
+
+      Array.from(bashCodeDoms).forEach((codeDom) => {
+        const text = (codeDom as HTMLElement).innerText;
+        if (
+          text.includes("npm") ||
+          text.includes("yarn") ||
+          text.includes("pnpm")
+        ) {
+          console.log("🚀 ~ Array.from ~ text:", text);
+          const { dependencies, isDevDependency } = extractDependencies(text);
+
+          console.log("[dependencies]", {
+            dependencies,
+            isDevDependency,
+          });
+
+          if (isDevDependency) {
+            setDevDependencies(dependencies);
+          } else {
+            setDependencies(dependencies);
+          }
         }
       });
 
@@ -408,6 +482,8 @@ export function PreCode(props: { children: any }) {
           isRunCode={isRunCode}
           isJSX={isJSXCode}
           jsxFiles={jsxFiles}
+          dependencies={dependencies}
+          devDependencies={devDependencies}
           onOk={() => setShowPreview(false)}
           onCancel={() => setShowPreview(false)}
           onClose={() => setShowPreview(false)}

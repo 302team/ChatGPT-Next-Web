@@ -812,3 +812,11 @@ export function padLeftZero(str: string) {
   // 如果传入的是 11 => 0011 => 11
   return ("00" + str).substr(str.length);
 }
+
+export function arrayToObject(arr: string[], value = "") {
+  const obj: Record<string, string> = {};
+  return arr.reduce((obj, item) => {
+    obj[item] = value || item;
+    return obj;
+  }, obj);
+}
