@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router";
-import { useMobileScreen, useWindowSize } from "@/app/utils";
+import { openWindow, useMobileScreen, useWindowSize } from "@/app/utils";
 import { IconButton } from "./button";
 import { nanoid } from "nanoid";
 import ExportIcon from "../icons/share.svg";
@@ -11,7 +11,14 @@ import LoadingButtonIcon from "../icons/loading.svg";
 import Locale from "../locales";
 import { Modal, showToast } from "./ui-lib";
 import { copyToClipboard, downloadAs } from "../utils";
-import { Path, ApiPath, REPO_URL } from "@/app/constant";
+import {
+  Path,
+  ApiPath,
+  REPO_URL,
+  Region,
+  GPT302_WEBSITE_CN_URL,
+  GPT302_WEBSITE_URL,
+} from "@/app/constant";
 import { Loading } from "./home";
 import styles from "./artifacts.module.scss";
 import NextImage from "next/image";
@@ -24,8 +31,9 @@ import {
   SandpackFiles,
   SandpackFileExplorer,
 } from "@codesandbox/sandpack-react";
+import BotIconDark from "../icons/logo-horizontal-dark.png";
 
-import { useAccessStore } from "../store";
+import { useAccessStore, useAppConfig } from "../store";
 
 export function HTMLPreview(props: {
   code: string;
@@ -295,6 +303,7 @@ export function Artifacts() {
   const [loading, setLoading] = useState(true);
   const [fileName, setFileName] = useState("");
   const isMobileScreen = useMobileScreen();
+  const appConfig = useAppConfig();
 
   useEffect(() => {
     if (id) {
@@ -322,6 +331,16 @@ export function Artifacts() {
             width={isMobileScreen ? 156 : 184}
             height={isMobileScreen ? 44 : 52}
             alt="302AI"
+            style={{
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              openWindow(
+                appConfig.region === Region.China
+                  ? GPT302_WEBSITE_CN_URL
+                  : GPT302_WEBSITE_URL,
+              );
+            }}
           />
         </div>
         <ArtifactsShareButton
@@ -343,6 +362,22 @@ export function Artifacts() {
             }}
           />
         )}
+      </div>
+
+      <div className={styles["artifacts-footer"]}>
+        Powered By
+        <NextImage
+          src={BotIconDark}
+          height={13}
+          alt=""
+          onClick={() =>
+            openWindow(
+              appConfig.region === Region.China
+                ? GPT302_WEBSITE_CN_URL
+                : GPT302_WEBSITE_URL,
+            )
+          }
+        />
       </div>
     </div>
   );
