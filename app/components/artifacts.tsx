@@ -9,7 +9,7 @@ import DownloadIcon from "../icons/download.svg";
 import Logo from "../icons/logo-horizontal-dark.png";
 import LoadingButtonIcon from "../icons/loading.svg";
 import Locale from "../locales";
-import { Modal, showToast } from "./ui-lib";
+import { Modal, showModal, showToast } from "./ui-lib";
 import { copyToClipboard, downloadAs } from "../utils";
 import {
   Path,
@@ -201,6 +201,9 @@ export function CodeSandpack(props: { files: SandpackFiles }) {
   );
 }
 
+const buildShareUrl = (name: string) =>
+  [location.origin, "#", Path.Artifacts, "/", name].join("");
+
 export function ArtifactsShareButton({
   getCode,
   id,
@@ -215,10 +218,6 @@ export function ArtifactsShareButton({
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(id);
   const [show, setShow] = useState(false);
-  const shareUrl = useMemo(
-    () => [location.origin, "#", Path.Artifacts, "/", name].join(""),
-    [name],
-  );
   const upload = (code: string) =>
     id
       ? Promise.resolve({ id })
@@ -249,50 +248,55 @@ export function ArtifactsShareButton({
             upload(getCode())
               .then((res) => {
                 if (res?.id) {
-                  setShow(true);
                   setName(res?.id);
+                  return res?.id;
                 }
+              })
+              .then((id) => {
+                if (!id) return;
+                const shareUrl = buildShareUrl(id);
+
+                showModal({
+                  title: Locale.Export.Artifacts.Title,
+                  onClose: () => setShow(false),
+                  className: "export-artifacts-modal",
+                  actions: [
+                    <IconButton
+                      key="download"
+                      icon={<DownloadIcon />}
+                      bordered
+                      text={Locale.Export.Download}
+                      onClick={() => {
+                        downloadAs(getCode(), `${fileName || id}.html`).then(
+                          () => setShow(false),
+                        );
+                      }}
+                    />,
+                    <IconButton
+                      key="copy"
+                      icon={<CopyIcon />}
+                      bordered
+                      text={Locale.Chat.Actions.Copy}
+                      onClick={() => {
+                        copyToClipboard(shareUrl).then(() => setShow(false));
+                      }}
+                    />,
+                  ],
+                  children: (
+                    <a
+                      target="_blank"
+                      href={shareUrl}
+                      className={styles["share-url"]}
+                    >
+                      {shareUrl}
+                    </a>
+                  ),
+                });
               })
               .finally(() => setLoading(false));
           }}
         />
       </div>
-      {show && (
-        <div className="modal-mask">
-          <Modal
-            title={Locale.Export.Artifacts.Title}
-            onClose={() => setShow(false)}
-            actions={[
-              <IconButton
-                key="download"
-                icon={<DownloadIcon />}
-                bordered
-                text={Locale.Export.Download}
-                onClick={() => {
-                  downloadAs(getCode(), `${fileName || name}.html`).then(() =>
-                    setShow(false),
-                  );
-                }}
-              />,
-              <IconButton
-                key="copy"
-                icon={<CopyIcon />}
-                bordered
-                text={Locale.Chat.Actions.Copy}
-                onClick={() => {
-                  copyToClipboard(shareUrl).then(() => setShow(false));
-                }}
-              />,
-            ]}
-          >
-            <div>
-              <a target="_blank" href={shareUrl}>
-                {shareUrl}
-              </a>
-            </div>
-          </Modal>
-        </div>
-      )}
     </>
   );
 }

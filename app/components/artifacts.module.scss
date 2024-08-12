@@ -23,6 +23,16 @@
   }
 }
 
+.share-url {
+  text-decoration: underline;
+  text-wrap: wrap;
+  word-break: break-all;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  display: block;
+}
+
 .artifacts-iframe {
   width: 100%;
   border: var(--border-in-light);

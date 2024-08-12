@@ -111,6 +111,7 @@ interface ModalProps {
   defaultMax?: boolean;
   showMaxButton?: boolean;
   footer?: React.ReactNode;
+  hideFooter?: boolean;
   containerClass?: string;
   className?: string;
   onClose?: () => void;

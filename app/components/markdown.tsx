@@ -120,7 +120,7 @@ export function CodePreviewModal(props: {
       <UiModal
         title={Locale.Preview.Title}
         containerClass="code-preview-modal"
-        footer={[]}
+        hideFooter={true}
         showMaxButton={true}
         onClose={() => props.onClose?.(false)}
       >
