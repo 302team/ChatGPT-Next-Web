@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router";
-import { openWindow, useMobileScreen, useWindowSize } from "@/app/utils";
+import {
+  arrayToObject,
+  openWindow,
+  useMobileScreen,
+  useWindowSize,
+} from "@/app/utils";
 import { IconButton } from "./button";
 import { nanoid } from "nanoid";
 import ExportIcon from "../icons/share.svg";
@@ -29,11 +34,18 @@ import {
   SandpackCodeEditor,
   SandpackPreview,
   SandpackFiles,
-  SandpackFileExplorer,
+  useActiveCode,
+  FileTabs,
+  SandpackStack,
+  useSandpack,
 } from "@codesandbox/sandpack-react";
-import BotIconDark from "../icons/logo-horizontal-dark.png";
+import { atomDark } from "@codesandbox/sandpack-themes";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
 
+import BotIconDark from "../icons/logo-horizontal-dark.png";
 import { useAccessStore, useAppConfig } from "../store";
+import { useDebouncedCallback } from "use-debounce";
 
 export function HTMLPreview(props: {
   code: string;
@@ -189,15 +201,87 @@ export function Stdout(props: { codeString: string; codeLang?: string }) {
   );
 }
 
-export function CodeSandpack(props: { files: SandpackFiles }) {
+function CustomSandpackEditor(props: {
+  files: SandpackFiles;
+  showTab: "edit" | "preview";
+  dependencies?: string[];
+  devDependencies?: string[];
+  onCodeChange?: (file: string, code: string) => void;
+}) {
+  const { code, updateCode } = useActiveCode();
+  const { sandpack } = useSandpack();
+  const { activeFile } = sandpack;
+
+  const onChange = useDebouncedCallback((val) => {
+    props.onCodeChange?.(activeFile, val);
+    updateCode(val, true);
+  }, 600);
+
   return (
-    <SandpackProvider files={props.files} theme="light" template="react">
-      <SandpackLayout>
-        <SandpackFileExplorer />
-        <SandpackCodeEditor closableTabs showTabs />
-        <SandpackPreview />
-      </SandpackLayout>
-    </SandpackProvider>
+    <>
+      <CodeMirror
+        value={code}
+        theme="dark"
+        extensions={[javascript()]}
+        onChange={onChange}
+      />
+    </>
+  );
+}
+
+export function CodeSandpack(props: {
+  files: SandpackFiles;
+  showTab: "edit" | "preview";
+  dependencies?: string[];
+  devDependencies?: string[];
+  onCodeChange?: (file: string, code: string) => void;
+}) {
+  return (
+    <>
+      <SandpackProvider
+        files={props.files}
+        theme={atomDark}
+        template="react"
+        className="react-code-sandpack"
+        options={{
+          externalResources: ["https://cdn.tailwindcss.com"],
+          autoReload: true,
+          autorun: true,
+        }}
+        customSetup={{
+          dependencies: props.dependencies
+            ? arrayToObject(props.dependencies, "latest")
+            : {},
+          devDependencies: props.devDependencies
+            ? arrayToObject(props.devDependencies, "latest")
+            : {},
+        }}
+      >
+        <SandpackLayout>
+          {props.showTab === "edit" && (
+            <>
+              <SandpackStack>
+                <FileTabs />
+                <CustomSandpackEditor {...props} />
+              </SandpackStack>
+            </>
+          )}
+
+          {props.showTab === "preview" && (
+            <>
+              <SandpackPreview
+                autoFocus
+                showRefreshButton={false}
+                showOpenInCodeSandbox={false}
+              />
+            </>
+          )}
+
+          {/* Keep Sandpack Active */}
+          <SandpackPreview style={{ display: "none" }} />
+        </SandpackLayout>
+      </SandpackProvider>
+    </>
   );
 }
 

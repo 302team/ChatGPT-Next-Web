@@ -504,8 +504,9 @@ input:disabled {
     flex-direction: column;
     max-height: 75vh !important;
     // min-height: calc(60vh + 45px) !important;
-    height: calc(60vh + 45px) !important;
+    height: calc(62vh + 45px) !important;
     padding-top: 0 !important;
+    overflow: hidden;
 
     > div[class^="cm-"] {
       flex: 1;
@@ -568,4 +569,27 @@ input:disabled {
 
 .export-artifacts-modal {
   z-index: 10005 !important;
+}
+
+.react-code-sandpack {
+  .sp-wrapper {
+    height: 100%;
+  }
+
+  .sp-layout {
+    height: 100%;
+    flex-direction: column;
+
+    .sp-preview {
+      height: auto;
+    }
+
+    .cm-editor {
+      height: 100%;
+    }
+  }
+
+  .sp-tabs ~ div[class^="cm-"] {
+    overflow: auto;
+  }
 }
