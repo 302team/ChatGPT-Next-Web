@@ -23,6 +23,16 @@
   }
 }
 
+.share-url {
+  text-decoration: underline;
+  text-wrap: wrap;
+  word-break: break-all;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  display: block;
+}
+
 .artifacts-iframe {
   width: 100%;
   border: var(--border-in-light);
@@ -36,4 +46,13 @@
   height: 80%;
   align-items: center;
   justify-content: center;
+}
+
+.artifacts-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-top: 7px;
+  font-size: 12px;
 }

@@ -104,7 +104,9 @@ interface ModalProps {
   defaultMax?: boolean;
   showMaxButton?: boolean;
   footer?: React.ReactNode;
+  hideFooter?: boolean;
   containerClass?: string;
+  className?: string;
   onClose?: () => void;
 }
 
@@ -204,7 +206,7 @@ export function Modal(props: ModalProps) {
 
 export function showModal(props: ModalProps) {
   const div = document.createElement("div");
-  div.className = "modal-mask";
+  div.className = "modal-mask " + props.className ?? "";
   document.body.appendChild(div);
 
   const root = createRoot(div);

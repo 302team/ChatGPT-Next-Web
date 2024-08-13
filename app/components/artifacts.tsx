@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router";
-import { useMobileScreen, useWindowSize } from "@/app/utils";
+import { openWindow, useMobileScreen, useWindowSize } from "@/app/utils";
 import { IconButton } from "./button";
 import { nanoid } from "nanoid";
 import ExportIcon from "../icons/share.svg";
@@ -9,14 +9,23 @@ import DownloadIcon from "../icons/download.svg";
 import Logo from "../icons/logo-horizontal-dark.png";
 import LoadingButtonIcon from "../icons/loading.svg";
 import Locale from "../locales";
-import { Modal, showToast } from "./ui-lib";
+import { Modal, showModal, showToast } from "./ui-lib";
 import { copyToClipboard, downloadAs } from "../utils";
-import { Path, ApiPath, REPO_URL } from "@/app/constant";
+import {
+  Path,
+  ApiPath,
+  REPO_URL,
+  Region,
+  GPT302_WEBSITE_CN_URL,
+  GPT302_WEBSITE_URL,
+} from "@/app/constant";
 import { Loading } from "./home";
 import styles from "./artifacts.module.scss";
 import NextImage from "next/image";
 import ReactMarkdown from "react-markdown";
-import { useAccessStore } from "../store";
+
+import BotIconDark from "../icons/logo-horizontal-dark.png";
+import { useAccessStore, useAppConfig } from "../store";
 
 export function HTMLPreview(props: {
   code: string;
@@ -172,6 +181,9 @@ export function Stdout(props: { codeString: string; codeLang?: string }) {
   );
 }
 
+const buildShareUrl = (name: string) =>
+  [location.origin, "#", Path.Artifacts, "/", name].join("");
+
 export function ArtifactsShareButton({
   getCode,
   id,
@@ -186,10 +198,6 @@ export function ArtifactsShareButton({
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(id);
   const [show, setShow] = useState(false);
-  const shareUrl = useMemo(
-    () => [location.origin, "#", Path.Artifacts, "/", name].join(""),
-    [name],
-  );
   const upload = (code: string) =>
     id
       ? Promise.resolve({ id })
@@ -220,50 +228,55 @@ export function ArtifactsShareButton({
             upload(getCode())
               .then((res) => {
                 if (res?.id) {
-                  setShow(true);
                   setName(res?.id);
+                  return res?.id;
                 }
+              })
+              .then((id) => {
+                if (!id) return;
+                const shareUrl = buildShareUrl(id);
+
+                showModal({
+                  title: Locale.Export.Artifacts.Title,
+                  onClose: () => setShow(false),
+                  className: "export-artifacts-modal",
+                  actions: [
+                    <IconButton
+                      key="download"
+                      icon={<DownloadIcon />}
+                      bordered
+                      text={Locale.Export.Download}
+                      onClick={() => {
+                        downloadAs(getCode(), `${fileName || id}.html`).then(
+                          () => setShow(false),
+                        );
+                      }}
+                    />,
+                    <IconButton
+                      key="copy"
+                      icon={<CopyIcon />}
+                      bordered
+                      text={Locale.Chat.Actions.Copy}
+                      onClick={() => {
+                        copyToClipboard(shareUrl).then(() => setShow(false));
+                      }}
+                    />,
+                  ],
+                  children: (
+                    <a
+                      target="_blank"
+                      href={shareUrl}
+                      className={styles["share-url"]}
+                    >
+                      {shareUrl}
+                    </a>
+                  ),
+                });
               })
               .finally(() => setLoading(false));
           }}
         />
       </div>
-      {show && (
-        <div className="modal-mask">
-          <Modal
-            title={Locale.Export.Artifacts.Title}
-            onClose={() => setShow(false)}
-            actions={[
-              <IconButton
-                key="download"
-                icon={<DownloadIcon />}
-                bordered
-                text={Locale.Export.Download}
-                onClick={() => {
-                  downloadAs(getCode(), `${fileName || name}.html`).then(() =>
-                    setShow(false),
-                  );
-                }}
-              />,
-              <IconButton
-                key="copy"
-                icon={<CopyIcon />}
-                bordered
-                text={Locale.Chat.Actions.Copy}
-                onClick={() => {
-                  copyToClipboard(shareUrl).then(() => setShow(false));
-                }}
-              />,
-            ]}
-          >
-            <div>
-              <a target="_blank" href={shareUrl}>
-                {shareUrl}
-              </a>
-            </div>
-          </Modal>
-        </div>
-      )}
     </>
   );
 }
@@ -274,6 +287,7 @@ export function Artifacts() {
   const [loading, setLoading] = useState(true);
   const [fileName, setFileName] = useState("");
   const isMobileScreen = useMobileScreen();
+  const appConfig = useAppConfig();
 
   useEffect(() => {
     if (id) {
@@ -301,6 +315,16 @@ export function Artifacts() {
             width={isMobileScreen ? 156 : 184}
             height={isMobileScreen ? 44 : 52}
             alt="302AI"
+            style={{
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              openWindow(
+                appConfig.region === Region.China
+                  ? GPT302_WEBSITE_CN_URL
+                  : GPT302_WEBSITE_URL,
+              );
+            }}
           />
         </div>
         <ArtifactsShareButton
@@ -322,6 +346,22 @@ export function Artifacts() {
             }}
           />
         )}
+      </div>
+
+      <div className={styles["artifacts-footer"]}>
+        Powered By
+        <NextImage
+          src={BotIconDark}
+          height={13}
+          alt=""
+          onClick={() =>
+            openWindow(
+              appConfig.region === Region.China
+                ? GPT302_WEBSITE_CN_URL
+                : GPT302_WEBSITE_URL,
+            )
+          }
+        />
       </div>
     </div>
   );
