@@ -13,6 +13,7 @@ import CopyIcon from "../icons/copy.svg";
 import DownloadIcon from "../icons/download.svg";
 import Logo from "../icons/logo-horizontal-dark.png";
 import LoadingButtonIcon from "../icons/loading.svg";
+import ReloadIcon from "../icons/reload.svg";
 import Locale from "../locales";
 import { Modal, showModal, showToast } from "./ui-lib";
 import { copyToClipboard, downloadAs } from "../utils";
@@ -229,6 +230,17 @@ function CustomSandpackEditor(props: {
   );
 }
 
+function CustomSandpackRefresh({ showTab }: { showTab: "edit" | "preview" }) {
+  const { dispatch } = useSandpack();
+
+  useEffect(() => {
+    if (showTab === "preview") dispatch({ type: "refresh" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showTab]);
+
+  return null;
+}
+
 const BUILTINS_DEPENDENCIES = ["recharts", "antd", "lucide-react", "shadcn-ui"];
 export function CodeSandpack(props: {
   files: SandpackFiles;
@@ -260,6 +272,8 @@ export function CodeSandpack(props: {
         }}
       >
         <SandpackLayout>
+          <CustomSandpackRefresh showTab={props.showTab} />
+
           {props.showTab === "edit" && (
             <>
               <SandpackStack>
@@ -269,18 +283,16 @@ export function CodeSandpack(props: {
             </>
           )}
 
-          {props.showTab === "preview" && (
-            <>
-              <SandpackPreview
-                autoFocus
-                showRefreshButton={false}
-                showOpenInCodeSandbox={false}
-              />
-            </>
-          )}
-
-          {/* Keep Sandpack Active */}
-          <SandpackPreview style={{ display: "none" }} />
+          <>
+            <SandpackPreview
+              style={{
+                display: props.showTab === "preview" ? "flex" : "none",
+              }}
+              autoFocus
+              showRefreshButton={false}
+              showOpenInCodeSandbox={false}
+            />
+          </>
         </SandpackLayout>
       </SandpackProvider>
     </>

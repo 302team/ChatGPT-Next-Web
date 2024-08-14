@@ -47,7 +47,8 @@ import {
 
 const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
-const componentNameReg = /export\s+default\s+(\w+)/;
+const componentNameReg =
+  /export\s+default\s+(?:function\s+)?([A-Z][a-zA-Z0-9]*)/;
 const cssNameRegex = /'\.\/(.*\.css)'/g;
 
 const dependenciesRegex =
