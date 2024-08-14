@@ -229,6 +229,7 @@ function CustomSandpackEditor(props: {
   );
 }
 
+const BUILTINS_DEPENDENCIES = ["recharts", "antd", "lucide-react", "shadcn-ui"];
 export function CodeSandpack(props: {
   files: SandpackFiles;
   showTab: "edit" | "preview";
@@ -249,9 +250,10 @@ export function CodeSandpack(props: {
           autorun: true,
         }}
         customSetup={{
-          dependencies: props.dependencies
-            ? arrayToObject(props.dependencies, "latest")
-            : {},
+          dependencies: arrayToObject(
+            [...BUILTINS_DEPENDENCIES, ...(props.dependencies ?? [])],
+            "latest",
+          ),
           devDependencies: props.devDependencies
             ? arrayToObject(props.devDependencies, "latest")
             : {},
