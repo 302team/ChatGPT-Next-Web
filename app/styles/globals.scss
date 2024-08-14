@@ -478,24 +478,11 @@ input:disabled {
   max-width: 1200px !important;
 
   &-max {
-    // position: absolute;
     width: 95vw !important;
     max-width: unset !important;
-    // top: 50%;
-    // transform: translate(0, -50%);
 
     .cm-editor {
       height: 100% !important;
-    }
-
-    .ant-modal-content {
-      width: 95vw !important;
-      height: 95vh !important;
-
-      .ant-modal-body {
-        width: 100%;
-        height: calc(100% - 40px);
-      }
     }
   }
 
@@ -553,17 +540,6 @@ input:disabled {
     max-height: 75vh;
     overflow-x: hidden;
     border: 0;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .code-preview-modal.code-preview-modal-max {
-    height: 86vh !important;
-    width: 98% !important;
-
-    .code-preview-modal-content {
-      max-height: unset !important;
-    }
   }
 }
 
