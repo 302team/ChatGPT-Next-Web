@@ -395,6 +395,8 @@ export function Artifacts() {
   const isMobileScreen = useMobileScreen();
   const appConfig = useAppConfig();
 
+  document.body.style.backgroundColor = "rgb(229, 229, 229)";
+
   useEffect(() => {
     if (id) {
       fetch(`${ApiPath.Artifacts}?id=${id}`)
