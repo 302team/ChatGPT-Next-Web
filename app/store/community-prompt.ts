@@ -58,6 +58,7 @@ export const useCommunityPromptStore = createPersistStore(
     prompts: {} as Record<string, CommunityPrompt>,
     promptCategories: [
       "热门",
+      "弱智吧",
       "知识",
       "写作",
       "编程",
