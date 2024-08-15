@@ -470,34 +470,59 @@ div.math {
   opacity: 0.25 !important;
 }
 
+.community-modal {
+  .community-modal-content {
+    max-height: 56vh !important;
+  }
+}
+
 .code-preview-modal {
   width: 98% !important;
   max-width: 1200px !important;
 
   &-max {
-    // position: absolute;
     width: 95vw !important;
     max-width: unset !important;
-    // top: 50%;
-    // transform: translate(0, -50%);
 
     .cm-editor {
-      height: 75vh !important;
+      height: 100% !important;
     }
+  }
 
-    .ant-modal-content {
-      width: 95vw !important;
-      height: 95vh !important;
+  &-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 75vh !important;
+    // min-height: calc(60vh + 45px) !important;
+    height: calc(62vh + 45px) !important;
+    padding-top: 0 !important;
+    overflow: hidden;
 
-      .ant-modal-body {
-        width: 100%;
-        height: calc(100% - 40px);
+    > div[class^="cm-"] {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .cm-editor {
+        flex: 1;
       }
     }
   }
 
-  .ant-modal-title {
-    text-align: center;
+  .sp-wrapper {
+    height: 100%;
+
+    .sp-layout {
+      height: 100%;
+
+      .sp-preview {
+        height: auto;
+      }
+
+      .cm-editor {
+        height: 100%;
+      }
+    }
   }
 
   &-actions {
@@ -511,12 +536,6 @@ div.math {
     z-index: 5;
   }
 
-  &-content {
-    max-height: 75vh !important;
-    min-height: calc(60vh + 45px) !important;
-    padding-top: 0 !important;
-  }
-
   iframe {
     width: 100%;
     height: 100%;
@@ -525,15 +544,31 @@ div.math {
     overflow-x: hidden;
     border: 0;
   }
-
-  .cm-editor {
-    height: 60vh;
-  }
 }
 
-@media screen and (max-width: 600px) {
-  .code-preview-modal.code-preview-modal-max {
-    height: 86vh !important;
-    width: 98% !important;
+.export-artifacts-modal {
+  z-index: 10005 !important;
+}
+
+.react-code-sandpack {
+  .sp-wrapper {
+    height: 100%;
+  }
+
+  .sp-layout {
+    height: 100%;
+    flex-direction: column;
+
+    .sp-preview {
+      height: auto;
+    }
+
+    .cm-editor {
+      height: 100%;
+    }
+  }
+
+  .sp-tabs ~ div[class^="cm-"] {
+    overflow: auto;
   }
 }

@@ -184,8 +184,12 @@
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 
+    &-max {
+      height: 86vh;
+    }
+
     .modal-content {
-      max-height: 50vh !important;
+      max-height: 50vh;
     }
   }
 }
