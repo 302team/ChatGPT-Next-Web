@@ -53,6 +53,7 @@ import SpeakIcon from "../icons/speak.svg";
 import VoiceIcon from "../icons/voice.svg";
 import KeyboardIcon from "../icons/keyboard.svg";
 import CheckmarkIcon from "../icons/checkmark.svg";
+import ChatHelp from "../icons/chat2.svg";
 
 import {
   ChatMessage,
@@ -132,6 +133,7 @@ import NextImage from "next/image";
 import { LoadingOutlined, CloseOutlined } from "@ant-design/icons";
 import { Typography, Image } from "antd";
 import { usePluginStore } from "../store/plugin";
+import { Community } from "./community";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -1028,6 +1030,7 @@ function _Chat() {
   const fontSize = config.fontSize;
 
   const [showExport, setShowExport] = useState(false);
+  const [showCommunity, setShowCommunity] = useState(false);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
@@ -2199,16 +2202,26 @@ function _Chat() {
               />
             )
           ) : (
-            <ChatAction
-              icon={<SendIcon />}
-              text=""
-              disabled={disabledSend}
-              className={styles["chat-input-send"]}
-              onClick={() => {
-                if (disabledSend) return;
-                doSubmit(userInput);
-              }}
-            />
+            <div className={styles["chat-input-send"]}>
+              <ChatAction
+                icon={<ChatHelp />}
+                text=""
+                className={styles["chat-input-send1"]}
+                onClick={() => {
+                  setShowCommunity(true);
+                }}
+              />
+              <ChatAction
+                icon={<SendIcon />}
+                text=""
+                disabled={disabledSend}
+                className={styles["chat-input-send1"]}
+                onClick={() => {
+                  if (disabledSend) return;
+                  doSubmit(userInput);
+                }}
+              />
+            </div>
           )}
         </div>
 
@@ -2228,6 +2241,16 @@ function _Chat() {
       )}
 
       {showLoading && <ShowLoading tip={Locale.Chat.InputActions.Waiting} />}
+
+      {showCommunity && (
+        <Community
+          onClose={() => setShowCommunity(false)}
+          onPromptSelect={(prompt) => {
+            setUserInput(prompt);
+            setShowCommunity(false);
+          }}
+        />
+      )}
     </div>
   );
 }

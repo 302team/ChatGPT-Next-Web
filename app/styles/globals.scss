@@ -471,8 +471,15 @@ div.math {
 }
 
 .community-modal {
+  .community-modal-title-wrap {
+    flex: 1;
+    padding-left: 52px;
+    text-align: center;
+  }
+
   .community-modal-content {
-    max-height: 56vh !important;
+    max-height: 60vh !important;
+    padding: 0 !important;
   }
 }
 

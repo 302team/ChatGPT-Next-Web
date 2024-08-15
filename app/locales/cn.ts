@@ -166,6 +166,17 @@ const cn = {
     EnableModel: "请开启想要竞技的模型",
     MultiChats: "多轮对话",
   },
+  Community: {
+    Title: "什么值得问",
+    Search: "搜索",
+    Placeholder: "搜索你感兴趣的问题",
+    SharePlaceholder: "分享你的问题",
+    Share: "我要分享",
+    ShareSuccess: "分享成功",
+    ShareFailed: "分享失败",
+    Cancel: "取消",
+    Submit: "分享",
+  },
   Export: {
     Title: "分享聊天记录",
     Copy: "复制",

@@ -164,6 +164,17 @@ const en: LocaleType = {
     EnableModel: "Please activate the desired competitive model.",
     MultiChats: "Multi-round Chat",
   },
+  Community: {
+    Title: "What is worth asking",
+    Search: "Search",
+    Placeholder: "Search for questions you are interested in",
+    SharePlaceholder: "Share your ideas",
+    Share: "Share",
+    ShareSuccess: "Share success",
+    ShareFailed: "Share failed",
+    Cancel: "Cancel",
+    Submit: "Share",
+  },
   Export: {
     Title: "Export Messages",
     Copy: "Copy",

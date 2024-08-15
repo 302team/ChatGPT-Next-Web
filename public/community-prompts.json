@@ -1,0 +1,352 @@
+[
+  {
+    "id": 1,
+    "prompt": "谁是蝙蝠侠",
+    "popularity": 7,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 2,
+    "prompt": "1955 年谁是美国总统",
+    "popularity": 3,
+    "category": ["知识"],
+    "extra": {}
+  },
+  {
+    "id": 3,
+    "prompt": "1955 年谁是美国总统？他是什么党派？",
+    "popularity": 5,
+    "category": ["知识"],
+    "extra": {}
+  },
+  {
+    "id": 4,
+    "prompt": "2008年全球票房最高的电影是什么？",
+    "popularity": 8,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 5,
+    "prompt": "2008年全球票房最高的电影由谁执导？",
+    "popularity": 6,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 6,
+    "prompt": "谁是 Fred Rickerson",
+    "popularity": 2,
+    "category": ["知识"],
+    "extra": {}
+  },
+  {
+    "id": 7,
+    "prompt": "香蕉的平方根是多少",
+    "popularity": 4,
+    "category": ["随机"],
+    "extra": {}
+  },
+  {
+    "id": 8,
+    "prompt": "麻辣螺丝钉怎么做",
+    "popularity": 9,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 9,
+    "prompt": "截至2017年，全球1岁的儿童中有多少已接种某种疾病的疫苗？",
+    "popularity": 3,
+    "category": ["知识"],
+    "extra": {}
+  },
+  {
+    "id": 10,
+    "prompt": "请问马有多少条腿？",
+    "popularity": 1,
+    "category": ["知识"],
+    "extra": {}
+  },
+  {
+    "id": 11,
+    "prompt": "蜘蛛有多少只眼睛？",
+    "popularity": 5,
+    "category": ["知识"],
+    "extra": {}
+  },
+  {
+    "id": 12,
+    "prompt": "请给以下公司分类：Apple、Facebook、Fedex",
+    "popularity": 7,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 13,
+    "prompt": "请判断这些句子中表达的情绪：我的猫好可爱♥♥",
+    "popularity": 8,
+    "category": ["理解", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 14,
+    "prompt": "请判断这些句子中表达的情绪是否正面：\n1. 我受不了家庭作业\n2. 这糟透了，很无聊😠\n3. 我等不及万圣节了！！！\n4. 我的猫很可爱❤️❤️\n5. 我讨厌巧克力",
+    "popularity": 9,
+    "category": ["理解", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 15,
+    "prompt": "请提取这段话中的关键词：橘猫，也称橘子猫，是混种猫中常见的一种毛色，成年公猫通常有5公斤以上，母猫4公斤以上。橘猫中的公猫较多，毛色通常分成全橘色、橘白相间两种。全橘色的猫，身上会带有浅浅白色条纹相间，仅有少数猫会在肚子呈现白色。橘白相间的猫，身上有大块橘色斑块与白底毛色相间。公猫通常是全橘色居多，母猫则是橘白色相间居多。",
+    "popularity": 6,
+    "category": ["理解", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 16,
+    "prompt": "猫、白菜和鲸鱼都属于什么？",
+    "popularity": 4,
+    "category": ["知识"],
+    "extra": {}
+  },
+  {
+    "id": 17,
+    "prompt": "美短、英短、暹罗和缅因属于什么？",
+    "popularity": 3,
+    "category": ["知识"],
+    "extra": {}
+  },
+  {
+    "id": 18,
+    "prompt": "现在你是一个 JavaScript 聊天机器人，例如：我：如何组合数组？你：您可以使用 concat() 方法。我：如何让警报在 10 秒后出现？你：",
+    "popularity": 8,
+    "category": ["编程", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 19,
+    "prompt": "我：你最近在忙什么？朋友：看老电影。我：你有没有看到什么有趣的东西？朋友：",
+    "popularity": 5,
+    "category": ["理解"],
+    "extra": {}
+  },
+  {
+    "id": 20,
+    "prompt": "给一个小学一年级学生解释一下：量子力学（Quantum Mechanics），为物理学理论，是研究物质世界微观粒子运动规律的物理学分支，主要研究原子、分子、凝聚态物质，以及原子核和基本粒子的结构、性质的基础理论。它与相对论一起构成现代物理学的理论基础。量子力学不仅是现代物理学的基础理论之一，而且在化学等学科和许多近代技术中得到广泛应用。",
+    "popularity": 7,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 21,
+    "prompt": "将此更正为标准英语：She no went to the market。",
+    "popularity": 2,
+    "category": ["翻译"],
+    "extra": {}
+  },
+  {
+    "id": 22,
+    "prompt": "把下面这句话更正为标准中文：我上班不想去",
+    "popularity": 4,
+    "category": ["翻译"],
+    "extra": {}
+  },
+  {
+    "id": 23,
+    "prompt": "将下面这句话翻译成英语、法语、西班牙语和日语：你们有哪些房间可用？",
+    "popularity": 6,
+    "category": ["翻译", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 24,
+    "prompt": "请把这个电影名用 emoji 表示：星球大战",
+    "popularity": 8,
+    "category": ["创意", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 25,
+    "prompt": "黄昏时分天空颜色的 CSS 代码： background-color: #",
+    "popularity": 5,
+    "category": ["编程"],
+    "extra": {}
+  },
+  {
+    "id": 26,
+    "prompt": "列举10本科幻小说：",
+    "popularity": 7,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 27,
+    "prompt": "将这句话中的第一人称转换为第三人称（性别女性）：我决定制作一部关于 Ada Lovelace 的电影。",
+    "popularity": 3,
+    "category": ["写作"],
+    "extra": {}
+  },
+  {
+    "id": 28,
+    "prompt": "为一篇写关于尼古拉·特斯拉及其技术贡献的文章创建一个大纲",
+    "popularity": 6,
+    "category": ["写作", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 29,
+    "prompt": "从此文本中提取机场代码： \"我想从奥兰多飞往波士顿\"",
+    "popularity": 4,
+    "category": ["理解"],
+    "extra": {}
+  },
+  {
+    "id": 30,
+    "prompt": "列一个包含顶级科幻电影和发行年份的两列电子表格：标题 | 发布年份",
+    "popularity": 8,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 31,
+    "prompt": "总结下面文字：\"回顾\"哈利·波特\"系列丛书在中国的出版史，过去的17年，这套书陪伴许多中国读者从少年走到青年。1997年6月，\"哈利·波特\"系列英文版正式出版发行，迅速成为全球最畅销的图书之一。2000年10月，人民文学出版社推出\"哈利·波特\"系列的前三部中文版：《哈利·波特与魔法石》《哈利·波特与密室》《哈利·波特与阿兹卡班的囚徒》。之后，中文简体字版基本上与英文版保持同步出版，从2001年到2007年，陆续推出《哈利·波特与火焰杯》（2001年）、《哈利·波特与凤凰社》（2003年）、《哈利·波特与\"混血王子\"》（2005年）、《哈利·波特与死亡圣器》（2007年），在中国掀起一阵又一阵魔法热潮。据了解，\"哈利·波特\"引进中国的17年，销量超过两千万册。",
+    "popularity": 9,
+    "category": ["理解", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 32,
+    "prompt": "从这封电子邮件中提取寄件人姓名和邮寄地址：亲爱的凯利，很高兴在研讨会上与您交谈。我觉得简的演讲很好，谢谢你的书，这是我的地址 2111 Ash Lane, Crestview CA 92002 Best, Maya",
+    "popularity": 5,
+    "category": ["理解"],
+    "extra": {}
+  },
+  {
+    "id": 33,
+    "prompt": "我要采访一位科幻作家，创建一个包含 8 个问题的列表",
+    "popularity": 7,
+    "category": ["写作", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 34,
+    "prompt": "根据以下文本创建一个带编号的转弯指示列表：沿 95 号公路向南行驶，直到到达 Sunrise boulevard，然后向东行驶至 us 1，然后向南行驶。几英里后，Tom Jenkins bbq 将在左侧。",
+    "popularity": 4,
+    "category": ["写作"],
+    "extra": {}
+  },
+  {
+    "id": 35,
+    "prompt": "研究古罗马时我应该学习的 5 个要点是什么？",
+    "popularity": 6,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 36,
+    "prompt": "研究量子力学我该学习的五个要点是什么？",
+    "popularity": 8,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 37,
+    "prompt": "研究红楼梦我该学习的五个要点是什么？",
+    "popularity": 7,
+    "category": ["知识", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 38,
+    "prompt": "假设你是 Marv，总是不情愿地用讽刺语气回答问题，例如一公斤是多少磅？Marv：又是这个？一公斤有 2.2 磅。\nHTML 是什么？",
+    "popularity": 9,
+    "category": ["用户分享", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 39,
+    "prompt": "根据描述帮我起个产品名字吧\n产品描述：家用搅拌机\n关键词：快速、健康、小巧",
+    "popularity": 5,
+    "category": ["创意"],
+    "extra": {}
+  },
+  {
+    "id": 40,
+    "prompt": "写一些 VR 和健身结合的方案",
+    "popularity": 7,
+    "category": ["创意", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 41,
+    "prompt": "用牛肉、草莓、萝卜、木薯、罗勒叶、百里香、苹果帮我生成一个晚餐食谱",
+    "popularity": 8,
+    "category": ["创意", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 42,
+    "prompt": "中子星是大质量超巨星坍缩的核心，其总质量在 10 到 25 个太阳质量之间，如果恒星特别富含金属，则可能更多。 [1] 中子星是除黑洞和假想的白洞、夸克星和奇异星之外最小、密度最大的恒星。 [2] 中子星的半径约为 10 公里（6.2 英里），质量约为 1.4 个太阳质量。 [3] 它们是由大质量恒星的超新星爆炸和引力坍缩相结合产生的，后者将核心压缩到超过白矮星密度，达到原子核的密度。Tl;DR",
+    "popularity": 6,
+    "category": ["理解", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 43,
+    "prompt": "#JavaScript to Python:\nJavaScript:\n\nfunction fibonacci(n) {\n  if (n <= 1) return n;\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n\nconsole.log(fibonacci(10));\n\nPython:",
+    "popularity": 7,
+    "category": ["编程", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 44,
+    "prompt": "请用中文解释以下代码：\n\nfunction quickSort(arr) {\n  if (arr.length <= 1) {\n    return arr;\n  }\n\n  const pivot = arr[Math.floor(arr.length / 2)];\n  const left = [];\n  const right = [];\n  const equal = [];\n\n  for (let element of arr) {\n    if (element < pivot) {\n      left.push(element);\n    } else if (element > pivot) {\n      right.push(element);\n    } else {\n      equal.push(element);\n    }\n  }\n\n  return [...quickSort(left), ...equal, ...quickSort(right)];\n}",
+    "popularity": 9,
+    "category": ["编程", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 45,
+    "prompt": "请解释以下代码：\n\nfunction mergeSort(arr) {\n  if (arr.length <= 1) return arr;\n\n  const mid = Math.floor(arr.length / 2);\n  const left = arr.slice(0, mid);\n  const right = arr.slice(mid);\n\n  return merge(mergeSort(left), mergeSort(right));\n}\n\nfunction merge(left, right) {\n  let result = [];\n  let leftIndex = 0;\n  let rightIndex = 0;\n\n  while (leftIndex < left.length && rightIndex < right.length) {\n    if (left[leftIndex] < right[rightIndex]) {\n      result.push(left[leftIndex]);\n      leftIndex++;\n    } else {\n      result.push(right[rightIndex]);\n      rightIndex++;\n    }\n  }\n\n  return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));\n}",
+    "popularity": 8,
+    "category": ["编程", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 46,
+    "prompt": "请解释以下代码：\n\nfunction bubbleSort(arr) {\n  const n = arr.length;\n  \n  for (let i = 0; i < n - 1; i++) {\n    for (let j = 0; j < n - i - 1; j++) {\n      if (arr[j] > arr[j + 1]) {\n        // 交换元素\n        let temp = arr[j];\n        arr[j] = arr[j + 1];\n        arr[j + 1] = temp;\n      }\n    }\n  }\n  \n  return arr;\n}",
+    "popularity": 7,
+    "category": ["编程", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 47,
+    "prompt": "请解释以下代码：\n\nfunction binarySearch(arr, target) {\n  let left = 0;\n  let right = arr.length - 1;\n\n  while (left <= right) {\n    const mid = Math.floor((left + right) / 2);\n    if (arr[mid] === target) {\n      return mid;\n    } else if (arr[mid] < target) {\n      left = mid + 1;\n    } else {\n      right = mid - 1;\n    }\n  }\n\n  return -1;\n}",
+    "popularity": 6,
+    "category": ["编程", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 48,
+    "prompt": "请解释以下代码：\n\nclass Node {\n  constructor(data) {\n    this.data = data;\n    this.next = null;\n  }\n}\n\nclass LinkedList {\n  constructor() {\n    this.head = null;\n  }\n\n  append(data) {\n    const newNode = new Node(data);\n    if (!this.head) {\n      this.head = newNode;\n      return;\n    }\n    let current = this.head;\n    while (current.next) {\n      current = current.next;\n    }\n    current.next = newNode;\n  }\n\n  print() {\n    let current = this.head;\n    while (current) {\n      console.log(current.data);\n      current = current.next;\n    }\n  }\n}",
+    "popularity": 8,
+    "category": ["编程", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 49,
+    "prompt": "请解释以下代码：\n\nclass Stack {\n  constructor() {\n    this.items = [];\n  }\n\n  push(element) {\n    this.items.push(element);\n  }\n\n  pop() {\n    if (this.isEmpty()) {\n      return \"Stack is empty\";\n    }\n    return this.items.pop();\n  }\n\n  peek() {\n    if (this.isEmpty()) {\n      return \"Stack is empty\";\n    }\n    return this.items[this.items.length - 1];\n  }\n\n  isEmpty() {\n    return this.items.length === 0;\n  }\n\n  size() {\n    return this.items.length;\n  }\n\n  clear() {\n    this.items = [];\n  }\n\n  print() {\n    console.log(this.items.toString());\n  }\n}",
+    "popularity": 7,
+    "category": ["编程", "热门"],
+    "extra": {}
+  },
+  {
+    "id": 50,
+    "prompt": "请解释以下代码：\n\nclass Queue {\n  constructor() {\n    this.items = {};\n    this.frontIndex = 0;\n    this.backIndex = 0;\n  }\n\n  enqueue(element) {\n    this.items[this.backIndex] = element;\n    this.backIndex++;\n  }\n\n  dequeue() {\n    if (this.isEmpty()) {\n      return \"Queue is empty\";\n    }\n    const item = this.items[this.frontIndex];\n    delete this.items[this.frontIndex];\n    this.frontIndex++;\n    return item;\n  }\n\n  peek() {\n    if (this.isEmpty()) {\n      return \"Queue is empty\";\n    }\n    return this.items[this.frontIndex];\n  }\n\n  isEmpty() {\n    return this.frontIndex === this.backIndex;\n  }\n\n  size() {\n    return this.backIndex - this.frontIndex;\n  }\n\n  clear() {\n    this.items = {};\n    this.frontIndex = 0;\n    this.backIndex = 0;\n  }\n\n  print() {\n    console.log(Object.values(this.items));\n  }\n}",
+    "popularity": 6,
+    "category": ["编程", "热门"],
+    "extra": {}
+  }
+]

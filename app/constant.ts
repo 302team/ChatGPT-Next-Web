@@ -20,6 +20,10 @@ export const GPT302_WEBSITE_CN_URL = "https://302ai.cn";
 export const GPTS302_WEBSITE_URL = "https://gpts.302.ai/?simple_version=1";
 export const GPTS302_WEBSITE_CN_URL = "https://gpts.302ai.cn/?simple_version=1";
 
+// export const GPT302_FEISHU_BOT_URL = "https://open.feishu.cn/open-apis/bot/v2/hook/27bd22df-8337-41e2-98f5-80773a1ea815";
+export const GPT302_FEISHU_BOT_URL =
+  "https://open.feishu.cn/open-apis/bot/v2/hook/dcd977e7-a36d-4f0c-ab19-18ffa320541a";
+
 export const Region = {
   China: 0,
   Overseas: 1,
@@ -42,6 +46,7 @@ export enum ApiPath {
   Anthropic = "/api/anthropic",
   Artifacts = "/api/artifacts",
   CodeInterpreter = "/api/code-interpreter",
+  Community = "/api/community",
 }
 
 export enum SlotID {
@@ -61,6 +66,7 @@ export enum StoreKey {
   Mask = "mask-store",
   Plugin = "plugin-store",
   Prompt = "prompt-store",
+  CommunityPrompt = "community-prompt-store",
   Update = "chat-update",
   Sync = "sync",
 }
