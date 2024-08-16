@@ -772,3 +772,22 @@ export function getRandomElements<T>(arr: T[], n: number): T[] {
   // Return the first n elements from the shuffled array
   return arrCopy.slice(0, n);
 }
+
+/**
+ * 在字符串左侧添加0
+ * @param {*} str 需要填充的字符串
+ */
+export function padLeftZero(str: string) {
+  // 截取字符串的长度位数之后的字符串
+  // 如果传入的是 1 => 001 => 01
+  // 如果传入的是 11 => 0011 => 11
+  return ("00" + str).substr(str.length);
+}
+
+export function arrayToObject(arr: string[], value = "") {
+  const obj: Record<string, string> = {};
+  return arr.reduce((obj, item) => {
+    obj[item] = value || item;
+    return obj;
+  }, obj);
+}

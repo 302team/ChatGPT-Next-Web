@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router";
-import { openWindow, useMobileScreen, useWindowSize } from "@/app/utils";
+import {
+  arrayToObject,
+  openWindow,
+  useMobileScreen,
+  useWindowSize,
+} from "@/app/utils";
 import { IconButton } from "./button";
 import { nanoid } from "nanoid";
 import ExportIcon from "../icons/share.svg";
@@ -8,6 +13,7 @@ import CopyIcon from "../icons/copy.svg";
 import DownloadIcon from "../icons/download.svg";
 import Logo from "../icons/logo-horizontal-dark.png";
 import LoadingButtonIcon from "../icons/loading.svg";
+import ReloadIcon from "../icons/reload.svg";
 import Locale from "../locales";
 import { Modal, showModal, showToast } from "./ui-lib";
 import { copyToClipboard, downloadAs } from "../utils";
@@ -23,9 +29,24 @@ import { Loading } from "./home";
 import styles from "./artifacts.module.scss";
 import NextImage from "next/image";
 import ReactMarkdown from "react-markdown";
+import {
+  SandpackProvider,
+  SandpackLayout,
+  SandpackCodeEditor,
+  SandpackPreview,
+  SandpackFiles,
+  useActiveCode,
+  FileTabs,
+  SandpackStack,
+  useSandpack,
+} from "@codesandbox/sandpack-react";
+import { atomDark } from "@codesandbox/sandpack-themes";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
 
 import BotIconDark from "../icons/logo-horizontal-dark.png";
 import { useAccessStore, useAppConfig } from "../store";
+import { useDebouncedCallback } from "use-debounce";
 
 export function HTMLPreview(props: {
   code: string;
@@ -177,6 +198,103 @@ export function Stdout(props: { codeString: string; codeLang?: string }) {
   return (
     <>
       <ReactMarkdown>{result}</ReactMarkdown>
+    </>
+  );
+}
+
+function CustomSandpackEditor(props: {
+  files: SandpackFiles;
+  showTab: "edit" | "preview";
+  dependencies?: string[];
+  devDependencies?: string[];
+  onCodeChange?: (file: string, code: string) => void;
+}) {
+  const { code, updateCode } = useActiveCode();
+  const { sandpack } = useSandpack();
+  const { activeFile } = sandpack;
+
+  const onChange = useDebouncedCallback((val) => {
+    props.onCodeChange?.(activeFile, val);
+    updateCode(val, true);
+  }, 600);
+
+  return (
+    <>
+      <CodeMirror
+        value={code}
+        theme="dark"
+        extensions={[javascript()]}
+        onChange={onChange}
+      />
+    </>
+  );
+}
+
+function CustomSandpackRefresh({ showTab }: { showTab: "edit" | "preview" }) {
+  const { dispatch } = useSandpack();
+
+  useEffect(() => {
+    if (showTab === "preview") dispatch({ type: "refresh" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showTab]);
+
+  return null;
+}
+
+const BUILTINS_DEPENDENCIES = ["recharts", "antd", "lucide-react", "shadcn-ui"];
+export function CodeSandpack(props: {
+  files: SandpackFiles;
+  showTab: "edit" | "preview";
+  dependencies?: string[];
+  devDependencies?: string[];
+  onCodeChange?: (file: string, code: string) => void;
+}) {
+  return (
+    <>
+      <SandpackProvider
+        files={props.files}
+        theme={atomDark}
+        template="react"
+        className="react-code-sandpack"
+        options={{
+          externalResources: ["https://cdn.tailwindcss.com"],
+          autoReload: true,
+          autorun: true,
+        }}
+        customSetup={{
+          dependencies: arrayToObject(
+            [...BUILTINS_DEPENDENCIES, ...(props.dependencies ?? [])],
+            "latest",
+          ),
+          devDependencies: props.devDependencies
+            ? arrayToObject(props.devDependencies, "latest")
+            : {},
+        }}
+      >
+        <SandpackLayout>
+          <CustomSandpackRefresh showTab={props.showTab} />
+
+          {props.showTab === "edit" && (
+            <>
+              <SandpackStack>
+                <FileTabs />
+                <CustomSandpackEditor {...props} />
+              </SandpackStack>
+            </>
+          )}
+
+          <>
+            <SandpackPreview
+              style={{
+                display: props.showTab === "preview" ? "flex" : "none",
+              }}
+              autoFocus
+              showRefreshButton={false}
+              showOpenInCodeSandbox={false}
+            />
+          </>
+        </SandpackLayout>
+      </SandpackProvider>
     </>
   );
 }

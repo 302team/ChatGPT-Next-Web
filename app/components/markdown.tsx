@@ -26,8 +26,11 @@ import { html } from "@codemirror/lang-html";
 // import { vue } from "@codemirror/lang-vue";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
+import { SandpackFile, SandpackFiles } from "@codesandbox/sandpack-react";
+
 import {
   ArtifactsShareButton,
+  CodeSandpack,
   detectLanguage,
   HTMLPreview,
   Stdout,
@@ -35,7 +38,44 @@ import {
 
 const htmlReg = /<\/?.+?>/gim;
 const svgReg = /<svg[^>]+>/gim;
+const componentNameReg =
+  /export\s+default\s+(?:function\s+)?([A-Z][a-zA-Z0-9]*)/;
+const cssNameRegex = /'\.\/(.*\.css)'/g;
 
+const dependenciesRegex =
+  /(npm install|yarn add|pnpm add)(?:\s+(-D|--save-dev))?\s+([a-zA-Z0-9@/.-]+(?:\s+[a-zA-Z0-9@/.-]+)*)/;
+
+function extractDependencies(command: string) {
+  const match = dependenciesRegex.exec(command);
+  if (match) {
+    const dependencies = match[3].trim().split(/\s+/);
+    const isDevDependency = !!match[2]; // 如果 match[2] 存在，表示是开发依赖
+    return {
+      dependencies,
+      isDevDependency,
+    };
+  }
+  return { dependencies: [], isDevDependency: false };
+}
+
+// const command1 = "yarn add react react-dom react-transition-group";
+// const command2 = "pnpm add lodash axios -D";
+// const command3 = "npm install --save-dev jest babel-jest";
+
+// => console.log(extractDependencies(command1)); // 输出 { dependencies: ["react", "react-dom", "react-transition-group"], isDevDependency: false }
+// => console.log(extractDependencies(command2)); // 输出 { dependencies: ["lodash", "axios"], isDevDependency: true }
+// => console.log(extractDependencies(command3)); // 输出 { dependencies: ["jest", "babel-jest"], isDevDependency: true }
+
+// 示例使用
+// const array = ['a', 'b', 'c'];
+// const result = arrayToObject(array);
+// console.log(result); // 输出: { a: 'latest', b: 'latest', c: 'latest' }
+
+function isJSXString(str: string) {
+  const jsxPattern =
+    /<([A-Z][A-Za-z0-9]*|[a-z]+)(\s+[a-zA-Z-]+(\s*=\s*("[^"]*"|'[^']*'|{[^}]*}))?)*\s*\/?>/;
+  return jsxPattern.test(str);
+}
 const langConfigMap: Record<string, LanguageSupport[]> = {
   jsx: [javascript()],
   javascript: [javascript()],
@@ -47,6 +87,10 @@ const langConfigMap: Record<string, LanguageSupport[]> = {
 export function CodePreviewModal(props: {
   content: string;
   isRunCode?: boolean;
+  isJSX?: boolean;
+  jsxFiles?: SandpackFiles;
+  dependencies?: string[];
+  devDependencies?: string[];
   currentLang: string;
   open: boolean;
   onOk?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -56,6 +100,7 @@ export function CodePreviewModal(props: {
   const [tab, setTab] = useState("preview");
   const [code, setCode] = useState(props.content);
   const [codeLang, setCodeLang] = useState(props.currentLang);
+  const [jsxFiles, setJsxFiles] = useState(props.jsxFiles);
 
   const onChange = useDebouncedCallback((val: string) => {
     setCode(val);
@@ -71,43 +116,81 @@ export function CodePreviewModal(props: {
       <UiModal
         title={Locale.Preview.Title}
         containerClass="code-preview-modal"
-        footer={[]}
+        hideFooter={true}
         showMaxButton={true}
         onClose={() => props.onClose?.(false)}
       >
-        <div className="code-preview-modal-actions">
-          <Segmented
-            value={tab}
-            style={{ marginBottom: 8 }}
-            onChange={(value) => setTab(value)}
-            options={[
-              {
-                label: props.isRunCode
-                  ? Locale.Preview.Actions.Stdout
-                  : Locale.Preview.Actions.Preview,
-                value: "preview",
-              },
-              {
-                label: Locale.Preview.Actions.Code,
-                value: "code",
-              },
-            ]}
-          />
-          {!props.isRunCode && (
-            <ArtifactsShareButton
-              style={{ position: "relative", top: -5, right: 5 }}
-              getCode={() => code}
+        <>
+          <div className="code-preview-modal-actions">
+            <Segmented
+              value={tab}
+              style={{ marginBottom: 8 }}
+              onChange={(value) => setTab(value)}
+              options={[
+                {
+                  label: props.isRunCode
+                    ? Locale.Preview.Actions.Stdout
+                    : Locale.Preview.Actions.Preview,
+                  value: "preview",
+                },
+                {
+                  label: Locale.Preview.Actions.Code,
+                  value: "code",
+                },
+              ]}
             />
-          )}
-        </div>
+            {!props.isRunCode && !props.isJSX && (
+              <ArtifactsShareButton
+                style={{ position: "relative", top: -5, right: 5 }}
+                getCode={() => code}
+              />
+            )}
+          </div>
+        </>
 
         {tab === "preview" ? (
           props.isRunCode ? (
             <Stdout codeString={code} codeLang={codeLang} />
+          ) : props.isJSX ? (
+            jsxFiles && (
+              <CodeSandpack
+                files={jsxFiles}
+                showTab="preview"
+                dependencies={props.dependencies}
+                devDependencies={props.devDependencies}
+              />
+            )
           ) : (
             code.length > 0 && (
               <HTMLPreview code={code} autoHeight={true} height="100%" />
             )
+          )
+        ) : props.isJSX ? (
+          jsxFiles && (
+            <CodeSandpack
+              files={jsxFiles}
+              showTab="edit"
+              dependencies={props.dependencies}
+              devDependencies={props.devDependencies}
+              onCodeChange={(file, code) => {
+                setJsxFiles((prev) => {
+                  let newValue: SandpackFiles = { ...prev };
+                  if (newValue) {
+                    Object.keys(newValue).forEach((file) => {
+                      (newValue[file] as SandpackFile).active = false;
+                    });
+                  }
+
+                  return {
+                    ...prev,
+                    [file]: {
+                      code: code,
+                      active: true,
+                    },
+                  };
+                });
+              }}
+            />
           )
         ) : (
           <CodeMirror
@@ -178,7 +261,119 @@ export function PreCode(props: { children: any }) {
   const [showPreview, setShowPreview] = useState(false);
   const [isRunCode, setIsStdout] = useState(false);
   const [codeText, setCodeText] = useState("");
+  const [isJSXCode, setIsJSXCode] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState("html");
+
+  const [jsxFiles, setJsxFiles] = useState<SandpackFiles>();
+  const [dependencies, setDependencies] = useState<string[]>();
+  const [devDependencies, setDevDependencies] = useState<string[]>();
+
+  const handleJSXCode = () => {
+    if (!ref.current) return;
+
+    let dom =
+      ref.current.querySelector("code.language-jsx") ||
+      ref.current.querySelector("code.language-javascript");
+    while (dom) {
+      if (dom === document.body) break;
+      if (dom?.className === "markdown-body") break;
+      dom = dom.parentElement;
+    }
+
+    // dom = div.markdown-body
+    if (dom && dom.className === "markdown-body") {
+      const jsxCodeDoms = dom.querySelectorAll("code.language-jsx");
+      const jsCodeDoms = dom.querySelectorAll("code.language-javascript");
+      const cssCodeDoms = dom.querySelectorAll("code.language-css");
+      const bashCodeDoms = [
+        ...dom.querySelectorAll("code.language-bash"),
+        ...dom.querySelectorAll("code.language-shell"),
+        ...dom.querySelectorAll("code.language-powershell"),
+      ];
+
+      const importedCss: Array<string> = [];
+
+      var files: Record<string, SandpackFile> = {};
+      [...Array.from(jsxCodeDoms), ...Array.from(jsCodeDoms)].forEach(
+        (codeDom) => {
+          let code = (codeDom as HTMLElement).innerText;
+          let filename = "/App.js";
+          const filenameMatches = code.match(componentNameReg);
+
+          if (filenameMatches) {
+            const componentName = filenameMatches[1]; // 捕获的组件名
+            console.log(`组件名是: ${componentName}`);
+            filename = `/${componentName}.js`;
+          } else {
+            console.log("没有找到组件名");
+            filename = "/App.js";
+          }
+
+          let match;
+          const cssNameMatches = [];
+          while ((match = cssNameRegex.exec(code)) !== null) {
+            cssNameMatches.push(match[1]);
+          }
+
+          if (cssNameMatches?.length) {
+            importedCss.push(...cssNameMatches);
+          }
+
+          files[`${filename}`] = { code, active: filename === "/App.js" };
+        },
+      );
+
+      Array.from(cssCodeDoms).forEach((codeDom) => {
+        let dom = codeDom?.parentElement?.parentElement?.previousElementSibling;
+
+        while (dom) {
+          const textString = (dom as HTMLElement).innerText;
+          const record = importedCss.find((item) => textString.match(item));
+          if (record) {
+            let cssname = record;
+            if (cssname.startsWith("./")) {
+              cssname = record.substring(1);
+            } else if (!cssname.startsWith("/")) {
+              cssname = `/${cssname}`;
+            }
+            files[`${cssname}`] = {
+              code: (codeDom as HTMLElement).innerText,
+              active: false,
+            };
+
+            break;
+          }
+          dom = dom.previousElementSibling;
+        }
+      });
+
+      Array.from(bashCodeDoms).forEach((codeDom) => {
+        const text = (codeDom as HTMLElement).innerText;
+        if (
+          text.includes("npm") ||
+          text.includes("yarn") ||
+          text.includes("pnpm")
+        ) {
+          console.log("🚀 ~ Array.from ~ text:", text);
+          const { dependencies, isDevDependency } = extractDependencies(text);
+
+          console.log("[dependencies]", {
+            dependencies,
+            isDevDependency,
+          });
+
+          if (isDevDependency) {
+            setDevDependencies(dependencies);
+          } else {
+            setDependencies(dependencies);
+          }
+        }
+      });
+
+      console.log("[jsx files]", files);
+      setJsxFiles(files);
+    }
+  };
 
   const renderMermaid = useDebouncedCallback(() => {
     if (!ref.current) return;
@@ -206,8 +401,17 @@ export function PreCode(props: { children: any }) {
       setShowCodePreviewAction(true);
     }
 
+    if (javascriptDom || jsxDom || tsxDom) {
+      const _isJSXCode = isJSXString(ref.current.innerText);
+      setIsJSXCode(() => _isJSXCode);
+      if (_isJSXCode) {
+        setShowCodePreviewAction(true);
+      }
+    }
+
     if (javascriptDom || pythonDom) {
-      setShowCodeInterpreterAction(true);
+      const _isJSXCode = isJSXString(ref.current.innerText);
+      setShowCodeInterpreterAction(!_isJSXCode);
     }
   }, 600);
 
@@ -248,6 +452,12 @@ export function PreCode(props: { children: any }) {
                       ?.className.split("language-")?.[1] ?? "html";
                   setCodeLanguage(codeLang);
                   setCodeText(code);
+
+                  const _isJSXCode = isJSXString(ref.current.innerText);
+                  if (_isJSXCode) {
+                    handleJSXCode();
+                  }
+
                   setIsStdout(false);
                   setShowPreview(true);
                 }
@@ -286,6 +496,10 @@ export function PreCode(props: { children: any }) {
           open={showPreview}
           currentLang={codeLanguage}
           isRunCode={isRunCode}
+          isJSX={isJSXCode}
+          jsxFiles={jsxFiles}
+          dependencies={dependencies}
+          devDependencies={devDependencies}
           onOk={() => setShowPreview(false)}
           onCancel={() => setShowPreview(false)}
           onClose={() => setShowPreview(false)}
