@@ -39,15 +39,15 @@ const cn = {
     Register: "注册",
     Unauthorized: (region = 0) =>
       `此工具为Demo展示。请访问<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>创建属于你自己的工具`,
-    Title: "需要分享码",
-    Tips: "创建者开启了验证, 请在下方填入分享码",
+    Title: "输入分享码",
+    Tips: "创建者已开启验证，请在下方输入分享码",
     SubTips: "或者输入你的 OpenAI 或 Google API 密钥",
-    Input: "在此处填写分享码",
+    Input: "请输入分享码",
     Remember: "记住分享码",
-    ValidError: "分享码错误",
-    Confirm: "确认",
+    ValidError: "分享码无效，请重试",
+    Confirm: "验证",
     Later: "稍后再说",
-    CAPTCHA_ERROR: "分享码错误",
+    CAPTCHA_ERROR: "分享码无效，请重试",
     CHATBOT_DISABLED_ERROR: (region = 0) =>
       `工具已禁用，更多信息请访问 <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>`,
     CHATBOT_DELETE_ERROR: (region = 0) =>
