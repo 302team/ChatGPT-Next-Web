@@ -754,3 +754,21 @@ export function getFileBase64(file: File) {
     reader.onerror = (error) => reject(error);
   });
 }
+
+export function getRandomElements<T>(arr: T[], n: number): T[] {
+  if (n > arr.length) {
+    throw new Error("n cannot be larger than the array length");
+  }
+
+  // Create a copy of the array to avoid modifying the original array
+  let arrCopy = [...arr];
+
+  // Fisher-Yates shuffle algorithm
+  for (let i = arrCopy.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arrCopy[i], arrCopy[j]] = [arrCopy[j], arrCopy[i]];
+  }
+
+  // Return the first n elements from the shuffled array
+  return arrCopy.slice(0, n);
+}

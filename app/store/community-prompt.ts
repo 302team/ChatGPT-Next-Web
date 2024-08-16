@@ -3,6 +3,7 @@ import { getLang } from "../locales";
 import { GPT302_FEISHU_BOT_URL, StoreKey } from "../constant";
 import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
+import { getRandomElements } from "../utils";
 
 export interface CommunityPrompt {
   id: string;
@@ -114,7 +115,7 @@ export const useCommunityPromptStore = createPersistStore(
 
       set(() => ({
         prompts,
-        counter: get().counter + 1,
+        counter: get().counter - 1,
       }));
     },
 
@@ -158,6 +159,12 @@ export const useCommunityPromptStore = createPersistStore(
       return (SearchService.search(text) as CommunityPrompt[]).sort((a, b) =>
         b.id && a.id ? b.popularity - a.popularity : 0,
       );
+    },
+
+    getRandomPrompts(n: number) {
+      const list = this.getUserPrompts().concat(SearchService.builtinPrompts);
+
+      return getRandomElements(list, Math.min(n, list.length - 1));
     },
 
     async share(text: string) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./community.module.scss";
 import Locale from "../locales";
 import { IconButton } from "./button";
@@ -8,6 +8,7 @@ import {
   CommunityPrompt,
   useCommunityPromptStore,
 } from "../store/community-prompt";
+import { getRandomElements } from "../utils";
 
 export function SharePrompt(props: {
   onClose: () => void;
@@ -50,13 +51,13 @@ export function SharePrompt(props: {
                 communityPromptStore
                   .share(text)
                   .then(() => {
-                    communityPromptStore.add({
-                      id: Date.now() + "",
-                      prompt: text,
-                      popularity: 1,
-                      category: ["用户分享"],
-                      extra: {},
-                    });
+                    // communityPromptStore.add({
+                    //   id: Date.now() + "",
+                    //   prompt: text,
+                    //   popularity: 1,
+                    //   category: ["用户分享"],
+                    //   extra: {},
+                    // });
                     showToast(Locale.Community.ShareSuccess);
                     props.onClose();
                     props.onSuccess?.();
@@ -100,11 +101,21 @@ export function Community(props: {
   const [searchText, setSearchText] = useState("");
   const [currentTagIndex, setCurrentTagIndex] = useState(0);
   const [showShare, setShowShare] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
 
   const onSearch = (text: string) => {
-    const matchedPrompts = communityPromptStore.search(text);
+    let matchedPrompts = [];
+    if (text === "随机") {
+      matchedPrompts = communityPromptStore.getRandomPrompts(50);
+    } else {
+      matchedPrompts = communityPromptStore.search(text);
+    }
     setPromptHints(matchedPrompts);
   };
+
+  useEffect(() => {
+    container.current?.parentElement?.scrollTo(0, 0);
+  }, [promptHints]);
 
   useEffect(() => {
     // init load prompts
@@ -119,7 +130,7 @@ export function Community(props: {
           onClose={() => props.onClose()}
           containerClass="community-modal"
         >
-          <div className={styles["community"]}>
+          <div ref={container} className={styles["community"]}>
             <div className={styles["community-header"]}>
               <div className={styles["community-search"]}>
                 <IconButton
@@ -153,9 +164,7 @@ export function Community(props: {
                       onClick={() => {
                         setCurrentTagIndex(index);
                         setPromptHints([]);
-                        setTimeout(() => {
-                          onSearch(item);
-                        }, 1);
+                        onSearch(item);
                       }}
                     >
                       {item}
@@ -215,10 +224,9 @@ export function Community(props: {
           onClose={() => setShowShare(false)}
           onSuccess={() => {
             console.log("success");
-
-            onSearch(
-              communityPromptStore.promptCategories.at(currentTagIndex) ?? "",
-            );
+            // onSearch(
+            //   communityPromptStore.promptCategories.at(currentTagIndex) ?? "",
+            // );
           }}
         />
       )}
