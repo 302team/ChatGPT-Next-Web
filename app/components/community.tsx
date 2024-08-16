@@ -103,12 +103,12 @@ export function Community(props: {
   const [showShare, setShowShare] = useState(false);
   const container = useRef<HTMLDivElement>(null);
 
-  const onSearch = (text: string) => {
+  const onSearch = (text: string, tag?: string) => {
     let matchedPrompts = [];
-    if (text === "随机") {
+    if (tag === "随机") {
       matchedPrompts = communityPromptStore.getRandomPrompts(50);
     } else {
-      matchedPrompts = communityPromptStore.search(text);
+      matchedPrompts = communityPromptStore.search(text, tag);
     }
     setPromptHints(matchedPrompts);
   };
@@ -164,7 +164,7 @@ export function Community(props: {
                       onClick={() => {
                         setCurrentTagIndex(index);
                         setPromptHints([]);
-                        onSearch(item);
+                        onSearch("", item);
                       }}
                     >
                       {item}

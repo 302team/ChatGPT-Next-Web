@@ -149,14 +149,23 @@ export const useCommunityPromptStore = createPersistStore(
       SearchService.add(prompt);
     },
 
-    search(text: string) {
+    search(text: string, tag?: string) {
+      let matchedPrompts;
+
       if (text.length === 0) {
         // return all rompts
-        return this.getUserPrompts()
-          .concat(SearchService.builtinPrompts)
-          .sort((a, b) => (b.id && a.id ? b.popularity - a.popularity : 0));
+        matchedPrompts = this.getUserPrompts().concat(
+          SearchService.builtinPrompts,
+        );
+      } else {
+        matchedPrompts = SearchService.search(text) as CommunityPrompt[];
       }
-      return (SearchService.search(text) as CommunityPrompt[]).sort((a, b) =>
+
+      if (tag) {
+        matchedPrompts = matchedPrompts.filter((v) => v.category.includes(tag));
+      }
+
+      return matchedPrompts.sort((a, b) =>
         b.id && a.id ? b.popularity - a.popularity : 0,
       );
     },
