@@ -418,6 +418,10 @@ async function getFileFromUrl(fileUrl: string, fileName: string) {
   return fileObj;
 }
 
+function getIsUseStreamFetch(model: string) {
+  return !["farui-plus"].includes(model);
+}
+
 const DEFAULT_CHAT_STATE = {
   sessions: [createEmptySession()],
   currentSessionIndex: 0,
@@ -1118,7 +1122,7 @@ export const useChatStore = createPersistStore(
               // make request
               api.llm.chat({
                 messages: sendMessages,
-                config: { ...modelConfig, stream: true },
+                config: { ...modelConfig, stream: getIsUseStreamFetch(model) },
                 retryCount: extAttr.retryCount ?? 0,
                 fileSupportType: modelConfig.fileSupportType,
                 onAborted(message) {
