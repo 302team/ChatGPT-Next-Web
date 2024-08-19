@@ -58,7 +58,7 @@ export const useCommunityPromptStore = createPersistStore(
     counter: 0,
     prompts: {} as Record<string, CommunityPrompt>,
     promptCategories: [
-      "热门",
+      // "热门",
       "弱智吧",
       "知识",
       "写作",
@@ -193,16 +193,30 @@ export const useCommunityPromptStore = createPersistStore(
   }),
   {
     name: StoreKey.CommunityPrompt,
-    version: 0.1,
+    version: 1,
 
-    // migrate(state, version) {
-    //   const newState = JSON.parse(JSON.stringify(state)) as {
-    //     prompts: Record<string, CommunityPrompt>;
-    //     promptCategories: string[];
-    //   };
+    migrate(state, version) {
+      const newState = JSON.parse(JSON.stringify(state)) as {
+        prompts: Record<string, CommunityPrompt>;
+        promptCategories: string[];
+      };
 
-    //   return newState as any;
-    // },
+      if (version <= 1) {
+        newState.promptCategories = [
+          "弱智吧",
+          "知识",
+          "写作",
+          "编程",
+          "推理",
+          "理解",
+          "翻译",
+          "用户分享",
+          "随机",
+        ];
+      }
+
+      return newState as any;
+    },
 
     onRehydrateStorage(state) {
       const PROMPT_URL = "./community-prompts.json";

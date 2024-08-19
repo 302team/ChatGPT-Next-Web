@@ -202,12 +202,12 @@ export function Community(props: {
                         <span className={styles["community-list-item-tag"]}>
                           {item.category.join(" / ")}
                         </span>
-                        <span
+                        {/* <span
                           className={styles["community-list-item-popularity"]}
                         >
                           <PopularityIcon style={{ width: 18, height: 18 }} />
                           {item.popularity}
-                        </span>
+                        </span> */}
                       </div>
                     </div>
                   </div>
