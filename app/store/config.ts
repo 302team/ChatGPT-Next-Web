@@ -114,6 +114,7 @@ export const CHATBOT_CONFIG = {
   region: Region.Overseas, // 用户地区
 
   hideSettingButton: false, // 隐藏侧边栏的设置按钮
+  showCost: false, // 显示消耗费用
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG &
@@ -193,7 +194,7 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 3.9,
+    version: 3.91,
     migrate(persistedState, version) {
       const state = persistedState as ChatConfig;
 
@@ -226,6 +227,10 @@ export const useAppConfig = createPersistStore(
 
       if (version < 3.9) {
         state.modelConfig.sendMemoryLength = "short";
+      }
+
+      if (version < 3.91) {
+        state.showCost = false;
       }
 
       return state as any;

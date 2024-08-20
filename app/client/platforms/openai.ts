@@ -9,6 +9,7 @@ import {
   ERROR_CODE,
   ERROR_CODE_TYPE,
   FILE_SUPPORT_TYPE,
+  DEFAULT_ERROR_MESSAGE,
 } from "@/app/constant";
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 
@@ -59,8 +60,6 @@ interface RequestPayload {
   top_p: number;
   max_tokens?: number;
 }
-
-const ERROR_MESSAGE = "Network error, please retry.";
 
 function extractMessageBody(text: string, model: string) {
   const _model = model.toLocaleLowerCase();
@@ -253,7 +252,7 @@ export class ChatGPTApi implements LLMApi {
         if (shouldRetry) {
           options.onRetry?.();
         } else {
-          options.onAborted?.(ERROR_MESSAGE);
+          options.onAborted?.(DEFAULT_ERROR_MESSAGE);
         }
       }, REQUEST_TIMEOUT_MS);
 
@@ -327,7 +326,7 @@ export class ChatGPTApi implements LLMApi {
                 return;
               }
 
-              responseText = ERROR_MESSAGE; // await res.clone().text();
+              responseText = DEFAULT_ERROR_MESSAGE; // await res.clone().text();
               return finish();
             }
 
@@ -378,7 +377,7 @@ export class ChatGPTApi implements LLMApi {
                     errorMsg = Locale.GPTs.Error.Deleted;
                   } else {
                     // 除了自定义的错误信息, 其他错误都显示 Network error, please retry.
-                    errorMsg = ERROR_MESSAGE;
+                    errorMsg = DEFAULT_ERROR_MESSAGE;
                     hasUncatchError = true;
                   }
                 }
@@ -638,7 +637,7 @@ export class ChatGPTApi implements LLMApi {
         if (shouldRetry) {
           options.onRetry?.();
         } else {
-          options.onAborted?.(ERROR_MESSAGE);
+          options.onAborted?.(DEFAULT_ERROR_MESSAGE);
         }
       }, REQUEST_TIMEOUT_MS);
       // console.log("shouldStream", shouldStream);
@@ -718,7 +717,7 @@ export class ChatGPTApi implements LLMApi {
                 "🚀 ~ [tool agent chat] ~ onopen ~ extraInfo:",
                 extraInfo,
               );
-              let errorMsg = ERROR_MESSAGE;
+              let errorMsg = DEFAULT_ERROR_MESSAGE;
 
               // try {
               //   const resJson = await res.clone().json();
@@ -726,7 +725,7 @@ export class ChatGPTApi implements LLMApi {
               //     "🚀 ~ [tool agent chat] ~ onopen ~ resJson:",
               //     resJson,
               //   );
-              //   errorMsg = ERROR_MESSAGE;
+              //   errorMsg = DEFAULT_ERROR_MESSAGE;
               //   hasUncatchError = true;
               //   // extraInfo = prettyObject(resJson);
               // } catch {}
@@ -759,7 +758,7 @@ export class ChatGPTApi implements LLMApi {
                     errorMsg = Locale.GPTs.Error.Deleted;
                   } else {
                     // 除了自定义的错误信息, 其他错误都显示 Network error, please retry.
-                    errorMsg = ERROR_MESSAGE;
+                    errorMsg = DEFAULT_ERROR_MESSAGE;
                     hasUncatchError = true;
                   }
                 }
@@ -801,7 +800,7 @@ export class ChatGPTApi implements LLMApi {
 
             if (!response.isSuccess) {
               console.error("[OpenAI Request] onmessage error: ", response);
-              responseText = ERROR_MESSAGE;
+              responseText = DEFAULT_ERROR_MESSAGE;
 
               const resJson = response;
               if (resJson.error) {
@@ -819,7 +818,7 @@ export class ChatGPTApi implements LLMApi {
                   hasUncatchError = false;
                 } else {
                   // 除了自定义的错误信息, 其他错误都显示 Network error, please retry.
-                  responseText = ERROR_MESSAGE;
+                  responseText = DEFAULT_ERROR_MESSAGE;
                   hasUncatchError = true;
                 }
               } else {

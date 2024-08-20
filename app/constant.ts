@@ -42,6 +42,7 @@ export enum ApiPath {
   Anthropic = "/api/anthropic",
   Artifacts = "/api/artifacts",
   CodeInterpreter = "/api/code-interpreter",
+  TokensCost = "/api/tokens-cost",
 }
 
 export enum SlotID {
@@ -269,3 +270,5 @@ export const DASH_URL = {
   LOGIN_CN: "https://dash.302ai.cn/login",
   REGISTER_CN: "https://dash.302ai.cn/register",
 };
+
+export const DEFAULT_ERROR_MESSAGE = "Network error, please retry.";

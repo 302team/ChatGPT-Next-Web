@@ -10,6 +10,8 @@ import {
   getFileBase64,
 } from "../utils";
 import { franc } from "franc";
+import { getEncoding, getEncodingNameForModel } from "js-tiktoken";
+import Decimal from "decimal.js";
 
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
@@ -26,6 +28,8 @@ import {
   GEMINI_SUMMARIZE_MODEL,
   LAST_INPUT_TIME,
   FILE_SUPPORT_TYPE,
+  ApiPath,
+  DEFAULT_ERROR_MESSAGE,
 } from "../constant";
 import {
   ClientApi,
@@ -44,6 +48,11 @@ import { usePluginStore } from "./plugin";
 import { useAccessStore } from "./access";
 import { useSysPromptStore } from "./sys-prompt";
 
+export interface ChatMessageTokenCost {
+  tokens: number[];
+  cost: string;
+}
+
 export interface ChatToolMessage {
   toolName: string;
   toolInput?: string;
@@ -60,6 +69,7 @@ export type ChatMessage = RequestMessage & {
   isTimeoutAborted?: boolean;
   needTranslate?: boolean;
   isIgnore4History?: boolean; // 发送消息时, 是否可以作为历史数据
+  tokenCost?: ChatMessageTokenCost;
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -457,6 +467,48 @@ function getIsUseStreamFetch(model: string) {
   return !["farui-plus"].includes(model);
 }
 
+interface ModelPrice {
+  input: number;
+  output: number;
+}
+// 模型价格
+const modelPrice: {
+  [key: string]: ModelPrice;
+} = {};
+
+function getEncodingNameByModel(model: any) {
+  let encodingName = "";
+  try {
+    encodingName = getEncodingNameForModel(model);
+  } catch (error) {
+    encodingName = "cl100k_base";
+  }
+  return encodingName;
+}
+
+const encoding = new Map();
+function getEncodingByModel(model: any) {
+  if (encoding.has(model)) {
+    return encoding.get(model);
+  }
+  encoding.set(model, getEncoding(getEncodingNameByModel(model) as any));
+}
+
+function getCost(
+  role: "user" | "assistant" | "system",
+  token: number,
+  modelPrice: ModelPrice,
+) {
+  let price = "0";
+
+  if (role === "user") {
+    price = Decimal.mul(token, modelPrice.input).valueOf();
+  } else if (role === "assistant") {
+    price = Decimal.mul(token, modelPrice.output).valueOf();
+  }
+  return `${price}`;
+}
+
 export const useChatStore = createPersistStore(
   DEFAULT_CHAT_STATE,
   (set, _get) => {
@@ -689,17 +741,27 @@ export const useChatStore = createPersistStore(
           get().moveSession(get().currentSessionIndex, 0);
         }
 
+        const savedUserMessage = {
+          ...userMessage,
+          content: saveUserContent,
+        } as ChatMessage;
         // save user's and bot's message
         get().updateCurrentSession((session) => {
-          const savedUserMessage = {
-            ...userMessage,
-            content: saveUserContent,
-          } as ChatMessage;
           session.messages = session.messages.concat([
             savedUserMessage,
             botMessage,
           ]);
         });
+
+        get()
+          .getTokensCost({
+            role: "user",
+            model: modelConfig.model,
+            message: getMessageTextContent(savedUserMessage),
+          })
+          .then((res) => {
+            res && (savedUserMessage.tokenCost = res);
+          });
 
         var api: ClientApi = new ClientApi(ModelProvider.GPT);
         if (
@@ -827,18 +889,26 @@ export const useChatStore = createPersistStore(
               if (!hasError) {
                 messageTranslate(message, botMessage);
               }
-              get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
+
+              if (message !== DEFAULT_ERROR_MESSAGE) {
+                get()
+                  .getTokensCost({
+                    role: "assistant",
+                    model: modelConfig.model,
+                    message: message,
+                  })
+                  .then((res) => {
+                    botMessage.tokenCost = res;
+                  })
+                  .finally(() => {
+                    get().onNewMessage(botMessage);
+                  });
+              }
             },
             onError(error) {
               const isAborted = error.message.includes("aborted");
-              botMessage.content += "Network error, please retry.";
-              // botMessage.content +=
-              //   "\n\n" +
-              //   prettyObject({
-              //     error: true,
-              //     message: error.message,
-              //   });
+              botMessage.content += DEFAULT_ERROR_MESSAGE;
               botMessage.streaming = false;
               userMessage.isError = !isAborted;
               botMessage.isError = !isAborted;
@@ -939,25 +1009,26 @@ export const useChatStore = createPersistStore(
               if (!hasError) {
                 messageTranslate(message, botMessage);
               }
-              get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
-              // if (!hasError) {
-              //   console.log(
-              //     "[OpenAi] chat finished, save media file to remote",
-              //   );
-              //   get()
-              //     .saveMediaToRemote(message, botMessage)
-              //     .then((newMessage) => {
-              //       console.log(
-              //         "[OpenAi] chat finished, save media file to remote end:",
-              //         newMessage,
-              //       );
-              //     });
-              // }
+
+              if (message !== DEFAULT_ERROR_MESSAGE) {
+                get()
+                  .getTokensCost({
+                    role: "assistant",
+                    model: modelConfig.model,
+                    message: message,
+                  })
+                  .then((res) => {
+                    botMessage.tokenCost = res;
+                  })
+                  .finally(() => {
+                    get().onNewMessage(botMessage);
+                  });
+              }
             },
             onError(error) {
               const isAborted = error.message.includes("aborted");
-              botMessage.content += "Network error, please retry.";
+              botMessage.content += DEFAULT_ERROR_MESSAGE;
               // botMessage.content +=
               // Locale.Error.ApiTimeout +
               // "\n\n" +
@@ -990,28 +1061,41 @@ export const useChatStore = createPersistStore(
         }
       },
 
-      translate(userInput: string) {
+      async translate(userInput: string) {
         if (!userInput || userInput.trim() == "") {
           showToast(Locale.Chat.InputActions.InputTips);
           return;
         }
         const session = get().currentSession();
         const messages: ChatMessage[] = [];
+        const translateModel = "gpt-3.5-turbo-0125";
+
+        const userMessage = createMessage({
+          role: "user",
+          content: userInput,
+        });
+
+        const userMessageTokenCost = await get().getTokensCost({
+          role: "user",
+          model: translateModel,
+          message: getMessageTextContent(userMessage),
+        });
+        if (userMessageTokenCost) {
+          userMessage.tokenCost = userMessageTokenCost;
+        }
+
         const topicMessages = messages.concat(
           createMessage({
             role: "system",
             content: Locale.Chat.InputActions.TranslateTo(navigator.language),
           }),
-          createMessage({
-            role: "user",
-            content: userInput,
-          }),
+          userMessage,
         );
 
         const botMessage = createMessage({
           role: "assistant",
           streaming: true,
-          model: "gpt-3.5-turbo-0125",
+          model: translateModel,
           isIgnore4History: true,
           toolMessages: [],
         });
@@ -1037,6 +1121,8 @@ export const useChatStore = createPersistStore(
             });
           },
           onFinish(message, hasError) {
+            let originMessage = message;
+
             if (message.length > 0) {
               message = message
                 .replace("Translate the user input to English:", "")
@@ -1047,6 +1133,16 @@ export const useChatStore = createPersistStore(
               botMessage.isError = hasError as boolean;
               get().onNewMessage(botMessage);
               ChatControllerPool.remove(session.id, botMessage.id);
+
+              get()
+                .getTokensCost({
+                  role: "assistant",
+                  model: translateModel,
+                  message: originMessage,
+                })
+                .then((res) => {
+                  botMessage.tokenCost = res;
+                });
             } else {
               showToast(Locale.Chat.InputActions.TranslateError);
             }
@@ -1056,6 +1152,39 @@ export const useChatStore = createPersistStore(
             showToast(Locale.Chat.InputActions.TranslateError);
           },
         });
+      },
+
+      async getTokensCost(params: {
+        role: "system" | "user" | "assistant";
+        model: string;
+        message: string;
+      }) {
+        try {
+          if (!modelPrice[params.model]) {
+            const response = await fetch(ApiPath.TokensCost, {
+              method: "POST",
+              body: JSON.stringify(params),
+            });
+            const res = await response.json();
+            modelPrice[params.model] = res.data;
+          }
+
+          const encoding = getEncodingByModel(params.model);
+          const tokens = encoding.encode(params.message);
+          // console.log("[get_tokens_cost]", {
+          //   ...params,
+          //   tokens,
+          //   price: modelPrice[params.model],
+          // });
+
+          return {
+            tokens,
+            cost: getCost(params.role, tokens.length, modelPrice[params.model]),
+          } as ChatMessageTokenCost;
+        } catch (error) {
+          console.log("[tokens_cost] get tokens-cost error", params, error);
+          return undefined;
+        }
       },
 
       async saveMediaToRemote(message: string, botMessage: ChatMessage) {

@@ -1771,6 +1771,34 @@ function _Chat(props: { promptStarters: string[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  let [updateMessage, setUpdateMessage] = useState(false);
+  useEffect(() => {
+    let isMounted = true;
+    const handleMessages = async () => {
+      for (const msg of renderMessages) {
+        if (msg.tokenCost) continue;
+        if (msg.role === "system") continue;
+
+        const content = getMessageTextContent(msg);
+        if (!content) continue;
+
+        msg.tokenCost = await chatStore.getTokensCost({
+          role: msg.role,
+          message: content,
+          model: msg.model ?? session.mask.modelConfig.model,
+        });
+      }
+      setUpdateMessage(true);
+    };
+
+    if (isMounted) {
+      handleMessages();
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [renderMessages]);
+
   return (
     <div className={styles.chat} key={session.id}>
       <div
@@ -2113,71 +2141,84 @@ function _Chat(props: { promptStarters: string[] }) {
                       )}
 
                     {showActions && (
-                      <div className={styles["chat-message-actions"]}>
-                        <div className={styles["chat-input-actions"]}>
-                          {message.streaming ? (
-                            <ChatAction
-                              text={Locale.Chat.Actions.Stop}
-                              icon={<PauseIcon />}
-                              onClick={() => onUserStop(message.id ?? i)}
-                            />
-                          ) : (
-                            <>
+                      <>
+                        <div className={styles["chat-message-actions"]}>
+                          <div className={styles["chat-input-actions"]}>
+                            {message.streaming ? (
                               <ChatAction
-                                text={Locale.Chat.Actions.Retry}
-                                icon={<ResetIcon />}
-                                onClick={() => onResend(message)}
+                                text={Locale.Chat.Actions.Stop}
+                                icon={<PauseIcon />}
+                                onClick={() => onUserStop(message.id ?? i)}
                               />
-
-                              <ChatAction
-                                text={Locale.Chat.Actions.Delete}
-                                icon={<DeleteIcon />}
-                                onClick={() => onDelete(message.id ?? i)}
-                              />
-
-                              <ChatAction
-                                text={Locale.Chat.Actions.Pin}
-                                icon={<PinIcon />}
-                                onClick={() => onPinMessage(message)}
-                              />
-                              <ChatAction
-                                text={Locale.Chat.Actions.Copy}
-                                icon={<CopyIcon />}
-                                onClick={() =>
-                                  copyToClipboard(
-                                    getMessageTextContent(message),
-                                  )
-                                }
-                              />
-                              {config.openTTS && (
+                            ) : (
+                              <>
                                 <ChatAction
-                                  text={
-                                    fetchSpeechLoading
-                                      ? "Load"
-                                      : speaking
-                                        ? Locale.Chat.Actions.Stop
-                                        : Locale.Chat.Actions.Speek
-                                  }
-                                  icon={
-                                    fetchSpeechLoading ? (
-                                      <LoadingOutlined />
-                                    ) : speaking ? (
-                                      <PauseIcon />
-                                    ) : (
-                                      <SpeakIcon />
+                                  text={Locale.Chat.Actions.Retry}
+                                  icon={<ResetIcon />}
+                                  onClick={() => onResend(message)}
+                                />
+
+                                <ChatAction
+                                  text={Locale.Chat.Actions.Delete}
+                                  icon={<DeleteIcon />}
+                                  onClick={() => onDelete(message.id ?? i)}
+                                />
+
+                                <ChatAction
+                                  text={Locale.Chat.Actions.Pin}
+                                  icon={<PinIcon />}
+                                  onClick={() => onPinMessage(message)}
+                                />
+                                <ChatAction
+                                  text={Locale.Chat.Actions.Copy}
+                                  icon={<CopyIcon />}
+                                  onClick={() =>
+                                    copyToClipboard(
+                                      getMessageTextContent(message),
                                     )
                                   }
-                                  onClick={() => {
-                                    speaking
-                                      ? cancelSpeak()
-                                      : speakContent(message.content);
-                                  }}
                                 />
-                              )}
-                            </>
-                          )}
+                                {config.openTTS && (
+                                  <ChatAction
+                                    text={
+                                      fetchSpeechLoading
+                                        ? "Load"
+                                        : speaking
+                                          ? Locale.Chat.Actions.Stop
+                                          : Locale.Chat.Actions.Speek
+                                    }
+                                    icon={
+                                      fetchSpeechLoading ? (
+                                        <LoadingOutlined />
+                                      ) : speaking ? (
+                                        <PauseIcon />
+                                      ) : (
+                                        <SpeakIcon />
+                                      )
+                                    }
+                                    onClick={() => {
+                                      speaking
+                                        ? cancelSpeak()
+                                        : speakContent(message.content);
+                                    }}
+                                  />
+                                )}
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                        {config.showCost && message.tokenCost && (
+                          <div className={styles["chat-message-tokens"]}>
+                            <span>
+                              {message.tokenCost.tokens.length} Tokens
+                            </span>{" "}
+                            / <span>{message.tokenCost.cost}PTC</span>
+                            <span style={{ display: "none" }}>
+                              {updateMessage}
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
