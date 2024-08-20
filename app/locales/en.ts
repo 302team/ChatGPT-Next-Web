@@ -7,8 +7,11 @@ import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
 const config = useAppConfig.getState();
 
 function getLink(region = config.region) {
-  const homeLink =
-    region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+  const homeLink = location.hostname.includes("302ai.cn")
+    ? GPT302_WEBSITE_CN_URL
+    : region === Region.China
+      ? GPT302_WEBSITE_CN_URL
+      : GPT302_WEBSITE_URL;
   const homeText = config.region === Region.China ? "302.AI" : "302.AI";
 
   return {
@@ -61,7 +64,7 @@ const en: LocaleType = {
     DAILY_QUOTA_ERROR: (region = 0) =>
       `Robot's daily quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
     HOUR_QUOTA_ERROR: (region = 0) =>
-      `This robot's hour quota reached maximum limit. Please visit [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own robot`,
+      `This free tool's hour quota reached maximum limit. Please view [${getLink(region).homeText}](${getLink(region).homeLink}) to create your own tool`,
   },
   Preview: {
     Title: "Preview",

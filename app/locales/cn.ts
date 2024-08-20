@@ -5,8 +5,11 @@ import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
 const config = useAppConfig.getState();
 
 function getLink(region = config.region) {
-  const homeLink =
-    region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+  const homeLink = location.hostname.includes("302ai.cn")
+    ? GPT302_WEBSITE_CN_URL
+    : region === Region.China
+      ? GPT302_WEBSITE_CN_URL
+      : GPT302_WEBSITE_URL;
   const homeText = config.region === Region.China ? "302.AI" : "302.AI";
 
   return {
@@ -57,7 +60,7 @@ const cn = {
     DAILY_QUOTA_ERROR: (region = 0) =>
       `机器人的单日额度已达上限，请访问[${getLink(region).homeText}](${getLink(region).homeLink})创建属于你自己的机器人`,
     HOUR_QUOTA_ERROR: (region = 0) =>
-      `该机器人在本小时的额度已达上限，请注册[${getLink(region).homeText}](${getLink(region).homeLink})创建属于自己的机器人`,
+      `该免费工具在本小时的额度已达上限,请访问[${getLink(region).homeText}](${getLink(region).homeLink})生成属于自己的工具`,
   },
   Preview: {
     Title: "实时预览",
