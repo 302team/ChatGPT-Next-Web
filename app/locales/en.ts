@@ -41,15 +41,15 @@ const en: LocaleType = {
     Register: "Sign up",
     Unauthorized: (region = 0) =>
       `This robot is for demonstration purposes. Please visit <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> to create your own robot`,
-    Title: "Please enter the share code",
-    Tips: "The creator has enabled verification, please enter the share code below",
+    Title: "Enter Share Code",
+    Tips: "Verification enabled. Please enter share code",
     SubTips: "Or enter your OpenAI or Google API Key",
-    Input: "share code",
-    Remember: "Remember the share code",
-    ValidError: "Share code incorrect",
-    Confirm: "Confirm",
+    Input: "Please enter share code",
+    Remember: "Remember Share Code",
+    ValidError: "Share Code is invalid. Please try again",
+    Confirm: "Verify",
     Later: "Later",
-    CAPTCHA_ERROR: "Share code incorrect",
+    CAPTCHA_ERROR: "Share Code is invalid. Please try again",
     CHATBOT_DISABLED_ERROR: (region = 0) =>
       `Robot is disabled, Please refer to <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> for details`,
     CHATBOT_DELETE_ERROR: (region = 0) =>
@@ -99,7 +99,7 @@ const en: LocaleType = {
       PinToastAction: "View",
       Delete: "Delete",
       Edit: "Edit",
-      Speek: "Speek",
+      Speek: "Play",
     },
     Commands: {
       new: "Start a new chat",

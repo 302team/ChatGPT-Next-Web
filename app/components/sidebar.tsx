@@ -22,7 +22,7 @@ import NextImage from "next/image";
 import BotIconDark from "../icons/logo-horizontal-dark.png";
 import ExportIcon from "../icons/share.svg";
 
-import Locale from "../locales";
+import Locale, { getLang } from "../locales";
 
 import { useAccessStore, useAppConfig, useChatStore } from "../store";
 
@@ -354,12 +354,27 @@ export function GptsConfigModal(props: {
   const windowSize = useWindowSize();
   const [spinning, setSpinning] = useState(true);
   const [error, setError] = useState(false);
-  const [iframeSrc, setIframeSrc] = useState("");
+  const [iframeSrc, _setIframeSrc] = useState("");
+
+  function setIframeSrc(url?: string) {
+    if (!url) {
+      url = props.isChina === 0 ? GPTS302_WEBSITE_CN_URL : GPTS302_WEBSITE_URL;
+
+      let lang = "";
+      if (getLang() === "cn") {
+        lang = "zh";
+      } else {
+        lang = "en";
+      }
+
+      url = url.replace("/?", `/${lang}?`);
+    }
+
+    _setIframeSrc(url);
+  }
 
   useEffect(() => {
-    setIframeSrc(
-      props.isChina === 0 ? GPTS302_WEBSITE_CN_URL : GPTS302_WEBSITE_URL,
-    );
+    setIframeSrc();
   }, [props.isChina]);
 
   return (
@@ -382,11 +397,7 @@ export function GptsConfigModal(props: {
                     setIframeSrc("about:blank");
                     setError(false);
                     setSpinning(true);
-                    setIframeSrc(
-                      props.isChina === 0
-                        ? GPTS302_WEBSITE_CN_URL
-                        : GPTS302_WEBSITE_URL,
-                    );
+                    setIframeSrc();
                   }}
                 >
                   {Locale.Error.Action.Retry}
