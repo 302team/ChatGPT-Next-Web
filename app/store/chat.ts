@@ -1074,7 +1074,8 @@ export const useChatStore = createPersistStore(
 
                 if (
                   lowerCaseModel.includes("claude-3-5-sonnet") ||
-                  lowerCaseModel.includes("gemma-2-27b-it")
+                  lowerCaseModel.includes("gemma-2-27b-it") ||
+                  lowerCaseModel.includes("hunyuan")
                 ) {
                   // claude-3-5-sonnet-20240620 模型首个message, 排除system 之后只能是user,
                   const isSystemMsg = filteredMessage[0].role === "system";
@@ -1380,7 +1381,7 @@ export const useChatStore = createPersistStore(
           : shortTermMemoryStartIndex;
         // and if user has cleared history messages, we should exclude the memory too.
         const contextStartIndex = Math.max(clearContextIndex, memoryStartIndex);
-        const maxTokenThreshold = modelConfig.max_tokens;
+        const maxTokenThreshold = 32000;
 
         // get recent messages as much as possible
         const reversedRecentMessages = [];
