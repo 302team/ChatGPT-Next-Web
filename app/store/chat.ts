@@ -1226,7 +1226,6 @@ export const useChatStore = createPersistStore(
                   botMessage.streaming = false;
                   botMessage.content = message ?? "";
                   botMessage.isError = hasError as boolean;
-                  get().onNewMessage(botMessage, false);
                   ChatControllerPool.remove(session.id, botMessage.id);
 
                   if (message !== DEFAULT_ERROR_MESSAGE) {

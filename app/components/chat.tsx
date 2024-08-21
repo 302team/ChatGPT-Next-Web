@@ -1782,7 +1782,7 @@ function _Chat() {
           const isUser = message.role === "user";
           const isContext = i < context.length;
           const showActions =
-            i > 0 &&
+            i >= 0 &&
             !(message.preview || message.content.length === 0) &&
             !isContext;
           const showTyping = message.preview || message.streaming;
