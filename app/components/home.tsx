@@ -200,6 +200,12 @@ function ChatWindow() {
             });
           }
 
+          if (opt.settings) {
+            appConfig.update((config) => {
+              config.showCost = opt.settings.showCost ?? false;
+            });
+          }
+
           setValidPwdVisible(false);
         }}
       />

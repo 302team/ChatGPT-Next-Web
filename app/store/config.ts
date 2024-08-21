@@ -116,6 +116,8 @@ export const CHATBOT_CONFIG = {
   },
 
   showShareEntry: true,
+  showCost: false,
+
   useGpts: false, // 是否开启 gpts 应用
   openTTS: false, // 是否开启 语音功能 (语音转文字, 文字转语音)
   isGpts: false,
@@ -211,7 +213,7 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 3.8,
+    version: 3.9,
     migrate(persistedState, version) {
       const state = persistedState as ChatConfig;
 
@@ -240,6 +242,10 @@ export const useAppConfig = createPersistStore(
 
       if (version < 3.8) {
         state.lastUpdate = Date.now();
+      }
+
+      if (version < 3.9) {
+        state.showCost = false;
       }
 
       return state as any;

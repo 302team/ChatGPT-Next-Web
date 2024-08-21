@@ -11,6 +11,8 @@ import {
   compressBase64Image,
   getFileBase64,
 } from "../utils";
+import { getEncoding, getEncodingNameForModel } from "js-tiktoken";
+import Decimal from "decimal.js";
 
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
@@ -35,6 +37,8 @@ import {
   DEFAULT_SYSTEM_TEMPLATE,
   LAST_INPUT_ID_KEY,
   DISABLED_SYSTEM_PROMPT_MODELS,
+  ApiPath,
+  DEFAULT_ERROR_MESSAGE,
 } from "../constant";
 import {
   ClientApi,
@@ -49,6 +53,11 @@ import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
 import { usePluginStore } from "./plugin";
 import { useAccessStore } from "./access";
+
+export interface ChatMessageTokenCost {
+  tokens: number[];
+  cost: string;
+}
 
 export interface ChatToolMessage {
   toolName: string;
@@ -65,6 +74,7 @@ export type ChatMessage = RequestMessage & {
   retryCount?: number;
   isIgnore4History?: boolean;
   isTimeoutAborted?: boolean;
+  tokenCost?: ChatMessageTokenCost;
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -426,6 +436,48 @@ const DEFAULT_CHAT_STATE = {
   sessions: [createEmptySession()],
   currentSessionIndex: 0,
 };
+
+interface ModelPrice {
+  input: number;
+  output: number;
+}
+// 模型价格
+const modelPrice: {
+  [key: string]: ModelPrice;
+} = {};
+
+function getEncodingNameByModel(model: any) {
+  let encodingName = "";
+  try {
+    encodingName = getEncodingNameForModel(model);
+  } catch (error) {
+    encodingName = "cl100k_base";
+  }
+  return encodingName;
+}
+
+const encoding = new Map();
+function getEncodingByModel(model: any) {
+  if (encoding.has(model)) {
+    return encoding.get(model);
+  }
+  encoding.set(model, getEncoding(getEncodingNameByModel(model) as any));
+}
+
+function getCost(
+  role: "user" | "assistant" | "system",
+  token: number,
+  modelPrice: ModelPrice,
+) {
+  let price = "0";
+
+  if (role === "user") {
+    price = Decimal.mul(token, modelPrice.input).valueOf();
+  } else if (role === "assistant") {
+    price = Decimal.mul(token, modelPrice.output).valueOf();
+  }
+  return `${price}`;
+}
 
 export const useChatStore = createPersistStore(
   DEFAULT_CHAT_STATE,
@@ -994,14 +1046,25 @@ export const useChatStore = createPersistStore(
         // 首次发消息, 保存记录
         if (!extAttr.isResend) {
           localStorage.setItem(LAST_INPUT_ID_KEY, userMessage.id);
+          const savedUserMessage = {
+            ...userMessage,
+            content: saveUserContent,
+            model: modelConfigs.map((m) => m.model).join(";"),
+          } as ChatMessage;
+
           get().updateCurrentSession((session) => {
-            const savedUserMessage = {
-              ...userMessage,
-              content: saveUserContent,
-              model: modelConfigs.map((m) => m.model).join(";"),
-            } as ChatMessage;
             session.messages = session.messages.concat([savedUserMessage]);
           });
+
+          get()
+            .getTokensCost({
+              role: "user",
+              model: modelConfig.model,
+              message: getMessageTextContent(savedUserMessage),
+            })
+            .then((res) => {
+              res && (savedUserMessage.tokenCost = res);
+            });
         } else {
           get().updateCurrentSession((session) => {
             const savedUserMessage = {
@@ -1165,6 +1228,21 @@ export const useChatStore = createPersistStore(
                   botMessage.isError = hasError as boolean;
                   get().onNewMessage(botMessage, false);
                   ChatControllerPool.remove(session.id, botMessage.id);
+
+                  if (message !== DEFAULT_ERROR_MESSAGE) {
+                    get()
+                      .getTokensCost({
+                        role: "assistant",
+                        model: modelConfig.model,
+                        message: message,
+                      })
+                      .then((res) => {
+                        botMessage.tokenCost = res;
+                      })
+                      .finally(() => {
+                        get().onNewMessage(botMessage);
+                      });
+                  }
                 },
                 onError(error) {
                   const isAborted = error.message.includes("aborted");
@@ -1195,6 +1273,39 @@ export const useChatStore = createPersistStore(
           };
 
           task();
+        }
+      },
+
+      async getTokensCost(params: {
+        role: "system" | "user" | "assistant";
+        model: string;
+        message: string;
+      }) {
+        try {
+          if (!modelPrice[params.model]) {
+            const response = await fetch(ApiPath.TokensCost, {
+              method: "POST",
+              body: JSON.stringify(params),
+            });
+            const res = await response.json();
+            modelPrice[params.model] = res.data;
+          }
+
+          const encoding = getEncodingByModel(params.model);
+          const tokens = encoding.encode(params.message);
+          // console.log("[get_tokens_cost]", {
+          //   ...params,
+          //   tokens,
+          //   price: modelPrice[params.model],
+          // });
+
+          return {
+            tokens,
+            cost: getCost(params.role, tokens.length, modelPrice[params.model]),
+          } as ChatMessageTokenCost;
+        } catch (error) {
+          console.log("[tokens_cost] get tokens-cost error", params, error);
+          return undefined;
         }
       },
 

@@ -47,6 +47,7 @@ export enum ApiPath {
   Artifacts = "/api/artifacts",
   CodeInterpreter = "/api/code-interpreter",
   Community = "/api/community",
+  TokensCost = "/api/tokens-cost",
 }
 
 export enum SlotID {
@@ -512,3 +513,5 @@ export const DISABLED_SYSTEM_PROMPT_MODELS = [
   "xuanyuan",
   "gemma-2-27b",
 ];
+
+export const DEFAULT_ERROR_MESSAGE = "Network error, please retry.";

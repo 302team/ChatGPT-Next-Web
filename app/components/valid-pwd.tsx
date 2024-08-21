@@ -43,7 +43,7 @@ export function ValidPwd(props: ValidPwdProps) {
   const [showError, setShowError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const userCode = window.location.hostname.split(".")[0];
+  const userCode = "localhostjjc"; //  window.location.hostname.split(".")[0];
 
   async function handleSubmit(code: string, callback?: (res: any) => void) {
     const res = await accessStore.validPwd(code);
