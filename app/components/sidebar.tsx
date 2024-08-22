@@ -367,7 +367,9 @@ export function GptsConfigModal(props: {
         lang = "en";
       }
 
-      url = url.replace("/?", `/${lang}?`);
+      if (props.isChina === 1) {
+        url = url.replace("/?", `/${lang}?`);
+      }
     }
 
     _setIframeSrc(url);
