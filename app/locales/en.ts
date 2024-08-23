@@ -681,7 +681,7 @@ const en: LocaleType = {
     description: (type: string = "AI") =>
       `Create your own ${type} Robot with just one click`,
     AppDescTitle: "Description",
-    AppDescSubTitle: "AI Chat Robot detailed preview",
+    AppDescSubTitle: "Chatbot detailed preview",
     AppDescContent: "",
   },
 };

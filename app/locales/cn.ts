@@ -670,7 +670,7 @@ const cn = {
     GPTs: "应用",
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
     AppDescTitle: "说明",
-    AppDescSubTitle: "AI机器人详情预览",
+    AppDescSubTitle: "聊天机器人详情预览",
     AppDescContent: "",
   },
 };
