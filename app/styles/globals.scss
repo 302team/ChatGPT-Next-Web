@@ -401,6 +401,11 @@ div.math {
   justify-content: center;
 }
 
+.mask-avatar {
+  width: auto;
+  max-width: unset;
+}
+
 .user-avatar {
   border: var(--border-in-light);
   box-shadow: var(--card-shadow);

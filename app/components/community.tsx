@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./community.module.scss";
-import Locale from "../locales";
+import Locale, { getLang } from "../locales";
 import { IconButton } from "./button";
 import { Input, Modal, ShowLoading, showToast } from "./ui-lib";
 import PopularityIcon from "../icons/popularity.svg";
@@ -96,6 +96,7 @@ export function Community(props: {
   onPromptSelect: (prompt: string) => void;
 }) {
   const communityPromptStore = useCommunityPromptStore();
+  const lang = getLang();
 
   const [promptHints, setPromptHints] = useState<CommunityPrompt[]>([]);
   const [searchText, setSearchText] = useState("");
@@ -157,19 +158,26 @@ export function Community(props: {
               </div>
               <div className={styles["community-nav-tags"]}>
                 <div className={styles["community-nav-tags-list"]}>
-                  {communityPromptStore.promptCategories.map((item, index) => (
-                    <span
-                      className={`${styles["community-nav-tags-item"]} ${currentTagIndex === index ? styles["community-nav-tags-item-active"] : ""}`}
-                      key={item}
-                      onClick={() => {
-                        setCurrentTagIndex(index);
-                        setPromptHints([]);
-                        onSearch("", item);
-                      }}
-                    >
-                      {item}
-                    </span>
-                  ))}
+                  {communityPromptStore.promptCategories
+                    .filter((item) => {
+                      if (lang !== "cn") {
+                        return item !== "弱智吧";
+                      }
+                      return true;
+                    })
+                    .map((item, index) => (
+                      <span
+                        className={`${styles["community-nav-tags-item"]} ${currentTagIndex === index ? styles["community-nav-tags-item-active"] : ""}`}
+                        key={item}
+                        onClick={() => {
+                          setCurrentTagIndex(index);
+                          setPromptHints([]);
+                          onSearch("", item);
+                        }}
+                      >
+                        {item}
+                      </span>
+                    ))}
                 </div>
               </div>
             </div>

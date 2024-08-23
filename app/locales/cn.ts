@@ -635,7 +635,7 @@ const cn = {
     FetchImageError: "无法获取图片或未配置OSS",
   },
   Config: {
-    title: `模型竞技场 - ${homeText}`,
+    title: `Model Arena - 302.AI`,
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
     AppDescTitle: "查看工具信息",
     AppDescSubTitle: "模型竞技场详情预览",

@@ -636,7 +636,7 @@ const en: LocaleType = {
     FetchImageError: "Can not fetch image or no OSS setting",
   },
   Config: {
-    title: `AI Arena - 302.AI`,
+    title: `Model Arena - 302.AI`,
     description: (type: string = "AI") =>
       `Create your own ${type} robot with just one click`,
     AppDescTitle: "View Tool Information",
