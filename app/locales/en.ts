@@ -639,8 +639,8 @@ const en: LocaleType = {
     title: `Model Arena - 302.AI`,
     description: (type: string = "AI") =>
       `Create your own ${type} robot with just one click`,
-    AppDescTitle: "View Tool Information",
-    AppDescSubTitle: "Model Arena details preview",
+    AppDescTitle: "Description",
+    AppDescSubTitle: "Model Arena Detailed Preview",
     AppDescContent: "",
   },
   Sidebar: {

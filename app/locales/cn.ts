@@ -637,7 +637,7 @@ const cn = {
   Config: {
     title: `Model Arena - 302.AI`,
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
-    AppDescTitle: "查看工具信息",
+    AppDescTitle: "说明",
     AppDescSubTitle: "模型竞技场详情预览",
     AppDescContent: "",
   },

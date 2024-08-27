@@ -1,8 +1,84 @@
-import { SubmitKey } from "../store/config";
 import type { PartialLocaleType } from "./index";
+import { getClientConfig } from "../config/client";
+import { SubmitKey, useAppConfig } from "../store/config";
+import { GPT302_WEBSITE_CN_URL, GPT302_WEBSITE_URL, Region } from "../constant";
+
+const config = useAppConfig.getState();
+
+const homeLink =
+  config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+const homeText = config.region === Region.China ? "302.AI" : "302.AI";
+
+function getLink(region = config.region) {
+  const homeLink = location.hostname.includes("302ai.cn")
+    ? GPT302_WEBSITE_CN_URL
+    : region === Region.China
+      ? GPT302_WEBSITE_CN_URL
+      : GPT302_WEBSITE_URL;
+  const homeText = config.region === Region.China ? "302.AI" : "302.AI";
+
+  return {
+    homeLink,
+    homeText,
+  };
+}
+const isApp = !!getClientConfig()?.isApp;
 
 const jp: PartialLocaleType = {
   WIP: "この機能は開発中です",
+  Error: {
+    Unauthorized: (region = 0) =>
+      `[${getLink(region).homeText}](${getLink(region).homeLink})にアクセスして、あなた自身のツールを作成してください`,
+    ApiTimeout: "リクエストに失敗しました。もう一度お試しください",
+    NetworkError: "ネットワークエラー",
+    PageOpenError: "ページの読み込みに失敗しました",
+    Action: {
+      Retry: "再試行",
+    },
+    CAN_NOT_OPEN_FILE_ERROR:
+      "申し訳ありませんが、このファイルを開くことができません",
+  },
+  Auth: {
+    Warn: "注意",
+    Login: "ログイン",
+    Register: "登録",
+    Unauthorized: (region = 0) =>
+      `このツールはデモ表示用です。<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>にアクセスして、あなた自身のツールを作成してください`,
+    Title: "共有コードを入力",
+    Tips: "作成者が認証を有効にしています。以下に共有コードを入力してください",
+    SubTips: "または、あなたのOpenAIまたはGoogle APIキーを入力してください",
+    Input: "共有コードを入力してください",
+    Remember: "共有コードを記憶する",
+    ValidError: "共有コードが無効です。もう一度お試しください",
+    Confirm: "確認",
+    Later: "後で",
+    CAPTCHA_ERROR: "共有コードが無効です。もう一度お試しください",
+    CHATBOT_DISABLED_ERROR: (region = 0) =>
+      `ツールが無効になっています。詳細は <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> をご覧ください`,
+    CHATBOT_DELETE_ERROR: (region = 0) =>
+      `ツールが削除されました。詳細は <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> をご覧ください`,
+    SERVER_ERROR: "内部エラーです。カスタマーサポートにお問い合わせください",
+    BALANCE_LIMIT_ERROR: "アカウント残高が不足しています。チャージしてください",
+    TOKEN_EXPIRED_ERROR:
+      "トークンの有効期限が切れています。再度ログインしてください",
+    CHATBOT_DISABLED_ERROR2: (region = 0) =>
+      `このツールは無効になっています。詳細は[${getLink(region).homeText}](${getLink(region).homeLink})をご覧ください`,
+    TOTAL_QUOTA_ERROR: (region = 0) =>
+      `このツールの総クォータに達しました。[${getLink(region).homeText}](${getLink(region).homeLink})にアクセスして、あなた自身のツールを作成してください`,
+    DAILY_QUOTA_ERROR: (region = 0) =>
+      `このツールの1日のクォータに達しました。[${getLink(region).homeText}](${getLink(region).homeLink})にアクセスして、あなた自身のツールを作成してください`,
+    HOUR_QUOTA_ERROR: (region = 0) =>
+      `この無料ツールは、この1時間のクォータに達しました。[${getLink(region).homeText}](${getLink(region).homeLink})にアクセスして、あなた自身のツールを生成してください`,
+  },
+  Preview: {
+    Title: "リアルタイムプレビュー",
+    Actions: {
+      Preview: "プレビュー",
+      Code: "コード",
+      Implement: "実行",
+      Stdout: "実行結果",
+    },
+  },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 通のチャット`,
   },
@@ -28,6 +104,30 @@ const jp: PartialLocaleType = {
       PinToastAction: "表示",
       Delete: "削除",
       Edit: "編集",
+      Speek: "再生",
+    },
+    Commands: {
+      new: "新しいチャットを作成",
+      newm: "アシスタントから新しいチャットを作成",
+      next: "次のチャット",
+      prev: "前のチャット",
+      clear: "コンテキストをクリア",
+      del: "チャットを削除",
+    },
+    InputActions: {
+      Stop: "応答を停止",
+      ToBottom: "最新へスクロール",
+      Theme: {
+        auto: "自動テーマ",
+        light: "ライトモード",
+        dark: "ダークモード",
+      },
+      Prompt: "クイックコマンド",
+      Masks: "全てのアシスタント",
+      Clear: "チャットをクリア",
+      Settings: "会話設定",
+      UploadImage: "画像をアップロード",
+      Waiting: "お待ちください...",
     },
     Rename: "チャットの名前を変更",
     Typing: "入力中…",
@@ -36,18 +136,60 @@ const jp: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += "，Shift + Enter で改行";
       }
-      return "メッセージを送信する"; // inputHints + "，/ で自動補完をトリガー";
+      return "メッセージを送信する";
     },
     Send: "送信",
     Config: {
       Reset: "リセット",
       SaveAs: "保存",
     },
+    IsContext: "プリセットプロンプト",
+    Speech: {
+      Voice: "音声",
+      ResponseFormat: "返信データ形式",
+      Speed: "速度",
+      FetchAudioError:
+        "音声ファイルの取得エラー、APIまたはOSS設定を確認してください",
+      Recording: "録音中：",
+      ToVoiceError: "テキストから音声への変換エラー！",
+      ToTextEmpty: "認識できません",
+      ToTextError: "音声からテキストへの変換エラー！",
+      StartSpeaking: "話し始める",
+      StopSpeaking: "話すのをやめる",
+      NotSupport: "お使いのブラウザは録音機能をサポートしていません",
+      ConverError: "音声形式の変換に失敗しました",
+    },
+    Model: {
+      Selector: "モデルを選択",
+      Local: "ローカルモデル",
+      KnowledgeBase: "知識ベース",
+      SearchPlaceholder: "名前を入力してください",
+    },
+    Tips: "AIは間違える可能性があります。重要な情報は確認することを検討してください。",
+    Upload: {
+      Limit: (size: number | string) => {
+        return `ファイルは${size}を超えることはできません`;
+      },
+    },
+    EnableModel: "競合させたいモデルを有効にしてください",
+    MultiChats: "マルチラウンド対話",
+  },
+  Community: {
+    Title: "何が聞く価値があるか",
+    Search: "検索",
+    Placeholder: "興味のある質問を検索",
+    SharePlaceholder: "あなたの質問を共有",
+    Share: "共有する",
+    ShareSuccess: "共有成功",
+    ShareFailed: "共有失敗",
+    Cancel: "キャンセル",
+    Submit: "共有",
   },
   Export: {
     Title: "チャット履歴をMarkdown形式でエクスポート",
     Copy: "すべてコピー",
     Download: "ファイルをダウンロード",
+    Share: "ShareGPTに共有",
     MessageFromYou: "あなたからのメッセージ",
     MessageFromChatGPT: "ChatGPTからのメッセージ",
     Format: {
@@ -65,6 +207,28 @@ const jp: PartialLocaleType = {
     Image: {
       Toast: "画像生成中...",
       Modal: "長押し、または右クリックで保存してください。",
+    },
+    ShareMessage: (pwd?: string, isGpts?: boolean, modelName?: string) => {
+      let url = location.href;
+      let msg = "リンク: ";
+      if (pwd) {
+        url += `?pwd=${pwd}`;
+      }
+      msg += url;
+      if (pwd) {
+        msg += `\n共有コード: ${pwd}`;
+      }
+
+      if (isGpts && modelName) {
+        msg += `\nアプリケーション: ${modelName}`;
+      }
+      msg += `\n---${homeText}メンバーからの共有`;
+
+      return msg;
+    },
+    Artifacts: {
+      Title: "共有ページ",
+      Error: "共有に失敗しました",
     },
   },
   Select: {
@@ -87,6 +251,8 @@ const jp: PartialLocaleType = {
     DeleteChat: "選択したチャットを削除してもよろしいですか？",
     DeleteToast: "チャットが削除されました",
     Revert: "元に戻す",
+    Search: "チャットを検索",
+    ZeroShot: "競技に行く",
   },
   Settings: {
     Title: "設定",
@@ -289,10 +455,27 @@ const jp: PartialLocaleType = {
     Edit: "編集",
   },
   Exporter: {
+    Description: {
+      Title: "コンテキストをクリアした後のメッセージのみが表示されます",
+    },
     Model: "モデル",
+    Tool: "ツール",
     Messages: "メッセージ",
+    Source: "ソース",
     Topic: "トピック",
     Time: "時間",
+  },
+  Config: {
+    title: `Model Arena - 302.AI`,
+    description: (type: string = "AI") =>
+      `ワンクリックで自分だけの${type}ロボットを生成`,
+    AppDescTitle: "説明",
+    AppDescSubTitle: "モデルアリーナの詳細プレビュー",
+    AppDescContent: "",
+  },
+  Sidebar: {
+    Title: "モデル競技場",
+    Description: "すべてのモデルが一緒に回答する",
   },
 };
 
