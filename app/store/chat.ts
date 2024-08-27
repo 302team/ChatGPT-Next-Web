@@ -1163,6 +1163,9 @@ export const useChatStore = createPersistStore(
           if (!modelPrice[params.model]) {
             const response = await fetch(ApiPath.TokensCost, {
               method: "POST",
+              headers: {
+                Authorization: `Bearer ${useAccessStore.getState().openaiApiKey}`,
+              },
               body: JSON.stringify(params),
             });
             const res = await response.json();

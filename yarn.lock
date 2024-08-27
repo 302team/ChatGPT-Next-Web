@@ -8263,6 +8263,11 @@ webpack@^5.88.1:
     watchpack "^2.4.1"
     webpack-sources "^3.2.3"
 
+weixin-js-sdk@^1.6.5:
+  version "1.6.5"
+  resolved "https://r.cnpmjs.org/weixin-js-sdk/-/weixin-js-sdk-1.6.5.tgz#01fe5220b91dbfe089fc0730d061be0e68271e6a"
+  integrity sha512-Gph1WAWB2YN/lMOFB/ymb+hbU/wYazzJgu6PMMktCy9cSCeW5wA6Zwt0dpahJbJ+RJEwtTv2x9iIu0U4enuVSQ==
+
 whatwg-encoding@^3.1.1:
   version "3.1.1"
   resolved "https://r.cnpmjs.org/whatwg-encoding/-/whatwg-encoding-3.1.1.tgz#d0f4ef769905d426e1688f3e34381a99b60b76e5"

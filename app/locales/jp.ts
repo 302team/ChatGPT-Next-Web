@@ -491,6 +491,7 @@ const jp: PartialLocaleType = {
   Config: {
     title: "チャットボット - 302.AI",
     GPTs: "アプリケーション",
+    Chat: "チャット",
     description: (type: string = "AI") =>
       `ワンクリックで自分専用の${type}ボットを生成`,
     AppDescTitle: "説明",

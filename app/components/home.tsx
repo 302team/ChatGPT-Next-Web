@@ -13,6 +13,7 @@ import { getCSSVar, isEmptyObject, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 
 import {
+  ApiPath,
   CN_HOST,
   DEMO_HOST,
   DEMO_HOST_CN,
@@ -54,6 +55,7 @@ import enUS from "antd/locale/en_US";
 import { Plugin, usePluginStore } from "../store/plugin";
 import { useSyncStore } from "../store/sync";
 import { Salesmartly } from "./script";
+import { wxShareInit } from "../utils/wechat";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -141,6 +143,33 @@ const useHasHydrated = () => {
   }, []);
 
   return hasHydrated;
+};
+
+const useWechatInit = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    let fetching = true;
+
+    const task = () => {
+      const HREF = window.location.href;
+
+      wxShareInit({
+        url: HREF,
+        onSuccess() {
+          setLoading(false);
+        },
+      });
+    };
+
+    if (fetching) task();
+
+    return () => {
+      fetching = false;
+    };
+  }, []);
+
+  return loading;
 };
 
 const loadAsyncGoogleFont = () => {
@@ -447,7 +476,7 @@ function Screen() {
 // }
 
 export function Home() {
-  const [langLoading, setLangLoading] = useState(false);
+  const [wechatInitLoading, setWechatInitLoading] = useState(true);
   const config = useAppConfig();
 
   useSwitchTheme();
@@ -468,11 +497,10 @@ export function Home() {
     setDefaultTheme(themeMedia ? Theme.Dark : Theme.Light);
   }, []);
 
-  if (!useHasHydrated()) {
-    return <Loading />;
-  }
+  const initWechat = useWechatInit();
+  const hasHydrated = !useHasHydrated();
 
-  if (langLoading) {
+  if (initWechat || hasHydrated) {
     return <Loading />;
   }
 

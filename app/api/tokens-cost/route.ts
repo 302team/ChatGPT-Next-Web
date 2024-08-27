@@ -32,10 +32,16 @@ async function handle(req: NextRequest) {
     return new Response("Bad Request", { status: 400 });
   }
 
+  const authValue = req.headers.get("Authorization")?.trim() ?? "";
+
+  if (!authValue) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   try {
     const result = await fetch(`${url}?model_name=${json.model}`, {
       headers: {
-        Authorization: `Bearer ${serverConfig.apiKey}`,
+        Authorization: authValue,
       },
     });
 

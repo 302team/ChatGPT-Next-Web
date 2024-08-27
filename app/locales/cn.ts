@@ -668,6 +668,7 @@ const cn = {
   Config: {
     title: "聊天机器人 - 302.AI",
     GPTs: "应用",
+    Chat: "聊天",
     description: (type: string = "AI") => `一键生成属于自己的${type}机器人`,
     AppDescTitle: "说明",
     AppDescSubTitle: "聊天机器人详情预览",

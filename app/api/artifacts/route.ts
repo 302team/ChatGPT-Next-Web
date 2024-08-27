@@ -72,10 +72,6 @@ async function handle(req: NextRequest, res: NextResponse) {
   const serverConfig = getServerSideConfig();
   const storeUrl = `${serverConfig.apiDomain}/gpt/api/upload/gpts/image`;
 
-  const storeHeaders = () => ({
-    Authorization: `Bearer ${serverConfig.apiKey}`,
-  });
-
   if (req.method === "POST") {
     const clonedBody = await req.clone().text();
     const hashedCode = md5.hash(clonedBody).trim();

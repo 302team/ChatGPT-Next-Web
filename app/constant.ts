@@ -43,6 +43,7 @@ export enum ApiPath {
   Artifacts = "/api/artifacts",
   CodeInterpreter = "/api/code-interpreter",
   TokensCost = "/api/tokens-cost",
+  WechatShare = "/api/wechat/share",
 }
 
 export enum SlotID {

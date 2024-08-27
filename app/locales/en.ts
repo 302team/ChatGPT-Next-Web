@@ -678,6 +678,7 @@ const en: LocaleType = {
   Config: {
     title: "Chatbot - 302.AI",
     GPTs: "App",
+    Chat: "Chat",
     description: (type: string = "AI") =>
       `Create your own ${type} Robot with just one click`,
     AppDescTitle: "Description",
