@@ -170,9 +170,28 @@ function AppDescription(props: {
     window.location.host.startsWith(DEMO_HOST) ||
     window.location.host.startsWith(DEMO_HOST_CN);
   const isCnDemo = window.location.host.startsWith(DEMO_HOST_CN);
-
   const config = useAppConfig();
-  const access = useAccessStore();
+  const accessStore = useAccessStore();
+
+  const userCode = window.location.hostname.split(".")[0];
+
+  const [chatbotInfo, setChatbotInfo] = useState(config.chatbotInfo);
+
+  useEffect(() => {
+    let loading = true;
+
+    const task = async () => {
+      const res = await accessStore.validPwd(userCode);
+      setChatbotInfo(res?.data?.info ?? "");
+    };
+
+    if (loading) {
+      task();
+    }
+    return () => {
+      loading = false;
+    };
+  });
 
   function ShareAction() {
     return (
@@ -183,7 +202,7 @@ function AppDescription(props: {
             ? config.gptsConfig.name
             : config.modelConfig.model;
           const msg = Locale.Export.ShareMessage(
-            access.pwd,
+            accessStore.pwd,
             config.isGpts,
             modelName,
           );
@@ -237,18 +256,27 @@ function AppDescription(props: {
           )
         }
       >
-        <div
-          dangerouslySetInnerHTML={{
-            __html: isDemo
-              ? Locale.Auth.Unauthorized(isCnDemo ? 0 : 1)
-              : config.chatbotInfo,
-          }}
-        ></div>
+        {chatbotInfo ? (
+          isDemo ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: Locale.Auth.Unauthorized(isCnDemo ? 0 : 1),
+              }}
+            ></div>
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: chatbotInfo,
+              }}
+            ></div>
+          )
+        ) : (
+          <Loading noLogo />
+        )}
       </Modal>
     </div>
   );
 }
-
 export function useWindowSize() {
   // 第一步：声明能够体现视口大小变化的状态
   const [windowSize, setWindowSize] = useState({
