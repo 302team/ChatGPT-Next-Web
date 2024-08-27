@@ -1,7 +1,8 @@
 // 参考：<https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html>
 import wx from "weixin-js-sdk";
 import { ApiPath } from "../constant";
-import Locale from "../locales";
+import Locale, { getLang, langCodeMap } from "../locales";
+import { useAccessStore, useAppConfig } from "../store";
 
 /**
  * 通过config接口注入权限验证配置
@@ -128,7 +129,7 @@ export const wxShareInit = async (params: {
       shareApp({
         title: params.title ?? Locale.Config.title,
         desc: params.desc ?? Locale.Config.description(),
-        link: params.url,
+        link: handlerUrl(params.url),
         imgUrl:
           params.imgUrl ??
           "https://file.302ai.cn/gpt/imgs/20240827/c2afd19a90b641f7ad997015cdd466c6.png",
@@ -139,4 +140,20 @@ export const wxShareInit = async (params: {
       console.log("初始化失败", error);
     },
   });
+};
+
+const handlerUrl = (url: string) => {
+  const accessStore = useAccessStore.getState();
+  const configStore = useAppConfig.getState();
+  const langCode = getLang();
+
+  const lang = Object.entries(langCodeMap).find(([key, value]) => {
+    return value === langCode;
+  });
+
+  let query = url.includes("?") ? `&` : `?`;
+
+  query += `region=${configStore.region}&confirm=true&lang=${lang?.at(0)}&pwd=${accessStore.pwd}`;
+
+  return `${url}${query}`;
 };

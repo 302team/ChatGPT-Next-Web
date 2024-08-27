@@ -81,29 +81,30 @@ merge(fallbackLang, targetLang);
 
 export default fallbackLang as LocaleType;
 
-function getLangCode(lang: string) {
-  const langMap = {
-    "zh-CN": "cn",
-    "en-US": "en",
-    "pt-BR": "pt",
-    "zh-TW": "tw",
-    "ja-JP": "jp",
-    "ko-KR": "ko",
-    "id-ID": "id",
-    "fr-FR": "fr",
-    "es-ES": "es",
-    "it-IT": "it",
-    "tr-TR": "tr",
-    "de-DE": "de",
-    "vi-VN": "vi",
-    "ru-RU": "ru",
-    "cs-CZ": "cs",
-    "no-NO": "no",
-    "ar-SA": "ar",
-    "bn-BD": "bn",
-    "sk-SK": "sk",
-  } as Record<string, string>;
-  return langMap[lang] || "en";
+export const langCodeMap = {
+  "zh-CN": "cn",
+  "en-US": "en",
+  "pt-BR": "pt",
+  "zh-TW": "tw",
+  "ja-JP": "jp",
+  "ko-KR": "ko",
+  "id-ID": "id",
+  "fr-FR": "fr",
+  "es-ES": "es",
+  "it-IT": "it",
+  "tr-TR": "tr",
+  "de-DE": "de",
+  "vi-VN": "vi",
+  "ru-RU": "ru",
+  "cs-CZ": "cs",
+  "no-NO": "no",
+  "ar-SA": "ar",
+  "bn-BD": "bn",
+  "sk-SK": "sk",
+} as Record<string, string>;
+
+export function getLangCode(lang: string) {
+  return langCodeMap[lang] || "en";
 }
 
 function getLangFromSearchParams() {
