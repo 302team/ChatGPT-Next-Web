@@ -8,21 +8,79 @@ const homeLink =
   config.region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
 const homeText = config.region === Region.China ? "302.AI" : "302.AI";
 
+function getLink(region = config.region) {
+  const homeLink =
+    region === Region.China ? GPT302_WEBSITE_CN_URL : GPT302_WEBSITE_URL;
+  const homeText = config.region === Region.China ? "302.AI" : "302.AI";
+
+  return {
+    homeLink,
+    homeText,
+  };
+}
+
 const jp: PartialLocaleType = {
   WIP: "この機能は開発中です",
   Error: {
-    Unauthorized: `自分自身のロボットを作成するには、[${homeText}](${homeLink}) をご覧ください`,
+    Unauthorized: (region = 0) =>
+      `[${getLink(region).homeText}](${getLink(region).homeLink})にアクセスして、あなた自身のボットを作成してください`,
+    ApiTimeout: "リクエストが失敗しました。もう一度お試しください",
+    NetworkError: "ネットワークエラー",
+    PageOpenError: "ページの読み込みに失敗しました",
+    Action: {
+      Retry: "再試行",
+    },
+  },
+  Auth: {
+    Warn: "注意",
+    Login: "ログイン",
+    Register: "登録",
+    Unauthorized: (region = 0) =>
+      `このボットはデモ展示用です。<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>にアクセスして、あなた自身のボットを作成してください`,
+    Title: "共有コードが必要です",
+    Tips: "作成者が認証を有効にしました。以下に共有コードを入力してください",
+    SubTips: "または、あなたのOpenAIまたはGoogle APIキーを入力してください",
+    Input: "ここに共有コードを入力してください",
+    Remember: "共有コードを記憶する",
+    ValidError: "共有コードが間違っています",
+    Confirm: "確認",
+    Later: "後で",
+    CAPTCHA_ERROR: "共有コードが間違っています",
+    CHATBOT_DISABLED_ERROR: (region = 0) =>
+      `このボットは無効化されています。詳細については<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>をご覧ください`,
+    CHATBOT_DELETE_ERROR: (region = 0) =>
+      `このボットは削除されました。詳細については<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>をご覧ください`,
+    SERVER_ERROR:
+      "内部エラーが発生しました。カスタマーサポートにお問い合わせください",
+    BALANCE_LIMIT_ERROR: "アカウント残高が不足しています。チャージしてください",
+    TOKEN_EXPIRED_ERROR:
+      "トークンの有効期限が切れました。再度ログインしてください",
+    CHATBOT_DISABLED_ERROR2: (region = 0) =>
+      `このボットは無効化されています。詳細については[${getLink(region).homeText}](${getLink(region).homeLink})をご覧ください`,
+    TOTAL_QUOTA_ERROR: (region = 0) =>
+      `このボットの総クォータに達しました。詳細については[${getLink(region).homeText}](${getLink(region).homeLink})をご覧ください`,
+    DAILY_QUOTA_ERROR: (region = 0) =>
+      `このボットの1日のクォータに達しました。詳細については[${getLink(region).homeText}](${getLink(region).homeLink})をご覧ください`,
+    HOUR_QUOTA_ERROR: (region = 0) =>
+      `このボットの1時間のクォータに達しました。[${getLink(region).homeText}](${getLink(region).homeLink})に登録して、あなた自身のボットを作成してください`,
+  },
+  Preview: {
+    Title: "リアルタイムプレビュー",
+    Actions: {
+      Preview: "プレビュー",
+      Code: "コード",
+    },
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 通のチャット`,
   },
   Chat: {
-    SubTitle: (count: number) => `ChatGPTとの ${count} 通のチャット`,
+    SubTitle: (count: number) => `合計 ${count} 件の会話`,
     EditMessage: {
-      Title: "全てのメッセージを修正",
+      Title: "メッセージ記録を編集",
       Topic: {
-        Title: "トピック",
-        SubTitle: "このトピックを変える",
+        Title: "チャットトピック",
+        SubTitle: "現在のチャットトピックを変更",
       },
     },
     Actions: {
@@ -31,13 +89,13 @@ const jp: PartialLocaleType = {
       Export: "チャット履歴をエクスポート",
       Copy: "コピー",
       Stop: "停止",
-      Retry: "リトライ",
-      Pin: "ピン",
-      PinToastContent:
-        "コンテキストプロンプトに1つのメッセージをピン留めしました",
+      Retry: "再試行",
+      Pin: "固定",
+      PinToastContent: "1件の会話をプリセットプロンプトに固定しました",
       PinToastAction: "表示",
       Delete: "削除",
       Edit: "編集",
+      Speek: "再生",
     },
     Rename: "チャットの名前を変更",
     Typing: "入力中…",
@@ -46,35 +104,82 @@ const jp: PartialLocaleType = {
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += "，Shift + Enter で改行";
       }
-      return "メッセージを送信する"; // inputHints + "，/ で自動補完をトリガー";
+      return "メッセージを送信"; // inputHints + "、/ で補完をトリガー、: でコマンドをトリガー";
     },
     Send: "送信",
     Config: {
-      Reset: "リセット",
-      SaveAs: "保存",
+      Reset: "メモリをクリア",
+      SaveAs: "アシスタントとして保存",
+    },
+    IsContext: "プリセットプロンプト",
+    Speech: {
+      Voice: "音声",
+      ResponseFormat: "返却データ形式",
+      Speed: "速度",
+      FetchAudioError:
+        "音声ファイルの取得エラー。インターフェースまたはOSS設定を確認してください",
+      Recording: "録音中：",
+      ToVoiceError: "テキストから音声への変換エラー！",
+      ToTextEmpty: "認識できません",
+      ToTextError: "音声からテキストへの変換エラー！",
+      StartSpeaking: "話し始める",
+      StopSpeaking: "話すのをやめる",
+      NotSupport: "お使いのブラウザは録音機能をサポートしていません",
+      ConverError: "音声フォーマットの変換に失敗しました",
+    },
+    Model: {
+      Selector: "モデルを選択",
+      Local: "ローカルモデル",
+      KnowledgeBase: "知識ベース",
+      SearchPlaceholder: "名前を入力してください",
+    },
+    Tips: "AIは間違いを犯す可能性があります。重要な情報の確認を検討してください。",
+    Upload: {
+      Limit: (size: number | string) => {
+        return `ファイルは${size}Mを超えることはできません`;
+      },
     },
   },
   Export: {
-    Title: "チャット履歴をMarkdown形式でエクスポート",
-    Copy: "すべてコピー",
-    Download: "ファイルをダウンロード",
-    MessageFromYou: "あなたからのメッセージ",
-    MessageFromChatGPT: "ChatGPTからのメッセージ",
+    Title: "チャット履歴の共有",
+    Copy: "コピー",
+    Download: "ダウンロード",
+    Share: "リンクを共有",
+    MessageFromYou: "ユーザー",
+    MessageFromChatGPT: "ChatGPT",
     Format: {
-      Title: "フォーマットをエクスポート",
-      SubTitle: "マークダウン形式、PNG画像形式を選択できます。",
+      Title: "エクスポート形式",
+      SubTitle: "MarkdownテキストまたはPNG画像でエクスポートできます",
     },
     IncludeContext: {
-      Title: "コンテキストを含みますか？",
-      SubTitle: "コンテキストを含ませるか否か",
+      Title: "アシスタントのコンテキストを含む",
+      SubTitle: "メッセージにアシスタントのコンテキストを表示するかどうか",
     },
     Steps: {
-      Select: "エクスポート設定",
+      Select: "選択",
       Preview: "プレビュー",
     },
     Image: {
-      Toast: "画像生成中...",
-      Modal: "長押し、または右クリックで保存してください。",
+      Toast: "スクリーンショットを生成中",
+      Modal: "長押しまたは右クリックで画像を保存",
+    },
+    ShareMessage: (pwd?: string, isGpts?: boolean, modelName?: string) => {
+      let url = location.href;
+      let msg = "リンク: ";
+      if (pwd) {
+        url += `?pwd=${pwd}`;
+      }
+      msg += url;
+      if (pwd) {
+        msg += `\n共有コード: ${pwd}`;
+      }
+
+      if (isGpts && modelName) {
+        msg += `\nアプリケーション: ${modelName}`;
+      }
+      msg += `\n---302.AI会員からの共有`;
+
+      return msg;
     },
   },
   Select: {
@@ -299,10 +404,23 @@ const jp: PartialLocaleType = {
     Edit: "編集",
   },
   Exporter: {
+    Description: {
+      Title: "コンテキストをクリアした後のメッセージのみが表示されます",
+    },
     Model: "モデル",
     Messages: "メッセージ",
+    Source: "ソース",
     Topic: "トピック",
     Time: "時間",
+    ModelName: "文心一言",
+  },
+  Config: {
+    title: "ナレッジベースボット - 302.AI",
+    GPTs: "アプリケーション",
+    description: `ワンクリックで自分専用のナレッジベースボットを生成`,
+    AppDescTitle: "説明",
+    AppDescSubTitle: "ナレッジベースボットの詳細プレビュー",
+    AppDescContent: "",
   },
 };
 
