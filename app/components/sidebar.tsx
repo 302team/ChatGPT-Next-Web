@@ -221,7 +221,25 @@ function AppDescription(props: {
   onClose: () => void;
 }) {
   const config = useAppConfig();
-  const access = useAccessStore();
+  const accessStore = useAccessStore();
+  const [chatbotInfo, setChatbotInfo] = useState(config.chatbotInfo ?? "");
+
+  const userCode = window.location.hostname.split(".")[0];
+
+  useEffect(() => {
+    let loading = true;
+    const task = async () => {
+      const res = await accessStore.validPwd(userCode);
+      setChatbotInfo(res?.data?.info ?? "");
+    };
+
+    if (loading) {
+      task();
+    }
+    return () => {
+      loading = false;
+    };
+  }, []);
 
   function ShareAction() {
     return (
@@ -232,7 +250,7 @@ function AppDescription(props: {
             ? config.gptsConfig.name
             : config.modelConfig.model;
           const msg = Locale.Export.ShareMessage(
-            access.pwd,
+            accessStore.pwd,
             config.isGpts,
             modelName,
           );
@@ -254,7 +272,11 @@ function AppDescription(props: {
         ]}
         onClose={() => props.onClose()}
       >
-        <div dangerouslySetInnerHTML={{ __html: config.chatbotInfo }}></div>
+        {chatbotInfo ? (
+          <div dangerouslySetInnerHTML={{ __html: chatbotInfo }}></div>
+        ) : (
+          <Loading noLogo />
+        )}
       </Modal>
     </div>
   );
