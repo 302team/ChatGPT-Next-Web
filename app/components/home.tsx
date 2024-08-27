@@ -497,10 +497,10 @@ export function Home() {
     setDefaultTheme(themeMedia ? Theme.Dark : Theme.Light);
   }, []);
 
-  const initWechat = useWechatInit();
+  useWechatInit();
   const hasHydrated = !useHasHydrated();
 
-  if (initWechat || hasHydrated) {
+  if (hasHydrated) {
     return <Loading />;
   }
 
