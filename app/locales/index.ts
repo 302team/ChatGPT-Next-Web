@@ -81,9 +81,54 @@ merge(fallbackLang, targetLang);
 
 export default fallbackLang as LocaleType;
 
+function getLangCode(lang: string) {
+  const langMap = {
+    "zh-CN": "cn",
+    "en-US": "en",
+    "pt-BR": "pt",
+    "zh-TW": "tw",
+    "ja-JP": "jp",
+    "ko-KR": "ko",
+    "id-ID": "id",
+    "fr-FR": "fr",
+    "es-ES": "es",
+    "it-IT": "it",
+    "tr-TR": "tr",
+    "de-DE": "de",
+    "vi-VN": "vi",
+    "ru-RU": "ru",
+    "cs-CZ": "cs",
+    "no-NO": "no",
+    "ar-SA": "ar",
+    "bn-BD": "bn",
+    "sk-SK": "sk",
+  } as Record<string, string>;
+  return langMap[lang] || "en";
+}
+
+function getLangFromSearchParams() {
+  let lang = "";
+  try {
+    let hash = window.location.hash;
+    if (hash.includes("lang=")) {
+      const query = hash.split("?").pop();
+      const langRecord = query?.split("&").find((q) => q.includes("lang"));
+      if (langRecord) {
+        const locale = langRecord.split("=")[1];
+        lang = getLangCode(locale);
+        localStorage.setItem("lang", lang);
+      }
+    }
+  } catch (error) {}
+
+  return lang;
+}
+
 function getItem(key: string) {
   try {
     return localStorage.getItem(key);
+    // const lang = getLangFromSearchParams();
+    // return lang ? lang : localStorage.getItem(key);
   } catch {
     return null;
   }
