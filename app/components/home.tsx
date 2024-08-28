@@ -9,6 +9,7 @@ import BotIcon from "../icons/bot.svg";
 import Logo from "../icons/logo.png";
 import LoadingIcon from "../icons/three-dots.svg";
 import { getCSSVar, isEmptyObject, useMobileScreen } from "../utils";
+import { wxShareInit } from "../utils/wechat";
 
 import dynamic from "next/dynamic";
 
@@ -137,6 +138,33 @@ const useHasHydrated = () => {
   }, []);
 
   return hasHydrated;
+};
+
+const useWechatInit = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    let fetching = true;
+
+    const task = () => {
+      const HREF = window.location.href;
+
+      wxShareInit({
+        url: HREF,
+        onSuccess() {
+          setLoading(false);
+        },
+      });
+    };
+
+    if (fetching) task();
+
+    return () => {
+      fetching = false;
+    };
+  }, []);
+
+  return loading;
 };
 
 const loadAsyncGoogleFont = () => {
@@ -382,7 +410,10 @@ export function Home() {
     setDefaultTheme(themeMedia ? Theme.Dark : Theme.Light);
   }, []);
 
-  if (!useHasHydrated()) {
+  useWechatInit();
+  const hasHydrated = !useHasHydrated();
+
+  if (hasHydrated) {
     return <Loading />;
   }
 

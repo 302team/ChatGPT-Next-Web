@@ -42,6 +42,7 @@ export enum ApiPath {
   OpenAI = "/api/openai",
   Anthropic = "/api/anthropic",
   KnowledgeBase = "/api/knowledge-base",
+  WechatShare = "/api/wechat/share",
 }
 
 export enum SlotID {

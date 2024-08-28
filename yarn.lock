@@ -7847,6 +7847,11 @@ webpack@^5.88.1:
     watchpack "^2.4.1"
     webpack-sources "^3.2.3"
 
+weixin-js-sdk@^1.6.5:
+  version "1.6.5"
+  resolved "https://r.cnpmjs.org/weixin-js-sdk/-/weixin-js-sdk-1.6.5.tgz#01fe5220b91dbfe089fc0730d061be0e68271e6a"
+  integrity sha512-Gph1WAWB2YN/lMOFB/ymb+hbU/wYazzJgu6PMMktCy9cSCeW5wA6Zwt0dpahJbJ+RJEwtTv2x9iIu0U4enuVSQ==
+
 whatwg-url@^5.0.0:
   version "5.0.0"
   resolved "https://r2.cnpmjs.org/whatwg-url/-/whatwg-url-5.0.0.tgz#966454e8765462e37644d3626f6742ce8b70965d"
