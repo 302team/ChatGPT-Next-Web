@@ -37,6 +37,7 @@ const en: LocaleType = {
     Register: "Sign up",
     Unauthorized: (region = 0) =>
       `This robot is for demonstration purposes. Please visit <a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a> to create your own robot`,
+    ShareCode: "Share Code",
     Title: "Please enter the share code",
     Tips: "The creator has enabled verification, please enter the share code below",
     SubTips: "Or enter your OpenAI or Google API Key",
