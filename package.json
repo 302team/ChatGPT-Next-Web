@@ -1,7 +1,6 @@
 {
   "name": "nextchat",
   "private": false,
-  "license": "mit",
   "scripts": {
     "dev": "next dev",
     "build": "cross-env BUILD_MODE=standalone next build",
