@@ -55,6 +55,7 @@ import { SyncOutlined } from "@ant-design/icons";
 import { Loading } from "./home";
 import { SearchBar, SearchInputRef } from "./search-bar";
 import { useSyncStore } from "../store/sync";
+import { wxShareInit } from "../utils/wechat";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -298,6 +299,39 @@ export function useWindowSize() {
   return windowSize;
 }
 
+const useWechatInit = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const appConfig = useAppConfig();
+
+  useEffect(() => {
+    let fetching = true;
+
+    const task = () => {
+      const HREF = window.location.href;
+
+      wxShareInit({
+        url: HREF,
+        title: appConfig.chatbotName || Locale.Config.title,
+        desc: appConfig.chatbotDesc || Locale.Config.description,
+        imgUrl:
+          appConfig.chatbotLogo ||
+          "https://file.302ai.cn/gpt/imgs/20240827/c2afd19a90b641f7ad997015cdd466c6.png",
+        onSuccess() {
+          setLoading(false);
+        },
+      });
+    };
+
+    if (fetching) task();
+
+    return () => {
+      fetching = false;
+    };
+  }, []);
+
+  return loading;
+};
+
 function useGptsConfigMessage(props: { callback: (data?: any) => void }) {
   const [gptsModel, setGptsModel] = useState();
   const chatStore = useChatStore();
@@ -515,6 +549,8 @@ export function SideBar(props: { className?: string }) {
     () => isIOS() && isMobileScreen,
     [isMobileScreen],
   );
+
+  useWechatInit();
 
   // search
   const searchBarWrapRef = useRef<HTMLDivElement>(null);
