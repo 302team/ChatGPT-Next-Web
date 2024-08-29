@@ -423,11 +423,9 @@ export function GptsConfigModal(props: {
     if (!url) {
       url = props.isChina === 0 ? GPTS302_WEBSITE_CN_URL : GPTS302_WEBSITE_URL;
 
-      let lang = "";
-      if (getLang() === "cn") {
+      let lang: string = getLang();
+      if (lang === "cn") {
         lang = "zh";
-      } else {
-        lang = "en";
       }
 
       if (props.isChina === 1) {
