@@ -36,6 +36,7 @@ export const CN_MASKS: BuiltinMask[] = [
     createdAt: 1724920707967,
     botHelloContent: "有什么可以帮你的吗",
     isStoreModel: false,
+    hideContext: true,
   },
   {
     avatar: "1f4cb",
