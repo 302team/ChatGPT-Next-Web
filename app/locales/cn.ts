@@ -37,6 +37,7 @@ const cn = {
     Register: "注册",
     Unauthorized: (region = 0) =>
       `此机器人为Demo展示。请访问<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>创建属于你自己的机器人`,
+    ShareCode: "分享码",
     Title: "输入分享码",
     Tips: "创建者已开启验证，请在下方输入分享码",
     SubTips: "或者输入你的 OpenAI 或 Google API 密钥",

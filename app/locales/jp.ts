@@ -42,6 +42,7 @@ const jp: PartialLocaleType = {
     Register: "登録",
     Unauthorized: (region = 0) =>
       `このボットはデモ展示用です。<a target="_blank" href="${getLink(region).homeLink}">${getLink(region).homeText}</a>にアクセスして、あなた自身のボットを作成してください`,
+    ShareCode: "共有コード",
     Title: "共有コードを入力",
     Tips: "作成者が認証を有効にしています。以下に共有コードを入力してください",
     SubTips: "または、OpenAIやGoogle APIキーを入力してください",

@@ -128,8 +128,8 @@ export const wxShareInit = async (params: {
 
       shareApp({
         title: params.title ?? Locale.Config.title,
-        desc: params.desc ?? Locale.Config.description(),
-        link: handlerUrl(params.url),
+        desc: buildDesc(params.desc ?? Locale.Config.description()),
+        link: params.url,
         imgUrl:
           params.imgUrl ??
           "https://file.302ai.cn/gpt/imgs/20240827/c2afd19a90b641f7ad997015cdd466c6.png",
@@ -142,18 +142,24 @@ export const wxShareInit = async (params: {
   });
 };
 
-const handlerUrl = (url: string) => {
+const buildDesc = (desc: string) => {
   const accessStore = useAccessStore.getState();
-  const configStore = useAppConfig.getState();
-  const langCode = getLang();
+  // const configStore = useAppConfig.getState();
+  // const langCode = getLang();
 
-  const lang = Object.entries(langCodeMap).find(([key, value]) => {
-    return value === langCode;
-  });
+  // const lang = Object.entries(langCodeMap).find(([key, value]) => {
+  //   return value === langCode;
+  // });
 
-  let query = url.includes("?") ? `&` : `?`;
+  // let query = url.includes("?") ? `&` : `?`;
 
-  query += `region=${configStore.region}&confirm=true&lang=${lang?.at(0)}&pwd=${accessStore.pwd}`;
+  // query += `region=${configStore.region}&confirm=true&lang=${lang?.at(0)}&pwd=${accessStore.pwd}`;
 
-  return `${url}${query}`;
+  // return `${url}${query}`;
+
+  if (accessStore.pwd) {
+    desc += `\n${Locale.Auth.ShareCode}: ${accessStore.pwd}`;
+  }
+
+  return desc;
 };

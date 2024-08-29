@@ -308,7 +308,7 @@ const useWechatInit = () => {
     let fetching = true;
 
     const task = () => {
-      const HREF = window.location.href;
+      const HREF = window.location.href.split("#")[0];
 
       wxShareInit({
         url: HREF,
