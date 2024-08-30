@@ -24,7 +24,7 @@ import {
 } from "../constant";
 import { ErrorBoundary } from "./error";
 
-import { getISOLang, getLang } from "../locales";
+import Locale, { getISOLang, getLang } from "../locales";
 
 import {
   HashRouter as Router,
@@ -52,6 +52,7 @@ import { Prompt, usePromptStore } from "../store/prompt";
 import { ConfigProvider, theme } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
+import jaJP from "antd/locale/ja_JP";
 import { Plugin, usePluginStore } from "../store/plugin";
 import { useSyncStore } from "../store/sync";
 import { Salesmartly } from "./script";
@@ -459,6 +460,8 @@ export function Home() {
     document.body.classList.add("light");
     console.log("[Config] got config from build time", getClientConfig());
     useAccessStore.getState().fetch();
+
+    document.title = Locale.Config.title;
   }, []);
 
   const [defaultTheme, setDefaultTheme] = useState("");
@@ -469,19 +472,28 @@ export function Home() {
     setDefaultTheme(themeMedia ? Theme.Dark : Theme.Light);
   }, []);
 
-  const hasHydrated = !useHasHydrated();
+  const lang = getLang();
+  const [locale, setLocale] = useState(enUS);
+  useEffect(() => {
+    if (lang === "cn") {
+      setLocale(zhCN);
+    } else if (lang === "en") {
+      setLocale(enUS);
+    } else if (lang === "jp") {
+      setLocale(jaJP);
+    }
+  }, [lang]);
 
+  const hasHydrated = !useHasHydrated();
   if (hasHydrated) {
     return <Loading />;
   }
-
-  const lang = getLang();
 
   return (
     <>
       <ErrorBoundary>
         <ConfigProvider
-          locale={lang === "cn" ? zhCN : enUS}
+          locale={locale}
           theme={{
             algorithm:
               config.theme === Theme.Auto
