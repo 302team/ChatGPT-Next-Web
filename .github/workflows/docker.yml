@@ -2,9 +2,9 @@ name: Publish Docker image
 
 on:
   push:
-    branches: ["main-proxy302", "dev", "feat-zero-shot"]
+    branches: ["main", "dev", ]
   pull_request:
-    branches: ["main-proxy302", "dev", "feat-zero-shot"]
+    branches: ["main", "dev"]
 
 jobs:
   push_to_registry:
@@ -26,7 +26,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: proxy302/chatgpt-next-web
+          images: proxy302/nextchat
           tags: |
             # type=raw,value=latest
             type=ref,event=tag
