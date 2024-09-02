@@ -52,6 +52,7 @@ export function ValidPwd(props: ValidPwdProps) {
     if (res.code === 0) {
       searchParams.delete("pwd");
       searchParams.delete("confirm");
+      searchParams.delete("lang");
       setSearchParams(searchParams, { replace: true });
       callback?.(res);
       return res;
