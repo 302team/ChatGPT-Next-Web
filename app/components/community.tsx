@@ -106,7 +106,7 @@ export function Community(props: {
 
   const onSearch = (text: string, tag?: string) => {
     let matchedPrompts = [];
-    if (tag === "随机") {
+    if (tag === "Random") {
       matchedPrompts = communityPromptStore.getRandomPrompts(50);
     } else {
       matchedPrompts = communityPromptStore.search(text, tag);
@@ -120,7 +120,12 @@ export function Community(props: {
 
   useEffect(() => {
     // init load prompts
-    onSearch(communityPromptStore.promptCategories.at(currentTagIndex) ?? "");
+    const initTag = communityPromptStore.promptCategories.at(currentTagIndex);
+    if (initTag) {
+      onSearch("", initTag.value);
+    } else {
+      onSearch("");
+    }
   }, []);
 
   return (
@@ -153,31 +158,28 @@ export function Community(props: {
                 <IconButton
                   text={Locale.Community.Search}
                   className={styles["community-search-button"]}
-                  onClick={() => onSearch(searchText)}
+                  onClick={() => {
+                    onSearch(searchText);
+                    setCurrentTagIndex(-1);
+                  }}
                 />
               </div>
               <div className={styles["community-nav-tags"]}>
                 <div className={styles["community-nav-tags-list"]}>
-                  {communityPromptStore.promptCategories
-                    .filter((item) => {
-                      if (lang !== "cn") {
-                        return item !== "弱智吧";
-                      }
-                      return true;
-                    })
-                    .map((item, index) => (
-                      <span
-                        className={`${styles["community-nav-tags-item"]} ${currentTagIndex === index ? styles["community-nav-tags-item-active"] : ""}`}
-                        key={item}
-                        onClick={() => {
-                          setCurrentTagIndex(index);
-                          setPromptHints([]);
-                          onSearch("", item);
-                        }}
-                      >
-                        {item}
-                      </span>
-                    ))}
+                  {communityPromptStore.promptCategories.map((item, index) => (
+                    <span
+                      className={`${styles["community-nav-tags-item"]} ${currentTagIndex === index ? styles["community-nav-tags-item-active"] : ""}`}
+                      key={item.title + index}
+                      onClick={() => {
+                        setCurrentTagIndex(index);
+                        setPromptHints([]);
+                        onSearch("", item.value);
+                        setSearchText("");
+                      }}
+                    >
+                      {item.title}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>

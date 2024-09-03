@@ -5,12 +5,22 @@ import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
 import { getRandomElements } from "../utils";
 
+export interface CommunityCategory {
+  title: string;
+  value: string;
+}
+
 export interface CommunityPrompt {
   id: string;
   prompt: string;
   category: string[];
   popularity: number;
   extra: Record<string, unknown>;
+}
+
+export interface CommunityPromptRecord {
+  tabs: CommunityCategory[];
+  prompts: CommunityPrompt[];
 }
 
 const SearchService = {
@@ -57,18 +67,7 @@ export const useCommunityPromptStore = createPersistStore(
   {
     counter: 0,
     prompts: {} as Record<string, CommunityPrompt>,
-    promptCategories: [
-      // "热门",
-      "弱智吧",
-      "知识",
-      "写作",
-      "编程",
-      "推理",
-      "理解",
-      "翻译",
-      "用户分享",
-      "随机",
-    ] as string[],
+    promptCategories: [] as CommunityCategory[],
   },
 
   (set, get) => ({
@@ -162,7 +161,10 @@ export const useCommunityPromptStore = createPersistStore(
       }
 
       if (tag) {
-        matchedPrompts = matchedPrompts.filter((v) => v.category.includes(tag));
+        const _tag = get().promptCategories.find((v) => v.value === tag);
+        matchedPrompts = matchedPrompts.filter((v) =>
+          v.category.includes(_tag ? _tag.title : tag),
+        );
       }
 
       return matchedPrompts.sort((a, b) =>
@@ -190,46 +192,42 @@ export const useCommunityPromptStore = createPersistStore(
         console.log("🚀 ~ share ~ text:", text);
       });
     },
+
+    setPromptCategories(list: CommunityCategory[]) {
+      set(() => ({
+        promptCategories: list,
+      }));
+    },
   }),
   {
     name: StoreKey.CommunityPrompt,
-    version: 1,
+    version: 1.1,
 
     migrate(state, version) {
       const newState = JSON.parse(JSON.stringify(state)) as {
         prompts: Record<string, CommunityPrompt>;
-        promptCategories: string[];
+        promptCategories: CommunityCategory[];
       };
-
-      if (version <= 1) {
-        newState.promptCategories = [
-          "弱智吧",
-          "知识",
-          "写作",
-          "编程",
-          "推理",
-          "理解",
-          "翻译",
-          "用户分享",
-          "随机",
-        ];
-      }
 
       return newState as any;
     },
 
-    onRehydrateStorage(state) {
+    onRehydrateStorage: () => (state) => {
       const PROMPT_URL = "./community-prompts.json";
 
       fetch(PROMPT_URL)
         .then((res) => res.json())
         .then((res) => {
-          let builtinPrompts = res;
+          let lang = getLang();
+          let fetchPrompts: CommunityPromptRecord = res[lang] ?? res["en"];
+
+          state?.setPromptCategories(fetchPrompts.tabs ?? []);
+
           const userPrompts =
             useCommunityPromptStore.getState().getUserPrompts() ?? [];
 
-          const allPromptsForSearch = builtinPrompts;
-          SearchService.count.builtin = res.length;
+          const allPromptsForSearch = fetchPrompts.prompts;
+          SearchService.count.builtin = fetchPrompts.prompts.length;
           SearchService.init(allPromptsForSearch, userPrompts);
         });
     },
