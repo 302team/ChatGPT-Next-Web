@@ -69,7 +69,7 @@ const jp: PartialLocaleType = {
     DAILY_QUOTA_ERROR: (region = 0) =>
       `このツールの1日の利用枠に達しました。[${getLink(region).homeText}](${getLink(region).homeLink})にアクセスして、あなた自身のツールを作成してください`,
     HOUR_QUOTA_ERROR: (region = 0) =>
-      `この無料ツールは今時間の利用枠に達しました。[${getLink(region).homeText}](${getLink(region).homeLink})にアクセスして、あなた自身のツールを生成してください`,
+      `この無料ツールは今時間の上限に達しました。[${getLink(region).homeText}](${getLink(region).homeLink})を訪問して自分のツールを作成してください`,
   },
   Preview: {
     Title: "リアルタイムプレビュー",
