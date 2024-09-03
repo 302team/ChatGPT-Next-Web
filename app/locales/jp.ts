@@ -106,7 +106,7 @@ const jp: PartialLocaleType = {
     },
     Commands: {
       new: "新しいチャットを開始",
-      newm: "アシスタントから新しいチャットを開始",
+      newm: "プロンプトから新しいチャットを開始",
       next: "次のチャット",
       prev: "前のチャット",
       clear: "コンテキストをクリア",
@@ -121,7 +121,7 @@ const jp: PartialLocaleType = {
         dark: "ダークモード",
       },
       Prompt: "ショートカット",
-      Masks: "全てのアシスタント",
+      Masks: "全てのプロンプト",
       Clear: "チャットをクリア",
       Settings: "会話設定",
       UploadImage: "画像をアップロード",
@@ -144,7 +144,7 @@ const jp: PartialLocaleType = {
     Send: "送信",
     Config: {
       Reset: "メモリをクリア",
-      SaveAs: "アシスタントとして保存",
+      SaveAs: "プロンプトとして保存",
     },
     IsContext: "プリセットプロンプト",
     Speech: {
@@ -187,8 +187,8 @@ const jp: PartialLocaleType = {
       SubTitle: "Markdownテキストまたは画像としてエクスポートできます",
     },
     IncludeContext: {
-      Title: "アシスタントのコンテキストを含める",
-      SubTitle: "メッセージにアシスタントのコンテキストを表示するかどうか",
+      Title: "プロンプトのコンテキストを含める",
+      SubTitle: "メッセージにプロンプトのコンテキストを表示するかどうか",
     },
     Steps: {
       Select: "選択",
@@ -341,7 +341,7 @@ const jp: PartialLocaleType = {
 
       LocalState: "ローカルデータ",
       Overview: (overview: any) => {
-        return `${overview.chat}件の会話、${overview.message}件のメッセージ、${overview.prompt}件のプロンプト、${overview.mask}個のアシスタント`;
+        return `${overview.chat}件の会話、${overview.message}件のメッセージ、${overview.prompt + overview.mask}件のプロンプト`;
       },
       ImportFailed: "インポート失敗",
 
@@ -391,14 +391,12 @@ const jp: PartialLocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "アシスタントスプラッシュ画面",
-        SubTitle:
-          "新しいチャットを開始する際、アシスタントスプラッシュ画面を表示します",
+        Title: "プロンプト",
+        SubTitle: "新しいチャットを開始する際、プロンプトを表示します",
       },
       Builtin: {
-        Title: "内蔵アシスタントを非表示",
-        SubTitle:
-          "すべてのアシスタントリストから内蔵アシスタントを非表示にします",
+        Title: "内蔵プロンプトを非表示",
+        SubTitle: "すべてのプロンプトリストから内蔵プロンプトを非表示にします",
       },
     },
     Prompt: {
@@ -587,14 +585,14 @@ const jp: PartialLocaleType = {
     Name: "プラグイン",
   },
   FineTuned: {
-    Sysmessage: "あなたはアシスタントです",
+    Sysmessage: "あなたはプロンプトです",
   },
   Mask: {
-    Name: "アシスタント",
+    Name: "プロンプト",
     Page: {
-      Title: "プリセットアシスタント",
-      SubTitle: (count: number) => `${count}個のプリセットアシスタント定義`,
-      Search: "アシスタントを検索",
+      Title: "プリセットプロンプト",
+      SubTitle: (count: number) => `${count}個のプリセットプロンプト定義`,
+      Search: "プロンプトを検索",
       Create: "新規作成",
     },
     Item: {
@@ -607,13 +605,13 @@ const jp: PartialLocaleType = {
     },
     EditModal: {
       Title: (readonly: boolean) =>
-        `プリセットアシスタントを編集 ${readonly ? "（読み取り専用）" : ""}`,
+        `プリセットプロンプトを編集 ${readonly ? "（読み取り専用）" : ""}`,
       Download: "プリセットをダウンロード",
       Clone: "プリセットをクローン",
     },
     Config: {
-      Avatar: "アシスタントのアバター",
-      Name: "アシスタントの名前",
+      Avatar: "プロンプトのアバター",
+      Name: "プロンプトの名前",
       Sync: {
         Title: "グローバル設定を使用",
         SubTitle: "現在の会話でグローバルモデル設定を使用するかどうか",
@@ -626,8 +624,8 @@ const jp: PartialLocaleType = {
           "隠すとプリセット会話がチャットインターフェースに表示されません",
       },
       Share: {
-        Title: "このアシスタントを共有",
-        SubTitle: "このアシスタントの直接リンクを生成",
+        Title: "このプロンプトを共有",
+        SubTitle: "このプロンプトの直接リンクを生成",
         Action: "リンクをコピー",
       },
     },
@@ -637,8 +635,8 @@ const jp: PartialLocaleType = {
     Skip: "スキップ",
     NotShow: "今後表示しない",
     ConfirmNoShow: "無効にしますか？設定からいつでも再度有効にできます。",
-    Title: "アシスタントを選択",
-    SubTitle: "アシスタントの背後にある魂との対話を始めましょう",
+    Title: "プロンプトを選択",
+    SubTitle: "プロンプトの背後にある魂との対話を始めましょう",
     More: "すべて表示",
   },
   URLCommand: {
