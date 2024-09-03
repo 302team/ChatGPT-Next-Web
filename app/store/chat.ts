@@ -721,9 +721,9 @@ export const useChatStore = createPersistStore(
 
         const currentLang = getLang();
         // 对于具备视觉能力的模型，自动禁用图像识别插件
-        const isVisionModel =
-          config.multimodalType4Models[modelConfig.model] ===
-          FILE_SUPPORT_TYPE.ONLY_IMAGE;
+        // const isVisionModel =
+        //   config.multimodalType4Models[modelConfig.model] ===
+        //   FILE_SUPPORT_TYPE.ONLY_IMAGE;
         // 应用商店的模型, 使用内置插件
         const allPlugins = session.mask.isStoreModel
           ? pluginStore
@@ -955,6 +955,22 @@ export const useChatStore = createPersistStore(
             // );
           } else if (modelConfig.model.includes("tts")) {
             // return this.audioSpeech(content, botMessage, extAttr);
+          }
+
+          for (let i = 0; i < sendMessages.length; i++) {
+            const msg = sendMessages[i];
+            if (
+              msg.content instanceof Array &&
+              isVisionModel(modelConfig.model)
+            ) {
+              for (let index = 0; index < msg.content.length; index++) {
+                const item = msg.content[index];
+                if (item.type === "image_url" && item.image_url) {
+                  const imageData = await getBase64FromUrl(item.image_url.url);
+                  item.image_url.url = imageData.base64;
+                }
+              }
+            }
           }
 
           // make request
