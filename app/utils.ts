@@ -385,7 +385,7 @@ export function getMessageFiles(
 // 具备视觉功能的模型({ type: "image_url", image_url: BASE64 })
 export function isVisionModel(model: string) {
   const m = model.toLocaleLowerCase();
-  const visionKeywords = ["vision"];
+  const visionKeywords = ["vision", "gemini-1.5-flash"];
 
   return visionKeywords.some((keyword) => m.includes(keyword));
 }
