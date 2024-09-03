@@ -100,7 +100,7 @@ const cn = {
     },
     Commands: {
       new: "新建聊天",
-      newm: "从助手新建聊天",
+      newm: "从提示词新建聊天",
       next: "下一个聊天",
       prev: "上一个聊天",
       clear: "清除上下文",
@@ -115,7 +115,7 @@ const cn = {
         dark: "深色模式",
       },
       Prompt: "快捷指令",
-      Masks: "所有助手",
+      Masks: "所有提示词",
       Clear: "清除聊天",
       Settings: "对话设置",
       UploadImage: "上传图片",
@@ -138,7 +138,7 @@ const cn = {
     Send: "发送",
     Config: {
       Reset: "清除记忆",
-      SaveAs: "存为助手",
+      SaveAs: "存为提示词",
     },
     IsContext: "预设提示词",
     Speech: {
@@ -180,8 +180,8 @@ const cn = {
       SubTitle: "可以导出 Markdown 文本或者 PNG 图片",
     },
     IncludeContext: {
-      Title: "包含助手上下文",
-      SubTitle: "是否在消息中展示助手上下文",
+      Title: "包含提示词上下文",
+      SubTitle: "是否在消息中展示提示词上下文",
     },
     Steps: {
       Select: "选取",
@@ -332,7 +332,7 @@ const cn = {
 
       LocalState: "本地数据",
       Overview: (overview: any) => {
-        return `${overview.chat} 次对话，${overview.message} 条消息，${overview.prompt} 条提示词，${overview.mask} 个助手`;
+        return `${overview.chat} 次对话，${overview.message} 条消息，${overview.prompt + overview.mask} 条提示词`;
       },
       ImportFailed: "导入失败",
 
@@ -379,12 +379,12 @@ const cn = {
     },
     Mask: {
       Splash: {
-        Title: "助手启动页",
-        SubTitle: "新建聊天时，展示助手启动页",
+        Title: "提示词启动页",
+        SubTitle: "新建聊天时，展示提示词启动页",
       },
       Builtin: {
-        Title: "隐藏内置助手",
-        SubTitle: "在所有助手列表中隐藏内置助手",
+        Title: "隐藏内置提示词",
+        SubTitle: "在所有提示词列表中隐藏内置提示词",
       },
     },
     Prompt: {
@@ -567,14 +567,14 @@ const cn = {
     Name: "插件",
   },
   FineTuned: {
-    Sysmessage: "你是一个助手",
+    Sysmessage: "你是一个提示词",
   },
   Mask: {
-    Name: "助手",
+    Name: "提示词",
     Page: {
-      Title: "预设助手",
-      SubTitle: (count: number) => `${count} 个预设助手定义`,
-      Search: "搜索助手",
+      Title: "预设提示词",
+      SubTitle: (count: number) => `${count} 个预设提示词定义`,
+      Search: "搜索提示词",
       Create: "新建",
     },
     Item: {
@@ -587,13 +587,13 @@ const cn = {
     },
     EditModal: {
       Title: (readonly: boolean) =>
-        `编辑预设助手 ${readonly ? "（只读）" : ""}`,
+        `编辑预设提示词 ${readonly ? "（只读）" : ""}`,
       Download: "下载预设",
       Clone: "克隆预设",
     },
     Config: {
-      Avatar: "助手头像",
-      Name: "助手名称",
+      Avatar: "提示词头像",
+      Name: "提示词名称",
       Sync: {
         Title: "使用全局设置",
         SubTitle: "当前对话是否使用全局模型设置",
@@ -604,8 +604,8 @@ const cn = {
         SubTitle: "隐藏后预设对话不会出现在聊天界面",
       },
       Share: {
-        Title: "分享此助手",
-        SubTitle: "生成此助手的直达链接",
+        Title: "分享此提示词",
+        SubTitle: "生成此提示词的直达链接",
         Action: "复制链接",
       },
     },
@@ -615,8 +615,8 @@ const cn = {
     Skip: "直接开始",
     NotShow: "不再展示",
     ConfirmNoShow: "确认禁用？禁用后可以随时在设置中重新启用。",
-    Title: "挑选一个助手",
-    SubTitle: "现在开始，与助手背后的灵魂思维碰撞",
+    Title: "挑选一个提示词",
+    SubTitle: "现在开始，与提示词背后的灵魂思维碰撞",
     More: "查看全部",
   },
 

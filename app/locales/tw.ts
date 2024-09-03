@@ -237,8 +237,8 @@ const tw = {
     },
     Mask: {
       Splash: {
-        Title: "助手啟動頁面",
-        SubTitle: "新增聊天時，呈現助手啟動頁面",
+        Title: "提示词啟動頁面",
+        SubTitle: "新增聊天時，呈現提示词啟動頁面",
       },
       Builtin: {
         Title: "隱藏內建角色範本",
@@ -416,13 +416,13 @@ const tw = {
     Revert: "恢復上下文",
   },
   Plugin: { Name: "外掛" },
-  FineTuned: { Sysmessage: "你是一個助手" },
+  FineTuned: { Sysmessage: "你是一個提示词" },
   Mask: {
-    Name: "助手",
+    Name: "提示词",
     Page: {
-      Title: "預設助手",
-      SubTitle: (count: number) => `${count} 個預設助手定義`,
-      Search: "搜尋助手",
+      Title: "預設提示词",
+      SubTitle: (count: number) => `${count} 個預設提示词定義`,
+      Search: "搜尋提示词",
       Create: "新增",
     },
     Item: {
@@ -435,13 +435,13 @@ const tw = {
     },
     EditModal: {
       Title: (readonly: boolean) =>
-        `編輯預設助手 ${readonly ? "（只讀）" : ""}`,
+        `編輯預設提示词 ${readonly ? "（只讀）" : ""}`,
       Download: "下載預設",
       Clone: "複製預設",
     },
     Config: {
-      Avatar: "助手頭像",
-      Name: "助手名稱",
+      Avatar: "提示词頭像",
+      Name: "提示词名稱",
       Sync: {
         Title: "使用全域性設定",
         SubTitle: "目前對話是否使用全域性模型設定",
@@ -461,8 +461,8 @@ const tw = {
   NewChat: {
     Return: "返回",
     Skip: "跳過",
-    Title: "挑選一個助手",
-    SubTitle: "現在開始，與助手背後的靈魂思維碰撞",
+    Title: "挑選一個提示词",
+    SubTitle: "現在開始，與提示词背後的靈魂思維碰撞",
     NotShow: "不再呈現",
     ConfirmNoShow: "確認停用？停用後可以隨時在設定中重新啟用。",
     More: "搜尋更多",

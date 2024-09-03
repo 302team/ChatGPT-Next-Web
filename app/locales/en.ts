@@ -104,7 +104,7 @@ const en: LocaleType = {
     },
     Commands: {
       new: "Start a new chat",
-      newm: "Start a new chat with assistant",
+      newm: "Start a new chat with prompt",
       next: "Next Chat",
       prev: "Previous Chat",
       clear: "Clear Context",
@@ -119,7 +119,7 @@ const en: LocaleType = {
         dark: "Dark Theme",
       },
       Prompt: "Prompts",
-      Masks: "Assistant",
+      Masks: "Prompt",
       Clear: "Clear Context",
       Settings: "Settings",
       UploadImage: "Upload Images",
@@ -142,7 +142,7 @@ const en: LocaleType = {
     Send: "Send",
     Config: {
       Reset: "Reset to Default",
-      SaveAs: "Save as Assistant",
+      SaveAs: "Save as Prompt",
     },
     IsContext: "Contextual Prompt",
     Speech: {
@@ -185,7 +185,7 @@ const en: LocaleType = {
     },
     IncludeContext: {
       Title: "Including Context",
-      SubTitle: "Export context prompts in assistant or not",
+      SubTitle: "Export context prompts in prompt or not",
     },
     Steps: {
       Select: "Select",
@@ -337,7 +337,7 @@ const en: LocaleType = {
 
       LocalState: "Local Data",
       Overview: (overview: any) => {
-        return `${overview.chat} chats，${overview.message} messages，${overview.prompt} prompts，${overview.mask} assistants`;
+        return `${overview.chat} chats，${overview.message} messages，${overview.prompt + overview.mask} prompts`;
       },
       ImportFailed: "Failed to import from file",
 
@@ -387,12 +387,12 @@ const en: LocaleType = {
     },
     Mask: {
       Splash: {
-        Title: "Assistant Splash Screen",
-        SubTitle: "Show a assistant splash screen before starting new chat",
+        Title: "Prompt Splash Screen",
+        SubTitle: "Show a prompt splash screen before starting new chat",
       },
       Builtin: {
-        Title: "Hide Builtin Assistants",
-        SubTitle: "Hide builtin assistants in assistant list",
+        Title: "Hide Builtin Prompts",
+        SubTitle: "Hide builtin prompts in prompt list",
       },
     },
     Prompt: {
@@ -579,10 +579,10 @@ const en: LocaleType = {
     Name: "Plugin",
   },
   FineTuned: {
-    Sysmessage: "You are an assistant that",
+    Sysmessage: "You are an prompt that",
   },
   Mask: {
-    Name: "Assistant",
+    Name: "Prompt",
     Page: {
       Title: "Prompt Template",
       SubTitle: (count: number) => `${count} prompt templates`,
@@ -616,8 +616,8 @@ const en: LocaleType = {
         SubTitle: "Do not show in-context prompts in chat",
       },
       Share: {
-        Title: "Share This Assistant",
-        SubTitle: "Generate a link to this assistant",
+        Title: "Share This Prompt",
+        SubTitle: "Generate a link to this prompt",
         Action: "Copy Link",
       },
     },
@@ -625,8 +625,8 @@ const en: LocaleType = {
   NewChat: {
     Return: "Return",
     Skip: "Just Start",
-    Title: "Pick a Assistant",
-    SubTitle: "Chat with the Soul behind the Assistant",
+    Title: "Pick a Prompt",
+    SubTitle: "Chat with the Soul behind the Prompt",
     More: "Find More",
     NotShow: "Never Show Again",
     ConfirmNoShow: "Confirm to disable？You can enable it in settings later.",
