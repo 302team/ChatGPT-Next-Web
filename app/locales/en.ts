@@ -586,7 +586,7 @@ const en: LocaleType = {
     Page: {
       Title: "Prompt Template",
       SubTitle: (count: number) => `${count} prompt templates`,
-      Search: "Search Templates",
+      Search: "Search Prompt",
       Create: "Create",
     },
     Item: {
@@ -604,8 +604,8 @@ const en: LocaleType = {
       Clone: "Clone",
     },
     Config: {
-      Avatar: "Bot Avatar",
-      Name: "Bot Name",
+      Avatar: "Prompt Avatar",
+      Name: "Prompt Name",
       Sync: {
         Title: "Use Global Config",
         SubTitle: "Use global config in this chat",
