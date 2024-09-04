@@ -277,7 +277,7 @@ async function getUserContent(
     const saveUserContent = []; // 保存的用户内容
     let msg: MultimodalContent = {
       type: "text",
-      text: content,
+      text: content.length > 0 ? content : " ",
     };
     sendUserContent.push(msg);
     saveUserContent.push(msg);
@@ -1455,7 +1455,35 @@ export const useChatStore = createPersistStore(
         }
 
         // remove error messages if any
-        const messages = session.messages;
+        const messages = session.messages
+          .filter((msg) => !msg.isError)
+          .filter((msg) => {
+            if (typeof msg.content === "string") {
+              return msg.content.length > 0;
+            } else {
+              return true;
+            }
+          });
+
+        if (isVisionModel(modelConfig.model)) {
+          for (let i = 0; i < messages.length; i++) {
+            const msg = messages[i];
+            if (msg.role !== "user") continue;
+
+            if (typeof msg.content !== "string") {
+              for (let index = 0; index < msg.content.length; index++) {
+                const item = msg.content[index];
+                if (item.type === "image_url" && item.image_url) {
+                  const imageData = await getBase64FromUrl(item.image_url.url);
+                  item.image_url.url = imageData.base64;
+                } else if (item.type === "text") {
+                  // text默认不能为空
+                  item.text = item.text || "Analyze this image";
+                }
+              }
+            }
+          }
+        }
 
         // should summarize topic after chating more than 50 words
         const SUMMARIZE_MIN_LEN = 50;
@@ -1489,9 +1517,7 @@ export const useChatStore = createPersistStore(
           session.lastSummarizeIndex,
           session.clearContextIndex ?? 0,
         );
-        let toBeSummarizedMsgs = messages
-          .filter((msg) => !msg.isError)
-          .slice(summarizeIndex);
+        let toBeSummarizedMsgs = messages.slice(summarizeIndex);
 
         const historyMsgLength = countMessages(toBeSummarizedMsgs);
 
@@ -1500,22 +1526,6 @@ export const useChatStore = createPersistStore(
           toBeSummarizedMsgs = toBeSummarizedMsgs.slice(
             Math.max(0, n - modelConfig.historyMessageCount),
           );
-        }
-
-        for (let i = 0; i < toBeSummarizedMsgs.length; i++) {
-          const msg = toBeSummarizedMsgs[i];
-          if (
-            msg.content instanceof Array &&
-            isVisionModel(modelConfig.model)
-          ) {
-            for (let index = 0; index < msg.content.length; index++) {
-              const item = msg.content[index];
-              if (item.type === "image_url" && item.image_url) {
-                const imageData = await getBase64FromUrl(item.image_url.url);
-                item.image_url.url = imageData.base64;
-              }
-            }
-          }
         }
 
         // add memory prompt
