@@ -1090,7 +1090,7 @@ export const useChatStore = createPersistStore(
             const modelConfig = modelConfigs[i];
             const model = modelConfig.model;
 
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
               // const userMessage = createMessage({
               //   role: "user",
               //   content: sendUserContent as string | MultimodalContent[],
@@ -1130,6 +1130,23 @@ export const useChatStore = createPersistStore(
                   const idx = filteredMessage.findIndex((m) => m.id === lastid);
                   if (idx > -1) {
                     filteredMessage.splice(idx, 1);
+                  }
+                }
+
+                if (isVisionModel(model)) {
+                  for (let i = 0; i < filteredMessage.length; i++) {
+                    const msg = filteredMessage[i];
+                    if (msg.content instanceof Array) {
+                      for (let index = 0; index < msg.content.length; index++) {
+                        const item = msg.content[index];
+                        if (item.type === "image_url" && item.image_url) {
+                          const imageData = await getBase64FromUrl(
+                            item.image_url.url,
+                          );
+                          item.image_url.url = imageData.base64;
+                        }
+                      }
+                    }
                   }
                 }
 

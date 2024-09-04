@@ -779,6 +779,7 @@
 }
 
 .chat-input-panel-inner {
+  position: relative;
   cursor: text;
   display: flex;
   flex: 1;
@@ -836,9 +837,9 @@
 
 .chat-input ~ .chat-input-send {
   position: absolute;
-  right: 40px;
+  right: 20px;
   bottom: 50%;
-  transform: translate(0px, 20%);
+  transform: translate(0px, 50%);
   color: #e5e5e5;
 }
 
