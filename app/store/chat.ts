@@ -1442,7 +1442,7 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      summarizeSession() {
+      async summarizeSession() {
         const config = useAppConfig.getState();
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
@@ -1500,6 +1500,22 @@ export const useChatStore = createPersistStore(
           toBeSummarizedMsgs = toBeSummarizedMsgs.slice(
             Math.max(0, n - modelConfig.historyMessageCount),
           );
+        }
+
+        for (let i = 0; i < toBeSummarizedMsgs.length; i++) {
+          const msg = toBeSummarizedMsgs[i];
+          if (
+            msg.content instanceof Array &&
+            isVisionModel(modelConfig.model)
+          ) {
+            for (let index = 0; index < msg.content.length; index++) {
+              const item = msg.content[index];
+              if (item.type === "image_url" && item.image_url) {
+                const imageData = await getBase64FromUrl(item.image_url.url);
+                item.image_url.url = imageData.base64;
+              }
+            }
+          }
         }
 
         // add memory prompt
