@@ -2055,7 +2055,7 @@ function _Chat(props: { promptStarters: string[] }) {
                       message.needTranslate &&
                       !message.isError &&
                       !message.isTimeoutAborted &&
-                      !currentModel.includes("gemini-1.5") &&
+                      // !currentModel.includes("gemini-1.5") &&
                       !currentModel.includes("ERNIE-4.0-8K") && (
                         <div className={styles["chat-message-translate"]}>
                           <div className={styles["chat-input-actions"]}>
