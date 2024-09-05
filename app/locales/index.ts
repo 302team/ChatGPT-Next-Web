@@ -7,7 +7,7 @@ import fr from "./fr";
 import es from "./es";
 import it from "./it";
 import tr from "./tr";
-import jp from "./jp";
+import ja from "./jp";
 import de from "./de";
 import vi from "./vi";
 import ru from "./ru";
@@ -27,7 +27,7 @@ const ALL_LANGS = {
   en,
   tw,
   pt,
-  jp,
+  ja,
   ko,
   id,
   fr,
@@ -53,7 +53,7 @@ export const ALL_LANG_OPTIONS: Record<Lang, string> = {
   en: "English",
   pt: "Português",
   tw: "繁體中文",
-  jp: "日本語",
+  ja: "日本語",
   ko: "한국어",
   id: "Indonesia",
   fr: "Français",
@@ -86,7 +86,7 @@ export const langCodeMap = {
   "en-US": "en",
   "pt-BR": "pt",
   "zh-TW": "tw",
-  "ja-JP": "jp",
+  "ja-JP": "ja",
   "ko-KR": "ko",
   "id-ID": "id",
   "fr-FR": "fr",
