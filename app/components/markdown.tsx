@@ -409,6 +409,8 @@ export function PreCode(props: { children: any }) {
       setShowCodePreviewAction(true);
     } else if (refText?.startsWith("<!DOCTYPE")) {
       setShowCodePreviewAction(true);
+    } else if (refText?.match(svgReg)) {
+      setShowCodePreviewAction(true);
     }
 
     if (javascriptDom || jsxDom || tsxDom) {
