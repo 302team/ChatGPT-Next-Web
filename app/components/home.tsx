@@ -479,7 +479,7 @@ export function Home() {
       setLocale(zhCN);
     } else if (lang === "en") {
       setLocale(enUS);
-    } else if (lang === "jp") {
+    } else if (lang === "ja") {
       setLocale(jaJP);
     }
   }, [lang]);
