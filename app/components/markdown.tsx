@@ -399,6 +399,8 @@ export function PreCode(props: { children: any }) {
       setShowCodePreviewAction(true);
     } else if (refText?.startsWith("<!DOCTYPE")) {
       setShowCodePreviewAction(true);
+    } else if (refText?.match(svgReg)) {
+      setShowCodePreviewAction(true);
     }
 
     if (javascriptDom || jsxDom || tsxDom) {
@@ -577,7 +579,7 @@ function _MarkDownContent(props: { content: string; isHtml?: boolean }) {
         a: (aProps) => {
           const href = aProps.href || "";
           const isInternal = /^\/#/i.test(href);
-          const target = isInternal ? "_self" : aProps.target ?? "_blank";
+          const target = isInternal ? "_self" : (aProps.target ?? "_blank");
           return <a {...aProps} target={target} />;
         },
       }}
