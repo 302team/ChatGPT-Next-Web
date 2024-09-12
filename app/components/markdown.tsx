@@ -405,6 +405,7 @@ export function PreCode(props: { children: any }) {
 
     const showPreviewBtn = htmlDom; // || jsxDom || tsxDom || vueDom;
 
+    setShowCodePreviewAction(true);
     if (showPreviewBtn) {
       setShowCodePreviewAction(true);
     } else if (refText?.startsWith("<!DOCTYPE")) {
